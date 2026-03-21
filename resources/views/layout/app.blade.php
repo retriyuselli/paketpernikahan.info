@@ -24,16 +24,48 @@
         <!-- Custom CSS Variables -->
         <style>
             :root {
-                --accent-red: #8B1538;
-                --accent-gold: #D4AF37;
-                --accent-light-red: #D32F2F;
+                --soft-pink:   #F9D5E5;
+                --sage-green:  #9CAF88;
+                --light-sage:  #C8D5B9;
+                --cream:       #FAF3E7;
+                --dark-gray:   #444444;
             }
+
+            /* Global body background */
+            body { background-color: var(--cream); color: var(--dark-gray); }
+
+            /* Color Utilities */
+            .text-accent            { color: var(--sage-green); }
+            .text-accent-pink       { color: var(--soft-pink); }
+            .text-dark              { color: var(--dark-gray); }
+            .bg-accent              { background-color: var(--sage-green); }
+            .bg-accent-pink         { background-color: var(--soft-pink); }
+            .bg-light-sage          { background-color: var(--light-sage); }
+            .bg-cream               { background-color: var(--cream); }
+            .border-accent          { border-color: var(--sage-green); }
+            .from-accent            { --tw-gradient-from: var(--sage-green); }
+            .to-accent              { --tw-gradient-to: var(--sage-green); }
+            .to-accent-dark         { --tw-gradient-to: #7d9469; }
+            .from-soft-pink         { --tw-gradient-from: var(--soft-pink); }
+            .hover\:text-accent:hover { color: var(--sage-green); }
+            .focus\:ring-accent:focus { --tw-ring-color: rgba(156,175,136,.4); box-shadow: 0 0 0 3px rgba(156,175,136,.4); }
+
+            @keyframes marquee {
+                0%   { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+            }
+            .animate-marquee {
+                animation: marquee 30s linear infinite;
+            }
+
+            .scrollbar-hide::-webkit-scrollbar { display: none; }
+            .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         </style>
 
         @yield('extra-head')
     </head>
     
-    <body class="@yield('body-class', 'bg-white text-gray-900')">
+    <body class="@yield('body-class', 'bg-cream text-dark')">
         @yield('content')
     </body>
 </html>
