@@ -1,0 +1,250 @@
+@import "tailwindcss";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans:
+        "Poppins", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* Dark Mode styles using raw CSS for better specificity */
+html.dark {
+    background-color: rgb(3, 7, 18) !important;
+    color: rgb(243, 244, 246) !important;
+}
+
+html.dark body {
+    background-color: rgb(3, 7, 18) !important;
+    color: rgb(243, 244, 246) !important;
+}
+
+html.dark header {
+    background-color: rgb(17, 24, 39) !important;
+    border-color: rgb(31, 41, 55) !important;
+}
+
+html.dark section {
+    background-color: rgb(3, 7, 18) !important;
+}
+
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6,
+html.dark p {
+    color: rgb(243, 244, 246) !important;
+}
+
+html.dark .text-gray-900 {
+    color: rgb(243, 244, 246) !important;
+}
+
+html.dark .text-gray-600 {
+    color: rgb(156, 163, 175) !important;
+}
+
+html.dark .text-gray-500 {
+    color: rgb(156, 163, 175) !important;
+}
+
+html.dark .text-gray-400 {
+    color: rgb(156, 163, 175) !important;
+}
+
+html.dark .text-gray-700 {
+    color: rgb(219, 234, 254) !important;
+}
+
+html.dark .text-gray-300 {
+    color: rgb(209, 213, 219) !important;
+}
+
+html.dark .border-gray-100 {
+    border-color: rgb(31, 41, 55) !important;
+}
+
+html.dark .border-gray-200 {
+    border-color: rgb(31, 41, 55) !important;
+}
+
+html.dark .border-gray-300 {
+    border-color: rgb(55, 65, 81) !important;
+}
+
+html.dark .border-gray-400 {
+    border-color: rgb(55, 65, 81) !important;
+}
+
+html.dark .border-gray-500 {
+    border-color: rgb(55, 65, 81) !important;
+}
+
+html.dark .bg-white {
+    background-color: rgb(17, 24, 39) !important;
+    color: rgb(243, 244, 246) !important;
+}
+
+html.dark .bg-gray-50 {
+    background-color: rgb(17, 24, 39) !important;
+}
+
+html.dark .bg-gray-100 {
+    background-color: rgb(31, 41, 55) !important;
+}
+
+html.dark .bg-gray-200 {
+    background-color: rgb(55, 65, 81) !important;
+}
+
+html.dark .bg-gray-300 {
+    background-color: rgb(55, 65, 81) !important;
+}
+
+html.dark .text-red-600 {
+    color: rgb(239, 68, 68) !important;
+}
+
+html.dark .bg-red-100 {
+    background-color: rgb(127, 29, 29) !important;
+}
+
+html.dark .bg-red-600 {
+    background-color: rgb(180, 83, 9) !important;
+}
+
+html.dark .bg-red-700 {
+    background-color: rgb(159, 18, 57) !important;
+}
+
+html.dark .from-red-600 {
+    --tw-gradient-from: rgb(180, 83, 9) !important;
+}
+
+html.dark .to-red-700 {
+    --tw-gradient-to: rgb(159, 18, 57) !important;
+}
+
+html.dark .to-rose-500 {
+    --tw-gradient-to: rgb(244, 63, 94) !important;
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+    background-color: rgb(31, 41, 55) !important;
+    border-color: rgb(55, 65, 81) !important;
+    color: rgb(243, 244, 246) !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+    color: rgb(107, 114, 128) !important;
+}
+
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus {
+    border-color: rgb(239, 68, 68) !important;
+    --tw-ring-color: rgb(239, 68, 68) !important;
+}
+
+html.dark a {
+    color: rgb(248, 113, 113) !important;
+}
+
+html.dark a:hover {
+    color: rgb(252, 165, 165) !important;
+}
+
+html.dark footer {
+    background-color: rgb(17, 24, 39) !important;
+    color: rgb(209, 213, 219) !important;
+}
+
+html.dark .text-white {
+    color: rgb(243, 244, 246) !important;
+}
+
+html.dark .shadow,
+html.dark .shadow-lg,
+html.dark .shadow-md {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.dark .from-red-200 {
+    --tw-gradient-from: rgb(127, 29, 29) !important;
+}
+
+html.dark .from-pink-200 {
+    --tw-gradient-from: rgb(127, 29, 29) !important;
+}
+
+html.dark .from-rose-200 {
+    --tw-gradient-from: rgb(127, 29, 29) !important;
+}
+
+html.dark .to-pink-200 {
+    --tw-gradient-to: rgb(159, 18, 57) !important;
+}
+
+html.dark .to-rose-200 {
+    --tw-gradient-to: rgb(159, 18, 57) !important;
+}
+
+html.dark .to-pink-300 {
+    --tw-gradient-to: rgb(190, 24, 93) !important;
+}
+
+html.dark .to-red-200 {
+    --tw-gradient-to: rgb(159, 18, 57) !important;
+}
+
+html.dark .from-red-100 {
+    --tw-gradient-from: rgb(127, 29, 29) !important;
+}
+
+html.dark .from-red-300 {
+    --tw-gradient-from: rgb(159, 18, 57) !important;
+}
+
+html.dark .from-pink-300 {
+    --tw-gradient-from: rgb(159, 18, 57) !important;
+}
+
+html.dark .from-rose-300 {
+    --tw-gradient-from: rgb(159, 18, 57) !important;
+}
+
+html.dark .to-rose-300 {
+    --tw-gradient-to: rgb(190, 24, 93) !important;
+}
+
+@keyframes float {
+    0% {
+        opacity: 0;
+        transform: translateY(0);
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-500px);
+    }
+}
+
+@layer components {
+    .animate-float {
+        animation: float linear infinite;
+        will-change: transform, opacity;
+    }
+}
