@@ -38,7 +38,7 @@
                         <!-- Email Field -->
                         <div>
                             <label for="email" style="font-size: 0.875rem; font-weight: 300; color: #374151; display: block; margin-bottom: 0.375rem;">Email</label>
-                            <input type="email" name="email" id="email" placeholder="Enter your email" required style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'" onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'" value="{{ old('email') }}">
+                            <input type="email" name="email" id="email" placeholder="test@example.com" required style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'" onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'" value="{{ old('email', 'test@example.com') }}">
                             @error('email')
                                 <p style="font-size: 0.75rem; color: #EF4444; margin-top: 0.25rem;">{{ $message }}</p>
                             @enderror
@@ -50,7 +50,7 @@
                                 <label for="password" style="font-size: 0.875rem; font-weight: 300; color: #374151;">Password</label>
                                 <a href="{{ route('password.request') }}" style="font-size: 0.875rem; color: #2563EB; font-weight: 300; text-decoration: none;" onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='#2563EB'">Forgot password?</a>
                             </div>
-                            <input type="password" name="password" id="password" placeholder="Enter your password" required style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'" onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'">
+                            <input type="password" name="password" id="password" placeholder="password" required style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'" onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'">
                             @error('password')
                                 <p style="font-size: 0.75rem; color: #EF4444; margin-top: 0.25rem;">{{ $message }}</p>
                             @enderror

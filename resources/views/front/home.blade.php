@@ -7,77 +7,109 @@
 @section('content')
         @include('layout.header')
 
-        <!-- Hero Section -->
-        <section style="background-color: var(--cream); background-image: linear-gradient(rgba(156,175,136,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(156,175,136,0.08) 1px, transparent 1px); background-size: 40px 40px;">
+        @include('front.sections.hero')
+
+        <!-- Highlight -->
+        <section class="py-10" style="background-color: var(--cream)">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
-                <div>
-                    <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight mt-15">
-                        Jangan menunda <span style="color:var(--sage-green)">momen spesial</span> Anda
-                    </h1>
-                    <p class="text-sm text-gray-600 mb-8">
-                        Makna Wedding membantu mewujudkan pernikahan impian Anda dengan paket lengkap dan terjangkau
-                    </p>
-                    <a href="#packages" class="inline-block text-white font-semibold py-3 px-8 rounded-lg hover:shadow-lg transition" style="background: linear-gradient(to right, var(--sage-green), #7d9469)">
-                        Lihat Paket Kami
-                    </a>
-                </div>
-                <div class="rounded-lg p-8 lg:p-12 h-80 lg:h-96 flex items-center justify-center relative">
-                    <!-- Animated floating circles with images -->
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <!-- Circle 1 - Flowers -->
-                        <div class="absolute w-16 h-16 rounded-full overflow-hidden shadow-lg animate-float bg-gradient-to-br from-accent to-pink-200" style="animation-delay: 0s; left: 5%; animation-duration: 17s; bottom: -80px;">
-                            <img src="https://images.unsplash.com/photo-1490490849894-425cda7c9f27?w=100&h=100&fit=crop" alt="Wedding flowers" class="w-full h-full object-cover">
-                        </div>
-                        
-                        <!-- Circle 2 - Couple -->
-                        <div class="absolute w-20 h-20 rounded-full overflow-hidden shadow-lg animate-float bg-gradient-to-br from-accent to-accent" style="animation-delay: 0.5s; left: 15%; animation-duration: 19s; bottom: 20px;">
-                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=120&h=120&fit=crop" alt="Happy couple" class="w-full h-full object-cover">
-                        </div>  
-                        
-                        <!-- Circle 3 - Ring -->
-                        <div class="absolute w-14 h-14 rounded-full overflow-hidden shadow-lg animate-float bg-gradient-to-br from-yellow-200 to-amber-300" style="animation-delay: 1s; right: 10%; animation-duration: 21s; bottom: -120px;">
-                            <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=100&h=100&fit=crop" alt="Wedding ring" class="w-full h-full object-cover">
-                        </div>
-                        
-                        <!-- Circle 4 - Cake -->
-                        <div class="absolute w-16 h-16 rounded-full overflow-hidden shadow-lg animate-float bg-gradient-to-br from-amber-200 to-yellow-200" style="animation-delay: 1.5s; right: 20%; animation-duration: 18s; bottom: 180px;">
-                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&h=100&fit=crop" alt="Wedding cake" class="w-full h-full object-cover">
-                        </div>
-                        
-                        <!-- Circle 5 - Celebration -->
-                        <div class="absolute w-18 h-18 rounded-full overflow-hidden shadow-lg animate-float bg-gradient-to-br from-purple-300 to-blue-300" style="animation-delay: 0.3s; left: 25%; animation-duration: 20s; bottom: -40px;">
-                            <img src="https://images.unsplash.com/photo-1517457373614-b7152f800fd1?w=120&h=120&fit=crop" alt="Wedding celebration" class="w-full h-full object-cover">
+
+                <h2 class="text-xl font-bold mb-5" style="color: var(--dark-gray)">Highlights</h2>
+
+                <!-- Slider Container -->
+                <div class="relative">
+                    <!-- Left Arrow -->
+                    <button onclick="document.getElementById('highlights-scroll').scrollBy({left: -400, behavior: 'smooth'})"
+                            class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
+                        <svg class="w-5 h-5" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+
+                    <!-- Scrollable Track -->
+                    <div id="highlights-scroll" class="flex gap-4 overflow-x-auto scroll-smooth pb-2" style="scrollbar-width: none; -ms-overflow-style: none;">
+
+                        <!-- Card 1 — Wedding Story (Photo) -->
+                        <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                            <img src="https://picsum.photos/seed/highlight1/640/480" alt="Ranggaz & Angie" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-4">
+                                <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Ranggaz &amp; Angie</span></p>
+                                <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">More Info</a>
+                            </div>
                         </div>
 
-                        <!-- Circle 6 - Bride -->
-                        <div class="absolute w-16 h-16 rounded-full overflow-hidden shadow-lg animate-float bg-gradient-to-br from-accent to-rose-300" style="animation-delay: 0.8s; left: 35%; animation-duration: 17.4s; bottom: 80px;">
-                            <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100&h=100&fit=crop" alt="Wedding bride" class="w-full h-full object-cover">
+                        <!-- Card 2 — Promo Banner -->
+                        <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3; background-color: var(--soft-pink);">
+                            <img src="https://picsum.photos/seed/highlight-promo/640/480" alt="Promo" class="w-full h-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105">
+                            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
+                                <p class="text-2xl font-bold leading-tight" style="color: var(--dark-gray)">Temukan Vendor <span style="color: var(--sage-green)">Terbaik</span><br>untuk Hari Istimewamu!</p>
+                                <p class="text-xs" style="color: var(--dark-gray)">Ribuan vendor pernikahan terpercaya<br>siap melayani Anda</p>
+                                <div class="flex gap-2 mt-2">
+                                    <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">Chat Vendor</a>
+                                    <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full border transition hover:opacity-90" style="border-color: var(--sage-green); color: var(--sage-green)">Simpan</a>
+                                    <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--dark-gray); color: var(--cream)">More Info</a>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Circle 7 - Groom -->
-                        <div class="absolute w-14 h-14 rounded-full overflow-hidden shadow-lg animate-float bg-gradient-to-br from-blue-300 to-slate-400" style="animation-delay: 1.2s; right: 30%; animation-duration: 20.6s; bottom: -100px;">
-                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="Wedding groom" class="w-full h-full object-cover">
+                        <!-- Card 3 — Blog Article -->
+                        <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                            <img src="https://picsum.photos/seed/highlight3/640/480" alt="Wedding Preparation" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-4">
+                                <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Wedding Preparation</p>
+                                <p class="text-white text-sm font-bold leading-snug">Ini Cara Capeng Tetap Waras Jelang Hari H &amp; Dekat Dengan Keindahan Adat.</p>
+                            </div>
                         </div>
 
-                        <!-- Circle 8 - Church/Venue -->
-                        <div class="absolute w-20 h-20 rounded-full overflow-hidden shadow-lg animate-float bg-gradient-to-br from-blue-200 to-cyan-200" style="animation-delay: 0.2s; left: 45%; animation-duration: 21.4s; bottom: 140px;">
-                            <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=120&h=120&fit=crop" alt="Wedding venue" class="w-full h-full object-cover">
+                        <!-- Card 4 — Blog Article -->
+                        <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                            <img src="https://picsum.photos/seed/highlight4/640/480" alt="Wedding Ideas" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-4">
+                                <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Wedding Ideas</p>
+                                <p class="text-white text-sm font-bold leading-snug">8 Inspirasi Dekorasi Pernikahan Bernuansa Alam yang Elegan &amp; Tak Terlupakan.</p>
+                            </div>
                         </div>
 
-                        <!-- Circle 9 - Lights/Stars -->
-                        <div class="absolute w-16 h-16 rounded-full overflow-hidden shadow-lg animate-float bg-gradient-to-br from-purple-400 to-indigo-500" style="animation-delay: 1.8s; right: 5%; animation-duration: 18.6s; bottom: -60px;">
-                            <img src="https://images.unsplash.com/photo-1511379938547-c1f69b13d835?w=100&h=100&fit=crop" alt="Wedding lights" class="w-full h-full object-cover">
+                        <!-- Card 5 — Wedding Story -->
+                        <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                            <img src="https://picsum.photos/seed/highlight5/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                            <div class="absolute bottom-0 left-0 right-0 p-4">
+                                <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Bimo &amp; Rara</span></p>
+                                <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">More Info</a>
+                            </div>
                         </div>
 
-                        <!-- Circle 10 - Celebration -->
-                        <div class="absolute w-14 h-14 rounded-full overflow-hidden shadow-lg animate-float bg-gradient-to-br from-rose-300 to-accent" style="animation-delay: 0.6s; left: 55%; animation-duration: 19.6s; bottom: 40px;">
-                            <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=100&h=100&fit=crop" alt="Wedding celebration" class="w-full h-full object-cover">
-                        </div>
                     </div>
+
+                    <!-- Right Arrow -->
+                    <button onclick="document.getElementById('highlights-scroll').scrollBy({left: 400, behavior: 'smooth'})"
+                            class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
+                        <svg class="w-5 h-5" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
                 </div>
+
             </div>
         </section>
+
+    <!-- Advertising Banner -->
+    <div class="px-4 sm:px-6 lg:px-8 py-4" style="background-color: var(--cream)">
+        <div class="max-w-7xl mx-auto">
+            <a href="#" class="block relative rounded-2xl overflow-hidden group" style="aspect-ratio: 970/90;">
+                <img src="https://picsum.photos/seed/adsbanner/1200/120"
+                     alt="Banner Iklan"
+                     class="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90">
+                <div class="absolute inset-0 flex items-center justify-between px-8" style="background: linear-gradient(to right, rgba(249,213,229,0.75), rgba(156,175,136,0.75));">
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest mb-0.5" style="color: var(--dark-gray)">Sponsor</p>
+                        <p class="text-base font-bold leading-snug" style="color: var(--dark-gray)">Nama Brand Sponsor — Tagline Promosi di Sini</p>
+                    </div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full flex-shrink-0" style="background-color: var(--dark-gray); color: var(--cream)">Pelajari →</span>
+                </div>
+                <span class="absolute top-1.5 right-2 text-[9px] font-semibold uppercase tracking-widest opacity-50" style="color: var(--dark-gray)">Iklan</span>
+            </a>
+        </div>
+    </div>
 
         <!-- Partner/Vendor Marquee -->
         <section class="py-8 overflow-hidden" style="background-color: var(--sage-green)">
@@ -541,7 +573,7 @@
                         <!-- Vendor Card 1 -->
                         <div class="flex-none w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition relative">
                             <div class="absolute top-3 left-3 z-10">
-                                <span class="text-[10px] font-bold uppercase tracking-wide text-white px-2.5 py-1 rounded-full" style="background: var(--soft-pink); color: #c0195e;">VENDOR PROMO</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wide text-white px-2.5 py-1 rounded-full" style="background: var(--soft-pink); color: var(--dark-gray);">VENDOR PROMO</span>
                             </div>
                             <div class="flex flex-col items-center px-6 pt-10 pb-5">
                                 <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4">
@@ -559,7 +591,7 @@
                         <!-- Vendor Card 2 -->
                         <div class="flex-none w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition relative">
                             <div class="absolute top-3 left-3 z-10">
-                                <span class="text-[10px] font-bold uppercase tracking-wide text-white px-2.5 py-1 rounded-full" style="background: var(--soft-pink); color: #c0195e;">VENDOR PROMO</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wide text-white px-2.5 py-1 rounded-full" style="background: var(--soft-pink); color: var(--dark-gray);">VENDOR PROMO</span>
                             </div>
                             <div class="flex flex-col items-center px-6 pt-10 pb-5">
                                 <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4">
@@ -577,7 +609,7 @@
                         <!-- Vendor Card 3 -->
                         <div class="flex-none w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition relative">
                             <div class="absolute top-3 left-3 z-10">
-                                <span class="text-[10px] font-bold uppercase tracking-wide text-white px-2.5 py-1 rounded-full" style="background: var(--soft-pink); color: #c0195e;">VENDOR PROMO</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wide text-white px-2.5 py-1 rounded-full" style="background: var(--soft-pink); color: var(--dark-gray);">VENDOR PROMO</span>
                             </div>
                             <div class="flex flex-col items-center px-6 pt-10 pb-5">
                                 <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4">
@@ -595,7 +627,7 @@
                         <!-- Vendor Card 4 -->
                         <div class="flex-none w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition relative">
                             <div class="absolute top-3 left-3 z-10">
-                                <span class="text-[10px] font-bold uppercase tracking-wide text-white px-2.5 py-1 rounded-full" style="background: var(--soft-pink); color: #c0195e;">VENDOR PROMO</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wide text-white px-2.5 py-1 rounded-full" style="background: var(--soft-pink); color: var(--dark-gray);">VENDOR PROMO</span>
                             </div>
                             <div class="flex flex-col items-center px-6 pt-10 pb-5">
                                 <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4">
@@ -860,47 +892,7 @@
             </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="bg-gray-900 text-gray-300 py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                    <div>
-                        <h3 class="text-white font-bold mb-4 text-xl">MW</h3>
-                        <p class="text-sm">Wedding organizer terpercaya di Sumatera Selatan</p>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-semibold mb-4">Kategori</h4>
-                        <ul class="text-sm space-y-2">
-                            <li><a href="#" class="hover:text-white transition">Gedung</a></li>
-                            <li><a href="#" class="hover:text-white transition">Hotel</a></li>
-                            <li><a href="#" class="hover:text-white transition">Rumah</a></li>
-                            <li><a href="#" class="hover:text-white transition">WO Only</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-semibold mb-4">Layanan</h4>
-                        <ul class="text-sm space-y-2">
-                            <li><a href="#" class="hover:text-white transition">Paket Pernikahan</a></li>
-                            <li><a href="#" class="hover:text-white transition">Promo Terbaru</a></li>
-                            <li><a href="#" class="hover:text-white transition">Blog</a></li>
-                            <li><a href="#" class="hover:text-white transition">Hubungi Kami</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="text-white font-semibold mb-4">Kontak</h4>
-                        <ul class="text-sm space-y-2">
-                            <li>office@makruwedding.id</li>
-                            <li>+62 812-7893-2624</li>
-                            <li>Palembang, Sumatera Selatan</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                <div class="border-t border-gray-800 pt-8 text-center text-sm">
-                    <p>&copy; 2024 Makna Wedding. All rights reserved.</p>
-                </div>
-            </div>
-        </footer>
+        @include('layout.footer')
 
     </body>
 </html>

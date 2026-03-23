@@ -1,12 +1,14 @@
-<!-- Top Announcement Banner -->
-<div class="text-white text-center py-2 px-4 text-sm font-medium" style="background: linear-gradient(to right, var(--sage-green), var(--light-sage))">
-    Coming soon, Sumatera Selatan Wedding Expo 2026 Season 1
-</div>
+<!-- Sticky Header Wrapper -->
+<div class="sticky top-0 z-40 bg-white border-b border-gray-200">
 
-<!-- Header -->
-<header class="border-b border-gray-200 sticky top-0 bg-white z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Collapsible: Announcement Banner + Top Contact Bar -->
+    <div id="collapsible-bar" class="overflow-hidden transition-all duration-300" style="max-height: 200px;">
+        <!-- Top Announcement Banner -->
+        <div class="text-white text-center py-2 px-4 text-sm font-medium" style="background: linear-gradient(to right, var(--sage-green), var(--light-sage))">
+            Coming soon, Sumatera Selatan Wedding Expo 2026 Season 1
+        </div>
         <!-- Top Contact Bar -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between py-3 text-xs border-b border-gray-100">
             <div class="flex items-center gap-6 text-gray-600">
                 <span>office@makruwedding.id</span>
@@ -38,38 +40,75 @@
                 <a href="#" class="font-medium hover:text-accent">Rp 0</a>
             </div>
         </div>
+        </div><!-- end max-w-7xl for contact bar -->
+    </div><!-- end collapsible-bar -->
 
-        <!-- Main Header -->
-        <div class="flex items-center justify-between gap-8 py-4">
-            <!-- Logo -->
-            <div class="flex-shrink-0">
-                <a href="/" class="text-3xl font-bold">
-                    <span style="color:var(--sage-green)">M</span><span style="color:var(--soft-pink)">W</span>
+    <!-- Main Header (always sticky) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-3 items-center py-3">
+
+            <!-- Logo (left) -->
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <a href="/" class="flex items-center gap-2">
+                    <span class="text-3xl font-extrabold tracking-tight">
+                        <span style="color:var(--sage-green)">M</span><span style="color:var(--dark-gray)">W</span>
+                    </span>
                 </a>
             </div>
 
-            <!-- Search Bar -->
-            <div class="hidden lg:flex flex-1 max-w-md">
-                <div class="relative w-full">
-                    <input type="text" placeholder="Temukan paket/produk di sini" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent">
-                    <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                        <span class="text-xs">🔍</span>
+            <!-- Main Navigation (center) -->
+            <nav class="hidden lg:flex items-center justify-center gap-6 whitespace-nowrap">
+                <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Home</a>
+                <div class="relative group">
+                    <button class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">
+                        Wedding Package
+                        <svg class="w-3 h-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
                     </button>
                 </div>
+                <a href="{{ route('vendor') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Vendor</a>
+                <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Promo</a>
+                <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Blog Makna</a>
+                <div class="relative group">
+                    <button class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">
+                        Lain lain
+                        <svg class="w-3 h-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Right Actions -->
+            <div class="flex items-center justify-end gap-2">
+                <!-- Search Icon -->
+                <button class="p-2 text-gray-600 hover:text-accent transition rounded-full hover:bg-gray-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </button>
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="p-2 text-gray-600 hover:text-accent transition rounded-full hover:bg-gray-100">
+                    {{-- <span id="theme-icon" class="text-base leading-none">🌙</span> --}}
+                </button>
+                <!-- Login / Dashboard Button -->
+                @auth
+                    <a href="{{ url('/dashboard') }}" class="px-5 py-2 rounded-full text-xs font-bold text-white uppercase tracking-wide transition hover:opacity-90" style="background-color: var(--sage-green)">
+                        Dashboard
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="px-5 py-2 rounded-full text-xs font-bold text-white uppercase tracking-wide transition hover:opacity-90" style="background-color: #D94F4F">
+                        Login
+                    </a>
+                @endauth
             </div>
 
-            <!-- Main Navigation -->
-            <nav class="hidden lg:flex items-center gap-8">
-                <a href="#" class="text-gray-900 text-sm hover:text-accent transition">Home</a>
-                <a href="#packages" class="text-gray-900 text-sm hover:text-accent transition">Wedding Package</a>
-                <a href="#" class="text-gray-900 text-sm hover:text-accent transition">Promo</a>
-                <a href="#" class="text-gray-900 text-sm hover:text-accent transition">Blog Makna</a>
-                <a href="#" class="text-gray-900 text-sm hover:text-accent transition">Lain lain</a>
-            </nav>
         </div>
+    </div><!-- end max-w-7xl main header -->
 
         <!-- Category Navigation -->
-        <div class="border-t border-gray-100 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+        {{-- <div class="border-t border-gray-100 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
             <div class="flex items-center overflow-x-auto py-4 gap-8">
                 <div class="flex items-center gap-3 cursor-pointer hover:opacity-75 transition flex-shrink-0">
                     <span class="text-xl">🏛️</span>
@@ -100,6 +139,23 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</header>
+        </div> --}}
+
+</div><!-- end sticky wrapper -->
+
+<script>
+(function () {
+    var bar = document.getElementById('collapsible-bar');
+    var lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', function () {
+        var currentScrollY = window.scrollY;
+        if (currentScrollY > lastScrollY && currentScrollY > 60) {
+            bar.style.maxHeight = '0';
+        } else {
+            bar.style.maxHeight = '200px';
+        }
+        lastScrollY = currentScrollY;
+    }, { passive: true });
+})();
+</script>

@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class VendorReview extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'vendor_id', 'user_id', 'reviewer_name', 'reviewer_avatar',
+        'rating', 'body', 'reviewed_at', 'is_approved',
+    ];
+
+    protected $casts = [
+        'rating'      => 'integer',
+        'reviewed_at' => 'date',
+        'is_approved' => 'boolean',
+    ];
+
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
