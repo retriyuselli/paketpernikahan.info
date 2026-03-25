@@ -1,4 +1,7 @@
 import "./bootstrap";
+import Alpine from "alpinejs";
+window.Alpine = Alpine;
+Alpine.start();
 
 // Dark Mode Toggle
 document.addEventListener("DOMContentLoaded", function () {

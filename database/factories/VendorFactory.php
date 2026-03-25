@@ -41,7 +41,7 @@ class VendorFactory extends Factory
             'instagram'      => '@' . $this->faker->userName(),
             'capacity'       => $this->faker->randomElement(['200 – 500', '300 – 800', '500 – 1.500', '100 – 300']) . ' tamu',
             'price_start'    => 'Rp ' . number_format($priceRaw, 0, ',', '.'),
-            'price_start_raw'=> $priceRaw,
+            'discount'       => 0,
             'experience'     => $this->faker->numberBetween(3, 20) . '+ Tahun',
             'venue_type'     => $this->faker->randomElement(['Indoor', 'Outdoor', 'Indoor & Outdoor']),
             'facilities'     => implode(', ', $this->faker->randomElements(['AC', 'Parkir', 'Lift', 'Kamar Pengantin', 'Katering', 'Dekorasi', 'Ibadah'], 4)),

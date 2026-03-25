@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');                         // Paket Silver, Gold, Platinum
             $table->string('price');                        // Rp 35.000.000 (display)
             $table->unsignedBigInteger('price_raw');        // 35000000 (for sorting/calc)
+            $table->unsignedBigInteger('discount')->default(0); // potongan harga (nominal)
             $table->string('max_guests');                   // Maks. 300 tamu
             $table->string('card_color')->default('#C8D5B9');
             $table->string('card_text_color')->default('#444444');

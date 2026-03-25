@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
+
+class ProfileController extends Controller
+{
+    public function updateName(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+        ]);
+
+        $request->user()->update(['name' => $data['name']]);
+
+        return redirect()->route('dashboard', ['#setting'])
+            ->with('setting_success', 'Nama berhasil diperbarui.');
+    }
+
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password'         => ['required', 'confirmed', Password::min(8)],
+        ]);
+
+        $request->user()->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('dashboard', ['#setting'])
+            ->with('setting_success', 'Password berhasil diperbarui.');
+    }
+
+    public function updateAvatar(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpeg,png,webp', 'max:1024'],
+        ]);
+
+        $user = $request->user();
+
+        if ($user->avatar_url) {
+            Storage::disk('public')->delete($user->avatar_url);
+        }
+
+        $path = $request->file('avatar')->store('avatars', 'public');
+
+        $user->update(['avatar_url' => $path]);
+
+        return redirect()->route('dashboard', ['#setting'])
+            ->with('setting_success', 'Foto profil berhasil diperbarui.');
+    }
+}

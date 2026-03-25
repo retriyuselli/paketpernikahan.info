@@ -1,0 +1,1604 @@
+@extends('layout.app')
+
+@section('title', 'Edit Vendor: ' . $vendor->name . ' - Makna Wedding')
+
+@section('body-class', 'bg-cream text-dark')
+
+@section('content')
+    @include('layout.header')
+
+    <style>
+        /* Uniform input height & focus ring */
+        .fi {
+            width: 100%;
+            height: 40px;
+            padding: 0 14px;
+            font-size: 0.875rem;
+            color: var(--dark-gray);
+            background: #fff;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .fi:focus {
+            border-color: var(--sage-green);
+            box-shadow: 0 0 0 3px rgba(156,175,136,.18);
+        }
+        .fi.error { border-color: #fca5a5; }
+
+        .fi-wrap {
+            display: flex;
+            align-items: stretch;
+            height: 40px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .fi-wrap:focus-within {
+            border-color: var(--sage-green);
+            box-shadow: 0 0 0 3px rgba(156,175,136,.18);
+        }
+        .fi-wrap .prefix {
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 0.8rem;
+            color: #9ca3af;
+            background: #f9fafb;
+            border-right: 1.5px solid #e5e7eb;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .fi-wrap input {
+            flex: 1;
+            height: 100%;
+            padding: 0 12px;
+            font-size: 0.875rem;
+            color: var(--dark-gray);
+            border: none;
+            outline: none;
+            background: transparent;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 6px;
+        }
+
+        .section-card {
+            background: #fff;
+            border-radius: 16px;
+            border: 1.5px solid #f0f0f0;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,.04);
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border-bottom: 1.5px solid #f3f4f6;
+            background: linear-gradient(135deg, var(--cream) 0%, #fff 100%);
+        }
+        .section-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-sage);
+            flex-shrink: 0;
+        }
+        .section-icon svg { color: var(--sage-green); }
+        .section-title {
+            font-size: 0.8125rem;
+            font-weight: 700;
+            color: var(--dark-gray);
+        }
+
+        textarea.fi { height: auto; padding: 10px 14px; resize: none; }
+
+        /* Toggle switch */
+        .toggle-track {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            border-radius: 9999px;
+            background: #d1d5db;
+            cursor: pointer;
+            transition: background .2s;
+            flex-shrink: 0;
+        }
+        .toggle-track.on { background: var(--sage-green); }
+        .toggle-thumb {
+            position: absolute;
+            top: 3px; left: 3px;
+            width: 18px; height: 18px;
+            background: #fff;
+            border-radius: 9999px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.2);
+            transition: transform .2s;
+        }
+        .toggle-track.on .toggle-thumb { transform: translateX(20px); }
+    </style>
+
+    <!-- Breadcrumb -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+        <nav class="flex items-center gap-2 text-xs" style="color: var(--dark-gray)">
+            <a href="{{ route('home') }}" class="hover:text-accent transition">Home</a>
+            <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <a href="{{ route('vendor') }}" class="hover:text-accent transition">Vendor</a>
+            <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <a href="{{ route('vendor.detail', $vendor) }}" class="hover:text-accent transition">{{ $vendor->name }}</a>
+            <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <span class="font-semibold opacity-60">Edit</span>
+        </nav>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5 pb-16">
+
+        <!-- Page Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: var(--light-sage)">
+                    <svg class="w-5 h-5" style="color: var(--sage-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold leading-tight" style="color: var(--dark-gray)">Edit Vendor</h1>
+                    <p class="text-xs text-gray-400 mt-0.5">{{ $vendor->name }}</p>
+                </div>
+            </div>
+            <a href="{{ route('vendor.detail', $vendor) }}"
+               class="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition"
+               style="color: var(--dark-gray)">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Kembali ke Detail
+            </a>
+        </div>
+
+        @if(session('success'))
+        <div class="mb-5 flex items-center gap-3 border text-sm font-medium px-4 py-3 rounded-xl"
+             style="background:#f0fdf4; border-color:#bbf7d0; color:#15803d">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            {{ session('success') }}
+        </div>
+        @endif
+
+        @if($errors->any())
+        <div class="mb-5 border text-sm px-4 py-3 rounded-xl"
+             style="background:#fff1f2; border-color:#fecdd3; color:#be123c">
+            <p class="font-semibold mb-1">Terdapat kesalahan pada form:</p>
+            <ul class="list-disc list-inside space-y-0.5 text-xs">
+                @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+            </ul>
+        </div>
+        @endif
+
+        <form action="{{ route('vendor.update', $vendor) }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+            @csrf
+
+            {{-- ── 1. Informasi Utama ── --}}
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <span class="section-title">Informasi Utama</span>
+                </div>
+                <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
+
+                    <div>
+                        <label class="field-label">Nama Vendor <span style="color:#f87171">*</span></label>
+                        <input type="text" name="name" value="{{ old('name', $vendor->name) }}" required
+                               class="fi @error('name') error @enderror">
+                        @error('name')<p class="text-xs mt-1" style="color:#f87171">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="field-label">Kategori <span style="color:#f87171">*</span></label>
+                        <select name="category" class="fi @error('category') error @enderror">
+                            @foreach(\App\Models\CategoryVendor::orderBy('sort_order')->get() as $cat)
+                            <option value="{{ $cat->slug }}" @selected(old('category', $vendor->category) === $cat->slug)>{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('category')<p class="text-xs mt-1" style="color:#f87171">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="field-label">Tipe Venue</label>
+                        <select name="type" class="fi">
+                            <option value="">— Pilih Tipe —</option>
+                            @foreach(['Indoor', 'Outdoor', 'Indoor & Outdoor'] as $t)
+                            <option value="{{ $t }}" @selected(old('type', $vendor->type) === $t)>{{ $t }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="field-label">Kota / Kabupaten</label>
+                        <input type="text" name="city" value="{{ old('city', $vendor->city) }}"
+                               placeholder="Nama kota" class="fi">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="field-label">Alamat Lengkap <span style="color:#f87171">*</span></label>
+                        <input type="text" name="location" value="{{ old('location', $vendor->location) }}" required
+                               class="fi @error('location') error @enderror">
+                        @error('location')<p class="text-xs mt-1" style="color:#f87171">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="field-label">Provinsi</label>
+                        <select name="province" class="fi">
+                            <option value="">— Pilih Provinsi —</option>
+                            @foreach(\App\Enums\ProvinsiEnum::toArray() as $val => $label)
+                            <option value="{{ $val }}" @selected(old('province', $vendor->province) === $val)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="field-label">Deskripsi</label>
+                        <textarea name="description" rows="4" class="fi">{{ old('description', $vendor->description) }}</textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ── 2. Kontak ── --}}
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    </div>
+                    <span class="section-title">Kontak</span>
+                </div>
+                <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-x-5 gap-y-4">
+
+                    <div>
+                        <label class="field-label">No. Telepon / WhatsApp</label>
+                        <div class="fi-wrap">
+                            <span class="prefix">
+                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            </span>
+                            <input type="text" name="phone" value="{{ old('phone', $vendor->phone) }}" placeholder="08xx-xxxx-xxxx">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="field-label">Email</label>
+                        <div class="fi-wrap">
+                            <span class="prefix">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            </span>
+                            <input type="email" name="email" value="{{ old('email', $vendor->email) }}" placeholder="vendor@email.com">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="field-label">Instagram</label>
+                        <div class="fi-wrap">
+                            <span class="prefix" style="font-size:.85rem; font-weight:600">@</span>
+                            <input type="text" name="instagram" value="{{ old('instagram', $vendor->instagram) }}" placeholder="username">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ── 3. Detail Venue ── --}}
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <span class="section-title">Detail Venue</span>
+                </div>
+                <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-x-5 gap-y-4">
+
+                    <div>
+                        <label class="field-label">Kapasitas</label>
+                        <input type="text" name="capacity" value="{{ old('capacity', $vendor->capacity) }}"
+                               placeholder="500 – 1.500 tamu" class="fi">
+                    </div>
+
+                    <div>
+                        <label class="field-label">Tipe Venue</label>
+                        <input type="text" name="venue_type" value="{{ old('venue_type', $vendor->venue_type) }}"
+                               placeholder="Indoor & Outdoor" class="fi">
+                    </div>
+
+                    <div>
+                        <label class="field-label">Pengalaman</label>
+                        <input type="text" name="experience" value="{{ old('experience', $vendor->experience) }}"
+                               placeholder="10+ Tahun" class="fi">
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label class="field-label">Fasilitas</label>
+                        <input type="text" name="facilities" value="{{ old('facilities', $vendor->facilities) }}"
+                               placeholder="AC, Parkir Luas, Lift, Musholla, Kamar Rias" class="fi">
+                        <p class="text-xs text-gray-400 mt-1">Pisahkan dengan koma</p>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ── 4. Harga & Statistik ── --}}
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                    <span class="section-title">Harga & Statistik</span>
+                </div>
+                <div class="p-5 grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-4">
+
+                    <div class="col-span-2">
+                        <label class="field-label">Harga Mulai <span class="text-gray-400 normal-case font-normal">(angka saja)</span></label>
+                        <div class="fi-wrap">
+                            <span class="prefix">Rp.</span>
+                            @php $cheapPkg = $cheapPkg ?? $vendor->cheapestPackage; $pv1 = old('price_start', $vendor->price_start ?: ($cheapPkg ? $cheapPkg->price_raw : null)); @endphp
+                            <input type="text" inputmode="numeric" name="price_start" value="{{ $pv1 ? number_format((int)$pv1, 0, ',', '.') : '' }}"
+                                   placeholder="35.000.000" class="price-fmt">
+                        </div>
+                        @error('price_start')<p class="text-xs mt-1" style="color:#f87171">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="field-label">Rating</label>
+                        <div class="fi-wrap opacity-60 cursor-not-allowed" style="background:#f9fafb">
+                            <span class="prefix">
+                                <svg class="w-3.5 h-3.5" fill="#f59e0b" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            </span>
+                            <input type="number" value="{{ $vendor->rating }}"
+                                   step="0.1" min="0" max="5" readonly tabindex="-1"
+                                   style="cursor:not-allowed; color:#6b7280">
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Otomatis dari ulasan pengunjung</p>
+                    </div>
+
+                    <div>
+                        <label class="field-label">Event Selesai</label>
+                        <div class="fi-wrap">
+                            <span class="prefix">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </span>
+                            <input type="number" name="events_done" value="{{ old('events_done', $vendor->events_done) }}"
+                                   min="0" placeholder="0">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="field-label">Jumlah Suka</label>
+                        <div class="fi-wrap opacity-60 cursor-not-allowed" style="background:#f9fafb">
+                            <span class="prefix">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                            </span>
+                            <input type="number" value="{{ $vendor->likes }}"
+                                   readonly tabindex="-1"
+                                   style="cursor:not-allowed; color:#6b7280">
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Otomatis dari klik suka pengunjung</p>
+                    </div>
+
+                    <div>
+                        <label class="field-label">Jumlah Komentar</label>
+                        <div class="fi-wrap opacity-60 cursor-not-allowed" style="background:#f9fafb">
+                            <span class="prefix">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                            </span>
+                            <input type="number" value="{{ $vendor->comments_count }}"
+                                   readonly tabindex="-1"
+                                   style="cursor:not-allowed; color:#6b7280">
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">Otomatis dari komentar pengunjung</p>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ── 5. Label ── --}}
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    </div>
+                    <span class="section-title">Label & Status</span>
+                </div>
+                <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
+
+                    {{-- Badge --}}
+                    <div>
+                        <label class="field-label mb-2.5">Badge</label>
+                        <div class="space-y-2.5">
+                            @foreach(\App\Enums\VendorBadge::cases() as $badge)
+                            <label class="flex items-center gap-2.5 cursor-pointer group">
+                                <input type="checkbox" name="badge[]" value="{{ $badge->value }}"
+                                       @checked(in_array($badge->value, old('badge', $vendor->badge ?? [])))
+                                       style="width:16px;height:16px;border-radius:5px;accent-color:var(--sage-green);cursor:pointer">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900 transition">{{ $badge->label() }}</span>
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Promo --}}
+                    <div>
+                        <label class="field-label mb-2.5">Promo</label>
+                        <div class="space-y-2.5">
+                            @foreach(\App\Enums\VendorPromo::cases() as $promo)
+                            <label class="flex items-center gap-2.5 cursor-pointer group">
+                                <input type="checkbox" name="promo[]" value="{{ $promo->value }}"
+                                       @checked(in_array($promo->value, old('promo', $vendor->promo ?? [])))
+                                       style="width:16px;height:16px;border-radius:5px;accent-color:var(--sage-green);cursor:pointer">
+                                <span class="text-sm text-gray-700 group-hover:text-gray-900 transition">{{ $promo->label() }}</span>
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Status Aktif --}}
+                    <div class="sm:col-span-2 pt-4 border-t border-gray-100 flex items-center gap-4">
+                        <input type="hidden" name="is_active" value="0">
+                        <div class="toggle-track {{ old('is_active', $vendor->is_active) ? 'on' : '' }}"
+                             id="toggle-active"
+                             onclick="toggleActive(this)">
+                            <div class="toggle-thumb"></div>
+                        </div>
+                        <input type="checkbox" name="is_active" value="1" id="is_active_check"
+                               @checked(old('is_active', $vendor->is_active)) class="hidden">
+                        <div>
+                            <p class="text-sm font-semibold" style="color: var(--dark-gray)">Vendor Aktif</p>
+                            <p class="text-xs text-gray-400 mt-0.5">Jika tidak aktif, vendor tidak akan muncul di halaman listing</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- ── 6. Video Cover YouTube ── --}}
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <span class="section-title">Video Cover YouTube</span>
+                </div>
+                <div class="p-5">
+                    <label class="field-label mb-1">URL Video YouTube <span class="font-normal text-gray-400 normal-case">(opsional)</span></label>
+                    <div class="fi-wrap">
+                        <span class="prefix">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" style="color:#ff0000"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </span>
+                        <input type="url" name="cover_video" value="{{ old('cover_video', $vendor->cover_video) }}"
+                               placeholder="https://www.youtube.com/watch?v=...">
+                    </div>
+                    @if($vendor->cover_video)
+                    <p class="text-xs text-gray-400 mt-1.5">
+                        Video saat ini:
+                        <a href="{{ $vendor->cover_video }}" target="_blank" class="underline hover:opacity-70" style="color: var(--sage-green)">{{ $vendor->cover_video }}</a>
+                    </p>
+                    @endif
+                    @error('cover_video')<p class="text-xs mt-1" style="color:#f87171">{{ $message }}</p>@enderror
+                </div>
+            </div>
+
+            {{-- ── 7. Foto Cover ── --}}
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                    <span class="section-title">Foto Cover</span>
+                </div>
+                <div class="p-5">
+                    <div class="flex flex-col sm:flex-row gap-6 items-start">
+
+                        {{-- Current covers with per-image delete --}}
+                        @php $coverImages = array_values(array_filter((array)($vendor->cover_image ?? []))); @endphp
+                        @if(count($coverImages))
+                        <div class="flex-shrink-0">
+                            <p class="field-label mb-2">Cover saat ini ({{ count($coverImages) }} foto) <span class="font-normal text-gray-400 normal-case">— klik ✕ untuk hapus</span></p>
+                            <div class="flex flex-wrap gap-2" id="existing-covers">
+                                @foreach($coverImages as $ci => $cp)
+                                @php $imgUrl = str_starts_with($cp, 'http') ? $cp : \Illuminate\Support\Facades\Storage::url($cp); @endphp
+                                <div class="relative group" id="cover-item-{{ $ci }}">
+                                    <img src="{{ $imgUrl }}" alt="Cover {{ $ci + 1 }}"
+                                         class="w-24 h-20 object-cover rounded-xl border-2 border-gray-100 shadow-sm">
+                                    <input type="hidden" name="cover_image_keep[]" value="{{ $cp }}" id="keep-{{ $ci }}">
+                                    <button type="button"
+                                            onclick="removeCover({{ $ci }})"
+                                            class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition"
+                                            style="background: #f87171"
+                                            title="Hapus foto ini">
+                                        ✕
+                                    </button>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- Upload new (multiple) --}}
+                        <div class="flex-1">
+                            <label class="field-label mb-2">Ganti Foto Cover <span class="font-normal text-gray-400 normal-case">(opsional · maks. 1MB per file)</span></label>
+
+                            <label for="cover_upload"
+                                   class="flex flex-col items-center justify-center gap-2 w-full h-32 rounded-xl border-2 border-dashed cursor-pointer transition"
+                                   style="border-color: var(--light-sage); background: var(--cream)"
+                                   id="upload-label"
+                                   onmouseenter="this.style.borderColor='var(--sage-green)'"
+                                   onmouseleave="this.style.borderColor='var(--light-sage)'">
+                                <svg class="w-7 h-7" style="color: var(--sage-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <span class="text-xs font-medium" style="color: var(--sage-green)">Klik untuk pilih foto (bisa lebih dari 1)</span>
+                                <span class="text-xs text-gray-400">JPG, PNG, WEBP</span>
+                                <input type="file" name="cover_image[]" id="cover_upload" accept="image/*" multiple class="hidden" onchange="previewCover(this)">
+                            </label>
+
+                            <div id="cover-preview-wrap" class="mt-3 hidden">
+                                <p class="field-label mb-2">Preview foto baru</p>
+                                <div id="cover-preview-grid" class="flex flex-wrap gap-2"></div>
+                            </div>
+
+                            @error('cover_image')<p class="text-xs mt-2" style="color:#f87171">{{ $message }}</p>@enderror
+                            @error('cover_image.*')<p class="text-xs mt-2" style="color:#f87171">{{ $message }}</p>@enderror
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── 8. Paket Pernikahan ── --}}
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    </div>
+                    <span class="section-title">Paket Pernikahan</span>
+                </div>
+                <div class="p-5">
+
+                    {{-- Package list --}}
+                    <div id="pkg-list" class="space-y-3 mb-4">
+                        @forelse($vendor->packages->sortBy('sort_order') as $pkg)
+                        <div class="pkg-card flex items-start gap-4 p-4 rounded-xl border border-gray-100 bg-white shadow-sm" data-id="{{ $pkg->id }}"
+                             style="border-left: 4px solid {{ $pkg->card_color }}">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-semibold text-sm" style="color: var(--dark-gray)">{{ $pkg->name }}</span>
+                                    @if(!$pkg->is_active)
+                                    <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Nonaktif</span>
+                                    @else
+                                    <span class="text-xs px-2 py-0.5 rounded-full" style="background:#f0fdf4;color:#15803d">Aktif</span>
+                                    @endif
+                                </div>
+                                <p class="text-sm mt-0.5" style="color: var(--sage-green)">{{ $pkg->price }}</p>
+                                @if($pkg->discount > 0)
+                                <p class="text-xs text-gray-400">Diskon: Rp {{ number_format($pkg->discount, 0, ',', '.') }}</p>
+                                @endif
+                                @if($pkg->max_guests)
+                                <p class="text-xs text-gray-400">{{ $pkg->max_guests }}</p>
+                                @endif
+                                @if(!empty($pkg->items))
+                                <p class="text-xs text-gray-400 mt-1 truncate">{{ implode(', ', array_slice($pkg->items, 0, 3)) }}{{ count($pkg->items) > 3 ? '…' : '' }}</p>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <button type="button"
+                                        onclick="openPkgModal({{ $pkg->id }}, @json($pkg->name), {{ $pkg->price_raw }}, {{ $pkg->discount }}, @json($pkg->max_guests ?? ''), @json(implode("\n", $pkg->items ?? [])), @json($pkg->card_color), @json($pkg->card_text_color), {{ $pkg->sort_order }}, {{ $pkg->is_active ? 'true' : 'false' }})"
+                                        class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition"
+                                        style="color: var(--dark-gray)">
+                                    Edit
+                                </button>
+                                <button type="button"
+                                        onclick="deletePkg({{ $pkg->id }}, this)"
+                                        class="px-3 py-1.5 text-xs font-semibold rounded-lg border transition"
+                                        style="border-color:#fecdd3;background:#fff1f2;color:#f87171">
+                                    Hapus
+                                </button>
+                            </div>
+                        </div>
+                        @empty
+                        <p class="text-sm text-gray-400 italic" id="pkg-empty-notice">Belum ada paket. Tambahkan paket pertama!</p>
+                        @endforelse
+                    </div>
+
+                    <button type="button"
+                            onclick="openPkgModal(null)"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-dashed transition hover:opacity-80"
+                            style="border-color: var(--sage-green); color: var(--sage-green); background: var(--cream)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        Tambah Paket
+                    </button>
+
+                </div>
+            </div>
+
+            {{-- ── Submit Bar ── --}}
+            <div class="flex items-center justify-between gap-3 pt-1 pb-2">
+                <p class="text-xs text-gray-400">
+                    <span style="color:#f87171">*</span> Wajib diisi
+                </p>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('vendor.detail', $vendor) }}"
+                       class="px-5 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 bg-white hover:bg-gray-50 transition"
+                       style="color: var(--dark-gray)">
+                        Batal
+                    </a>
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-7 py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90 shadow-sm"
+                            style="background-color: var(--sage-green); color: var(--cream)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+    const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
+
+    function showFileSizeModal(oversized) {
+        const names = oversized.map(f => `• ${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)`).join('<br>');
+        document.getElementById('file-size-modal-body').innerHTML = names;
+        document.getElementById('file-size-modal').classList.remove('hidden');
+    }
+    function closeFileSizeModal() {
+        document.getElementById('file-size-modal').classList.add('hidden');
+    }
+
+    function checkFileSizes(files) {
+        return Array.from(files).filter(f => f.size > MAX_FILE_SIZE);
+    }
+
+    function previewCover(input) {
+        const oversized = checkFileSizes(input.files);
+        if (oversized.length > 0) {
+            showFileSizeModal(oversized);
+            input.value = '';
+            return;
+        }
+        const wrap = document.getElementById('cover-preview-wrap');
+        const grid = document.getElementById('cover-preview-grid');
+        const label = document.getElementById('upload-label');
+        if (input.files && input.files.length > 0) {
+            grid.innerHTML = '';
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-24 h-20 object-cover rounded-xl border-2 border-gray-100 shadow-sm';
+                    grid.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+            wrap.classList.remove('hidden');
+            label.style.borderColor = 'var(--sage-green)';
+        }
+    }
+
+    function removeCover(index) {
+        const item = document.getElementById('cover-item-' + index);
+        const keep = document.getElementById('keep-' + index);
+        if (item) item.remove();
+        if (keep) keep.remove();
+    }
+
+    function toggleActive(track) {
+        const isOn = track.classList.toggle('on');
+        const check = document.getElementById('is_active_check');
+        check.checked = isOn;
+    }
+    </script>
+
+    {{-- ── File Size Error Modal ── --}}
+    <div id="file-size-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.45)">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 flex flex-col items-center gap-4 text-center">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:#fef2f2">
+                <svg class="w-7 h-7" style="color:#f87171" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-base font-bold" style="color:#444">File Terlalu Besar</h3>
+            <p class="text-sm text-gray-500">File berikut melebihi batas maksimal <strong>1MB</strong>:</p>
+            <p id="file-size-modal-body" class="text-xs text-left w-full bg-gray-50 rounded-lg p-3" style="color:#f87171; line-height:1.8"></p>
+            <p class="text-xs text-gray-400">Silakan kompres gambar terlebih dahulu menggunakan tools seperti <strong>TinyPNG</strong> atau <strong>Squoosh</strong>.</p>
+            <button onclick="closeFileSizeModal()"
+                    class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90"
+                    style="background: var(--sage-green)">
+                Mengerti
+            </button>
+        </div>
+    </div>
+
+    @include('layout.footer')
+
+@section('body-class', 'bg-cream text-dark')
+
+@section('content')
+    @include('layout.header')
+
+    <!-- Breadcrumb -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+        <nav class="flex items-center gap-2 text-xs" style="color: var(--dark-gray)">
+            <a href="{{ route('home') }}" class="hover:text-accent transition">Home</a>
+            <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <a href="{{ route('vendor') }}" class="hover:text-accent transition">Vendor</a>
+            <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <a href="{{ route('vendor.detail', $vendor) }}" class="hover:text-accent transition">{{ $vendor->name }}</a>
+            <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <span class="font-semibold opacity-60">Edit</span>
+        </nav>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-16">
+
+        <!-- Page Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-bold" style="color: var(--dark-gray)">Edit Vendor</h1>
+                <p class="text-sm text-gray-500 mt-0.5">{{ $vendor->name }}</p>
+            </div>
+            <a href="{{ route('vendor.detail', $vendor) }}"
+               class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border border-gray-200 bg-white hover:border-gray-300 transition"
+               style="color: var(--dark-gray)">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Kembali ke Detail
+            </a>
+        </div>
+
+        @if(session('success'))
+        {{-- Success Modal --}}
+        <div id="success-modal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.4)">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 flex flex-col items-center text-center gap-4 animate-bounce-in">
+                <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background:#f0fdf4">
+                    <svg class="w-8 h-8" style="color:#22c55e" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-1" style="color: var(--dark-gray)">Perubahan Tersimpan!</h3>
+                    <p class="text-sm text-gray-500">{{ session('success') }}</p>
+                    <p class="text-sm font-medium mt-1" style="color: var(--sage-green)">Terima kasih 🎉</p>
+                </div>
+                <button onclick="document.getElementById('success-modal').remove()"
+                        class="w-full py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90 mt-1"
+                        style="background: var(--sage-green)">
+                    Oke, Mengerti
+                </button>
+            </div>
+        </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('success-modal');
+            if (modal) {
+                modal.addEventListener('click', function(e) { if (e.target === this) this.remove(); });
+            }
+        });
+        </script>
+        @endif
+
+        @if($errors->any())
+        <div class="mb-5 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+            <p class="font-semibold mb-1">Terdapat kesalahan pada form:</p>
+            <ul class="list-disc list-inside space-y-0.5">
+                @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        <form action="{{ route('vendor.update', $vendor) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            @csrf
+
+            {{-- ── TAB-LIKE SECTIONS ── --}}
+
+            {{-- 1. Informasi Utama --}}
+            <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100" style="background: var(--cream)">
+                    <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Informasi Utama</h2>
+                </div>
+                <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                    {{-- Status Aktif --}}
+                    <div class="sm:col-span-2 flex items-center gap-3 pb-3 border-gray-100">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="hidden" name="is_active" value="0">
+                            <input type="checkbox" name="is_active" value="1"
+                                   @checked(old('is_active', $vendor->is_active))
+                                   class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sage" style="--sage: var(--sage-green)"></div>
+                            <span class="ml-2 text-sm font-medium text-gray-700">Vendor Aktif</span>
+                        </label>
+                        <p class="text-xs text-gray-400">(Jika tidak aktif, vendor tidak akan muncul di halaman listing)</p>
+                    </div>
+
+                    {{-- Nama --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Nama Vendor <span class="text-red-400">*</span></label>
+                        <input type="text" name="name" value="{{ old('name', $vendor->name) }}"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-0 @error('name') border-red-300 @enderror"
+                               style="--tw-ring-color: var(--sage-green)" required>
+                        @error('name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    {{-- Kategori --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Kategori <span class="text-red-400">*</span></label>
+                        <select name="category"
+                                class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 @error('category') border-red-300 @enderror"
+                                style="--tw-ring-color: var(--sage-green)">
+                            @foreach(\App\Models\CategoryVendor::orderBy('sort_order')->get() as $cat)
+                            <option value="{{ $cat->slug }}" @selected(old('category', $vendor->category) === $cat->slug)>{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('category')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    {{-- Tipe --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Tipe Venue</label>
+                        <select name="type"
+                                class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                                style="--tw-ring-color: var(--sage-green)">
+                            <option value="">— Pilih Tipe —</option>
+                            @foreach(['Indoor', 'Outdoor', 'Indoor & Outdoor'] as $t)
+                            <option value="{{ $t }}" @selected(old('type', $vendor->type) === $t)>{{ $t }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Alamat --}}
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Alamat Lengkap <span class="text-red-400">*</span></label>
+                        <input type="text" name="location" value="{{ old('location', $vendor->location) }}"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 @error('location') border-red-300 @enderror"
+                               style="--tw-ring-color: var(--sage-green)" required>
+                        @error('location')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    {{-- Provinsi --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Provinsi</label>
+                        <select name="province"
+                                class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                                style="--tw-ring-color: var(--sage-green)">
+                            <option value="">— Pilih Provinsi —</option>
+                            @foreach(\App\Enums\ProvinsiEnum::toArray() as $val => $label)
+                            <option value="{{ $val }}" @selected(old('province', $vendor->province) === $val)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Kota --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Kota / Kabupaten</label>
+                        <input type="text" name="city" value="{{ old('city', $vendor->city) }}"
+                               placeholder="Nama kota"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                               style="--tw-ring-color: var(--sage-green)">
+                    </div>
+
+                    {{-- Deskripsi --}}
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Deskripsi</label>
+                        <textarea name="description" rows="4"
+                                  class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 resize-none"
+                                  style="--tw-ring-color: var(--sage-green)">{{ old('description', $vendor->description) }}</textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- 2. Kontak --}}
+            <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100" style="background: var(--cream)">
+                    <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Kontak</h2>
+                </div>
+                <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">No. Telepon / WhatsApp</label>
+                        <input type="text" name="phone" value="{{ old('phone', $vendor->phone) }}"
+                               placeholder="08xx-xxxx-xxxx"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                               style="--tw-ring-color: var(--sage-green)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Email</label>
+                        <input type="email" name="email" value="{{ old('email', $vendor->email) }}"
+                               placeholder="vendor@email.com"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                               style="--tw-ring-color: var(--sage-green)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Instagram</label>
+                        <div class="flex items-center rounded-xl border border-gray-200 overflow-hidden focus-within:ring-2" style="--tw-ring-color: var(--sage-green)">
+                            <span class="px-3 py-2 text-sm text-gray-400 bg-gray-50 border-r border-gray-200">@</span>
+                            <input type="text" name="instagram" value="{{ old('instagram', $vendor->instagram) }}"
+                                   placeholder="username"
+                                   class="flex-1 px-3 py-2 text-sm focus:outline-none bg-transparent">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- 3. Detail Venue --}}
+            <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100" style="background: var(--cream)">
+                    <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Detail Venue</h2>
+                </div>
+                <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Kapasitas</label>
+                        <input type="text" name="capacity" value="{{ old('capacity', $vendor->capacity) }}"
+                               placeholder="500 – 1.500 tamu"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                               style="--tw-ring-color: var(--sage-green)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Tipe Venue</label>
+                        <input type="text" name="venue_type" value="{{ old('venue_type', $vendor->venue_type) }}"
+                               placeholder="Indoor & Outdoor"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                               style="--tw-ring-color: var(--sage-green)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Pengalaman</label>
+                        <input type="text" name="experience" value="{{ old('experience', $vendor->experience) }}"
+                               placeholder="10+ Tahun"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                               style="--tw-ring-color: var(--sage-green)">
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Fasilitas</label>
+                        <input type="text" name="facilities" value="{{ old('facilities', $vendor->facilities) }}"
+                               placeholder="AC, Parkir, Lift, Kamar Mandi"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                               style="--tw-ring-color: var(--sage-green)">
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- 4. Harga & Statistik --}}
+            <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100" style="background: var(--cream)">
+                    <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Harga & Statistik</h2>
+                </div>
+                <div class="p-5 grid grid-cols-2 sm:grid-cols-4 gap-4">
+
+                    <div class="col-span-2">
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Harga Mulai (angka saja)</label>
+                        <div class="flex items-center rounded-xl border border-gray-200 overflow-hidden focus-within:ring-2" style="--tw-ring-color: var(--sage-green)">
+                            <span class="px-3 py-2 text-xs text-gray-400 bg-gray-50 border-r border-gray-200 whitespace-nowrap">Rp.</span>
+                            @php $cheapPkg = $vendor->cheapestPackage; $pv2 = old('price_start', $vendor->price_start ?: ($cheapPkg ? $cheapPkg->price_raw : null)); @endphp
+                            <input type="text" inputmode="numeric" name="price_start"
+                                   value="{{ $pv2 ? number_format((int)$pv2, 0, ',', '.') : '' }}"
+                                   placeholder="35.000.000"
+                                   class="price-fmt flex-1 px-3 py-2 text-sm focus:outline-none bg-transparent">
+                        </div>
+                        @error('price_start')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Rating</label>
+                        <input type="number" name="rating" value="{{ old('rating', $vendor->rating) }}"
+                               step="0.1" min="0" max="5" placeholder="4.8"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                               style="--tw-ring-color: var(--sage-green)">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Event Selesai</label>
+                        <input type="number" name="events_done" value="{{ old('events_done', $vendor->events_done) }}"
+                               min="0" placeholder="0"
+                               class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                               style="--tw-ring-color: var(--sage-green)">
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- 5. Label --}}
+            <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100" style="background: var(--cream)">
+                    <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Label</h2>
+                </div>
+                <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                    {{-- Badge --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-2">Badge</label>
+                        <div class="space-y-2">
+                            @foreach(\App\Enums\VendorBadge::cases() as $badge)
+                            <label class="flex items-center gap-2 cursor-pointer text-sm">
+                                <input type="checkbox" name="badge[]" value="{{ $badge->value }}"
+                                       @checked(in_array($badge->value, old('badge', $vendor->badge ?? [])))
+                                       class="rounded border-gray-300 text-sage focus:ring-0"
+                                       style="accent-color: var(--sage-green)">
+                                <span>{{ $badge->label() }}</span>
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Promo --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-2">Promo</label>
+                        <div class="space-y-2">
+                            @foreach(\App\Enums\VendorPromo::cases() as $promo)
+                            <label class="flex items-center gap-2 cursor-pointer text-sm">
+                                <input type="checkbox" name="promo[]" value="{{ $promo->value }}"
+                                       @checked(in_array($promo->value, old('promo', $vendor->promo ?? [])))
+                                       class="rounded border-gray-300"
+                                       style="accent-color: var(--sage-green)">
+                                <span>{{ $promo->label() }}</span>
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            {{-- 6. Foto Cover --}}
+            <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100" style="background: var(--cream)">
+                    <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Foto Cover</h2>
+                </div>
+                <div class="p-5">
+                    <div class="flex flex-col sm:flex-row gap-5 items-start">
+                        {{-- Preview cover saat ini dengan tombol hapus --}}
+                        @php $coverImages2 = array_values(array_filter((array)($vendor->cover_image ?? []))); @endphp
+                        @if(count($coverImages2))
+                        <div class="flex-shrink-0">
+                            <p class="text-xs text-gray-400 mb-1.5">Cover saat ini ({{ count($coverImages2) }} foto) — hover untuk hapus:</p>
+                            <div class="flex flex-wrap gap-2" id="existing-covers2">
+                                @foreach($coverImages2 as $ci2 => $cp2)
+                                @php $imgUrl2 = str_starts_with($cp2, 'http') ? $cp2 : \Illuminate\Support\Facades\Storage::url($cp2); @endphp
+                                <div class="relative group" id="cover-item2-{{ $ci2 }}">
+                                    <img src="{{ $imgUrl2 }}" alt="Cover {{ $ci2 + 1 }}"
+                                         class="w-24 h-20 object-cover rounded-xl border border-gray-200">
+                                    <input type="hidden" name="cover_image_keep[]" value="{{ $cp2 }}" id="keep2-{{ $ci2 }}">
+                                    <button type="button"
+                                            onclick="removeCover2({{ $ci2 }})"
+                                            class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-white text-xs font-bold opacity-0 group-hover:opacity-100 transition"
+                                            style="background: #f87171"
+                                            title="Hapus foto ini">
+                                        ✕
+                                    </button>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+                        <div class="flex-1">
+                            <label class="block text-xs font-semibold text-gray-500 mb-1.5">
+                                Ganti Foto Cover <span class="font-normal text-gray-400">(opsional, bisa lebih dari 1, maks. 1MB/file)</span>
+                            </label>
+                            <label for="cover_upload2"
+                                   class="flex flex-col items-center justify-center gap-2 w-full h-32 rounded-xl border-2 border-dashed cursor-pointer transition"
+                                   style="border-color: var(--light-sage); background: var(--cream)"
+                                   id="upload-label2"
+                                   onmouseenter="this.style.borderColor='var(--sage-green)'"
+                                   onmouseleave="this.style.borderColor='var(--light-sage)'">
+                                <svg class="w-7 h-7" style="color: var(--sage-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                </svg>
+                                <span class="text-xs font-medium" style="color: var(--sage-green)">Klik untuk pilih foto (bisa lebih dari 1)</span>
+                                <span class="text-xs text-gray-400">JPG, PNG, WEBP · maks. 1MB/file</span>
+                                <input type="file" name="cover_image[]" accept="image/*" multiple
+                                       class="hidden"
+                                       id="cover_upload2"
+                                       onchange="previewCover2(this)">
+                            </label>
+                            <div id="cover-preview-wrap2" class="mt-3 hidden">
+                                <p class="text-xs text-gray-400 mb-1">Preview baru:</p>
+                                <div id="cover-preview-grid2" class="flex flex-wrap gap-2"></div>
+                            </div>
+                            @error('cover_image')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                            @error('cover_image.*')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- 8. Paket Pernikahan --}}
+            <div class="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+                <div class="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background: var(--light-sage)">
+                        <svg class="w-4 h-4" style="color: var(--sage-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    </div>
+                    <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Paket Pernikahan</h2>
+                </div>
+                <div class="p-5">
+
+                    {{-- Package list --}}
+                    <div id="pkg-list" class="space-y-3 mb-4">
+                        @forelse($vendor->packages->sortBy('sort_order') as $pkg)
+                        <div class="pkg-card flex items-start gap-3 p-4 rounded-xl border bg-white"
+                             data-id="{{ $pkg->id }}"
+                             style="border-left: 4px solid {{ $pkg->card_color }}">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-semibold text-sm" style="color: var(--dark-gray)">{{ $pkg->name }}</span>
+                                    @if(!$pkg->is_active)
+                                    <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-400">Nonaktif</span>
+                                    @else
+                                    <span class="text-xs px-2 py-0.5 rounded-full" style="background:#f0fdf4;color:#15803d">Aktif</span>
+                                    @endif
+                                </div>
+                                <p class="text-sm mt-0.5 font-medium" style="color: var(--sage-green)">{{ $pkg->price }}</p>
+                                @if($pkg->discount > 0)
+                                <p class="text-xs text-gray-400">Diskon: Rp {{ number_format($pkg->discount, 0, ',', '.') }}</p>
+                                @endif
+                                @if($pkg->max_guests)
+                                <p class="text-xs text-gray-400">{{ $pkg->max_guests }}</p>
+                                @endif
+                                @if(!empty($pkg->items))
+                                <p class="text-xs text-gray-400 mt-1">{{ implode(' · ', array_slice($pkg->items, 0, 3)) }}{{ count($pkg->items) > 3 ? ' · …' : '' }}</p>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-2 flex-shrink-0 pt-0.5">
+                                <button type="button"
+                                        onclick="openPkgModal({{ $pkg->id }}, @json($pkg->name), {{ $pkg->price_raw }}, {{ $pkg->discount }}, @json($pkg->max_guests ?? ''), @json(implode("\n", $pkg->items ?? [])), @json($pkg->card_color), @json($pkg->card_text_color), {{ $pkg->sort_order }}, {{ $pkg->is_active ? 'true' : 'false' }})"
+                                        class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 bg-white hover:bg-gray-50 transition"
+                                        style="color: var(--dark-gray)">
+                                    Edit
+                                </button>
+                                <button type="button"
+                                        onclick="deletePkg({{ $pkg->id }}, this)"
+                                        class="px-3 py-1.5 text-xs font-semibold rounded-lg border transition"
+                                        style="border-color:#fecdd3;background:#fff1f2;color:#f87171">
+                                    Hapus
+                                </button>
+                            </div>
+                        </div>
+                        @empty
+                        <p class="text-sm text-gray-400 italic" id="pkg-empty-notice">Belum ada paket. Klik tombol di bawah untuk menambahkan.</p>
+                        @endforelse
+                    </div>
+
+                    <button type="button"
+                            onclick="openPkgModal(null)"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border-2 border-dashed transition hover:opacity-80"
+                            style="border-color: var(--sage-green); color: var(--sage-green); background: transparent">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        Tambah Paket
+                    </button>
+
+                </div>
+            </div>
+
+            {{-- Submit --}}
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <a href="{{ route('vendor.detail', $vendor) }}"
+                   class="px-5 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 bg-white hover:border-gray-300 transition"
+                   style="color: var(--dark-gray)">
+                    Batal
+                </a>
+                <button type="submit"
+                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90"
+                        style="background-color: var(--sage-green); color: var(--cream)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Simpan Perubahan
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+    function previewCover2(input) {
+        const oversized = checkFileSizes(input.files);
+        if (oversized.length > 0) {
+            showFileSizeModal(oversized);
+            input.value = '';
+            return;
+        }
+        const wrap = document.getElementById('cover-preview-wrap2');
+        const grid = document.getElementById('cover-preview-grid2');
+        if (input.files && input.files.length > 0) {
+            grid.innerHTML = '';
+            Array.from(input.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-24 h-20 object-cover rounded-xl border border-gray-200';
+                    grid.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+            wrap.classList.remove('hidden');
+        } else {
+            wrap.classList.add('hidden');
+        }
+    }
+
+    function removeCover2(index) {
+        const item = document.getElementById('cover-item2-' + index);
+        const keep = document.getElementById('keep2-' + index);
+        if (item) item.remove();
+        if (keep) keep.remove();
+    }
+
+    // Toggle switch styling
+    document.querySelectorAll('.peer-checked\\:bg-sage').forEach(el => {
+        const input = el.previousElementSibling;
+        if (input && input.type === 'checkbox') {
+            const update = () => {
+                if (input.checked) {
+                    el.style.backgroundColor = 'var(--sage-green)';
+                } else {
+                    el.style.backgroundColor = '';
+                }
+            };
+            update();
+            input.addEventListener('change', update);
+        }
+    });
+    </script>
+
+    {{-- ── File Size Error Modal ── --}}
+    <div id="file-size-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.45)">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 flex flex-col items-center gap-4 text-center">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:#fef2f2">
+                <svg class="w-7 h-7" style="color:#f87171" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+            </div>
+            <h3 class="text-base font-bold" style="color:#444">File Terlalu Besar</h3>
+            <p class="text-sm text-gray-500">File berikut melebihi batas maksimal <strong>1MB</strong>:</p>
+            <p id="file-size-modal-body" class="text-xs text-left w-full bg-gray-50 rounded-lg p-3" style="color:#f87171; line-height:1.8"></p>
+            <p class="text-xs text-gray-400">Silakan kompres gambar terlebih dahulu menggunakan tools seperti <strong>TinyPNG</strong> atau <strong>Squoosh</strong>.</p>
+            <button onclick="closeFileSizeModal()"
+                    class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90"
+                    style="background: var(--sage-green)">
+                Mengerti
+            </button>
+        </div>
+    </div>
+
+    {{-- ── Package Modal ── --}}
+    <div id="pkg-modal" class="hidden fixed inset-0 z-[9990] flex items-start justify-center p-4 overflow-y-auto" style="background: rgba(0,0,0,0.45)">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg my-8">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <h3 id="pkg-modal-title" class="text-base font-bold" style="color: var(--dark-gray)">Tambah Paket</h3>
+                <button type="button" onclick="closePkgModal()" class="text-gray-400 hover:text-gray-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="pkg-id">
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Nama Paket <span style="color:#f87171">*</span></label>
+                    <input type="text" id="pkg-name" placeholder="Contoh: Paket Silver"
+                           class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none focus:border-sage-green transition"
+                           style="color: var(--dark-gray)">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Harga (Rp) <span style="color:#f87171">*</span></label>
+                        <input type="text" id="pkg-price-raw" placeholder="35.000.000"
+                               class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition pkg-price-fmt"
+                               style="color: var(--dark-gray)">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Diskon (Rp)</label>
+                        <input type="text" id="pkg-discount" placeholder="0"
+                               class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition pkg-price-fmt"
+                               style="color: var(--dark-gray)">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Kapasitas Tamu</label>
+                    <input type="text" id="pkg-max-guests" placeholder="Contoh: Maks. 300 tamu"
+                           class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition"
+                           style="color: var(--dark-gray)">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Item Paket <span class="font-normal text-gray-400">(satu per baris)</span></label>
+                    <textarea id="pkg-items" rows="5" placeholder="Gedung 6 jam&#10;Katering 300 tamu&#10;Dekorasi pelaminan"
+                              class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition resize-none"
+                              style="color: var(--dark-gray)"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Warna Kartu</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="pkg-card-color" value="#C8D5B9"
+                                   class="w-9 h-9 rounded-lg border border-gray-200 cursor-pointer p-0.5">
+                            <input type="text" id="pkg-card-color-text" value="#C8D5B9" maxlength="7"
+                                   class="flex-1 px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none transition font-mono"
+                                   style="color: var(--dark-gray)">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Warna Teks</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="pkg-text-color" value="#444444"
+                                   class="w-9 h-9 rounded-lg border border-gray-200 cursor-pointer p-0.5">
+                            <input type="text" id="pkg-text-color-text" value="#444444" maxlength="7"
+                                   class="flex-1 px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none transition font-mono"
+                                   style="color: var(--dark-gray)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Urutan Tampil</label>
+                        <input type="number" id="pkg-sort-order" value="0" min="0"
+                               class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition"
+                               style="color: var(--dark-gray)">
+                    </div>
+                    <div class="flex flex-col justify-end pb-1">
+                        <label class="flex items-center gap-3 cursor-pointer select-none">
+                            <span class="text-xs font-semibold" style="color: var(--dark-gray)">Aktif</span>
+                            <div class="relative">
+                                <input type="checkbox" id="pkg-is-active" class="sr-only" checked>
+                                <div id="pkg-toggle-track"
+                                     onclick="togglePkgActive()"
+                                     class="w-10 h-5 rounded-full cursor-pointer transition-colors duration-200"
+                                     style="background: var(--sage-green)">
+                                    <div id="pkg-toggle-thumb"
+                                         class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
+                                         style="transform: translateX(20px)"></div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="pkg-error" class="hidden text-xs rounded-lg px-3 py-2" style="background:#fff1f2;color:#f87171"></div>
+            </div>
+            <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100">
+                <button type="button" onclick="closePkgModal()"
+                        class="px-5 py-2 rounded-xl text-sm font-semibold border border-gray-200 bg-white hover:bg-gray-50 transition"
+                        style="color: var(--dark-gray)">
+                    Batal
+                </button>
+                <button type="button" id="pkg-save-btn" onclick="savePkg()"
+                        class="inline-flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold transition hover:opacity-90"
+                        style="background: var(--sage-green); color: #fff">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    Simpan Paket
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @include('layout.footer')
+
+    <script>
+    // Format price inputs with thousand dots; strip before submit
+    document.querySelectorAll('input.price-fmt').forEach(function(input) {
+        input.addEventListener('input', function() {
+            var raw = this.value.replace(/\./g, '').replace(/\D/g, '');
+            this.value = raw ? parseInt(raw, 10).toLocaleString('id-ID') : '';
+        });
+        input.closest('form').addEventListener('submit', function() {
+            input.value = input.value.replace(/\./g, '');
+        }, { once: true });
+    });
+
+    // ── Package Modal ──────────────────────────────────────────────
+    const PKG_STORE_URL  = '{{ route('vendor.packages.store', $vendor) }}';
+    const PKG_UPDATE_URL = '{{ route('vendor.packages.update', ['vendor' => $vendor->slug, 'package' => '__ID__']) }}';
+    const PKG_DELETE_URL = '{{ route('vendor.packages.destroy', ['vendor' => $vendor->slug, 'package' => '__ID__']) }}';
+    const CSRF_TOKEN     = '{{ csrf_token() }}';
+
+    // Sync color picker ↔ text input
+    document.getElementById('pkg-card-color').addEventListener('input', function() {
+        document.getElementById('pkg-card-color-text').value = this.value;
+    });
+    document.getElementById('pkg-card-color-text').addEventListener('input', function() {
+        if (/^#[0-9a-fA-F]{6}$/.test(this.value)) {
+            document.getElementById('pkg-card-color').value = this.value;
+        }
+    });
+    document.getElementById('pkg-text-color').addEventListener('input', function() {
+        document.getElementById('pkg-text-color-text').value = this.value;
+    });
+    document.getElementById('pkg-text-color-text').addEventListener('input', function() {
+        if (/^#[0-9a-fA-F]{6}$/.test(this.value)) {
+            document.getElementById('pkg-text-color').value = this.value;
+        }
+    });
+
+    // Thousand-dot format on pkg price inputs
+    document.querySelectorAll('.pkg-price-fmt').forEach(function(input) {
+        input.addEventListener('input', function() {
+            var raw = this.value.replace(/\./g, '').replace(/\D/g, '');
+            this.value = raw ? parseInt(raw, 10).toLocaleString('id-ID') : '';
+        });
+    });
+
+    function openPkgModal(id, name, priceRaw, discount, maxGuests, items, cardColor, textColor, sortOrder, isActive) {
+        document.getElementById('pkg-id').value          = id ?? '';
+        document.getElementById('pkg-name').value        = name ?? '';
+        document.getElementById('pkg-price-raw').value   = priceRaw ? parseInt(priceRaw).toLocaleString('id-ID') : '';
+        document.getElementById('pkg-discount').value    = discount ? parseInt(discount).toLocaleString('id-ID') : '';
+        document.getElementById('pkg-max-guests').value  = maxGuests ?? '';
+        document.getElementById('pkg-items').value       = items ?? '';
+        document.getElementById('pkg-card-color').value  = cardColor ?? '#C8D5B9';
+        document.getElementById('pkg-card-color-text').value = cardColor ?? '#C8D5B9';
+        document.getElementById('pkg-text-color').value  = textColor ?? '#444444';
+        document.getElementById('pkg-text-color-text').value = textColor ?? '#444444';
+        document.getElementById('pkg-sort-order').value  = sortOrder ?? 0;
+
+        const pkgActive = (isActive === true || isActive === 'true');
+        document.getElementById('pkg-is-active').checked = pkgActive;
+        document.getElementById('pkg-toggle-track').style.background = pkgActive ? 'var(--sage-green)' : '#d1d5db';
+        document.getElementById('pkg-toggle-thumb').style.transform   = pkgActive ? 'translateX(20px)' : 'translateX(0)';
+
+        document.getElementById('pkg-modal-title').textContent = id ? 'Edit Paket' : 'Tambah Paket';
+        document.getElementById('pkg-error').classList.add('hidden');
+        document.getElementById('pkg-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePkgModal() {
+        document.getElementById('pkg-modal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    function togglePkgActive() {
+        const check = document.getElementById('pkg-is-active');
+        check.checked = !check.checked;
+        document.getElementById('pkg-toggle-track').style.background = check.checked ? 'var(--sage-green)' : '#d1d5db';
+        document.getElementById('pkg-toggle-thumb').style.transform   = check.checked ? 'translateX(20px)' : 'translateX(0)';
+    }
+
+    function parsePkgPrice(str) {
+        return parseInt(str.replace(/\./g, '').replace(/\D/g, '') || '0', 10);
+    }
+
+    async function savePkg() {
+        const id       = document.getElementById('pkg-id').value;
+        const name     = document.getElementById('pkg-name').value.trim();
+        const priceRaw = parsePkgPrice(document.getElementById('pkg-price-raw').value);
+        const discount = parsePkgPrice(document.getElementById('pkg-discount').value);
+        const errEl    = document.getElementById('pkg-error');
+
+        if (!name) {
+            errEl.textContent = 'Nama paket wajib diisi.';
+            errEl.classList.remove('hidden');
+            return;
+        }
+        if (!priceRaw) {
+            errEl.textContent = 'Harga wajib diisi.';
+            errEl.classList.remove('hidden');
+            return;
+        }
+        errEl.classList.add('hidden');
+
+        const btn = document.getElementById('pkg-save-btn');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan…';
+
+        const payload = {
+            _token:           CSRF_TOKEN,
+            name:             name,
+            price_raw:        priceRaw,
+            discount:         discount,
+            max_guests:       document.getElementById('pkg-max-guests').value.trim(),
+            items:            document.getElementById('pkg-items').value,
+            card_color:       document.getElementById('pkg-card-color').value,
+            card_text_color:  document.getElementById('pkg-text-color').value,
+            sort_order:       parseInt(document.getElementById('pkg-sort-order').value || '0', 10),
+            is_active:        document.getElementById('pkg-is-active').checked ? 1 : 0,
+        };
+
+        let url, method;
+        if (id) {
+            url    = PKG_UPDATE_URL.replace('__ID__', id);
+            method = 'PUT';
+            payload._method = 'PUT';
+        } else {
+            url    = PKG_STORE_URL;
+            method = 'POST';
+        }
+
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                const msgs = data.errors ? Object.values(data.errors).flat().join(', ') : (data.message || 'Terjadi kesalahan.');
+                errEl.textContent = msgs;
+                errEl.classList.remove('hidden');
+                return;
+            }
+            closePkgModal();
+            location.reload();
+        } catch (e) {
+            errEl.textContent = 'Koneksi gagal. Coba lagi.';
+            errEl.classList.remove('hidden');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Simpan Paket';
+        }
+    }
+
+    async function deletePkg(id, btn) {
+        if (!confirm('Hapus paket ini?')) return;
+        btn.disabled = true;
+        const url = PKG_DELETE_URL.replace('__ID__', id);
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+                body: JSON.stringify({ _method: 'DELETE', _token: CSRF_TOKEN }),
+            });
+            if (res.ok) {
+                const card = btn.closest('.pkg-card');
+                if (card) card.remove();
+                const list = document.getElementById('pkg-list');
+                if (list && list.querySelectorAll('.pkg-card').length === 0) {
+                    const p = document.createElement('p');
+                    p.id = 'pkg-empty-notice';
+                    p.className = 'text-sm text-gray-400 italic';
+                    p.textContent = 'Belum ada paket. Klik tombol di bawah untuk menambahkan.';
+                    list.appendChild(p);
+                }
+            }
+        } catch (e) {
+            alert('Gagal menghapus paket.');
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('pkg-modal').addEventListener('click', function(e) {
+        if (e.target === this) closePkgModal();
+    });
+    </script>
+
+@endsection

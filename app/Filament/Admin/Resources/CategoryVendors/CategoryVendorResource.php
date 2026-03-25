@@ -25,7 +25,7 @@ class CategoryVendorResource extends Resource
 
     protected static ?string $modelLabel = 'Kategori Vendor';
 
-    protected static string|UnitEnum|null $navigationGroup = 'Master Data';
+    protected static string|UnitEnum|null $navigationGroup = 'Data Vendor';
 
     protected static ?int $navigationSort = 1;
 

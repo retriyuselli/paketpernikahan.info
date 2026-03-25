@@ -67,5 +67,28 @@
     
     <body class="@yield('body-class', 'bg-cream text-dark')">
         @yield('content')
+
+        {{-- ── Error Modal (PostTooLarge / upload errors) ── --}}
+        @if(session('error_modal'))
+        <div id="error-modal"
+             class="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+             style="background: rgba(0,0,0,0.45)">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 flex flex-col items-center gap-4 text-center">
+                <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:#fef2f2">
+                    <svg class="w-7 h-7" style="color:#f87171" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-base font-bold" style="color:#444">File Terlalu Besar</h3>
+                <p class="text-sm text-gray-500">{{ session('error_modal') }}</p>
+                <button onclick="document.getElementById('error-modal').remove()"
+                        class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90"
+                        style="background: var(--sage-green)">
+                    Mengerti
+                </button>
+            </div>
+        </div>
+        @endif
+
     </body>
 </html>

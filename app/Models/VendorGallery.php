@@ -13,7 +13,6 @@ class VendorGallery extends Model
         'vendor_id', 
         'image_path', 
         'video_url',
-        'cover_video',
         'caption', 
         'sort_order', 
         'is_cover',

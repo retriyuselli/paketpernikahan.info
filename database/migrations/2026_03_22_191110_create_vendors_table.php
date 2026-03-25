@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('instagram')->nullable();
             $table->string('capacity')->nullable();          // e.g. 500 – 1.500 tamu
             $table->string('price_start')->nullable();       // e.g. Rp 35.000.000
-            $table->string('price_start_raw')->nullable();   // numeric for sorting
+            $table->unsignedInteger('discount')->default(0);     // potongan harga (nominal)
             $table->string('experience')->nullable();        // e.g. 10+ Tahun
             $table->string('venue_type')->nullable();        // Indoor & Outdoor
             $table->string('facilities')->nullable();        // AC, Parkir, Lift

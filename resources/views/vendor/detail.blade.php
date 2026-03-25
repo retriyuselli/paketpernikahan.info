@@ -10,23 +10,53 @@
 
     <!-- Breadcrumb -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-        <nav class="flex items-center gap-2 text-xs" style="color: var(--dark-gray)">
-            <a href="{{ route('home') }}" class="hover:text-accent transition">Home</a>
-            <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            <a href="{{ route('vendor') }}" class="hover:text-accent transition">Vendor</a>
-            <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            <span class="font-semibold opacity-60">{{ $vendor->name }}</span>
-        </nav>
+        <div class="flex items-center justify-between">
+            <nav class="flex items-center gap-2 text-xs" style="color: var(--dark-gray)">
+                <a href="{{ route('home') }}" class="hover:text-accent transition">Home</a>
+                <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <a href="{{ route('vendor') }}" class="hover:text-accent transition">Vendor</a>
+                <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <span class="font-semibold opacity-60">{{ $vendor->name }}</span>
+            </nav>
+
+            @auth
+                @if(auth()->user()->hasRole(['super_admin', 'admin']))
+                    <a href="{{ route('vendor.edit', $vendor) }}"
+                       class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition hover:opacity-80"
+                       style="color: var(--sage-green); border-color: var(--sage-green); background: transparent">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Edit Vendor
+                    </a>
+                @endif
+            @endauth
+        </div>
     </div>
 
     <!-- Hero Section -->
+    @php
+        // Build a unified pool: cover_image[] first, then galleries, then picsum fallback
+        $heroPool = [];
+        foreach (array_values(array_filter((array)($vendor->cover_image ?? []))) as $ci) {
+            $heroPool[] = str_starts_with($ci, 'http') ? $ci : \Illuminate\Support\Facades\Storage::url($ci);
+        }
+        foreach ($vendor->galleries as $g) {
+            if (count($heroPool) >= 5) break;
+            if ($g->image_url) $heroPool[] = $g->image_url;
+        }
+        for ($pi = count($heroPool); $pi < 5; $pi++) {
+            $heroPool[] = 'https://picsum.photos/seed/' . $vendor->slug . '-' . $pi . '/800/600';
+        }
+    @endphp
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
         x-data="{
-            mainSrc: '{{ $vendor->cover_image_url ?? optional($vendor->galleries->first())->image_path ?? 'https://picsum.photos/seed/'.$vendor->slug.'-hero/1200/700' }}',
+            mainSrc: '{{ $heroPool[0] }}',
             sideSrcs: [
-                @for ($i = 1; $i <= 4; $i++)
-                    '{{ optional($vendor->galleries->get($i))->image_path ?? 'https://picsum.photos/seed/'.$vendor->slug.'-side'.$i.'/400/400' }}'{{ $i < 4 ? ',' : '' }}
-                @endfor
+                '{{ $heroPool[1] }}',
+                '{{ $heroPool[2] }}',
+                '{{ $heroPool[3] }}',
+                '{{ $heroPool[4] }}'
             ],
             swap(index) {
                 let prev = this.mainSrc;
@@ -114,6 +144,7 @@
                 </div>
 
                 <!-- About -->
+                @php $cheapPkg = $vendor->cheapestPackage; @endphp
                 <div>
                     <h2 class="text-base font-bold mb-3" style="color: var(--dark-gray)">Tentang Vendor</h2>
                     <p class="text-sm leading-relaxed text-gray-600">{{ $vendor->description }}</p>
@@ -124,7 +155,16 @@
                         </div>
                         <div class="rounded-xl p-3 border border-gray-100 bg-white">
                             <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Harga Mulai</p>
-                            <p class="text-sm font-semibold" style="color: var(--sage-green)">{{ $vendor->price_start }}</p>
+                            @if ($cheapPkg)
+                            @if ($cheapPkg->discount > 0)
+                            <p class="text-[10px] line-through text-gray-400 leading-none mb-0.5">{{ $cheapPkg->price }}</p>
+                            <p class="text-sm font-semibold" style="color: var(--sage-green)">Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}</p>
+                            @else
+                            <p class="text-sm font-semibold" style="color: var(--sage-green)">{{ $cheapPkg->price }}</p>
+                            @endif
+                            @else
+                            <p class="text-sm font-semibold" style="color: var(--sage-green)">{{ $vendor->price_start ?? '—' }}</p>
+                            @endif
                         </div>
                         <div class="rounded-xl p-3 border border-gray-100 bg-white">
                             <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Pengalaman</p>
@@ -187,7 +227,7 @@
                 <div>
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-base font-bold" style="color: var(--dark-gray)">Venue Review Videos</h2>
-                        <a href="#" class="text-xs font-semibold hover:opacity-70 transition" style="color: var(--sage-green)">Lihat Semua</a>
+                        {{-- <a href="#" class="text-xs font-semibold hover:opacity-70 transition" style="color: var(--sage-green)">Lihat Semua</a> --}}
                     </div>
                     <!-- Horizontal scroll strip -->
                     <div class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none" style="-ms-overflow-style:none;scrollbar-width:none;">
@@ -197,7 +237,7 @@
                              style="width: 180px; height: 280px;"
                              @if($hasVideo) onclick="openVideoModal('{{ $g->video_url }}')" @endif>
                             <!-- Background image -->
-                            <img src="{{ $g->image_path }}"
+                            <img src="{{ $g->image_url }}"
                                  alt="Review Video {{ $idx + 1 }}"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <!-- Dark gradient overlay -->
@@ -224,19 +264,64 @@
                 </div>
 
                 <!-- Reviews -->
+                @php
+                    $reviewList   = $vendor->approvedReviews;
+                    $reviewTotal  = $reviewList->count();
+                    $ratingCounts = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
+                    foreach ($reviewList as $_r) {
+                        $ratingCounts[(int) $_r->rating] = ($ratingCounts[(int) $_r->rating] ?? 0) + 1;
+                    }
+                    $ratingLabel = match(true) {
+                        $vendor->rating >= 4.8 => 'Luar Biasa',
+                        $vendor->rating >= 4.5 => 'Sangat Bagus',
+                        $vendor->rating >= 4.0 => 'Bagus',
+                        $vendor->rating >= 3.0 => 'Cukup Baik',
+                        default                => 'Perlu Ditingkatkan',
+                    };
+                @endphp
                 <div>
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-base font-bold" style="color: var(--dark-gray)">Ulasan</h2>
-                        <div class="flex items-center gap-1">
-                            <svg class="w-4 h-4" style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <span class="font-bold text-sm">{{ $vendor->rating }}</span>
-                            <span class="text-xs text-gray-400">({{ $vendor->approvedReviews->count() }} ulasan)</span>
+                    <h2 class="text-base font-bold mb-4" style="color: var(--dark-gray)">Ulasan</h2>
+
+                    {{-- Rating Summary Panel --}}
+                    <div class="rounded-2xl border border-gray-100 bg-white p-5 mb-5 flex flex-col sm:flex-row items-center gap-6">
+                        {{-- Big Score --}}
+                        <div class="flex flex-col items-center justify-center flex-shrink-0 sm:border-r border-gray-100 sm:pr-6">
+                            <p class="text-5xl font-bold leading-none mb-1" style="color: var(--dark-gray)">{{ number_format($vendor->rating, 1) }}</p>
+                            <div class="flex items-center gap-0.5 my-1.5">
+                                @for ($s = 1; $s <= 5; $s++)
+                                <svg class="w-4 h-4 {{ $s <= round($vendor->rating) ? '' : 'opacity-20' }}"
+                                     style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                @endfor
+                            </div>
+                            <p class="text-xs font-semibold" style="color: var(--sage-green)">{{ $ratingLabel }}</p>
+                            <p class="text-[11px] text-gray-400 mt-0.5">{{ $reviewTotal }} ulasan</p>
+                        </div>
+
+                        {{-- Star Bars --}}
+                        <div class="flex-1 w-full space-y-2">
+                            @foreach ([5, 4, 3, 2, 1] as $star)
+                            @php $pct = $reviewTotal > 0 ? round($ratingCounts[$star] / $reviewTotal * 100) : 0; @endphp
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold w-3 flex-shrink-0" style="color: var(--dark-gray)">{{ $star }}</span>
+                                <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                                <div class="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                                    <div class="h-full rounded-full transition-all duration-700"
+                                         style="width: {{ $pct }}%; background: var(--sage-green)"></div>
+                                </div>
+                                <span class="text-[11px] text-gray-400 w-6 text-right flex-shrink-0">{{ $ratingCounts[$star] }}</span>
+                            </div>
+                            @endforeach
                         </div>
                     </div>
 
+                    {{-- Review Cards --}}
                     <div class="space-y-4">
-                        @foreach ($vendor->approvedReviews as $rev)
-                        <div class="bg-white rounded-2xl p-4 border border-gray-100">
+                        @foreach ($reviewList as $revIdx => $rev)
+                        <div class="bg-white rounded-2xl p-4 border border-gray-100 review-card {{ $revIdx >= 3 ? 'hidden' : '' }}">
                             <div class="flex items-center gap-3 mb-2">
                                 <img src="{{ $rev->reviewer_avatar ?? 'https://picsum.photos/seed/rv-'.$rev->id.'/80/80' }}"
                                      alt="{{ $rev->reviewer_name }}"
@@ -256,9 +341,83 @@
                         @endforeach
                     </div>
 
-                    <button class="mt-4 w-full py-2.5 rounded-xl text-sm font-semibold border border-gray-200 bg-white hover:border-gray-300 transition" style="color: var(--dark-gray)">
-                        Lihat Semua Ulasan ({{ $vendor->approvedReviews->count() }})
+                    @if($reviewTotal > 3)
+                    <button id="review-toggle-btn"
+                            onclick="toggleReviews()"
+                            class="mt-4 w-full py-2.5 rounded-xl text-sm font-semibold border border-gray-200 bg-white hover:border-gray-300 transition flex items-center justify-center gap-2"
+                            style="color: var(--dark-gray)">
+                        <span id="review-toggle-text">Lihat Semua Ulasan ({{ $reviewTotal }})</span>
+                        <svg id="review-toggle-icon" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
                     </button>
+                    @endif
+
+                    {{-- Write Review Form --}}
+                    <div class="mt-6 bg-white rounded-2xl border border-gray-100 p-5">
+                        <h3 class="text-sm font-bold mb-4" style="color: var(--dark-gray)">Tulis Ulasan</h3>
+
+                        @guest
+                        {{-- Guest: prompt to login --}}
+                        <div class="flex flex-col items-center justify-center py-4 text-center gap-3">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-1" style="background: var(--light-sage)">
+                                <svg class="w-6 h-6" style="color: var(--sage-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                            <p class="text-sm text-gray-500">Kamu harus <strong class="font-semibold" style="color: var(--dark-gray)">masuk</strong> terlebih dahulu untuk memberikan ulasan.</p>
+                            <a href="{{ route('login') }}?redirect={{ urlencode(request()->fullUrl()) }}"
+                               class="inline-block px-6 py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90"
+                               style="background: var(--sage-green); color: #fff">
+                                Masuk / Daftar
+                            </a>
+                        </div>
+                        @endguest
+
+                        @auth
+                        {{-- Authenticated: show form --}}
+                        <div class="flex items-center gap-2 mb-4 p-2.5 rounded-xl" style="background: var(--cream)">
+                            <div class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 text-white" style="background: var(--sage-green)">
+                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            </div>
+                            <p class="text-xs font-semibold" style="color: var(--dark-gray)">{{ auth()->user()->name }}</p>
+                        </div>
+
+                        {{-- Star Rating Picker --}}
+                        <div class="flex items-center gap-1 mb-4" id="star-picker">
+                            @for ($si = 1; $si <= 5; $si++)
+                            <button type="button"
+                                    onclick="setReviewRating({{ $si }})"
+                                    data-val="{{ $si }}"
+                                    class="star-btn w-8 h-8 transition-transform hover:scale-110"
+                                    aria-label="{{ $si }} bintang">
+                                <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20" style="color: #d1d5db">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            </button>
+                            @endfor
+                            <span id="star-label" class="text-xs text-gray-400 ml-1">Pilih rating</span>
+                        </div>
+                        <input type="hidden" id="review-rating" value="0">
+                        <input type="hidden" id="review-name" value="{{ auth()->user()->name }}">
+
+                        <div class="mb-4">
+                            <textarea id="review-body" rows="3" maxlength="1000"
+                                      placeholder="Ceritakan pengalaman Anda dengan vendor ini (min. 10 karakter)..."
+                                      class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition resize-none"></textarea>
+                            <p class="text-[10px] text-gray-300 text-right mt-0.5"><span id="review-char">0</span>/1000</p>
+                        </div>
+
+                        <div id="review-feedback" class="hidden mb-3 text-xs font-semibold px-3 py-2 rounded-lg"></div>
+
+                        <button type="button" onclick="submitReview()"
+                                id="review-submit-btn"
+                                class="w-full py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90"
+                                style="background: var(--sage-green); color: #fff">
+                            Kirim Ulasan
+                        </button>
+                        @endauth
+                    </div>
                 </div>
 
             </div>
@@ -270,7 +429,16 @@
                     <!-- CTA Card -->
                     <div id="contact-cta" class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
                         <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1" id="sidebar-pkg-label">Harga Mulai</p>
-                        <p class="text-2xl font-bold mb-0.5" id="sidebar-price" style="color: var(--sage-green)">{{ $vendor->price_start }}</p>
+                        @if ($cheapPkg)
+                        @if ($cheapPkg->discount > 0)
+                        <p class="text-sm line-through text-gray-400 mb-0">{{ $cheapPkg->price }}</p>
+                        <p class="text-2xl font-bold mb-0.5" id="sidebar-price" style="color: var(--sage-green)">Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}</p>
+                        @else
+                        <p class="text-2xl font-bold mb-0.5" id="sidebar-price" style="color: var(--sage-green)">{{ $cheapPkg->price }}</p>
+                        @endif
+                        @else
+                        <p class="text-2xl font-bold mb-0.5" id="sidebar-price" style="color: var(--sage-green)">{{ $vendor->price_start ?? '—' }}</p>
+                        @endif
                         <p class="text-xs text-gray-400 mb-5" id="sidebar-pkg-sub">*Tergantung paket & tanggal</p>
 
                         <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $vendor->phone) }}"
@@ -553,6 +721,103 @@
             closeVideoModal();
         }
     });
+    </script>
+
+    <script>
+    // ── Review Submit ────────────────────────────────────────────────
+    const REVIEW_STORE_URL = '{{ route('vendor.review.store', $vendor->slug) }}';
+    const STAR_LABELS = ['', 'Sangat Buruk', 'Buruk', 'Cukup', 'Bagus', 'Luar Biasa'];
+
+    function setReviewRating(val) {
+        document.getElementById('review-rating').value = val;
+        document.getElementById('star-label').textContent = STAR_LABELS[val];
+        document.querySelectorAll('.star-btn svg').forEach((svg, i) => {
+            svg.style.color = i < val ? '#f59e0b' : '#d1d5db';
+        });
+    }
+
+    // Char counter
+    const reviewBody = document.getElementById('review-body');
+    if (reviewBody) {
+        reviewBody.addEventListener('input', function () {
+            document.getElementById('review-char').textContent = this.value.length;
+        });
+    }
+
+    function submitReview() {
+        const rating  = parseInt(document.getElementById('review-rating').value, 10);
+        const name    = document.getElementById('review-name')?.value?.trim() ?? '';
+        const body    = document.getElementById('review-body')?.value?.trim() ?? '';
+        const fb      = document.getElementById('review-feedback');
+        const btn     = document.getElementById('review-submit-btn');
+
+        const showFeedback = (msg, isError) => {
+            fb.textContent = msg;
+            fb.className   = `mb-3 text-xs font-semibold px-3 py-2 rounded-lg ${isError ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-700'}`;
+            fb.classList.remove('hidden');
+        };
+
+        if (rating < 1)          { showFeedback('Pilih rating bintang terlebih dahulu.', true); return; }
+        if (name.length < 2)     { showFeedback('Nama minimal 2 karakter.', true); return; }
+        if (body.length < 10)    { showFeedback('Ulasan minimal 10 karakter.', true); return; }
+
+        btn.disabled    = true;
+        btn.textContent = 'Mengirim...';
+
+        fetch(REVIEW_STORE_URL, {
+            method : 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                'Accept'      : 'application/json',
+            },
+            body: JSON.stringify({ reviewer_name: name, rating, body }),
+        })
+        .then(r => r.json().then(d => ({ status: r.status, data: d })))
+        .then(({ status, data }) => {
+            if (status === 201) {
+                showFeedback(data.message, false);
+                document.getElementById('review-body').value = '';
+                document.getElementById('review-char').textContent = '0';
+                document.getElementById('review-rating').value = '0';
+                document.getElementById('star-label').textContent = 'Pilih rating';
+                document.querySelectorAll('.star-btn svg').forEach(s => s.style.color = '#d1d5db');
+                btn.textContent = 'Terkirim ✓';
+            } else {
+                showFeedback(data.message || 'Terjadi kesalahan.', true);
+                btn.disabled    = false;
+                btn.textContent = 'Kirim Ulasan';
+            }
+        })
+        .catch(() => {
+            showFeedback('Gagal terhubung. Coba lagi.', true);
+            btn.disabled    = false;
+            btn.textContent = 'Kirim Ulasan';
+        });
+    }
+
+    // ── Review Toggle ────────────────────────────────────────────────
+    function toggleReviews() {
+        const cards   = document.querySelectorAll('.review-card');
+        const btn     = document.getElementById('review-toggle-btn');
+        const text    = document.getElementById('review-toggle-text');
+        const icon    = document.getElementById('review-toggle-icon');
+        const isOpen  = btn.dataset.open === '1';
+
+        cards.forEach((c, i) => {
+            if (i >= 3) c.classList.toggle('hidden', isOpen);
+        });
+
+        if (isOpen) {
+            text.textContent = 'Lihat Semua Ulasan ({{ $reviewTotal ?? $vendor->approvedReviews->count() }})';
+            icon.style.transform = '';
+            btn.dataset.open = '0';
+        } else {
+            text.textContent = 'Sembunyikan Ulasan';
+            icon.style.transform = 'rotate(180deg)';
+            btn.dataset.open = '1';
+        }
+    }
     </script>
 
     @include('layout.footer')

@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Support\RawJs;
 use Filament\Schemas\Schema;
 
 class VendorPackageForm
@@ -33,10 +34,14 @@ class VendorPackageForm
                             ->label('Harga (tampil)')
                             ->required()
                             ->placeholder('Rp 45.000.000'),
-                        TextInput::make('price_raw')
-                            ->label('Harga (angka)')
-                            ->numeric()
-                            ->required(),
+                        TextInput::make('discount')
+                            ->label('Potongan Harga')
+                            ->prefix('Rp. ')
+                            ->mask(RawJs::make('$money($input)'))
+                            ->stripCharacters(',')
+                            ->dehydrateStateUsing(fn ($state) => (int) preg_replace('/[^\d]/', '', (string) $state))
+                            ->placeholder('0')
+                            ->helperText('Isi jika ada potongan harga khusus'),
                         TextInput::make('max_guests')
                             ->label('Kapasitas Tamu')
                             ->required(),

@@ -39,17 +39,26 @@ class VendorForm
                                 TextInput::make('slug')
                                     ->required()
                                     ->maxLength(255)
-                                    ->unique(ignoreRecord: true),
+                                    ->unique(ignoreRecord: true)
+                                    ->hidden()
+                                    ->dehydrated(),
                                 Select::make('category')
                                     ->required()
                                     ->options(fn () => CategoryVendor::orderBy('sort_order')
                                         ->pluck('name', 'slug')
                                         ->toArray()
                                     )
+                                    ->searchable()
+                                    ->live(),
+                                Select::make('type')
+                                    ->required(fn ($get) => in_array($get('category'), ['gedung', 'hotel', 'venue', 'rumah']))
+                                    ->visible(fn ($get) => in_array($get('category'), ['gedung', 'hotel', 'venue', 'rumah']))
+                                    ->options([
+                                        'Indoor'           => 'Indoor',
+                                        'Outdoor'          => 'Outdoor',
+                                        'Indoor & Outdoor' => 'Indoor & Outdoor',
+                                    ])
                                     ->searchable(),
-                                TextInput::make('type')
-                                    ->required()
-                                    ->maxLength(255),
                                 TextInput::make('location')
                                     ->required()
                                     ->label('Alamat')
@@ -108,12 +117,6 @@ class VendorForm
                                     ->stripCharacters(',')
                                     ->dehydrateStateUsing(fn ($state) => (int) preg_replace('/[^\d]/', '', (string) $state))
                                     ->placeholder('0'),
-                                TextInput::make('price_start_raw')
-                                    ->prefix('Rp. ')
-                                    ->mask(RawJs::make('$money($input)'))
-                                    ->stripCharacters(',')
-                                    ->dehydrateStateUsing(fn ($state) => (int) preg_replace('/[^\d]/', '', (string) $state))
-                                    ->placeholder('0'),
                                 TextInput::make('rating')
                                     ->numeric()->minValue(0)->maxValue(5)->step(0.1),
                                 TextInput::make('events_done')
@@ -142,26 +145,15 @@ class VendorForm
                             ]),
 
                         Tab::make('Galeri Foto')
+                            ->columns(2)
                             ->schema([
-                                Repeater::make('galleries')
-                                    ->relationship()
-                                    ->schema([
-                                        FileUpload::make('image_path')
-                                            ->label('Foto')
-                                            ->image()
-                                            ->multiple()
-                                            ->disk('public')
-                                            ->directory('galleries')
-                                            ->columnSpanFull(),
-                                    ])
-                                    ->columns(2)
-                                    ->reorderableWithButtons()
-                                    ->collapsible()
-                                    ->itemLabel(fn (array $state): ?string =>
-                                        isset($state['caption']) && $state['caption']
-                                            ? $state['caption']
-                                            : 'Foto Gallery'
-                                    )
+                                FileUpload::make('cover_image')
+                                    ->label('Foto Cover')
+                                    ->image()
+                                    ->multiple()
+                                    ->reorderable()
+                                    ->disk('public')
+                                    ->directory('galleries')
                                     ->columnSpanFull(),
                             ]),
 

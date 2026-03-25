@@ -15,7 +15,10 @@ Route::get('/vendor', function () {
 
     $query = \App\Models\Vendor::where('is_active', true)
         ->withCount('galleries')
-        ->with(['galleries' => fn ($q) => $q->where('is_cover', true)])
+        ->with([
+            'galleries'       => fn ($q) => $q->where('is_cover', true),
+            'cheapestPackage',
+        ])
         ->orderByDesc('rating');
 
     if ($q) {
@@ -36,7 +39,7 @@ Route::get('/vendor', function () {
 
     if ($price) {
         [$min, $max] = explode('-', $price);
-        $query->whereBetween('price_start_raw', [(int)$min, (int)$max]);
+        $query->whereBetween('price_start', [(int)$min, (int)$max]);
     }
 
     $vendors = $query->get()->groupBy('category');
@@ -75,9 +78,34 @@ Route::get('/vendor', function () {
 })->name('vendor');
 
 Route::get('/vendor/{vendor:slug}', function (\App\Models\Vendor $vendor) {
-    $vendor->load(['galleries', 'packages', 'approvedReviews']);
+    $vendor->load(['galleries', 'packages', 'approvedReviews', 'cheapestPackage']);
     return view('vendor.detail', compact('vendor'));
 })->name('vendor.detail');
+
+Route::post('/vendor/{vendor:slug}/reviews', [\App\Http\Controllers\VendorReviewController::class, 'store'])
+    ->middleware('auth')
+    ->name('vendor.review.store');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/vendor/{vendor:slug}/edit', [\App\Http\Controllers\VendorEditController::class, 'edit'])
+        ->name('vendor.edit');
+    Route::post('/vendor/{vendor:slug}/update', [\App\Http\Controllers\VendorEditController::class, 'update'])
+        ->name('vendor.update');
+
+    Route::post('/vendor/{vendor:slug}/packages', [\App\Http\Controllers\VendorPackageController::class, 'store'])
+        ->name('vendor.packages.store');
+    Route::put('/vendor/{vendor:slug}/packages/{package}', [\App\Http\Controllers\VendorPackageController::class, 'update'])
+        ->name('vendor.packages.update');
+    Route::delete('/vendor/{vendor:slug}/packages/{package}', [\App\Http\Controllers\VendorPackageController::class, 'destroy'])
+        ->name('vendor.packages.destroy');
+
+    Route::post('/vendor/{vendor:slug}/gallery', [\App\Http\Controllers\VendorGalleryController::class, 'store'])
+        ->name('vendor.gallery.store');
+    Route::post('/vendor/{vendor:slug}/gallery/{gallery}', [\App\Http\Controllers\VendorGalleryController::class, 'update'])
+        ->name('vendor.gallery.update');
+    Route::delete('/vendor/{vendor:slug}/gallery/{gallery}', [\App\Http\Controllers\VendorGalleryController::class, 'destroy'])
+        ->name('vendor.gallery.destroy');
+});
 
 // AuthRedirection
 Route::get('/login', function () {
@@ -100,5 +128,29 @@ Route::get('/reset-password/{token}', function ($token) {
 })->name('password.reset');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user        = auth()->user();
+    $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
+    return view('dashboard.index', compact('user', 'reviewCount'));
 })->name('dashboard')->middleware('auth');
+
+Route::get('/dashboard/pengaturan', function () {
+    $user = auth()->user();
+    $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
+    return view('dashboard.pengaturan', compact('user', 'reviewCount'));
+})->name('dashboard.pengaturan')->middleware('auth');
+
+Route::get('/dashboard/ulasan', function () {
+    $user        = auth()->user();
+    $myReviews   = \App\Models\VendorReview::where('user_id', $user->id)->latest()->with('vendor')->get();
+    $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
+    return view('dashboard.ulasan', compact('user', 'myReviews', 'reviewCount'));
+})->name('dashboard.ulasan')->middleware('auth');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/dashboard/profile/name', [\App\Http\Controllers\ProfileController::class, 'updateName'])
+        ->name('dashboard.profile.update');
+    Route::post('/dashboard/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])
+        ->name('dashboard.password.update');
+    Route::post('/dashboard/profile/avatar', [\App\Http\Controllers\ProfileController::class, 'updateAvatar'])
+        ->name('dashboard.avatar.update');
+});

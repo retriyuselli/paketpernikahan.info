@@ -20,7 +20,18 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('dashboard'));
+            // Honour ?redirect= param stored in session or query string
+            $redirectTo = $request->session()->pull('url.intended',
+                $request->query('redirect', route('dashboard'))
+            );
+
+            // Validate redirect URL stays on same host (prevent open redirect)
+            $host = parse_url($redirectTo, PHP_URL_HOST);
+            if ($host && $host !== $request->getHost()) {
+                $redirectTo = route('dashboard');
+            }
+
+            return redirect($redirectTo);
         }
 
         throw ValidationException::withMessages([

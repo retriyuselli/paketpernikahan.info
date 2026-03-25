@@ -276,7 +276,7 @@
             <select id="city-select" name="city"
                     class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                     style="color: var(--dark-gray);">
-                <option value="">Pilih Provinsi dulu</option>
+                <option value="">Pilih Provinsi Dulu</option>
             </select>
 
             <select name="price" class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer" style="color: var(--dark-gray);">
@@ -354,7 +354,26 @@
 
                 <div class="flex gap-1 overflow-x-auto scroll-smooth pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
                     @foreach ($cat->vendors as $i => $v)
-                    <a href="{{ route('vendor.detail', $v->slug) }}" class="flex-none w-56 cursor-pointer group border border-gray-200 rounded-2xl p-2 hover:border-gray-300 transition bg-white block">
+                    @php
+                    $vData = [
+                        'name'           => $v->name,
+                        'type'           => $v->type,
+                        'city'           => $v->city,
+                        'location'       => $v->location,
+                        'rating'         => $v->rating,
+                        'likes'          => $v->likes,
+                        'comments_count' => $v->comments_count,
+                        'description'    => $v->description,
+                        'cover'          => $v->cover_image_url ?: (optional($v->galleries->first())->image_url ?? 'https://picsum.photos/seed/'.$v->id.'/800/600'),
+                        'detail_url'     => route('vendor.detail', $v->slug),
+                        'wa_url'         => 'https://wa.me/'.preg_replace('/[^0-9]/', '', $v->phone ?? ''),
+                        'pkg_price'      => optional($v->cheapestPackage)->price,
+                        'pkg_price_raw'  => optional($v->cheapestPackage)->price_raw,
+                        'pkg_discount'   => optional($v->cheapestPackage)->discount ?? 0,
+                        'pkg_name'       => optional($v->cheapestPackage)->name,
+                    ];
+                    @endphp
+                    <div onclick="openVendorPreview(this)" data-vendor='@json($vData)' class="flex-none w-56 cursor-pointer group border border-gray-200 rounded-2xl p-2 hover:border-gray-300 transition bg-white block">
                         <!-- Photo -->
                         <div class="relative rounded-xl overflow-hidden mb-2" style="aspect-ratio: 4/5;">
                             <img src="{{ $v->cover_image_url ?: (optional($v->galleries->first())->image_url ?? 'https://picsum.photos/seed/'.$v->id.'/350/260') }}"
@@ -371,7 +390,13 @@
                             <div class="absolute bottom-0 left-0 right-0 px-2 py-1.5 flex items-center gap-1"
                                  style="background: linear-gradient(to right, var(--soft-pink), var(--sage-green))">
                                 <svg class="w-3 h-3 text-white flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                <span class="text-[9px] font-bold text-white uppercase tracking-wide">{{ implode(' · ', array_map(fn($b) => \App\Enums\VendorBadge::from($b)->label(), (array) $v->badge)) }}</span>
+                                @php $allBadges = (array) $v->badge; $extraBadges = count($allBadges) - 2; @endphp
+                                @foreach (array_slice($allBadges, 0, 2) as $b)
+                                <span class="text-[9px] font-bold text-white uppercase tracking-wide">{{ \App\Enums\VendorBadge::from($b)->label() }}</span>
+                                @endforeach
+                                @if ($extraBadges > 0)
+                                <span class="text-[9px] font-bold text-white/70 uppercase tracking-wide">+{{ $extraBadges }}</span>
+                                @endif
                                 <svg class="w-3 h-3 text-white ml-auto flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </div>
                             @endif
@@ -387,7 +412,21 @@
 
                         <!-- Info -->
                         <p class="font-bold text-sm leading-snug group-hover:underline" style="color: var(--dark-gray)">{{ $v->name }}</p>
-                        <p class="text-xs mt-0.5 mb-2" style="color: var(--sage-green)">{{ $v->type }}</p>
+                        <p class="text-xs mt-0.5" style="color: var(--sage-green)">{{ $v->type }}</p>
+                        @php $pkg = $v->cheapestPackage; @endphp
+                        @if ($pkg)
+                        <div class="flex items-center gap-1.5 mt-1 mb-2">
+                            <span class="text-[9px] text-gray-400">Mulai</span>
+                            @if ($pkg->discount > 0)
+                            <span class="text-[10px] line-through text-gray-400">{{ $pkg->price }}</span>
+                            <span class="text-[11px] font-bold" style="color: var(--dark-gray)">Rp {{ number_format($pkg->price_raw - $pkg->discount, 0, ',', '.') }}</span>
+                            @else
+                            <span class="text-[11px] font-semibold" style="color: var(--dark-gray)">{{ $pkg->price }}</span>
+                            @endif
+                        </div>
+                        @else
+                        <div class="mb-2"></div>
+                        @endif
 
                         <!-- Stats -->
                         <div class="flex items-center gap-2 text-[10px] text-gray-500 flex-wrap">
@@ -414,7 +453,7 @@
                             </span>
                             @endif
                         </div>
-                    </a>
+                    </div>
                     @endforeach
                 </div>
 
@@ -431,5 +470,115 @@
     </div>
 
     @include('layout.footer')
+
+    <!-- Vendor Quick Preview Modal -->
+    <div id="vendor-preview-modal"
+         class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden"
+         onclick="if(event.target===this) closeVendorPreview()">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden" style="max-height: 92vh; overflow-y: auto;">
+
+            <!-- Cover Image -->
+            <div class="relative" style="aspect-ratio: 16/9;">
+                <img id="vp-cover" src="" alt="" class="w-full h-full object-cover">
+                <button onclick="closeVendorPreview()"
+                        class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition"
+                        style="background: rgba(0,0,0,0.45)">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-5">
+                <p id="vp-type" class="text-xs font-semibold mb-0.5" style="color: var(--sage-green)"></p>
+                <h2 id="vp-name" class="text-lg font-bold leading-snug mb-1" style="color: var(--dark-gray)"></h2>
+                <p class="flex items-center gap-1 text-xs text-gray-500 mb-3">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span id="vp-location"></span>
+                </p>
+
+                <!-- Stats -->
+                <div class="flex gap-4 text-xs text-gray-500 mb-4 pb-4 border-b border-gray-100">
+                    <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <strong id="vp-rating"></strong>
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                        <span id="vp-likes"></span> Suka
+                    </span>
+                    <span class="flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        <span id="vp-comments"></span>
+                    </span>
+                </div>
+
+                <!-- Price -->
+                <div class="rounded-xl p-3 mb-4" style="background: var(--cream)">
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Harga Mulai</p>
+                    <p id="vp-price" class="text-base font-bold" style="color: var(--sage-green)"></p>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col gap-2">
+                    <a id="vp-detail" href="#"
+                       class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90"
+                       style="background-color: var(--sage-green); color: var(--cream)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0m2.458-4.243A11 11 0 011.542 12 11 11 0 0122.458 7.757"/></svg>
+                        Lihat Selengkapnya
+                    </a>
+                    <a id="vp-wa" href="#" target="_blank"
+                       class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90"
+                       style="background-color: #25D366; color: #fff">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        Chat WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function openVendorPreview(el) {
+        const v = JSON.parse(el.dataset.vendor);
+
+        document.getElementById('vp-cover').src = v.cover || '';
+        document.getElementById('vp-cover').alt = v.name;
+        document.getElementById('vp-type').textContent = v.type || '';
+        document.getElementById('vp-name').textContent = v.name || '';
+        document.getElementById('vp-location').textContent = v.city || v.location || '';
+        document.getElementById('vp-rating').textContent = v.rating || '-';
+        document.getElementById('vp-likes').textContent = v.likes || 0;
+        document.getElementById('vp-comments').textContent = v.comments_count || 0;
+
+        const priceEl = document.getElementById('vp-price');
+        if (v.pkg_price) {
+            if (v.pkg_discount > 0) {
+                const discounted = Number(v.pkg_price_raw) - Number(v.pkg_discount);
+                priceEl.innerHTML = '<span style="text-decoration:line-through;color:#9ca3af;font-size:.75rem">' + v.pkg_price + '</span><br>' +
+                    'Rp ' + discounted.toLocaleString('id-ID');
+            } else {
+                priceEl.textContent = v.pkg_price;
+            }
+        } else {
+            priceEl.textContent = '—';
+        }
+
+        document.getElementById('vp-wa').href     = v.wa_url || '#';
+        document.getElementById('vp-detail').href = v.detail_url || '#';
+
+        document.getElementById('vendor-preview-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeVendorPreview() {
+        document.getElementById('vendor-preview-modal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeVendorPreview();
+    });
+    </script>
 
 @endsection

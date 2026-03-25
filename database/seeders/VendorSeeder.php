@@ -16,40 +16,40 @@ class VendorSeeder extends Seeder
         // ── Vendor data – 10 vendor per kategori (20 kategori = 200 vendor) ──
         $vendors = [
             // ── GEDUNG (10) ──────────────────────────────────────────────────────
-            ['name'=>'Grand Ballroom Sriwijaya',     'category'=>'gedung',     'type'=>'Gedung Wedding Venue',     'location'=>'Jl. Sudirman No. 12',          'price'=>45_000_000,'cap'=>'500 – 1.500 tamu','rating'=>4.9,'promo'=>'Hemat 10jt',   'badge'=>'NEW REAL WEDDING'],
-            ['name'=>'Ballroom Mahkota Indah',       'category'=>'gedung',     'type'=>'Gedung Wedding Venue',     'location'=>'Jl. Demang Lebar Daun No. 5',  'price'=>40_000_000,'cap'=>'400 – 1.200 tamu','rating'=>4.8,'promo'=>'Disc 15%',    'badge'=>'TOP PICK'],
-            ['name'=>'Gedung Permata Palembang',     'category'=>'gedung',     'type'=>'Gedung Wedding Venue',     'location'=>'Jl. Kolonel Atmo No. 20',      'price'=>35_000_000,'cap'=>'300 – 1.000 tamu','rating'=>4.7,'promo'=>null,          'badge'=>'POPULAR'],
-            ['name'=>'Aula Sriwijaya Garden',        'category'=>'gedung',     'type'=>'Gedung Wedding Venue',     'location'=>'Jl. Veteran No. 8',            'price'=>28_000_000,'cap'=>'200 – 800 tamu', 'rating'=>4.6,'promo'=>'Free Lighting','badge'=>null],
-            ['name'=>'Gedung Putri Kencana',         'category'=>'gedung',     'type'=>'Gedung Wedding Venue',     'location'=>'Jl. Basuki Rahmat No. 11',     'price'=>32_000_000,'cap'=>'300 – 900 tamu', 'rating'=>4.7,'promo'=>null,          'badge'=>'NEW REAL WEDDING'],
-            ['name'=>'Wedding Hall Bukit Siguntang', 'category'=>'gedung',     'type'=>'Gedung Wedding Venue',     'location'=>'Jl. Bukit Siguntang No. 3',    'price'=>25_000_000,'cap'=>'200 – 700 tamu', 'rating'=>4.5,'promo'=>'Disc 10%',    'badge'=>null],
-            ['name'=>'Balai Agung Riverside',        'category'=>'gedung',     'type'=>'Gedung Wedding Venue',     'location'=>'Jl. Merdeka No. 33',           'price'=>38_000_000,'cap'=>'400 – 1.100 tamu','rating'=>4.8,'promo'=>'Hemat 5jt',   'badge'=>'TOP PICK'],
-            ['name'=>'Gedung Siger Wedding',         'category'=>'gedung',     'type'=>'Gedung Wedding Venue',     'location'=>'Jl. POM IX No. 14',            'price'=>22_000_000,'cap'=>'150 – 600 tamu', 'rating'=>4.5,'promo'=>null,          'badge'=>null],
-            ['name'=>'Graha Agung Permai',           'category'=>'gedung',     'type'=>'Gedung Wedding Venue',     'location'=>'Jl. Kapten A. Rivai No. 15',   'price'=>30_000_000,'cap'=>'250 – 850 tamu', 'rating'=>4.6,'promo'=>'Free MC',     'badge'=>'POPULAR'],
-            ['name'=>'Aula Bina Graha Palembang',    'category'=>'gedung',     'type'=>'Gedung Wedding Venue',     'location'=>'Jl. Letkol Iskandar No. 7',    'price'=>27_000_000,'cap'=>'200 – 750 tamu', 'rating'=>4.6,'promo'=>null,          'badge'=>null],
+            ['name'=>'Grand Ballroom Sriwijaya',     'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Sudirman No. 12',          'price'=>45_000_000,'cap'=>'500 – 1.500 tamu','rating'=>4.9,'promo'=>'Hemat 10jt',   'badge'=>'NEW REAL WEDDING'],
+            ['name'=>'Ballroom Mahkota Indah',       'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Demang Lebar Daun No. 5',  'price'=>40_000_000,'cap'=>'400 – 1.200 tamu','rating'=>4.8,'promo'=>'Disc 15%',    'badge'=>'TOP PICK'],
+            ['name'=>'Gedung Permata Palembang',     'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Kolonel Atmo No. 20',      'price'=>35_000_000,'cap'=>'300 – 1.000 tamu','rating'=>4.7,'promo'=>null,          'badge'=>'POPULAR'],
+            ['name'=>'Aula Sriwijaya Garden',        'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Veteran No. 8',            'price'=>28_000_000,'cap'=>'200 – 800 tamu', 'rating'=>4.6,'promo'=>'Free Lighting','badge'=>null],
+            ['name'=>'Gedung Putri Kencana',         'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Basuki Rahmat No. 11',     'price'=>32_000_000,'cap'=>'300 – 900 tamu', 'rating'=>4.7,'promo'=>null,          'badge'=>'NEW REAL WEDDING'],
+            ['name'=>'Wedding Hall Bukit Siguntang', 'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Bukit Siguntang No. 3',    'price'=>25_000_000,'cap'=>'200 – 700 tamu', 'rating'=>4.5,'promo'=>'Disc 10%',    'badge'=>null],
+            ['name'=>'Balai Agung Riverside',        'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Merdeka No. 33',           'price'=>38_000_000,'cap'=>'400 – 1.100 tamu','rating'=>4.8,'promo'=>'Hemat 5jt',   'badge'=>'TOP PICK'],
+            ['name'=>'Gedung Siger Wedding',         'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. POM IX No. 14',            'price'=>22_000_000,'cap'=>'150 – 600 tamu', 'rating'=>4.5,'promo'=>null,          'badge'=>null],
+            ['name'=>'Graha Agung Permai',           'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Kapten A. Rivai No. 15',   'price'=>30_000_000,'cap'=>'250 – 850 tamu', 'rating'=>4.6,'promo'=>'Free MC',     'badge'=>'POPULAR'],
+            ['name'=>'Aula Bina Graha Palembang',    'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Letkol Iskandar No. 7',    'price'=>27_000_000,'cap'=>'200 – 750 tamu', 'rating'=>4.6,'promo'=>null,          'badge'=>null],
 
             // ── HOTEL (10) ───────────────────────────────────────────────────────
-            ['name'=>'Aryaduta Palembang',           'category'=>'hotel',      'type'=>'Hotel & Ballroom',         'location'=>'Jl. POM IX No. 1',             'price'=>60_000_000,'cap'=>'500 – 2.000 tamu','rating'=>4.9,'promo'=>'Disc 20%',    'badge'=>'TOP PICK'],
-            ['name'=>'Novotel Palembang',            'category'=>'hotel',      'type'=>'Hotel & Ballroom',         'location'=>'Jl. Rajawali No. 8',           'price'=>55_000_000,'cap'=>'400 – 1.500 tamu','rating'=>4.8,'promo'=>'Free 1 Kamar','badge'=>'NEW REAL WEDDING'],
-            ['name'=>'Swissbell Hotel Palembang',    'category'=>'hotel',      'type'=>'Hotel & Ballroom',         'location'=>'Jl. Radial No. 2',             'price'=>48_000_000,'cap'=>'300 – 1.200 tamu','rating'=>4.7,'promo'=>null,          'badge'=>'POPULAR'],
-            ['name'=>'Grand Inna Daira',             'category'=>'hotel',      'type'=>'Hotel & Ballroom',         'location'=>'Jl. Jend. Sudirman No. 177',   'price'=>42_000_000,'cap'=>'300 – 1.000 tamu','rating'=>4.7,'promo'=>'Disc 10%',    'badge'=>null],
-            ['name'=>'Hotel Santika Palembang',      'category'=>'hotel',      'type'=>'Hotel & Ballroom',         'location'=>'Jl. Basuki Rahmat No. 37',     'price'=>38_000_000,'cap'=>'250 – 900 tamu', 'rating'=>4.6,'promo'=>null,          'badge'=>'TOP PICK'],
-            ['name'=>'Whiz Prime Hotel',             'category'=>'hotel',      'type'=>'Hotel & Ballroom',         'location'=>'Jl. Angkatan 45 No. 5',        'price'=>30_000_000,'cap'=>'200 – 600 tamu', 'rating'=>4.5,'promo'=>'Hemat 8jt',   'badge'=>null],
-            ['name'=>'Hotel Bumi Asih Palembang',    'category'=>'hotel',      'type'=>'Hotel & Ballroom',         'location'=>'Jl. Veteran No. 36',           'price'=>25_000_000,'cap'=>'150 – 500 tamu', 'rating'=>4.5,'promo'=>null,          'badge'=>null],
-            ['name'=>'Horison Ultima Palembang',     'category'=>'hotel',      'type'=>'Hotel & Ballroom',         'location'=>'Jl. Demang Lebar Daun No. 26', 'price'=>44_000_000,'cap'=>'300 – 1.100 tamu','rating'=>4.7,'promo'=>'Free Dessert','badge'=>'NEW REAL WEDDING'],
-            ['name'=>'Harper Palembang',             'category'=>'hotel',      'type'=>'Hotel & Ballroom',         'location'=>'Jl. Letkol Iskandar No. 21',   'price'=>50_000_000,'cap'=>'400 – 1.300 tamu','rating'=>4.8,'promo'=>null,          'badge'=>'POPULAR'],
-            ['name'=>'Aston Palembang Hotel',        'category'=>'hotel',      'type'=>'Hotel & Ballroom',         'location'=>'Jl. R. Sukamto No. 9',         'price'=>35_000_000,'cap'=>'250 – 800 tamu', 'rating'=>4.6,'promo'=>'Disc 15%',    'badge'=>null],
+            ['name'=>'Aryaduta Palembang',           'category'=>'hotel',      'type'=>'Indoor',         'location'=>'Jl. POM IX No. 1',             'price'=>60_000_000,'cap'=>'500 – 2.000 tamu','rating'=>4.9,'promo'=>'Disc 20%',    'badge'=>'TOP PICK'],
+            ['name'=>'Novotel Palembang',            'category'=>'hotel',      'type'=>'Indoor',         'location'=>'Jl. Rajawali No. 8',           'price'=>55_000_000,'cap'=>'400 – 1.500 tamu','rating'=>4.8,'promo'=>'Free 1 Kamar','badge'=>'NEW REAL WEDDING'],
+            ['name'=>'Swissbell Hotel Palembang',    'category'=>'hotel',      'type'=>'Indoor',         'location'=>'Jl. Radial No. 2',             'price'=>48_000_000,'cap'=>'300 – 1.200 tamu','rating'=>4.7,'promo'=>null,          'badge'=>'POPULAR'],
+            ['name'=>'Grand Inna Daira',             'category'=>'hotel',      'type'=>'Indoor',         'location'=>'Jl. Jend. Sudirman No. 177',   'price'=>42_000_000,'cap'=>'300 – 1.000 tamu','rating'=>4.7,'promo'=>'Disc 10%',    'badge'=>null],
+            ['name'=>'Hotel Santika Palembang',      'category'=>'hotel',      'type'=>'Indoor',         'location'=>'Jl. Basuki Rahmat No. 37',     'price'=>38_000_000,'cap'=>'250 – 900 tamu', 'rating'=>4.6,'promo'=>null,          'badge'=>'TOP PICK'],
+            ['name'=>'Whiz Prime Hotel',             'category'=>'hotel',      'type'=>'Indoor',         'location'=>'Jl. Angkatan 45 No. 5',        'price'=>30_000_000,'cap'=>'200 – 600 tamu', 'rating'=>4.5,'promo'=>'Hemat 8jt',   'badge'=>null],
+            ['name'=>'Hotel Bumi Asih Palembang',    'category'=>'hotel',      'type'=>'Indoor',         'location'=>'Jl. Veteran No. 36',           'price'=>25_000_000,'cap'=>'150 – 500 tamu', 'rating'=>4.5,'promo'=>null,          'badge'=>null],
+            ['name'=>'Horison Ultima Palembang',     'category'=>'hotel',      'type'=>'Indoor',         'location'=>'Jl. Demang Lebar Daun No. 26', 'price'=>44_000_000,'cap'=>'300 – 1.100 tamu','rating'=>4.7,'promo'=>'Free Dessert','badge'=>'NEW REAL WEDDING'],
+            ['name'=>'Harper Palembang',             'category'=>'hotel',      'type'=>'Indoor',         'location'=>'Jl. Letkol Iskandar No. 21',   'price'=>50_000_000,'cap'=>'400 – 1.300 tamu','rating'=>4.8,'promo'=>null,          'badge'=>'POPULAR'],
+            ['name'=>'Aston Palembang Hotel',        'category'=>'hotel',      'type'=>'Indoor',         'location'=>'Jl. R. Sukamto No. 9',         'price'=>35_000_000,'cap'=>'250 – 800 tamu', 'rating'=>4.6,'promo'=>'Disc 15%',    'badge'=>null],
 
             // ── RUMAH & TAMAN (10) ───────────────────────────────────────────────
-            ['name'=>'Villa Kambang Sari',           'category'=>'rumah',      'type'=>'Rumah & Taman',            'location'=>'Jl. Soekarno-Hatta',           'price'=>20_000_000,'cap'=>'100 – 300 tamu', 'rating'=>4.8,'promo'=>'Disc 10%',    'badge'=>'NEW REAL WEDDING'],
-            ['name'=>'Taman Orchid Wedding Garden',  'category'=>'rumah',      'type'=>'Rumah & Taman',            'location'=>'Jl. Talang Semut No. 5',       'price'=>15_000_000,'cap'=>'80 – 250 tamu',  'rating'=>4.7,'promo'=>null,          'badge'=>'POPULAR'],
-            ['name'=>'Villa Hijau Palembang',        'category'=>'rumah',      'type'=>'Rumah & Taman',            'location'=>'Jl. Kapten Anwar Sastro No. 3','price'=>18_000_000,'cap'=>'100 – 280 tamu', 'rating'=>4.7,'promo'=>'Free Tenda',  'badge'=>null],
-            ['name'=>'Kebun Sari Outdoor Wedding',   'category'=>'rumah',      'type'=>'Rumah & Taman',            'location'=>'Jl. Alang-Alang Lebar No. 2',  'price'=>12_000_000,'cap'=>'70 – 200 tamu',  'rating'=>4.5,'promo'=>null,          'badge'=>null],
-            ['name'=>'Taman Bunga Indah',            'category'=>'rumah',      'type'=>'Rumah & Taman',            'location'=>'Jl. Merdeka No. 7',            'price'=>16_000_000,'cap'=>'80 – 230 tamu',  'rating'=>4.6,'promo'=>'Disc 5%',     'badge'=>'TOP PICK'],
-            ['name'=>'Gazebo Garden Palembang',      'category'=>'rumah',      'type'=>'Rumah & Taman',            'location'=>'Jl. Bukit Kecil No. 4',        'price'=>10_000_000,'cap'=>'50 – 150 tamu',  'rating'=>4.4,'promo'=>null,          'badge'=>null],
-            ['name'=>'Villa Cantik Riverside',       'category'=>'rumah',      'type'=>'Rumah & Taman',            'location'=>'Jl. Riverside No. 12',         'price'=>22_000_000,'cap'=>'120 – 350 tamu', 'rating'=>4.8,'promo'=>'Hemat 3jt',   'badge'=>'NEW REAL WEDDING'],
-            ['name'=>'Taman Rindang Venue',          'category'=>'rumah',      'type'=>'Rumah & Taman',            'location'=>'Jl. Golf No. 1',               'price'=>14_000_000,'cap'=>'80 – 220 tamu',  'rating'=>4.5,'promo'=>null,          'badge'=>null],
-            ['name'=>'Green Garden Palembang',       'category'=>'rumah',      'type'=>'Rumah & Taman',            'location'=>'Jl. Sriwijaya No. 9',          'price'=>17_000_000,'cap'=>'90 – 260 tamu',  'rating'=>4.6,'promo'=>'Free Bunga',  'badge'=>'POPULAR'],
-            ['name'=>'Rumah Taman Anggrek',          'category'=>'rumah',      'type'=>'Rumah & Taman',            'location'=>'Jl. Demang Lebar Daun No. 10', 'price'=>13_000_000,'cap'=>'60 – 180 tamu',  'rating'=>4.5,'promo'=>null,          'badge'=>null],
+            ['name'=>'Villa Kambang Sari',           'category'=>'rumah',      'type'=>'Outdoor',            'location'=>'Jl. Soekarno-Hatta',           'price'=>20_000_000,'cap'=>'100 – 300 tamu', 'rating'=>4.8,'promo'=>'Disc 10%',    'badge'=>'NEW REAL WEDDING'],
+            ['name'=>'Taman Orchid Wedding Garden',  'category'=>'rumah',      'type'=>'Outdoor',            'location'=>'Jl. Talang Semut No. 5',       'price'=>15_000_000,'cap'=>'80 – 250 tamu',  'rating'=>4.7,'promo'=>null,          'badge'=>'POPULAR'],
+            ['name'=>'Villa Hijau Palembang',        'category'=>'rumah',      'type'=>'Outdoor',            'location'=>'Jl. Kapten Anwar Sastro No. 3','price'=>18_000_000,'cap'=>'100 – 280 tamu', 'rating'=>4.7,'promo'=>'Free Tenda',  'badge'=>null],
+            ['name'=>'Kebun Sari Outdoor Wedding',   'category'=>'rumah',      'type'=>'Outdoor',            'location'=>'Jl. Alang-Alang Lebar No. 2',  'price'=>12_000_000,'cap'=>'70 – 200 tamu',  'rating'=>4.5,'promo'=>null,          'badge'=>null],
+            ['name'=>'Taman Bunga Indah',            'category'=>'rumah',      'type'=>'Outdoor',            'location'=>'Jl. Merdeka No. 7',            'price'=>16_000_000,'cap'=>'80 – 230 tamu',  'rating'=>4.6,'promo'=>'Disc 5%',     'badge'=>'TOP PICK'],
+            ['name'=>'Gazebo Garden Palembang',      'category'=>'rumah',      'type'=>'Outdoor',            'location'=>'Jl. Bukit Kecil No. 4',        'price'=>10_000_000,'cap'=>'50 – 150 tamu',  'rating'=>4.4,'promo'=>null,          'badge'=>null],
+            ['name'=>'Villa Cantik Riverside',       'category'=>'rumah',      'type'=>'Outdoor',            'location'=>'Jl. Riverside No. 12',         'price'=>22_000_000,'cap'=>'120 – 350 tamu', 'rating'=>4.8,'promo'=>'Hemat 3jt',   'badge'=>'NEW REAL WEDDING'],
+            ['name'=>'Taman Rindang Venue',          'category'=>'rumah',      'type'=>'Outdoor',            'location'=>'Jl. Golf No. 1',               'price'=>14_000_000,'cap'=>'80 – 220 tamu',  'rating'=>4.5,'promo'=>null,          'badge'=>null],
+            ['name'=>'Green Garden Palembang',       'category'=>'rumah',      'type'=>'Outdoor',            'location'=>'Jl. Sriwijaya No. 9',          'price'=>17_000_000,'cap'=>'90 – 260 tamu',  'rating'=>4.6,'promo'=>'Free Bunga',  'badge'=>'POPULAR'],
+            ['name'=>'Rumah Taman Anggrek',          'category'=>'rumah',      'type'=>'Outdoor',            'location'=>'Jl. Demang Lebar Daun No. 10', 'price'=>13_000_000,'cap'=>'60 – 180 tamu',  'rating'=>4.5,'promo'=>null,          'badge'=>null],
 
             // ── WEDDING ORGANIZER (10) ───────────────────────────────────────────
             ['name'=>'Sriwijaya Wedding Organizer',  'category'=>'wo',         'type'=>'Wedding Organizer',        'location'=>'Jl. Veteran No. 20',           'price'=>10_000_000,'cap'=>'Semua lokasi',   'rating'=>4.9,'promo'=>null,          'badge'=>'TOP PICK'],
@@ -385,22 +385,54 @@ class VendorSeeder extends Seeder
             'Gratis Design' => 'gratis_konsultasi',
         ];
 
+        // Province + city pool for randomization
+        $provincePool = [
+            'DKI Jakarta'      => ['Jakarta Pusat', 'Jakarta Selatan', 'Jakarta Barat', 'Jakarta Utara', 'Jakarta Timur'],
+            'Jawa Barat'       => ['Bandung', 'Bekasi', 'Bogor', 'Depok', 'Cirebon', 'Tasikmalaya'],
+            'Jawa Tengah'      => ['Semarang', 'Surakarta (Solo)', 'Magelang', 'Pekalongan', 'Kudus', 'Cilacap'],
+            'Jawa Timur'       => ['Surabaya', 'Malang', 'Kediri', 'Madiun', 'Gresik', 'Sidoarjo'],
+            'DI Yogyakarta'    => ['Yogyakarta', 'Sleman', 'Bantul', 'Gunungkidul', 'Kulon Progo'],
+            'Banten'           => ['Tangerang', 'Tangerang Selatan', 'Serang', 'Cilegon'],
+            'Bali'             => ['Denpasar', 'Badung', 'Gianyar', 'Tabanan', 'Buleleng'],
+            'Sumatera Utara'   => ['Medan', 'Binjai', 'Pematangsiantar', 'Sibolga', 'Deli Serdang'],
+            'Sumatera Barat'   => ['Padang', 'Bukittinggi', 'Payakumbuh', 'Solok', 'Padang Pariaman'],
+            'Sumatera Selatan' => ['Palembang', 'Prabumulih', 'Lubuklinggau', 'Lahat', 'Musi Banyuasin'],
+            'Lampung'          => ['Bandar Lampung', 'Metro', 'Pringsewu', 'Pesawaran', 'Lampung Selatan'],
+            'Kalimantan Timur' => ['Samarinda', 'Balikpapan', 'Bontang', 'Kutai Kartanegara'],
+            'Sulawesi Selatan' => ['Makassar', 'Parepare', 'Palopo', 'Bone', 'Gowa'],
+            'Riau'             => ['Pekanbaru', 'Dumai', 'Kampar', 'Siak', 'Rokan Hulu'],
+        ];
+        $provinceKeys = array_keys($provincePool);
+
         foreach ($vendors as $i => $data) {
+            $randProvince = $provinceKeys[$i % count($provinceKeys)];
+            $randCity     = $provincePool[$randProvince][array_rand($provincePool[$randProvince])];
+
+            // Hitung discount dari promo
+            $discountRaw = 0;
+            if ($data['promo']) {
+                if (preg_match('/Hemat (\d+)jt/', $data['promo'], $m)) {
+                    $discountRaw = (int)$m[1] * 1_000_000;
+                } elseif (preg_match('/Disc (\d+)%/', $data['promo'], $m)) {
+                    $discountRaw = (int) round($data['price'] * $m[1] / 100);
+                }
+            }
+
             $vendor = Vendor::create([
                 'name'            => $data['name'],
                 'slug'            => Str::slug($data['name']),
                 'type'            => $data['type'],
                 'category'        => $data['category'],
                 'location'        => $data['location'],
-                'city'            => 'Palembang',
-                'province'        => 'Sumatera Selatan',
+                'city'            => $randCity,
+                'province'        => $randProvince,
                 'description'     => 'Kami adalah ' . $data['name'] . ', menyediakan layanan pernikahan terbaik di Palembang dengan pengalaman bertahun-tahun. Kepuasan pasangan adalah prioritas utama kami.',
                 'phone'           => '0811-' . str_pad($i + 1, 4, '0', STR_PAD_LEFT) . '-2025',
                 'email'           => Str::slug($data['name']) . '@example.com',
                 'instagram'       => '@' . Str::slug($data['name'], ''),
                 'capacity'        => $data['cap'],
                 'price_start'     => 'Rp ' . number_format($data['price'], 0, ',', '.'),
-                'price_start_raw' => $data['price'],
+                'discount'        => $discountRaw,
                 'experience'      => ($i + 3) . '+ Tahun',
                 'venue_type'      => in_array($data['category'], ['gedung','hotel']) ? 'Indoor & Outdoor' : 'Outdoor',
                 'facilities'      => 'AC, Parkir, Mushola, Kamar Rias',
@@ -478,7 +510,7 @@ class VendorSeeder extends Seeder
             [
                 'name'     => 'The Royal Sriwijaya Palace',
                 'slug'     => 'the-royal-sriwijaya-palace',
-                'type'     => 'Gedung Wedding Venue',
+                'type'     => 'Indoor & Outdoor',
                 'category' => 'gedung',
                 'location' => 'Jl. Gubernur H. Bastari No. 1',
                 'price'    => 120_000_000,
@@ -544,7 +576,7 @@ class VendorSeeder extends Seeder
             [
                 'name'     => 'Pesona Grand Wedding Resort',
                 'slug'     => 'pesona-grand-wedding-resort',
-                'type'     => 'Hotel & Ballroom',
+                'type'     => 'Indoor',
                 'category' => 'hotel',
                 'location' => 'Jl. PTC Palembang No. 88',
                 'price'    => 95_000_000,
@@ -613,20 +645,34 @@ class VendorSeeder extends Seeder
         ];
 
         foreach ($premiumVendors as $pi => $pd) {
+            $pvProvince = $provinceKeys[($pi + 5) % count($provinceKeys)];
+            $pvCity     = $provincePool[$pvProvince][array_rand($provincePool[$pvProvince])];
+
+            // Hitung discount dari promo
+            $pvDiscountRaw = 0;
+            if (!empty($pd['promo'])) {
+                if (preg_match('/Hemat (\d+)jt/', $pd['promo'], $m2)) {
+                    $pvDiscountRaw = (int)$m2[1] * 1_000_000;
+                } elseif (preg_match('/Disc (\d+)%/', $pd['promo'], $m2)) {
+                    $pvDiscountRaw = (int) round($pd['price'] * $m2[1] / 100);
+                }
+            }
+
             $pv = Vendor::create([
                 'name'            => $pd['name'],
                 'slug'            => $pd['slug'],
                 'type'            => $pd['type'],
                 'category'        => $pd['category'],
                 'location'        => $pd['location'],
-                'city'            => 'Palembang',
-                'description'     => $pd['name'] . ' adalah destinasi wedding paling prestisius di Palembang. Dengan fasilitas bintang 5 dan tim profesional berpengalaman, kami menghadirkan pengalaman pernikahan impian yang tak terlupakan.',
+                'city'            => $pvCity,
+                'province'        => $pvProvince,
+                'description'     => $pd['name'] . ' adalah destinasi wedding paling prestisius. Dengan fasilitas bintang 5 dan tim profesional berpengalaman, kami menghadirkan pengalaman pernikahan impian yang tak terlupakan.',
                 'phone'           => '0812-' . str_pad($pi + 1, 4, '0', STR_PAD_LEFT) . '-8888',
                 'email'           => $pd['slug'] . '@example.com',
                 'instagram'       => '@' . str_replace('-', '', $pd['slug']),
                 'capacity'        => $pd['cap'],
                 'price_start'     => 'Rp ' . number_format($pd['price'], 0, ',', '.'),
-                'price_start_raw' => $pd['price'],
+                'discount'        => $pvDiscountRaw,
                 'experience'      => '15+ Tahun',
                 'venue_type'      => 'Indoor & Outdoor',
                 'facilities'      => 'AC, Parkir VIP, Valet, Mushola, Kamar Rias, Lounge VVIP',

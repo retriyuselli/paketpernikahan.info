@@ -11,11 +11,32 @@ class Vendor extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'slug', 'type', 'category', 'location', 'province', 'city', 'description',
-        'phone', 'email', 'instagram', 'capacity', 'price_start', 'price_start_raw',
-        'experience', 'venue_type', 'facilities', 'events_done',
-        'likes', 'comments_count', 'rating', 'badge', 'promo',
-        'cover_image', 'cover_video', 'is_active',
+        'name', 
+        'slug', 
+        'type', 
+        'category', 
+        'location', 
+        'province', 
+        'city', 
+        'description',
+        'phone', 
+        'email', 
+        'instagram', 
+        'capacity', 
+        'price_start', 
+        'discount',
+        'experience', 
+        'venue_type', 
+        'facilities', 
+        'events_done',
+        'likes', 
+        'comments_count', 
+        'rating', 
+        'badge', 
+        'promo',
+        'cover_image', 
+        'cover_video', 
+        'is_active',
     ];
 
     protected $casts = [
@@ -23,10 +44,13 @@ class Vendor extends Model
         'promo'           => 'array',
         'is_active'       => 'boolean',
         'rating'          => 'float',
-        'price_start_raw' => 'integer',
+        'discount'        => 'integer',
         'events_done'     => 'integer',
         'likes'           => 'integer',
         'comments_count'  => 'integer',
+        'price_start'     => 'integer',
+        'discount'        => 'integer',
+        'cover_image'     => 'array',
     ];
 
     /** Use slug as route key: /vendor/{vendor:slug} */
@@ -50,6 +74,13 @@ class Vendor extends Model
         return $this->hasMany(VendorPackage::class)->orderBy('sort_order');
     }
 
+    public function cheapestPackage()
+    {
+        return $this->hasOne(VendorPackage::class)
+                    ->where('is_active', true)
+                    ->orderBy('price_raw');
+    }
+
     public function reviews()
     {
         return $this->hasMany(VendorReview::class)->latest('reviewed_at');
@@ -67,11 +98,21 @@ class Vendor extends Model
         return $this->belongsTo(CategoryVendor::class, 'category', 'slug');
     }
 
+    /** Harga setelah potongan */
+    public function getFinalPriceAttribute(): int
+    {
+        $raw = (int) preg_replace('/[^\d]/', '', $this->price_start ?? '0');
+        return max(0, $raw - ($this->discount ?? 0));
+    }
+
     /** Mengembalikan URL gambar cover yang siap dipakai di Blade */
     public function getCoverImageUrlAttribute(): ?string
     {
-        if (!$this->cover_image) return null;
-        if (str_starts_with($this->cover_image, 'http')) return $this->cover_image;
-        return Storage::url($this->cover_image);
+        $value = $this->cover_image;
+        if (!$value) return null;
+        $path = is_array($value) ? ($value[0] ?? null) : $value;
+        if (!$path) return null;
+        if (str_starts_with($path, 'http')) return $path;
+        return Storage::url($path);
     }
 }
