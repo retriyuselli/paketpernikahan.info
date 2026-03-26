@@ -118,6 +118,21 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                 </svg>
                 Favorit
+                @if(($favoriteCount ?? 0) > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
+                      style="background: var(--light-sage); color: var(--dark-gray)">{{ $favoriteCount }}</span>
+                @endif
+            </a>
+
+            <a href="{{ route('dashboard.booking') }}" class="sidebar-link {{ request()->routeIs('dashboard.booking') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Booking
+                @if(($bookingCount ?? 0) > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
+                      style="background: var(--light-sage); color: var(--dark-gray)">{{ $bookingCount }}</span>
+                @endif
             </a>
 
             {{-- <a href="{{ route('vendor') }}" class="sidebar-link">

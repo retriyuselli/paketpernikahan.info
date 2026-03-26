@@ -7,7 +7,13 @@
 @section('content')
     @include('layout.header')
 
-    @php $hasLiked = $hasLiked ?? false; @endphp
+    @php
+        $hasLiked = $hasLiked ?? false;
+        $reviewList = $vendor->approvedReviews;
+        $reviewTotal = $reviewList->count();
+        $displayRating = $reviewTotal > 0 ? round($reviewList->avg('rating'), 1) : 0;
+        $openBookingModal = ($errors->booking->any() ?? false) || session()->has('booking_success');
+    @endphp
 
     <!-- Breadcrumb -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
@@ -77,7 +83,7 @@
                 <div class="absolute bottom-4 left-4 flex items-center gap-3">
                     <span class="flex items-center gap-1 bg-black/40 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full">
                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                        {{ $vendor->rating }}
+                        {{ $displayRating }}
                     </span>
                     <span class="text-white text-xs bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">{{ $vendor->approvedReviews->count() }} Ulasan</span>
                     <span class="text-white text-xs bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">{{ $vendor->galleries->count() }} Foto</span>
@@ -129,7 +135,7 @@
                 <div class="flex items-center gap-5 py-4 border-y border-gray-100 text-sm">
                     <div class="flex items-center gap-1.5">
                         <svg class="w-4 h-4" style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                        <span class="font-bold">{{ $vendor->rating }}</span>
+                        <span class="font-bold">{{ $displayRating }}</span>
                         <span class="text-gray-400">({{ $vendor->approvedReviews->count() }})</span>
                     </div>
                     <div class="w-px h-4 bg-gray-200"></div>
@@ -276,17 +282,15 @@
 
                 <!-- Reviews -->
                 @php
-                    $reviewList   = $vendor->approvedReviews;
-                    $reviewTotal  = $reviewList->count();
                     $ratingCounts = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
                     foreach ($reviewList as $_r) {
                         $ratingCounts[(int) $_r->rating] = ($ratingCounts[(int) $_r->rating] ?? 0) + 1;
                     }
                     $ratingLabel = match(true) {
-                        $vendor->rating >= 4.8 => 'Luar Biasa',
-                        $vendor->rating >= 4.5 => 'Sangat Bagus',
-                        $vendor->rating >= 4.0 => 'Bagus',
-                        $vendor->rating >= 3.0 => 'Cukup Baik',
+                        $displayRating >= 4.8 => 'Luar Biasa',
+                        $displayRating >= 4.5 => 'Sangat Bagus',
+                        $displayRating >= 4.0 => 'Bagus',
+                        $displayRating >= 3.0 => 'Cukup Baik',
                         default                => 'Perlu Ditingkatkan',
                     };
                 @endphp
@@ -297,10 +301,10 @@
                     <div class="rounded-2xl border border-gray-100 bg-white p-5 mb-5 flex flex-col sm:flex-row items-center gap-6">
                         {{-- Big Score --}}
                         <div class="flex flex-col items-center justify-center flex-shrink-0 sm:border-r border-gray-100 sm:pr-6">
-                            <p class="text-5xl font-bold leading-none mb-1" style="color: var(--dark-gray)">{{ number_format($vendor->rating, 1) }}</p>
+                            <p class="text-5xl font-bold leading-none mb-1" style="color: var(--dark-gray)">{{ number_format($displayRating, 1) }}</p>
                             <div class="flex items-center gap-0.5 my-1.5">
                                 @for ($s = 1; $s <= 5; $s++)
-                                <svg class="w-4 h-4 {{ $s <= round($vendor->rating) ? '' : 'opacity-20' }}"
+                                <svg class="w-4 h-4 {{ $s <= round($displayRating) ? '' : 'opacity-20' }}"
                                      style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                 </svg>
@@ -459,11 +463,29 @@
                             Chat WhatsApp
                         </a>
 
-                        <button class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 mb-4"
-                                style="background-color: var(--sage-green); color: var(--cream)">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            Booking Sekarang
-                        </button>
+                        @if (session('booking_success'))
+                            <div class="mb-3 text-xs font-semibold px-3 py-2 rounded-xl bg-green-50 text-green-700">
+                                {{ session('booking_success') }}
+                            </div>
+                        @endif
+
+                        @guest
+                            <a href="{{ route('login') }}?redirect={{ urlencode(request()->fullUrl() . '#booking') }}"
+                               class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 mb-4"
+                               style="background-color: var(--sage-green); color: var(--cream)">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                Booking Sekarang
+                            </a>
+                        @endguest
+
+                        @auth
+                            <button type="button" onclick="openBookingModal()"
+                                    class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 mb-4"
+                                    style="background-color: var(--sage-green); color: var(--cream)">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                Booking Sekarang
+                            </button>
+                        @endauth
 
                         <div class="flex gap-2">
                             <button class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold border border-gray-200 hover:border-gray-300 transition" style="color: var(--dark-gray)">
@@ -631,6 +653,120 @@
         </div>
     </div>
 
+    <div id="booking-modal"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden"
+         onclick="if(event.target===this) closeBookingModal()">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
+             style="max-height: 90vh; overflow-y: auto;">
+            <div class="p-6 pb-5" style="background: var(--cream)">
+                <button type="button" onclick="closeBookingModal()"
+                        class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/60 hover:bg-white/80 flex items-center justify-center transition">
+                    <svg class="w-4 h-4" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Booking</p>
+                <p class="text-xl font-bold" style="color: var(--dark-gray)">{{ $vendor->name }}</p>
+                <p class="text-xs text-gray-500 mt-1">Isi detail singkat, lalu kami hubungi via WhatsApp/telepon.</p>
+            </div>
+            <div class="p-6 space-y-4">
+                @if (session('booking_success'))
+                    <div class="text-xs font-semibold px-3 py-2 rounded-xl bg-green-50 text-green-700">
+                        {{ session('booking_success') }}
+                    </div>
+                @endif
+
+                @if ($errors->booking->any())
+                    <div class="text-xs font-semibold px-3 py-2 rounded-xl bg-red-50 text-red-700">
+                        <ul class="list-disc pl-4 space-y-1">
+                            @foreach ($errors->booking->all() as $err)
+                                <li>{{ $err }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('vendor.booking.store', $vendor) }}" class="space-y-3">
+                    @csrf
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Paket (opsional)</label>
+                        @php
+                            $oldBookingPkgId = old('vendor_package_id');
+                            $oldBookingPkg = $oldBookingPkgId ? $vendor->packages->firstWhere('id', (int) $oldBookingPkgId) : null;
+                        @endphp
+                        <input type="hidden" name="vendor_package_id" id="booking-vendor-package-id" value="{{ $oldBookingPkg?->id }}">
+                        <input type="text" id="booking-vendor-package-label"
+                               value="{{ $oldBookingPkg ? ($oldBookingPkg->name . ' — ' . $oldBookingPkg->price) : 'Tanpa paket' }}"
+                               readonly
+                               class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-gray-50 text-gray-700">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Tanggal acara</label>
+                        <input type="date" name="event_date" value="{{ old('event_date') }}"
+                               class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Nomor WhatsApp</label>
+                        <input type="text" name="phone" value="{{ old('phone') }}"
+                               placeholder="Contoh: 08xxxxxxxxxx"
+                               class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Catatan (opsional)</label>
+                        <textarea name="notes" rows="3" maxlength="2000"
+                                  class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition resize-none"
+                                  placeholder="Mis: jam acara, estimasi tamu, request konsep...">{{ old('notes') }}</textarea>
+                    </div>
+
+                    <button type="submit"
+                            class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90"
+                            style="background-color: var(--sage-green); color: var(--cream)">
+                        Kirim Booking
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openBookingModal() {
+            const modal = document.getElementById('booking-modal');
+            if (!modal) return;
+            if (typeof syncBookingPackage === 'function') {
+                syncBookingPackage();
+            }
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBookingModal() {
+            const modal = document.getElementById('booking-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                closeBookingModal();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const isAuth = {{ auth()->check() ? 'true' : 'false' }};
+            const shouldOpen = {{ $openBookingModal ? 'true' : 'false' }};
+            const hashOpen = window.location.hash === '#booking';
+            if (isAuth && (shouldOpen || hashOpen)) {
+                openBookingModal();
+            }
+        });
+    </script>
+
     <script>
     // ── YouTube Video Modal ───────────────────────────────────
     function openVideoModal(url) {
@@ -652,8 +788,39 @@
 
     // ── Package Modal ─────────────────────────────────────────
     let currentPackage = null;
+    let selectedPackage = null;
+    const vendorSlug = '{{ $vendor->slug }}';
     const waNumber = '{{ preg_replace('/[^0-9]/', '', $vendor->phone) }}';
     const vendorName = '{{ addslashes($vendor->name) }}';
+    const bookingSuccess = {{ session()->has('booking_success') ? 'true' : 'false' }};
+    if (bookingSuccess) {
+        try {
+            localStorage.removeItem(`bookingPkg:${vendorSlug}`);
+        } catch {}
+    }
+
+    function syncBookingPackage() {
+        const idEl = document.getElementById('booking-vendor-package-id');
+        const labelEl = document.getElementById('booking-vendor-package-label');
+        if (!idEl || !labelEl) return;
+
+        if (!selectedPackage) {
+            try {
+                const raw = localStorage.getItem(`bookingPkg:${vendorSlug}`);
+                if (raw) selectedPackage = JSON.parse(raw);
+            } catch {}
+        }
+
+        if (selectedPackage?.id) {
+            idEl.value = selectedPackage.id;
+            labelEl.value = `${selectedPackage.name} — ${selectedPackage.price}`;
+            return;
+        }
+
+        if (!idEl.value) {
+            labelEl.value = 'Tanpa paket';
+        }
+    }
 
     function openPackageModal(pkg) {
         currentPackage = pkg;
@@ -717,6 +884,12 @@
         document.getElementById('sidebar-price').textContent    = currentPackage.price;
         document.getElementById('sidebar-pkg-label').textContent = currentPackage.name;
         document.getElementById('sidebar-pkg-sub').textContent   = currentPackage.max_guests;
+
+        selectedPackage = { id: currentPackage.id, name: currentPackage.name, price: currentPackage.price };
+        try {
+            localStorage.setItem(`bookingPkg:${vendorSlug}`, JSON.stringify(selectedPackage));
+        } catch {}
+        syncBookingPackage();
 
         closePackageModal();
 

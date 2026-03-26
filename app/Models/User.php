@@ -63,6 +63,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         return $this->hasMany(VendorReview::class);
     }
 
+    public function vendorBookings()
+    {
+        return $this->hasMany(VendorBooking::class);
+    }
+
     /**
      * Get the vendors that the user has liked.
      */

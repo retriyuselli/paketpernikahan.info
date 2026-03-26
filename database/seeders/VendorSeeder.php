@@ -438,8 +438,8 @@ class VendorSeeder extends Seeder
                 'facilities'      => 'AC, Parkir, Mushola, Kamar Rias',
                 'events_done'     => ($i + 1) * 15 + 20,
                 'likes'           => 0,
-                'comments_count'  => ($i + 1) * 3 + 5,
-                'rating'          => $data['rating'],
+                'comments_count'  => 0,
+                'rating'          => 0,
                 'badge'           => $data['badge'] ? [$badgeMap[$data['badge']] ?? 'unggulan'] : null,
                 'promo'           => $data['promo'] ? [$promoMap[$data['promo']] ?? 'bonus_gift'] : null,
                 'cover_image'     => null,
@@ -482,23 +482,6 @@ class VendorSeeder extends Seeder
                     'items'           => $tpl['items'],
                     'sort_order'      => $idx,
                     'is_active'       => true,
-                ]);
-            }
-
-            // Reviews (3 per vendor)
-            $reviewData = [
-                ['name'=>'Budi Santoso',   'rating'=>5,'body'=>'Pelayanan luar biasa, semua berjalan lancar di hari pernikahan kami. Sangat profesional!'],
-                ['name'=>'Sari Dewi',      'rating'=>5,'body'=>'Dekorasi cantik sekali, sesuai dengan konsep yang kami inginkan. Terima kasih banyak.'],
-                ['name'=>'Ahmad Fauzi',    'rating'=>4,'body'=>'Overall memuaskan, hanya sedikit kendala teknis kecil tapi tim langsung tanggap mengatasi.'],
-            ];
-            foreach ($reviewData as $rIdx => $rev) {
-                VendorReview::create([
-                    'vendor_id'     => $vendor->id,
-                    'reviewer_name' => $rev['name'],
-                    'rating'        => $rev['rating'],
-                    'body'          => $rev['body'],
-                    'reviewed_at'   => now()->subMonths($rIdx * 2 + 1),
-                    'is_approved'   => true,
                 ]);
             }
         }
@@ -712,22 +695,6 @@ class VendorSeeder extends Seeder
                     'items'           => $tpl['items'],
                     'sort_order'      => $idx,
                     'is_active'       => true,
-                ]);
-            }
-
-            $premiumReviews = [
-                ['name' => 'Reza Pratama',    'rating' => 5, 'body' => 'Luar biasa! Semua fasilitas tersedia lengkap, dekorasi sangat mewah, tamu undangan sangat terkesan. Ini adalah hari paling sempurna dalam hidup kami!'],
-                ['name' => 'Cindy Wijaya',    'rating' => 5, 'body' => 'Pelayanan kelas dunia, setiap detail diperhatikan. Paket Platinum benar-benar all-inclusive, tidak perlu pusing urus apa pun.'],
-                ['name' => 'Hendra Gunawan',  'rating' => 5, 'body' => 'Sudah ke banyak wedding di Palembang, tapi di sini memang beda levelnya. Sangat merekomendasikan!'],
-            ];
-            foreach ($premiumReviews as $rIdx => $rev) {
-                VendorReview::create([
-                    'vendor_id'     => $pv->id,
-                    'reviewer_name' => $rev['name'],
-                    'rating'        => $rev['rating'],
-                    'body'          => $rev['body'],
-                    'reviewed_at'   => now()->subMonths($rIdx + 1),
-                    'is_approved'   => true,
                 ]);
             }
         }

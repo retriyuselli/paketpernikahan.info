@@ -27,7 +27,9 @@
         @foreach($likedVendors as $vendor)
             <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col group hover:shadow-md transition-shadow">
                 <a href="{{ route('vendor.detail', $vendor->slug) }}" class="relative h-40 overflow-hidden block">
-                    <img src="{{ $vendor->cover_image_url }}" alt="{{ $vendor->name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                    <img src="{{ $vendor->cover_image_url ?: ('https://picsum.photos/seed/vendor-' . $vendor->slug . '/800/600') }}"
+                         alt="{{ $vendor->name }}"
+                         class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute top-3 right-3">
                         <form action="{{ route('vendor.like', $vendor) }}" method="POST">
                             @csrf
@@ -63,9 +65,21 @@
                     <div class="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
                         <div>
                             <p class="text-[10px] text-gray-400 mb-0.5">Harga Mulai</p>
-                            <p class="text-sm font-bold" style="color: var(--sage-green)">
-                                {{ $vendor->price_start ? 'Rp ' . number_format($vendor->price_start, 0, ',', '.') : '—' }}
-                            </p>
+                            @php $cheapPkg = $vendor->cheapestPackage; @endphp
+                            @if ($cheapPkg)
+                                @if ($cheapPkg->discount > 0)
+                                    <p class="text-[10px] line-through text-gray-400 leading-none mb-0.5">{{ $cheapPkg->price }}</p>
+                                    <p class="text-sm font-bold leading-none" style="color: var(--sage-green)">
+                                        Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}
+                                    </p>
+                                @else
+                                    <p class="text-sm font-bold" style="color: var(--sage-green)">{{ $cheapPkg->price }}</p>
+                                @endif
+                            @else
+                                <p class="text-sm font-bold" style="color: var(--sage-green)">
+                                    {{ $vendor->price_start ? 'Rp ' . number_format($vendor->price_start, 0, ',', '.') : '—' }}
+                                </p>
+                            @endif
                         </div>
                         <a href="{{ route('vendor.detail', $vendor->slug) }}" class="text-xs font-bold px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
                             Detail

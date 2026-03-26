@@ -101,6 +101,11 @@ class Vendor extends Model
                     ->latest('reviewed_at');
     }
 
+    public function bookings()
+    {
+        return $this->hasMany(VendorBooking::class);
+    }
+
     public function categoryVendor()
     {
         return $this->belongsTo(CategoryVendor::class, 'category', 'slug');

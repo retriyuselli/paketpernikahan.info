@@ -18,6 +18,11 @@ Route::get('/vendor', function () {
 
     $query = \App\Models\Vendor::where('is_active', true)
         ->withCount('galleries')
+        ->withCount([
+            'approvedReviews as comments_count',
+            'likedByUsers as likes',
+        ])
+        ->withAvg('approvedReviews as rating', 'rating')
         ->with([
             'galleries'       => fn ($q) => $q->where('is_cover', true),
             'cheapestPackage',
@@ -82,6 +87,11 @@ Route::get('/vendor', function () {
 
 Route::get('/vendor/{vendor:slug}', function (\App\Models\Vendor $vendor) {
     $vendor->load(['galleries', 'packages', 'approvedReviews', 'cheapestPackage']);
+    $vendor->loadCount([
+        'approvedReviews as comments_count',
+        'likedByUsers as likes',
+    ]);
+    $vendor->loadAvg('approvedReviews as rating', 'rating');
     $hasLiked = auth()->check() && auth()->user()->likedVendors()->where('vendor_id', $vendor->id)->exists();
     return view('vendor.detail', compact('vendor', 'hasLiked'));
 })->name('vendor.detail');
@@ -93,6 +103,10 @@ Route::post('/vendor/{vendor:slug}/reviews', [\App\Http\Controllers\VendorReview
 Route::post('/vendor/{vendor:slug}/like', [\App\Http\Controllers\VendorLikeController::class, 'toggle'])
     ->middleware('auth')
     ->name('vendor.like');
+
+Route::post('/vendor/{vendor:slug}/bookings', [\App\Http\Controllers\VendorBookingController::class, 'store'])
+    ->middleware('auth')
+    ->name('vendor.booking.store');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/vendor/{vendor:slug}/edit', [\App\Http\Controllers\VendorEditController::class, 'edit'])
@@ -187,27 +201,99 @@ Route::post('/reset-password', function (\Illuminate\Http\Request $request) {
 Route::get('/dashboard', function () {
     $user        = auth()->user();
     $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
-    return view('dashboard.index', compact('user', 'reviewCount'));
+    $favoriteCount = $user->likedVendors()->count();
+    $bookingCount = $user->vendorBookings()->count();
+    return view('dashboard.index', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount'));
 })->name('dashboard')->middleware(['auth', 'verified']);
 
 Route::get('/dashboard/pengaturan', function () {
     $user = auth()->user();
     $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
-    return view('dashboard.pengaturan', compact('user', 'reviewCount'));
+    $favoriteCount = $user->likedVendors()->count();
+    $bookingCount = $user->vendorBookings()->count();
+    return view('dashboard.pengaturan', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount'));
 })->name('dashboard.pengaturan')->middleware(['auth', 'verified']);
 
 Route::get('/dashboard/ulasan', function () {
     $user        = auth()->user();
     $myReviews   = \App\Models\VendorReview::where('user_id', $user->id)->latest()->with('vendor')->get();
     $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
-    return view('dashboard.ulasan', compact('user', 'myReviews', 'reviewCount'));
+    $favoriteCount = $user->likedVendors()->count();
+    $bookingCount = $user->vendorBookings()->count();
+    return view('dashboard.ulasan', compact('user', 'myReviews', 'reviewCount', 'favoriteCount', 'bookingCount'));
 })->name('dashboard.ulasan')->middleware(['auth', 'verified']);
+
+Route::get('/dashboard/booking', function () {
+    $user = auth()->user();
+    $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
+    $favoriteCount = $user->likedVendors()->count();
+    $bookings = $user->vendorBookings()
+        ->with(['vendor', 'vendorPackage'])
+        ->latest()
+        ->get();
+    $bookingCount = $bookings->count();
+    return view('dashboard.booking', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount', 'bookings'));
+})->name('dashboard.booking')->middleware(['auth', 'verified']);
+
+Route::get('/dashboard/booking/{booking}/edit', function (\App\Models\VendorBooking $booking) {
+    $user = auth()->user();
+    abort_unless($booking->user_id === $user->id, 403);
+
+    $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
+    $favoriteCount = $user->likedVendors()->count();
+    $bookingCount = $user->vendorBookings()->count();
+
+    $booking->load(['vendor', 'vendorPackage', 'vendor.packages']);
+
+    return view('dashboard.booking-edit', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount', 'booking'));
+})->name('dashboard.booking.edit')->middleware(['auth', 'verified']);
+
+Route::put('/dashboard/booking/{booking}', function (\Illuminate\Http\Request $request, \App\Models\VendorBooking $booking) {
+    $user = $request->user();
+    abort_unless($booking->user_id === $user->id, 403);
+
+    if ($booking->status !== 'pending') {
+        return redirect()->route('dashboard.booking')->with('booking_error', 'Booking tidak bisa diedit karena statusnya sudah diproses.');
+    }
+
+    $vendorId = $booking->vendor_id;
+
+    $data = $request->validateWithBag('booking', [
+        'vendor_package_id' => [
+            'nullable',
+            'integer',
+            \Illuminate\Validation\Rule::exists('vendor_packages', 'id')->where('vendor_id', $vendorId),
+        ],
+        'event_date' => ['required', 'date', 'after_or_equal:today'],
+        'phone'      => ['required', 'string', 'max:30'],
+        'notes'      => ['nullable', 'string', 'max:2000'],
+    ]);
+
+    $booking->update([
+        'vendor_package_id' => $data['vendor_package_id'] ?? null,
+        'event_date'        => $data['event_date'],
+        'phone'             => $data['phone'],
+        'notes'             => $data['notes'] ?? null,
+    ]);
+
+    return redirect()->route('dashboard.booking')->with('booking_success', 'Booking berhasil diperbarui.');
+})->name('dashboard.booking.update')->middleware(['auth', 'verified']);
 
 Route::get('/dashboard/favorit', function () {
     $user        = auth()->user();
     $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
-    $likedVendors = $user->likedVendors()->latest('vendor_user_likes.created_at')->get();
-    return view('dashboard.favorit', compact('user', 'reviewCount', 'likedVendors'));
+    $likedVendors = $user->likedVendors()
+        ->with('cheapestPackage')
+        ->withCount([
+            'approvedReviews as comments_count',
+            'likedByUsers as likes',
+        ])
+        ->withAvg('approvedReviews as rating', 'rating')
+        ->latest('vendor_user_likes.created_at')
+        ->get();
+    $favoriteCount = $likedVendors->count();
+    $bookingCount = $user->vendorBookings()->count();
+    return view('dashboard.favorit', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount', 'likedVendors'));
 })->name('dashboard.favorit')->middleware(['auth', 'verified']);
 
 Route::middleware(['auth', 'verified'])->group(function () {

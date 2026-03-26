@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Vendors;
 use App\Filament\Admin\Resources\Vendors\Pages\CreateVendor;
 use App\Filament\Admin\Resources\Vendors\Pages\EditVendor;
 use App\Filament\Admin\Resources\Vendors\Pages\ListVendors;
+use App\Filament\Admin\Resources\Vendors\RelationManagers\BookingsRelationManager;
 use App\Filament\Admin\Resources\Vendors\Schemas\VendorForm;
 use App\Filament\Admin\Resources\Vendors\Tables\VendorsTable;
 use App\Models\Vendor;
@@ -36,7 +37,7 @@ class VendorResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            BookingsRelationManager::class,
         ];
     }
 
