@@ -24,8 +24,8 @@
                 <!-- Logo -->
                 <div class="text-center mb-8">
                     <a href="{{ route('home') }}" class="inline-flex items-center space-x-2 mb-6" style="text-decoration: none;">
-                        <div class="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-lg" style="font-weight:300;">👰</div>
-                        <span class="text-xl text-gray-900" style="font-weight:300;">MAKNA WEDDING</span>
+                        {{-- <div class="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-lg" style="font-weight:300;">👰</div> --}}
+                        <span class="text-xl text-gray-900" style="font-weight:800;">PAKET PERNIKAHAN</span>
                     </a>
                 </div>
 
@@ -36,7 +36,7 @@
                         <p style="font-size: 0.875rem; color: #6B7280; font-weight: 300;">Start your journey — sign up to get access.</p>
                     </div>
 
-                    <form method="POST" action="{{ url('/register') }}">
+                    <form method="POST" action="{{ route('register.post') }}">
                         @csrf
 
                         <!-- Row 1: Full Name + Email -->
@@ -91,7 +91,7 @@
                             <label style="font-size: 0.875rem; font-weight: 300; color: #374151; display: block; margin-bottom: 0.375rem;">
                                 What is the result of
                                 <span style="color: #EF4444; font-weight: 400;">{{ $num1 }}</span>
-                                /
+                                +
                                 <span style="color: #F97316; font-weight: 400;">{{ $num2 }}</span>
                                 ?
                             </label>
@@ -99,7 +99,10 @@
                                 style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; font-weight: 300; outline: none; box-sizing: border-box;"
                                 onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'"
                                 onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'">
-                            <input type="hidden" name="captcha_answer" value="{{ $num1 / $num2 }}">
+                            <input type="hidden" name="captcha_answer" value="{{ $num1 + $num2 }}">
+                            @error('captcha')
+                                <p style="font-size: 0.75rem; color: #EF4444; margin-top: 0.25rem;">{{ $message }}</p>
+                            @enderror
                         </div>
 
                         <!-- Privacy Policy Checkbox -->

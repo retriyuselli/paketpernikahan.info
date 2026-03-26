@@ -27,7 +27,7 @@
             <div class="flex items-center gap-5">
                 <div class="flex-shrink-0">
                     @if($user->avatar_url)
-                    <img id="avatar-preview" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($user->avatar_url) }}"
+                    <img id="avatar-preview" src="{{ $user->avatarUrl() }}"
                          alt="Avatar" class="w-20 h-20 rounded-full object-cover border-4 border-gray-100 shadow"
                          onerror="this.style.display='none';document.getElementById('avatar-preview-initials').style.display='flex'">
                     @else

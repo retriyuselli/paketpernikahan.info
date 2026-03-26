@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\SocialAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('front.home');
+    $heroCircles = \App\Models\HeroCircle::active()->get();
+    return view('front.home', compact('heroCircles'));
 })->name('home');
 
 Route::get('/vendor', function () {
@@ -115,38 +118,87 @@ Route::get('/login', function () {
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
 Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
+Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
+// Email Verification
+Route::get('/email/verify', function () {
+    if (auth()->user()->hasVerifiedEmail()) {
+        return redirect()->route('home');
+    }
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect()->route('dashboard')->with('verified', true);
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (\Illuminate\Http\Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('resent', true);
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
-})->name('password.request');
+})->middleware('guest')->name('password.request');
+
+Route::post('/forgot-password', function (\Illuminate\Http\Request $request) {
+    $request->validate(['email' => 'required|email']);
+    $status = \Illuminate\Support\Facades\Password::sendResetLink($request->only('email'));
+    return $status === \Illuminate\Support\Facades\Password::RESET_LINK_SENT
+        ? redirect()->route('login')->with('status', __($status))
+        : back()->withErrors(['email' => __($status)]);
+})->middleware('guest')->name('password.email');
 
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
-})->name('password.reset');
+})->middleware('guest')->name('password.reset');
+
+Route::post('/reset-password', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'token'    => 'required',
+        'email'    => 'required|email',
+        'password' => 'required|min:8|confirmed',
+    ]);
+    $status = \Illuminate\Support\Facades\Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function (\App\Models\User $user, string $password) {
+            $user->forceFill(['password' => \Illuminate\Support\Facades\Hash::make($password)])->save();
+            event(new \Illuminate\Auth\Events\PasswordReset($user));
+        }
+    );
+    return $status === \Illuminate\Support\Facades\Password::PASSWORD_RESET
+        ? redirect()->route('login')->with('status', __($status))
+        : back()->withErrors(['email' => __($status)]);
+})->middleware('guest')->name('password.update');
 
 Route::get('/dashboard', function () {
     $user        = auth()->user();
     $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
     return view('dashboard.index', compact('user', 'reviewCount'));
-})->name('dashboard')->middleware('auth');
+})->name('dashboard')->middleware(['auth', 'verified']);
 
 Route::get('/dashboard/pengaturan', function () {
     $user = auth()->user();
     $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
     return view('dashboard.pengaturan', compact('user', 'reviewCount'));
-})->name('dashboard.pengaturan')->middleware('auth');
+})->name('dashboard.pengaturan')->middleware(['auth', 'verified']);
 
 Route::get('/dashboard/ulasan', function () {
     $user        = auth()->user();
     $myReviews   = \App\Models\VendorReview::where('user_id', $user->id)->latest()->with('vendor')->get();
     $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
     return view('dashboard.ulasan', compact('user', 'myReviews', 'reviewCount'));
-})->name('dashboard.ulasan')->middleware('auth');
+})->name('dashboard.ulasan')->middleware(['auth', 'verified']);
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/dashboard/profile/name', [\App\Http\Controllers\ProfileController::class, 'updateName'])
         ->name('dashboard.profile.update');
     Route::post('/dashboard/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])

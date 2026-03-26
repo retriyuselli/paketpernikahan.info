@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Users\Schemas;
 
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -46,6 +47,11 @@ class UserForm
                             ->dehydrated(false)
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->same('password'),
+                        DateTimePicker::make('email_verified_at')
+                            ->label('Email Diverifikasi Pada')
+                            ->nullable()
+                            ->displayFormat('d M Y, H:i')
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Foto Profil')

@@ -5,11 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Forgot Password - Makna Wedding</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=poppins:400,500,600,700" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=poppins:200,300,400,500,600,700" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <style>
             * {
                 font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+                font-weight: 300;
             }
         </style>
     </head>
@@ -27,8 +28,8 @@
                 <!-- Card -->
                 <div class="bg-white rounded-2xl shadow-sm p-8">
                     <div class="text-center mb-8">
-                        <h1 class="text-4xl font-bold text-gray-900 mb-3">Forgot password?</h1>
-                        <p class="text-gray-600 text-base">No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.</p>
+                        <h1 style="font-size: 1.5rem; font-weight: 500; color: #111827; margin-bottom: 0.5rem; line-height: 1.3;">Forgot password?</h1>
+                        <p style="font-size: 0.875rem; color: #6B7280;">No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.</p>
                     </div>
 
                     @if ($errors->any())
@@ -42,22 +43,22 @@
                         
                         <!-- Email Field -->
                         <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                            <input type="email" name="email" id="email" placeholder="Enter your email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition @error('email') border-red-500 @enderror" value="{{ old('email') }}">
+                            <label for="email" style="font-size: 0.875rem; font-weight: 300; color: #374151; display: block; margin-bottom: 0.375rem;">Email</label>
+                            <input type="email" name="email" id="email" placeholder="Enter your email" required style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'" onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'" value="{{ old('email') }}">
                             @error('email')
-                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                                <p style="font-size: 0.75rem; color: #EF4444; margin-top: 0.25rem;">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Send Button -->
-                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-full transition duration-200">
+                        <button type="submit" style="width: 100%; background-color: #DC2626; color: white; font-size: 0.9375rem; font-weight: 300; padding: 0.75rem 1rem; border-radius: 9999px; border: none; cursor: pointer; transition: background-color 0.15s;" onmouseover="this.style.backgroundColor='#B91C1C'" onmouseout="this.style.backgroundColor='#DC2626'">
                             Email Password Reset Link
                         </button>
                     </form>
 
                     <!-- Back to Login -->
-                    <p class="text-center text-gray-600 text-sm mt-6">
-                        <a href="{{ route('login') }}" class="text-blue-600 hover:text-blue-700 font-semibold">Back to login</a>
+                    <p style="text-align: center; font-size: 0.875rem; color: #6B7280; margin-top: 1.5rem;">
+                        <a href="{{ route('login') }}" style="color: #2563EB; font-weight: 300; text-decoration: none;" onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='#2563EB'">Back to login</a>
                     </p>
                 </div>
             </div>

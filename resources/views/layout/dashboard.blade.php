@@ -72,7 +72,7 @@
         <div class="px-4 py-4 mt-5 border-b border-gray-100">
             <div class="flex items-center gap-3">
                 @if($user->avatar_url)
-                <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($user->avatar_url) }}"
+                <img src="{{ $user->avatarUrl() }}"
                      alt="{{ $user->name }}"
                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
                      class="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-white shadow-sm">
