@@ -82,12 +82,17 @@ Route::get('/vendor', function () {
 
 Route::get('/vendor/{vendor:slug}', function (\App\Models\Vendor $vendor) {
     $vendor->load(['galleries', 'packages', 'approvedReviews', 'cheapestPackage']);
-    return view('vendor.detail', compact('vendor'));
+    $hasLiked = auth()->check() && auth()->user()->likedVendors()->where('vendor_id', $vendor->id)->exists();
+    return view('vendor.detail', compact('vendor', 'hasLiked'));
 })->name('vendor.detail');
 
 Route::post('/vendor/{vendor:slug}/reviews', [\App\Http\Controllers\VendorReviewController::class, 'store'])
     ->middleware('auth')
     ->name('vendor.review.store');
+
+Route::post('/vendor/{vendor:slug}/like', [\App\Http\Controllers\VendorLikeController::class, 'toggle'])
+    ->middleware('auth')
+    ->name('vendor.like');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/vendor/{vendor:slug}/edit', [\App\Http\Controllers\VendorEditController::class, 'edit'])
@@ -197,6 +202,13 @@ Route::get('/dashboard/ulasan', function () {
     $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
     return view('dashboard.ulasan', compact('user', 'myReviews', 'reviewCount'));
 })->name('dashboard.ulasan')->middleware(['auth', 'verified']);
+
+Route::get('/dashboard/favorit', function () {
+    $user        = auth()->user();
+    $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
+    $likedVendors = $user->likedVendors()->latest('vendor_user_likes.created_at')->get();
+    return view('dashboard.favorit', compact('user', 'reviewCount', 'likedVendors'));
+})->name('dashboard.favorit')->middleware(['auth', 'verified']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/dashboard/profile/name', [\App\Http\Controllers\ProfileController::class, 'updateName'])

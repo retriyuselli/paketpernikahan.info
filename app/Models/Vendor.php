@@ -83,7 +83,15 @@ class Vendor extends Model
 
     public function reviews()
     {
-        return $this->hasMany(VendorReview::class)->latest('reviewed_at');
+        return $this->hasMany(VendorReview::class);
+    }
+
+    /**
+     * Get the users who have liked this vendor.
+     */
+    public function likedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'vendor_user_likes')->withTimestamps();
     }
 
     public function approvedReviews()

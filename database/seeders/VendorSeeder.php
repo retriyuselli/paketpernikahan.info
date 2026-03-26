@@ -437,7 +437,7 @@ class VendorSeeder extends Seeder
                 'venue_type'      => in_array($data['category'], ['gedung','hotel']) ? 'Indoor & Outdoor' : 'Outdoor',
                 'facilities'      => 'AC, Parkir, Mushola, Kamar Rias',
                 'events_done'     => ($i + 1) * 15 + 20,
-                'likes'           => ($i + 1) * 12 + 50,
+                'likes'           => 0,
                 'comments_count'  => ($i + 1) * 3 + 5,
                 'rating'          => $data['rating'],
                 'badge'           => $data['badge'] ? [$badgeMap[$data['badge']] ?? 'unggulan'] : null,

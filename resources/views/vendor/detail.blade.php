@@ -7,6 +7,7 @@
 @section('content')
     @include('layout.header')
 
+    @php $hasLiked = $hasLiked ?? false; @endphp
 
     <!-- Breadcrumb -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
@@ -114,9 +115,14 @@
                             {{ $vendor->location }}
                         </div>
                     </div>
-                    <button class="flex-shrink-0 w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-red-50 transition group">
-                        <svg class="w-5 h-5 text-gray-400 group-hover:text-red-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                    </button>
+                    <form action="{{ route('vendor.like', $vendor) }}" method="POST" class="m-0 p-0">
+                        @csrf
+                        <button type="submit" class="flex-shrink-0 w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center transition group {{ $hasLiked ? 'bg-red-50 border-red-200' : 'hover:bg-red-50' }}">
+                            <svg class="w-5 h-5 transition {{ $hasLiked ? 'text-red-500 fill-red-500' : 'text-gray-400 group-hover:text-red-400' }}" fill="{{ $hasLiked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
 
                 <!-- Stats Bar -->
@@ -132,10 +138,15 @@
                         {{ $vendor->galleries->count() }} Foto
                     </div>
                     <div class="w-px h-4 bg-gray-200"></div>
-                    <div class="flex items-center gap-1.5 text-gray-500">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                        {{ $vendor->likes }} Suka
-                    </div>
+                    <form action="{{ route('vendor.like', $vendor) }}" method="POST" class="inline m-0 p-0">
+                        @csrf
+                        <button type="submit" class="flex items-center gap-1.5 transition group cursor-pointer {{ $hasLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500' }}">
+                            <svg class="w-4 h-4 transition {{ $hasLiked ? 'fill-red-500' : 'group-hover:fill-red-500' }}" fill="{{ $hasLiked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                            {{ number_format($vendor->likes) }} Suka
+                        </button>
+                    </form>
                     <div class="w-px h-4 bg-gray-200"></div>
                     <div class="flex items-center gap-1.5 text-gray-500">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
@@ -399,7 +410,6 @@
                             <span id="star-label" class="text-xs text-gray-400 ml-1">Pilih rating</span>
                         </div>
                         <input type="hidden" id="review-rating" value="0">
-                        <input type="hidden" id="review-name" value="{{ auth()->user()->name }}">
 
                         <div class="mb-4">
                             <textarea id="review-body" rows="3" maxlength="1000"
@@ -746,10 +756,10 @@
 
     function submitReview() {
         const rating  = parseInt(document.getElementById('review-rating').value, 10);
-        const name    = document.getElementById('review-name')?.value?.trim() ?? '';
         const body    = document.getElementById('review-body')?.value?.trim() ?? '';
         const fb      = document.getElementById('review-feedback');
         const btn     = document.getElementById('review-submit-btn');
+        if (!fb || !btn) return;
 
         const showFeedback = (msg, isError) => {
             fb.textContent = msg;
@@ -758,7 +768,6 @@
         };
 
         if (rating < 1)          { showFeedback('Pilih rating bintang terlebih dahulu.', true); return; }
-        if (name.length < 2)     { showFeedback('Nama minimal 2 karakter.', true); return; }
         if (body.length < 10)    { showFeedback('Ulasan minimal 10 karakter.', true); return; }
 
         btn.disabled    = true;
@@ -771,11 +780,19 @@
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
                 'Accept'      : 'application/json',
             },
-            body: JSON.stringify({ reviewer_name: name, rating, body }),
+            body: JSON.stringify({ rating, body }),
         })
-        .then(r => r.json().then(d => ({ status: r.status, data: d })))
-        .then(({ status, data }) => {
-            if (status === 201) {
+        .then(async r => {
+            const contentType = r.headers.get('content-type') ?? '';
+            if (contentType.includes('application/json')) {
+                const data = await r.json();
+                return { status: r.status, data, redirected: r.redirected, url: r.url };
+            }
+            const text = await r.text();
+            return { status: r.status, data: null, text, redirected: r.redirected, url: r.url };
+        })
+        .then(({ status, data, redirected, url }) => {
+            if (status === 201 && data?.message) {
                 showFeedback(data.message, false);
                 document.getElementById('review-body').value = '';
                 document.getElementById('review-char').textContent = '0';
@@ -783,11 +800,21 @@
                 document.getElementById('star-label').textContent = 'Pilih rating';
                 document.querySelectorAll('.star-btn svg').forEach(s => s.style.color = '#d1d5db');
                 btn.textContent = 'Terkirim ✓';
-            } else {
-                showFeedback(data.message || 'Terjadi kesalahan.', true);
-                btn.disabled    = false;
-                btn.textContent = 'Kirim Ulasan';
+                return;
             }
+
+            if (status === 401 || redirected || (url && url.includes('/login'))) {
+                showFeedback('Sesi login sudah berakhir. Silakan masuk lagi, lalu coba ulang.', true);
+            } else if (status === 419) {
+                showFeedback('Sesi halaman sudah kedaluwarsa. Silakan refresh halaman lalu coba lagi.', true);
+            } else if (data?.message) {
+                showFeedback(data.message, true);
+            } else {
+                showFeedback('Terjadi kesalahan. Coba lagi.', true);
+            }
+
+            btn.disabled    = false;
+            btn.textContent = 'Kirim Ulasan';
         })
         .catch(() => {
             showFeedback('Gagal terhubung. Coba lagi.', true);
