@@ -40,7 +40,7 @@
                 </button>
             </div>
         </div>
-        <div class="rounded-lg p-8 lg:p-12 h-80 lg:h-96 flex items-center justify-center relative">
+        <div class="hidden lg:flex rounded-lg p-8 lg:p-12 h-80 lg:h-96 items-center justify-center relative">
             <!-- Animated floating circles with images -->
             <div class="absolute inset-0 flex items-center justify-center">
                 @foreach($heroCircles as $circle)
