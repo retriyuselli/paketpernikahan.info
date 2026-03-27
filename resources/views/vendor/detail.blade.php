@@ -132,7 +132,35 @@
                 </div>
 
                 <!-- Stats Bar -->
-                <div class="flex items-center gap-5 py-4 border-y border-gray-100 text-sm">
+                <div class="sm:hidden flex items-center gap-3 py-3 border-y border-gray-100 text-xs text-gray-600 whitespace-nowrap overflow-x-auto">
+                    <div class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4" style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <span class="font-bold">{{ $displayRating }}</span>
+                        <span class="text-gray-400">({{ $vendor->approvedReviews->count() }})</span>
+                    </div>
+                    <span class="text-gray-300">•</span>
+                    <div class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <span class="font-bold">{{ $vendor->galleries->count() }}</span>
+                    </div>
+                    <span class="text-gray-300">•</span>
+                    <form action="{{ route('vendor.like', $vendor) }}" method="POST" class="inline m-0 p-0">
+                        @csrf
+                        <button type="submit" class="flex items-center gap-1.5 transition group cursor-pointer {{ $hasLiked ? 'text-red-500' : 'text-gray-600 hover:text-red-500' }}">
+                            <svg class="w-4 h-4 transition {{ $hasLiked ? 'fill-red-500' : 'group-hover:fill-red-500' }}" fill="{{ $hasLiked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                            </svg>
+                            <span class="font-bold">{{ number_format($vendor->likes) }}</span>
+                        </button>
+                    </form>
+                    <span class="text-gray-300">•</span>
+                    <div class="flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        <span class="font-bold">{{ $vendor->comments_count }}</span>
+                    </div>
+                </div>
+
+                <div class="hidden sm:flex items-center gap-5 py-4 border-y border-gray-100 text-sm">
                     <div class="flex items-center gap-1.5">
                         <svg class="w-4 h-4" style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <span class="font-bold">{{ $displayRating }}</span>
@@ -339,13 +367,6 @@
                             <div class="bg-green-50 text-green-700 border border-green-100 rounded-2xl p-3 text-xs font-semibold">
                                 {{ session('reply_success') }}
                             </div>
-                            <script>
-                                document.addEventListener('DOMContentLoaded', () => {
-                                    document.querySelectorAll('textarea[name="admin_reply"]').forEach(el => {
-                                        el.value = '';
-                                    });
-                                });
-                            </script>
                         @endif
                         @foreach ($reviewList as $revIdx => $rev)
                         <div class="bg-white rounded-2xl p-4 border border-gray-100 review-card {{ $revIdx >= 3 ? 'hidden' : '' }}">
@@ -382,9 +403,10 @@
                                         <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Reply Admin</p>
                                         <form method="POST" action="{{ route('vendor.review.reply', $rev) }}" class="space-y-2">
                                             @csrf
+                                            <input type="hidden" name="review_id" value="{{ $rev->id }}">
                                             <textarea name="admin_reply" rows="3" maxlength="2000"
                                                       class="w-full border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-gray-400 transition resize-none"
-                                                      placeholder="Tulis balasan admin...">{{ $rev->admin_reply }}</textarea>
+                                                      placeholder="Tulis balasan admin...">{{ (string) old('review_id') === (string) $rev->id ? old('admin_reply') : '' }}</textarea>
                                             <div class="flex items-center justify-end gap-2">
                                                 <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
                                                     Simpan
@@ -608,29 +630,29 @@
 
                     <!-- Contact Info -->
                     <div class="bg-white rounded-2xl border border-gray-100 p-5">
-                        <h3 class="text-sm font-bold mb-3" style="color: var(--dark-gray)">Informasi Kontak</h3>
+                        <h3 class="text-xs sm:text-sm font-bold mb-3" style="color: var(--dark-gray)">Informasi Kontak</h3>
                         <div class="space-y-3">
-                            <div class="flex items-center gap-3 text-sm text-gray-600">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: var(--light-sage)">
-                                    <svg class="w-4 h-4" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            <div class="flex items-center gap-3 text-xs sm:text-sm text-gray-600">
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: var(--light-sage)">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                 </div>
                                 {{ $vendor->phone }}
                             </div>
-                            <div class="flex items-center gap-3 text-sm text-gray-600">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: var(--light-sage)">
-                                    <svg class="w-4 h-4" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <div class="flex items-center gap-3 text-xs sm:text-sm text-gray-600">
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: var(--light-sage)">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                 </div>
-                                {{ $vendor->email }}
+                                <span class="break-all">{{ $vendor->email }}</span>
                             </div>
-                            <div class="flex items-center gap-3 text-sm text-gray-600">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: var(--light-sage)">
-                                    <svg class="w-4 h-4" style="color: var(--dark-gray)" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            <div class="flex items-center gap-3 text-xs sm:text-sm text-gray-600">
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: var(--light-sage)">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" style="color: var(--dark-gray)" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                                 </div>
-                                {{ $vendor->instagram }}
+                                <span class="break-all">{{ $vendor->instagram }}</span>
                             </div>
-                            <div class="flex items-start gap-3 text-sm text-gray-600">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background-color: var(--light-sage)">
-                                    <svg class="w-4 h-4" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <div class="flex items-start gap-3 text-xs sm:text-sm text-gray-600">
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background-color: var(--light-sage)">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </div>
                                 {{ $vendor->location }}
                             </div>
