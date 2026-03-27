@@ -11,10 +11,9 @@ use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'avatar_url', 'theme_color', 'email_verified_at'])]
+#[Fillable(['name', 'email', 'password', 'avatar_url', 'theme_color', 'email_verified_at', 'whatsapp'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
@@ -55,7 +54,12 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
             return $this->avatar_url;
         }
 
-        return Storage::disk('public')->url($this->avatar_url);
+        return asset('storage/' . ltrim($this->avatar_url, '/'));
+    }
+
+    protected function setWhatsappAttribute($value): void
+    {
+        $this->attributes['whatsapp'] = VendorBooking::normalizeWhatsappNumber($value);
     }
 
     public function vendorReviews()

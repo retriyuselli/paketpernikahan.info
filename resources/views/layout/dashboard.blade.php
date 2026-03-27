@@ -135,12 +135,18 @@
                 @endif
             </a>
 
-            {{-- <a href="{{ route('vendor') }}" class="sidebar-link">
+            @if($user->hasRole(['super_admin', 'admin']))
+            <a href="{{ route('dashboard.booking.user') }}" class="sidebar-link {{ request()->routeIs('dashboard.booking.user') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
-                Jelajahi Vendor
-            </a> --}}
+                Booking User
+                @if(($bookingUserCount ?? 0) > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
+                      style="background: var(--light-sage); color: var(--dark-gray)">{{ $bookingUserCount }}</span>
+                @endif
+            </a>
+            @endif
 
             <a href="{{ route('dashboard.ulasan') }}" class="sidebar-link {{ request()->routeIs('dashboard.ulasan') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -196,7 +202,7 @@
             <p class="text-sm font-semibold" style="color: var(--dark-gray)">@yield('page-title', 'Dashboard')</p>
         </header>
 
-        <main class="flex-1 px-6 py-8 w-full max-w-3xl mx-auto">
+        <main class="flex-1 px-6 py-8 w-full max-w-6xl mx-auto">
             @yield('content')
         </main>
     </div>

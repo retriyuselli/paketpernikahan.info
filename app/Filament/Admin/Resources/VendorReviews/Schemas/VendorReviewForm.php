@@ -50,6 +50,14 @@ class VendorReviewForm
                             ->rows(3)
                             ->columnSpanFull(),
                     ]),
+                Section::make('Balasan Admin')
+                    ->schema([
+                        Textarea::make('admin_reply')
+                            ->label('Balasan')
+                            ->rows(4)
+                            ->maxLength(2000)
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 }

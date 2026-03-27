@@ -95,6 +95,36 @@
             </button>
         </form>
 
+        {{-- Nomor WhatsApp --}}
+        <form method="POST" action="{{ route('dashboard.whatsapp.update') }}"
+              class="bg-white rounded-2xl border border-gray-100 p-5">
+            @csrf
+            <p class="text-xs font-bold mb-4" style="color: var(--dark-gray)">Nomor WhatsApp</p>
+
+            <div class="mb-4">
+                <label class="text-[10px] uppercase tracking-widest text-gray-400 block mb-1">WhatsApp</label>
+                @php
+                    $waDisplay = $user->whatsapp ? preg_replace('/^62/', '0', $user->whatsapp) : '';
+                @endphp
+                <input type="tel" inputmode="numeric" autocomplete="tel" name="whatsapp"
+                       value="{{ old('whatsapp', $waDisplay) }}"
+                       maxlength="30"
+                       placeholder="Contoh: 08xxxxxxxxxx"
+                       class="w-full border rounded-xl px-3.5 py-2.5 text-sm focus:outline-none transition
+                              {{ $errors->has('whatsapp') ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-gray-400' }}">
+                @error('whatsapp')
+                <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+                <p class="text-[10px] text-gray-400 mt-1.5">Nomor ini akan dipakai untuk autofill saat booking.</p>
+            </div>
+
+            <button type="submit"
+                    class="w-full py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90"
+                    style="background: var(--sage-green); color: #fff">
+                Simpan WhatsApp
+            </button>
+        </form>
+
         {{-- Ganti Password --}}
         <form method="POST" action="{{ route('dashboard.password.update') }}"
               class="bg-white rounded-2xl border border-gray-100 p-5">

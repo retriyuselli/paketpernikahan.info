@@ -23,6 +23,30 @@ class VendorBooking extends Model
         'event_date' => 'date',
     ];
 
+    protected function setPhoneAttribute($value): void
+    {
+        $this->attributes['phone'] = self::normalizeWhatsappNumber($value);
+    }
+
+    public static function normalizeWhatsappNumber($value): string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $value);
+
+        if (str_starts_with($digits, '0')) {
+            $digits = '62' . substr($digits, 1);
+        }
+
+        if (str_starts_with($digits, '8')) {
+            $digits = '62' . $digits;
+        }
+
+        if (str_starts_with($digits, '620')) {
+            $digits = '62' . substr($digits, 3);
+        }
+
+        return $digits;
+    }
+
     public function vendor()
     {
         return $this->belongsTo(Vendor::class);
@@ -38,4 +62,3 @@ class VendorBooking extends Model
         return $this->belongsTo(VendorPackage::class);
     }
 }
-

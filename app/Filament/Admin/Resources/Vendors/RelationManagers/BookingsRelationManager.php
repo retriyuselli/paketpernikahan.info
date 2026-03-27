@@ -58,7 +58,10 @@ class BookingsRelationManager extends RelationManager
                             ->label('Status')
                             ->options([
                                 'pending' => 'Pending',
+                                'contacted' => 'Contacted',
                                 'confirmed' => 'Confirmed',
+                                'done' => 'Done',
+                                'no_response' => 'No Response',
                                 'cancelled' => 'Cancelled',
                             ])
                             ->required(),
@@ -98,7 +101,10 @@ class BookingsRelationManager extends RelationManager
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'confirmed' => 'success',
+                        'done' => 'success',
                         'cancelled' => 'danger',
+                        'no_response' => 'gray',
+                        'contacted' => 'info',
                         default => 'warning',
                     })
                     ->sortable(),
@@ -123,4 +129,3 @@ class BookingsRelationManager extends RelationManager
             ]);
     }
 }
-

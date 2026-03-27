@@ -4,12 +4,21 @@
     <!-- Collapsible: Announcement Banner + Top Contact Bar -->
     <div id="collapsible-bar" class="overflow-hidden transition-all duration-300" style="max-height: 200px;">
         <!-- Top Announcement Banner -->
-        <div class="text-white text-center py-2 px-4 text-sm font-medium" style="background: linear-gradient(to right, var(--sage-green), var(--light-sage))">
-            Coming soon, Sumatera Selatan Wedding Expo 2026 Season 1
+        <div id="announcement-banner" class="text-white py-2 px-4 text-sm font-medium" style="background: linear-gradient(to right, var(--sage-green), var(--light-sage))">
+            <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+                <div class="text-center flex-1">
+                    Coming soon, Sumatera Selatan Wedding Expo 2026 Season 1
+                </div>
+                <button type="button" onclick="dismissAnnouncement()" class="p-1 rounded-lg hover:bg-white/10 transition" aria-label="Tutup pengumuman">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
         </div>
         <!-- Top Contact Bar -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between py-3 text-xs border-b border-gray-100">
+        <div class="hidden md:flex items-center justify-between py-3 text-xs border-b border-gray-100">
             <div class="flex items-center gap-6 text-gray-600">
                 <span>office@makruwedding.id</span>
                 <span>+62 812-7893-2624</span>
@@ -42,12 +51,12 @@
 
     <!-- Main Header (always sticky) -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-3 items-center py-3">
+        <div class="flex items-center justify-between py-3 lg:grid lg:grid-cols-3 lg:items-center">
 
             <!-- Logo (left) -->
-            <div class="flex items-center gap-2 flex-shrink-0">
+            <div class="flex items-center gap-2 flex-shrink-0 h-10">
                 <a href="/" class="flex items-center gap-2">
-                    <span class="text-3xl font-extrabold tracking-tight">
+                    <span class="text-2xl lg:text-3xl font-extrabold tracking-tight leading-none">
                         <span style="color:var(--sage-green)">M</span><span style="color:var(--dark-gray)">W</span>
                     </span>
                 </a>
@@ -55,36 +64,69 @@
 
             <!-- Main Navigation (center) -->
             <nav class="hidden lg:flex items-center justify-center gap-6 whitespace-nowrap">
-                <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Home</a>
+                <a href="{{ route('home') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Home</a>
                 <div class="relative group">
-                    <button class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">
+                    <button type="button" onclick="toggleHeaderDropdown('wedding')"
+                            class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase"
+                            aria-expanded="false" aria-controls="dropdown-wedding">
                         Wedding Package
                         <svg class="w-3 h-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
+                    <div id="dropdown-wedding" class="hidden absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                        <a href="{{ route('vendor') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-50 transition">
+                            Semua Vendor
+                        </a>
+                        <a href="{{ route('vendor') }}?q=paket" class="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-50 transition">
+                            Cari Paket
+                        </a>
+                    </div>
                 </div>
                 <a href="{{ route('vendor') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Vendor</a>
                 <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Promo</a>
                 <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Blog Makna</a>
                 <div class="relative group">
-                    <button class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">
+                    <button type="button" onclick="toggleHeaderDropdown('lain')"
+                            class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase"
+                            aria-expanded="false" aria-controls="dropdown-lain">
                         Lain lain
                         <svg class="w-3 h-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
+                    <div id="dropdown-lain" class="hidden absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
+                        <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-50 transition">
+                            Tentang Makna
+                        </a>
+                        <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-50 transition">
+                            Kontak
+                        </a>
+                    </div>
                 </div>
             </nav>
 
             <!-- Right Actions -->
-            <div class="flex items-center justify-end gap-2">
+            <div class="flex items-center justify-end gap-2" id="header-actions">
                 <!-- Search Icon -->
-                <button class="p-2 text-gray-600 hover:text-accent transition rounded-full hover:bg-gray-100">
+                <div class="relative" id="header-search-wrapper">
+                    <button type="button" onclick="toggleHeaderSearch()"
+                            class="p-2 text-gray-600 hover:text-accent transition rounded-full hover:bg-gray-100"
+                            aria-label="Cari" aria-expanded="false" aria-controls="header-search-panel">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                </button>
+                    </button>
+                    <div id="header-search-panel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 p-3 z-50">
+                        <form method="GET" action="{{ route('vendor') }}" class="flex items-center gap-2">
+                            <input type="text" name="q" placeholder="Cari vendor atau paket..."
+                                   class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition">
+                            <button type="submit" class="px-4 py-2 rounded-xl text-sm font-bold transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                                Cari
+                            </button>
+                        </form>
+                    </div>
+                </div>
 
                 <!-- Theme Toggle (iPhone style) -->
                 <button id="theme-toggle" onclick="toggleTheme()"
@@ -169,6 +211,14 @@
                         @endauth
                     </div>
                 </div>
+
+                <button type="button" onclick="openMobileMenu()"
+                        class="lg:hidden p-2 text-gray-600 hover:text-accent transition rounded-full hover:bg-gray-100"
+                        aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
             </div>
 
         </div>
@@ -209,6 +259,141 @@
         </div> --}}
 
 </div><!-- end sticky wrapper -->
+
+<div id="mobile-menu" class="hidden fixed inset-0 z-50 lg:hidden" onclick="if(event.target===this) closeMobileMenu()">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+    <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl flex flex-col">
+        <div class="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="text-lg font-extrabold tracking-tight">
+                    <span style="color:var(--sage-green)">M</span><span style="color:var(--dark-gray)">W</span>
+                </span>
+                <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background: var(--light-sage); color: var(--dark-gray)">Menu</span>
+            </div>
+            <button type="button" onclick="closeMobileMenu()" class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Tutup menu">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-4 border-b border-gray-100">
+            <form method="GET" action="{{ route('vendor') }}" class="flex items-center gap-2">
+                <input type="text" name="q" placeholder="Cari vendor atau paket..."
+                       class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition">
+                <button type="submit" class="px-4 py-2 rounded-xl text-sm font-bold transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                    Cari
+                </button>
+            </form>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto p-2">
+            <a href="{{ route('home') }}" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 9.75L12 4l9 5.75V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.75z"/>
+                </svg>
+                Home
+            </a>
+
+            <details class="rounded-xl hover:bg-gray-50 transition">
+                <summary class="list-none flex items-center gap-3 px-3 py-3 text-sm font-semibold text-gray-700 cursor-pointer">
+                    <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/>
+                    </svg>
+                    Wedding Package
+                    <svg class="ml-auto w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </summary>
+                <div class="px-3 pb-3 space-y-1">
+                    <a href="{{ route('vendor') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
+                        Semua Vendor
+                    </a>
+                    <a href="{{ route('vendor') }}?q=paket" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
+                        Cari Paket
+                    </a>
+                </div>
+            </details>
+
+            <a href="{{ route('vendor') }}" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                Vendor
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
+                </svg>
+                Promo
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 013 3L8 18l-4 1 1-4 11.5-11.5z"/>
+                </svg>
+                Blog Makna
+            </a>
+
+            <details class="rounded-xl hover:bg-gray-50 transition">
+                <summary class="list-none flex items-center gap-3 px-3 py-3 text-sm font-semibold text-gray-700 cursor-pointer">
+                    <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                    </svg>
+                    Lain lain
+                    <svg class="ml-auto w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </summary>
+                <div class="px-3 pb-3 space-y-1">
+                    <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
+                        Tentang Makna
+                    </a>
+                    <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
+                        Kontak
+                    </a>
+                </div>
+            </details>
+
+            <div class="my-2 border-t border-gray-100"></div>
+
+            @auth
+                <a href="{{ url('/dashboard') }}" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                    <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                    Dashboard
+                </a>
+                @if(auth()->user()->hasRole(['super_admin', 'admin']))
+                    <a href="/admin" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                        <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        Panel Admin
+                    </a>
+                @endif
+            @else
+                <button type="button" onclick="closeMobileMenu(); openLoginModal();" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                    <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    Login / Daftar
+                </button>
+            @endauth
+        </nav>
+
+        <div class="p-4 border-t border-gray-100 text-xs text-gray-600">
+            <div class="flex items-center justify-between">
+                <span>office@makruwedding.id</span>
+                <span>+62 812-7893-2624</span>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Login Modal -->
 @guest
@@ -305,8 +490,18 @@
 (function () {
     var bar = document.getElementById('collapsible-bar');
     var lastScrollY = window.scrollY;
+    var banner = document.getElementById('announcement-banner');
+    var isAnnouncementDismissed = localStorage.getItem('announcement_dismissed') === '1';
+
+    if (isAnnouncementDismissed) {
+        if (banner) banner.style.display = 'none';
+    }
 
     window.addEventListener('scroll', function () {
+        if (localStorage.getItem('announcement_dismissed') === '1') {
+            bar.style.maxHeight = '0';
+            return;
+        }
         var currentScrollY = window.scrollY;
         if (currentScrollY > lastScrollY && currentScrollY > 60) {
             bar.style.maxHeight = '0';
@@ -316,6 +511,14 @@
         lastScrollY = currentScrollY;
     }, { passive: true });
 })();
+
+function dismissAnnouncement() {
+    localStorage.setItem('announcement_dismissed', '1');
+    var banner = document.getElementById('announcement-banner');
+    if (banner) banner.style.display = 'none';
+    var bar = document.getElementById('collapsible-bar');
+    if (bar) bar.style.maxHeight = '0';
+}
 
 function openLoginModal() {
     var modal = document.getElementById('login-modal');
@@ -339,12 +542,58 @@ function toggleMainDropdown() {
     document.getElementById('main-profile-dropdown').classList.toggle('hidden');
 }
 
+function toggleHeaderDropdown(key) {
+    var wedding = document.getElementById('dropdown-wedding');
+    var lain = document.getElementById('dropdown-lain');
+    var target = document.getElementById('dropdown-' + key);
+
+    if (wedding && wedding !== target) wedding.classList.add('hidden');
+    if (lain && lain !== target) lain.classList.add('hidden');
+    if (target) target.classList.toggle('hidden');
+}
+
+function toggleHeaderSearch() {
+    var panel = document.getElementById('header-search-panel');
+    var wedding = document.getElementById('dropdown-wedding');
+    var lain = document.getElementById('dropdown-lain');
+    if (wedding) wedding.classList.add('hidden');
+    if (lain) lain.classList.add('hidden');
+    if (panel) panel.classList.toggle('hidden');
+    if (panel && !panel.classList.contains('hidden')) {
+        var input = panel.querySelector('input[name="q"]');
+        if (input) input.focus();
+    }
+}
+
+function openMobileMenu() {
+    var menu = document.getElementById('mobile-menu');
+    if (!menu) return;
+    menu.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeMobileMenu() {
+    var menu = document.getElementById('mobile-menu');
+    if (!menu) return;
+    menu.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+
 document.addEventListener('click', function (e) {
     var wrapper = document.getElementById('main-profile-wrapper');
     if (wrapper && !wrapper.contains(e.target)) {
         var d = document.getElementById('main-profile-dropdown');
         if (d) d.classList.add('hidden');
     }
+    var sw = document.getElementById('header-search-wrapper');
+    if (sw && !sw.contains(e.target)) {
+        var sp = document.getElementById('header-search-panel');
+        if (sp) sp.classList.add('hidden');
+    }
+    var dw = document.getElementById('dropdown-wedding');
+    var dl = document.getElementById('dropdown-lain');
+    if (dw && !dw.parentElement.contains(e.target)) dw.classList.add('hidden');
+    if (dl && !dl.parentElement.contains(e.target)) dl.classList.add('hidden');
 });
 
 (function () {
@@ -371,4 +620,16 @@ function toggleTheme() {
     localStorage.setItem('theme', isDark ? 'light' : 'dark');
     applyTheme(!isDark);
 }
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeMobileMenu();
+        var sp = document.getElementById('header-search-panel');
+        if (sp) sp.classList.add('hidden');
+        var dw = document.getElementById('dropdown-wedding');
+        var dl = document.getElementById('dropdown-lain');
+        if (dw) dw.classList.add('hidden');
+        if (dl) dl.classList.add('hidden');
+    }
+});
 </script>

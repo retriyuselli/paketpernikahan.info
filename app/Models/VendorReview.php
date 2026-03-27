@@ -11,11 +11,13 @@ class VendorReview extends Model
 
     protected $fillable = [
         'vendor_id', 'user_id', 'reviewer_name', 'reviewer_avatar',
-        'rating', 'body', 'reviewed_at', 'is_approved', 'reviewer_ip',
+        'rating', 'body', 'admin_reply', 'admin_reply_by', 'admin_replied_at',
+        'reviewed_at', 'is_approved', 'reviewer_ip',
     ];
 
     protected $casts = [
         'rating'      => 'integer',
+        'admin_replied_at' => 'datetime',
         'reviewed_at' => 'date',
         'is_approved' => 'boolean',
     ];
@@ -28,5 +30,10 @@ class VendorReview extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function adminReplyBy()
+    {
+        return $this->belongsTo(User::class, 'admin_reply_by');
     }
 }

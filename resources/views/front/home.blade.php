@@ -1,6 +1,6 @@
 @extends('layout.app')
 
-@section('title', 'Makna Wedding - Wedding Organizer & Paket Pernikahan')
+@section('title', 'PT. Makna kreatif Indonesia - Wedding Organizer & Paket Pernikahan')
 
 @section('body-class', 'bg-cream text-dark')
 
@@ -95,18 +95,18 @@
     <!-- Advertising Banner -->
     <div class="px-4 sm:px-6 lg:px-8 py-4" style="background-color: var(--cream)">
         <div class="max-w-7xl mx-auto">
-            <a href="#" class="block relative rounded-2xl overflow-hidden group" style="aspect-ratio: 970/90;">
+            <a href="#" class="block relative rounded-2xl overflow-hidden group aspect-[16/7] sm:aspect-[970/90]">
                 <img src="https://picsum.photos/seed/adsbanner/1200/120"
                      alt="Banner Iklan"
                      class="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90">
-                <div class="absolute inset-0 flex items-center justify-between px-8" style="background: linear-gradient(to right, rgba(249,213,229,0.75), rgba(156,175,136,0.75));">
+                <div class="absolute inset-0 flex flex-col justify-between p-4 sm:flex-row sm:items-center sm:justify-between sm:px-8" style="background: linear-gradient(to right, rgba(249,213,229,0.75), rgba(156,175,136,0.75));">
                     <div>
                         <p class="text-xs font-bold uppercase tracking-widest mb-0.5" style="color: var(--dark-gray)">Sponsor</p>
-                        <p class="text-base font-bold leading-snug" style="color: var(--dark-gray)">Nama Brand Sponsor — Tagline Promosi di Sini</p>
+                        <p class="text-sm sm:text-base font-bold leading-snug" style="color: var(--dark-gray)">Nama Brand Sponsor — Tagline Promosi di Sini</p>
                     </div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full flex-shrink-0" style="background-color: var(--dark-gray); color: var(--cream)">Pelajari →</span>
+                    <span class="mt-3 sm:mt-0 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full flex-shrink-0 w-fit" style="background-color: var(--dark-gray); color: var(--cream)">Pelajari →</span>
                 </div>
-                <span class="absolute top-1.5 right-2 text-[9px] font-semibold uppercase tracking-widest opacity-50" style="color: var(--dark-gray)">Iklan</span>
+                <span class="absolute top-2 right-2 text-[9px] font-semibold uppercase tracking-widest opacity-60" style="color: var(--dark-gray)">Iklan</span>
             </a>
         </div>
     </div>
@@ -116,45 +116,45 @@
             <div class="relative flex">
                 <div class="flex gap-4 animate-marquee whitespace-nowrap">
                     <!-- Set 1 -->
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">📸</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Fotografer</p><p class="text-xs text-gray-500">Abadikan Momen</p></div>
+                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
+                        <span class="text-xl sm:text-2xl">📸</span>
+                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Fotografer</p><p class="text-[10px] sm:text-xs text-gray-500">Abadikan Momen</p></div>
                     </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🎂</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Wedding Cake</p><p class="text-xs text-gray-500">Catering & Kue</p></div>
+                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
+                        <span class="text-xl sm:text-2xl">🎂</span>
+                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Wedding Cake</p><p class="text-[10px] sm:text-xs text-gray-500">Catering & Kue</p></div>
                     </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">💐</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Dekorasi Bunga</p><p class="text-xs text-gray-500">Floral Arrangement</p></div>
+                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
+                        <span class="text-xl sm:text-2xl">💐</span>
+                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Dekorasi Bunga</p><p class="text-[10px] sm:text-xs text-gray-500">Floral Arrangement</p></div>
                     </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🎵</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Live Music</p><p class="text-xs text-gray-500">Hiburan Pernikahan</p></div>
+                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
+                        <span class="text-xl sm:text-2xl">🎵</span>
+                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Live Music</p><p class="text-[10px] sm:text-xs text-gray-500">Hiburan Pernikahan</p></div>
                     </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">💄</span>
-                        <div><p class="font-bold text-gray-900 text-sm">MUA</p><p class="text-xs text-gray-500">Make Up Artist</p></div>
+                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
+                        <span class="text-xl sm:text-2xl">💄</span>
+                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">MUA</p><p class="text-[10px] sm:text-xs text-gray-500">Make Up Artist</p></div>
                     </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🏨</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Hotel</p><p class="text-xs text-gray-500">Venue Mewah</p></div>
+                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
+                        <span class="text-xl sm:text-2xl">🏨</span>
+                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Hotel</p><p class="text-[10px] sm:text-xs text-gray-500">Venue Mewah</p></div>
                     </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🎬</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Videografer</p><p class="text-xs text-gray-500">Cinematic Wedding</p></div>
+                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
+                        <span class="text-xl sm:text-2xl">🎬</span>
+                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Videografer</p><p class="text-[10px] sm:text-xs text-gray-500">Cinematic Wedding</p></div>
                     </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">💍</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Cincin Nikah</p><p class="text-xs text-gray-500">Jewelry Partner</p></div>
+                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
+                        <span class="text-xl sm:text-2xl">💍</span>
+                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Cincin Nikah</p><p class="text-[10px] sm:text-xs text-gray-500">Jewelry Partner</p></div>
                     </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🍽️</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Catering</p><p class="text-xs text-gray-500">Sajian Terbaik</p></div>
+                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
+                        <span class="text-xl sm:text-2xl">🍽️</span>
+                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Catering</p><p class="text-[10px] sm:text-xs text-gray-500">Sajian Terbaik</p></div>
                     </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🚗</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Wedding Car</p><p class="text-xs text-gray-500">Transportasi Pengantin</p></div>
+                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
+                        <span class="text-xl sm:text-2xl">🚗</span>
+                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Wedding Car</p><p class="text-[10px] sm:text-xs text-gray-500">Transportasi Pengantin</p></div>
                     </div>
                     <!-- Set 2 (duplikat untuk seamless loop) -->
                     <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">

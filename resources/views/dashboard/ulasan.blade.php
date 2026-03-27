@@ -48,6 +48,17 @@
                     <span class="text-[10px] text-gray-400 ml-1">{{ $rev->reviewed_at->translatedFormat('d M Y') }}</span>
                 </div>
                 <p class="text-xs text-gray-500">{{ $rev->body }}</p>
+                @if(filled($rev->admin_reply))
+                    <div class="mt-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Balasan Admin</p>
+                            @if($rev->admin_replied_at)
+                                <p class="text-[10px] text-gray-400">{{ $rev->admin_replied_at->translatedFormat('d M Y') }}</p>
+                            @endif
+                        </div>
+                        <p class="text-xs text-gray-600">{{ $rev->admin_reply }}</p>
+                    </div>
+                @endif
             </div>
             @if($rev->vendor)
             <a href="{{ route('vendor.detail', $rev->vendor->slug) }}"
@@ -60,6 +71,113 @@
         </div>
         @endforeach
     </div>
+    @endif
+
+    @if($user->hasRole(['super_admin', 'admin']))
+        <div class="mt-10">
+            <div class="mb-4 flex items-start justify-between gap-3">
+                <div>
+                <h2 class="text-lg font-bold" style="color: var(--dark-gray)">Ulasan User</h2>
+                <p class="text-sm text-gray-500">Ulasan terbaru dari semua user (maks. 200).</p>
+                </div>
+                <div class="inline-flex rounded-xl overflow-hidden border border-gray-100 bg-white flex-shrink-0">
+                    <a href="{{ request()->fullUrlWithQuery(['review_filter' => null]) }}"
+                       class="text-xs font-bold px-3 py-2 transition {{ ($reviewFilter ?? null) === 'pending' ? 'bg-white text-gray-500' : 'bg-gray-50 text-gray-700' }}">
+                        Semua
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['review_filter' => 'pending']) }}"
+                       class="text-xs font-bold px-3 py-2 transition border-l border-gray-100 {{ ($reviewFilter ?? null) === 'pending' ? 'bg-gray-50 text-gray-700' : 'bg-white text-gray-500' }}">
+                        Menunggu
+                        @if(($pendingReviewCount ?? 0) > 0)
+                            <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold"
+                                  style="background: var(--light-sage); color: var(--dark-gray)">{{ $pendingReviewCount }}</span>
+                        @endif
+                    </a>
+                </div>
+            </div>
+
+            @if(($allReviews ?? collect())->isEmpty())
+                <div class="bg-white rounded-2xl border border-gray-100 p-8 text-sm text-gray-500">
+                    Belum ada ulasan.
+                </div>
+            @else
+                <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm">
+                            <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="text-left px-4 py-3 font-semibold">No</th>
+                                    <th class="text-left px-4 py-3 font-semibold">User</th>
+                                    <th class="text-left px-4 py-3 font-semibold">Vendor</th>
+                                    <th class="text-left px-4 py-3 font-semibold">Rating</th>
+                                    <th class="text-left px-4 py-3 font-semibold">Status</th>
+                                    <th class="text-left px-4 py-3 font-semibold">Dibalas</th>
+                                    <th class="text-left px-4 py-3 font-semibold">Tanggal</th>
+                                    <th class="text-left px-4 py-3 font-semibold"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach($allReviews as $i => $rev)
+                                    @php
+                                        $approveClass = $rev->is_approved ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700';
+                                        $approveLabel = $rev->is_approved ? 'Disetujui' : 'Menunggu';
+                                        $replyClass = filled($rev->admin_reply) ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700';
+                                        $replyLabel = filled($rev->admin_reply) ? 'Ya' : 'Belum';
+                                    @endphp
+                                    <tr class="hover:bg-gray-50/60 transition">
+                                        <td class="px-4 py-3 text-xs text-gray-500 align-top">{{ $i + 1 }}</td>
+                                        <td class="px-4 py-3 align-top">
+                                            <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $rev->user?->name ?? $rev->reviewer_name }}</div>
+                                            <div class="text-[10px] mt-1 text-gray-400">{{ $rev->user?->email ?? '' }}</div>
+                                        </td>
+                                        <td class="px-4 py-3 align-top">
+                                            <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $rev->vendor?->name ?? '—' }}</div>
+                                        </td>
+                                        <td class="px-4 py-3 align-top">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-yellow-50 text-yellow-700">
+                                                {{ $rev->rating }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 align-top">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs {{ $approveClass }}">
+                                                {{ $approveLabel }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 align-top">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs {{ $replyClass }}">
+                                                {{ $replyLabel }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 align-top text-xs text-gray-600">
+                                            {{ $rev->reviewed_at?->translatedFormat('d M Y') }}
+                                        </td>
+                                        <td class="px-4 py-3 align-top">
+                                            @if($rev->vendor)
+                                                <a href="{{ route('vendor.detail', $rev->vendor->slug) }}" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                                    Lihat
+                                                </a>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr class="bg-gray-50/40">
+                                        <td colspan="8" class="px-4 pb-3 pt-2 text-xs text-gray-500">
+                                            <span class="font-semibold text-gray-600">Ulasan:</span> {{ $rev->body }}
+                                        </td>
+                                    </tr>
+                                    @if(filled($rev->admin_reply))
+                                        <tr class="bg-gray-50/40">
+                                            <td colspan="8" class="px-4 pb-3 pt-0 text-xs text-gray-500">
+                                                <span class="font-semibold text-gray-600">Balasan Admin:</span> {{ $rev->admin_reply }}
+                                            </td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+        </div>
     @endif
 
 @endsection

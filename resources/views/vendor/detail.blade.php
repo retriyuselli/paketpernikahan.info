@@ -203,7 +203,7 @@
                 </div>
 
                 <!-- Packages -->
-                <div>
+                <div id="packages">
                     <h2 class="text-base font-bold mb-4" style="color: var(--dark-gray)">Paket & Harga</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         @foreach ($vendor->packages as $pkg)
@@ -335,6 +335,18 @@
 
                     {{-- Review Cards --}}
                     <div class="space-y-4">
+                        @if (session('reply_success'))
+                            <div class="bg-green-50 text-green-700 border border-green-100 rounded-2xl p-3 text-xs font-semibold">
+                                {{ session('reply_success') }}
+                            </div>
+                            <script>
+                                document.addEventListener('DOMContentLoaded', () => {
+                                    document.querySelectorAll('textarea[name="admin_reply"]').forEach(el => {
+                                        el.value = '';
+                                    });
+                                });
+                            </script>
+                        @endif
                         @foreach ($reviewList as $revIdx => $rev)
                         <div class="bg-white rounded-2xl p-4 border border-gray-100 review-card {{ $revIdx >= 3 ? 'hidden' : '' }}">
                             <div class="flex items-center gap-3 mb-2">
@@ -352,6 +364,45 @@
                                 </div>
                             </div>
                             <p class="text-sm text-gray-600 leading-relaxed">{{ $rev->body }}</p>
+                            @if(filled($rev->admin_reply))
+                                <div class="mt-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                                    <div class="flex items-center justify-between gap-2 mb-1">
+                                        <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold">Balasan Admin</p>
+                                        @if($rev->admin_replied_at)
+                                            <p class="text-[10px] text-gray-400">{{ $rev->admin_replied_at->translatedFormat('d M Y') }}</p>
+                                        @endif
+                                    </div>
+                                    <p class="text-xs text-gray-600 leading-relaxed">{{ $rev->admin_reply }}</p>
+                                </div>
+                            @endif
+
+                            @auth
+                                @if(auth()->user()->hasRole(['super_admin', 'admin']))
+                                    <div class="mt-3 p-3 rounded-xl border border-gray-100 bg-white">
+                                        <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-2">Reply Admin</p>
+                                        <form method="POST" action="{{ route('vendor.review.reply', $rev) }}" class="space-y-2">
+                                            @csrf
+                                            <textarea name="admin_reply" rows="3" maxlength="2000"
+                                                      class="w-full border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-gray-400 transition resize-none"
+                                                      placeholder="Tulis balasan admin...">{{ $rev->admin_reply }}</textarea>
+                                            <div class="flex items-center justify-end gap-2">
+                                                <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                                                    Simpan
+                                                </button>
+                                            </div>
+                                        </form>
+                                        @if(filled($rev->admin_reply))
+                                            <form method="POST" action="{{ route('vendor.review.reply', $rev) }}" class="mt-2 flex justify-end">
+                                                @csrf
+                                                <input type="hidden" name="admin_reply" value="">
+                                                <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                @endif
+                            @endauth
                         </div>
                         @endforeach
                     </div>
@@ -469,6 +520,46 @@
                             </div>
                         @endif
 
+                        @auth
+                            @if(isset($myBooking) && $myBooking)
+                                @php
+                                    $myBookingBadge = match($myBooking->status) {
+                                        'confirmed', 'done' => 'bg-green-50 text-green-700',
+                                        'cancelled' => 'bg-red-50 text-red-700',
+                                        'no_response' => 'bg-gray-100 text-gray-700',
+                                        'contacted' => 'bg-blue-50 text-blue-700',
+                                        default => 'bg-yellow-50 text-yellow-700',
+                                    };
+                                    $myBookingLabel = match($myBooking->status) {
+                                        'confirmed' => 'Confirmed',
+                                        'done' => 'Done',
+                                        'cancelled' => 'Cancelled',
+                                        'no_response' => 'No Response',
+                                        'contacted' => 'Contacted',
+                                        default => 'Pending',
+                                    };
+                                @endphp
+                                <div class="mb-3 px-3 py-2 rounded-xl border border-gray-100 bg-white">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="text-xs font-semibold text-gray-700">Status Booking Anda</div>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold {{ $myBookingBadge }}">
+                                            {{ $myBookingLabel }}
+                                        </span>
+                                    </div>
+                                    <div class="text-[10px] text-gray-400 mt-1">
+                                        {{ $myBooking->created_at?->format('d M Y, H:i') }}
+                                    </div>
+                                    @if($myBooking->status === 'pending')
+                                        <div class="text-[10px] text-gray-500 mt-1">
+                                            Booking sudah terkirim, menunggu diproses admin.
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                        @endauth
+
+                        <div id="booking-warning" class="hidden mb-3 text-xs font-semibold px-3 py-2 rounded-xl bg-yellow-50 text-yellow-700"></div>
+
                         @guest
                             <a href="{{ route('login') }}?redirect={{ urlencode(request()->fullUrl() . '#booking') }}"
                                class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 mb-4"
@@ -479,12 +570,28 @@
                         @endguest
 
                         @auth
-                            <button type="button" onclick="openBookingModal()"
-                                    class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 mb-4"
-                                    style="background-color: var(--sage-green); color: var(--cream)">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                Booking Sekarang
-                            </button>
+                            @if(isset($myBooking) && $myBooking && $myBooking->status === 'pending')
+                                <div class="flex gap-2 mb-4">
+                                    <a href="{{ route('dashboard.booking.edit', $myBooking) }}"
+                                       class="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition hover:opacity-90"
+                                       style="background-color: var(--sage-green); color: var(--cream)">
+                                        Edit Booking
+                                    </a>
+                                    <a href="{{ route('dashboard.booking') }}"
+                                       class="flex items-center justify-center px-4 py-3 rounded-xl text-sm font-bold border border-gray-200 hover:border-gray-300 transition"
+                                       style="color: var(--dark-gray)">
+                                        Riwayat
+                                    </a>
+                                </div>
+                            @else
+                                <button type="button" onclick="openBookingModal()"
+                                        class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 mb-4"
+                                        style="background-color: var(--sage-green); color: var(--cream)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    Booking Sekarang
+                                </button>
+                                <p class="text-[10px] text-gray-400 -mt-2 mb-4">Booking membutuhkan pemilihan paket.</p>
+                            @endif
                         @endauth
 
                         <div class="flex gap-2">
@@ -711,7 +818,12 @@
 
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 mb-1">Nomor WhatsApp</label>
-                        <input type="text" name="phone" value="{{ old('phone') }}"
+                        @php
+                            $prefillWa = auth()->check() && auth()->user()->whatsapp
+                                ? preg_replace('/^62/', '0', auth()->user()->whatsapp)
+                                : '';
+                        @endphp
+                        <input type="tel" inputmode="numeric" autocomplete="tel" name="phone" value="{{ old('phone', $prefillWa) }}"
                                placeholder="Contoh: 08xxxxxxxxxx"
                                class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition">
                     </div>
@@ -740,6 +852,12 @@
             if (typeof syncBookingPackage === 'function') {
                 syncBookingPackage();
             }
+            const pkgId = document.getElementById('booking-vendor-package-id')?.value ?? '';
+            if (!pkgId) {
+                showBookingWarning('Silakan pilih paket terlebih dahulu sebelum booking.');
+                document.getElementById('packages')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
             modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
@@ -749,6 +867,17 @@
             if (!modal) return;
             modal.classList.add('hidden');
             document.body.style.overflow = '';
+        }
+
+        function showBookingWarning(message) {
+            const el = document.getElementById('booking-warning');
+            if (!el) return;
+            el.textContent = message;
+            el.classList.remove('hidden');
+            window.clearTimeout(window.__bookingWarningTimer);
+            window.__bookingWarningTimer = window.setTimeout(() => {
+                el.classList.add('hidden');
+            }, 4500);
         }
 
         document.addEventListener('keydown', e => {

@@ -7,7 +7,7 @@
                 Jangan menunda <span style="color:var(--sage-green)">momen spesial</span> Anda
             </h1>
             <p class="text-sm text-gray-600 mb-6">
-                Makna Wedding membantu mewujudkan pernikahan impian Anda dengan paket lengkap dan terjangkau
+                Paket Pernikahan membantu mewujudkan pernikahan impian Anda dengan paket lengkap dan terjangkau
             </p>
 
             <!-- Category Pills -->

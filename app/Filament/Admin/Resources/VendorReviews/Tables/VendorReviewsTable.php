@@ -37,6 +37,9 @@ class VendorReviewsTable
                     ->label('Tanggal')
                     ->date('d M Y')
                     ->sortable(),
+                IconColumn::make('admin_reply')
+                    ->label('Dibalas')
+                    ->boolean(fn ($state) => filled($state)),
                 IconColumn::make('is_approved')
                     ->label('Disetujui')
                     ->boolean(),

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\VendorBooking;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -55,5 +56,26 @@ class ProfileController extends Controller
 
         return redirect()->route('dashboard', ['#setting'])
             ->with('setting_success', 'Foto profil berhasil diperbarui.');
+    }
+
+    public function updateWhatsapp(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'whatsapp' => ['nullable', 'string', 'max:30', 'regex:/^[0-9+()\s.-]{8,30}$/'],
+        ]);
+
+        $normalized = VendorBooking::normalizeWhatsappNumber($data['whatsapp'] ?? '');
+        if (filled($data['whatsapp']) && (strlen($normalized) < 10 || strlen($normalized) > 15 || !str_starts_with($normalized, '62'))) {
+            return back()
+                ->withErrors(['whatsapp' => 'Nomor WhatsApp tidak valid.'])
+                ->withInput();
+        }
+
+        $request->user()->update([
+            'whatsapp' => filled($data['whatsapp']) ? $normalized : null,
+        ]);
+
+        return redirect()->route('dashboard.pengaturan')
+            ->with('setting_success', 'Nomor WhatsApp berhasil diperbarui.');
     }
 }
