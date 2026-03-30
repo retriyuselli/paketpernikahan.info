@@ -13,10 +13,13 @@ class VendorBooking extends Model
         'vendor_id',
         'user_id',
         'vendor_package_id',
+        'agreed_total',
+        'dp_required_amount',
         'event_date',
         'phone',
         'notes',
         'status',
+        'payment_status',
     ];
 
     protected $casts = [
@@ -60,5 +63,10 @@ class VendorBooking extends Model
     public function vendorPackage()
     {
         return $this->belongsTo(VendorPackage::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(\App\Models\VendorBookingPayment::class);
     }
 }

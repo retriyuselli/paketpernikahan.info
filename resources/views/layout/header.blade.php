@@ -1,5 +1,13 @@
 <!-- Sticky Header Wrapper -->
 <div class="sticky top-0 z-40 bg-white border-b border-gray-200">
+    @php
+        $headerUser = auth()->user();
+        $headerIsPrivileged = $headerUser && $headerUser->hasRole(['super_admin', 'admin', 'vendor']);
+        $headerHasVendorApplication = $headerUser
+            ? \App\Models\VendorApplication::where('user_id', $headerUser->id)->whereIn('status', ['pending', 'approved'])->exists()
+            : false;
+        $headerShowJoinVendorForAuth = $headerUser && !$headerIsPrivileged && !$headerHasVendorApplication;
+    @endphp
 
     <!-- Collapsible: Announcement Banner + Top Contact Bar -->
     <div id="collapsible-bar" class="overflow-hidden transition-all duration-300" style="max-height: 200px;">
@@ -63,7 +71,7 @@
             </div>
 
             <!-- Main Navigation (center) -->
-            <nav class="hidden lg:flex items-center justify-center gap-6 whitespace-nowrap">
+            <nav class="hidden lg:flex items-center justify-center gap-6 whitespace-nowrap relative z-20">
                 <a href="{{ route('home') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Home</a>
                 <div class="relative group">
                     <button type="button" onclick="toggleHeaderDropdown('wedding')"
@@ -104,10 +112,21 @@
                         </a>
                     </div>
                 </div>
+                @auth
+                    @if($headerShowJoinVendorForAuth)
+                        <a href="{{ route('join.vendor') }}" class="text-xs font-bold tracking-wide px-4 py-2 rounded-full transition hover:opacity-90 uppercase" style="background: var(--sage-green); color: #fff">
+                            Join Vendor
+                        </a>
+                    @endif
+                @else
+                    <a href="{{ route('join.vendor.signup') }}" class="text-xs font-bold tracking-wide px-4 py-2 rounded-full transition hover:opacity-90 uppercase" style="background: var(--sage-green); color: #fff">
+                        Join Vendor
+                    </a>
+                @endauth
             </nav>
 
             <!-- Right Actions -->
-            <div class="flex items-center justify-end gap-2" id="header-actions">
+            <div class="flex items-center justify-end gap-2 relative z-10" id="header-actions">
                 <!-- Search Icon -->
                 <div class="relative" id="header-search-wrapper">
                     <button type="button" onclick="toggleHeaderSearch()"
@@ -321,6 +340,30 @@
                 </svg>
                 Vendor
             </a>
+
+            @auth
+                @if($headerShowJoinVendorForAuth)
+                    <a href="{{ route('join.vendor') }}" class="flex items-center justify-between gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                        <span class="flex items-center gap-3">
+                            <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4.5 4.5 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            Join Vendor
+                        </span>
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-full" style="background: var(--light-sage); color: var(--dark-gray)">Daftar</span>
+                    </a>
+                @endif
+            @else
+                <a href="{{ route('join.vendor.signup') }}" class="flex items-center justify-between gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                    <span class="flex items-center gap-3">
+                        <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4.5 4.5 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        Join Vendor
+                    </span>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-full" style="background: var(--light-sage); color: var(--dark-gray)">Daftar</span>
+                </a>
+            @endauth
 
             <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
                 <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

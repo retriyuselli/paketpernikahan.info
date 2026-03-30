@@ -335,7 +335,20 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-        @foreach ($categories as $cat)
+        @if(!isset($categories) || $categories->isEmpty())
+            <div class="bg-white rounded-2xl border border-gray-100 p-10 text-center flex flex-col items-center">
+                <div class="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
+                    </svg>
+                </div>
+                <h3 class="text-base font-bold mb-1" style="color: var(--dark-gray)">Belum ada vendor yang tersedia</h3>
+                <p class="text-sm text-gray-500 max-w-md">
+                    Saat ini belum ada vendor yang aktif dan profilnya lengkap untuk ditampilkan.
+                </p>
+            </div>
+        @else
+            @foreach ($categories as $cat)
         <div class="mb-12">
 
             <!-- Category Title -->
@@ -371,6 +384,7 @@
                         'pkg_price_raw'  => optional($v->cheapestPackage)->price_raw,
                         'pkg_discount'   => optional($v->cheapestPackage)->discount ?? 0,
                         'pkg_name'       => optional($v->cheapestPackage)->name,
+                        'price_start'    => is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : ($v->price_start ?: '—'),
                     ];
                     @endphp
                     <div onclick="openVendorPreview(this)" data-vendor='@json($vData)' class="flex-none w-56 cursor-pointer group border border-gray-200 rounded-2xl p-2 hover:border-gray-300 transition bg-white block">
@@ -425,7 +439,10 @@
                             @endif
                         </div>
                         @else
-                        <div class="mb-2"></div>
+                        <div class="flex items-center gap-1.5 mt-1 mb-2">
+                            <span class="text-[9px] text-gray-400">Mulai</span>
+                            <span class="text-[11px] font-semibold" style="color: var(--dark-gray)">{{ is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : ($v->price_start ?: '—') }}</span>
+                        </div>
                         @endif
 
                         <!-- Stats -->
@@ -475,7 +492,8 @@
             </div>
 
         </div>
-        @endforeach
+            @endforeach
+        @endif
 
     </div>
 
@@ -571,7 +589,7 @@
                 priceEl.textContent = v.pkg_price;
             }
         } else {
-            priceEl.textContent = '—';
+            priceEl.textContent = v.price_start || '—';
         }
 
         document.getElementById('vp-wa').href     = v.wa_url || '#';

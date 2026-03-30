@@ -166,10 +166,56 @@
                 Pengaturan Akun
             </a>
 
+            @if($user->hasRole(['super_admin', 'admin', 'vendor']))
+            <div class="pt-3">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 px-2 mb-2">Vendor</p>
+            </div>
+            @if($user->hasRole(['vendor']))
+                <a href="{{ route('dashboard.vendor.vendors') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.vendors') ? 'active' : '' }}">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
+                    </svg>
+                    Vendor Saya
+                </a>
+            @endif
+            <a href="{{ route('dashboard.vendor.bookings') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.bookings') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Booking Masuk
+            </a>
+            <a href="{{ route('dashboard.vendor.payments') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.payments') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
+                </svg>
+                Pembayaran Masuk
+            </a>
+            @endif
+
             @if($user->hasRole(['super_admin', 'admin']))
             <div class="pt-3">
                 <p class="text-[10px] uppercase tracking-widest text-gray-400 px-2 mb-2">Admin</p>
             </div>
+            <a href="{{ route('dashboard.admin.vendors') }}" class="sidebar-link {{ request()->routeIs('dashboard.admin.vendors') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
+                </svg>
+                All Vendor
+            </a>
+            <a href="{{ route('dashboard.vendor.applications') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.applications') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4.5 4.5 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                Pengajuan Vendor
+            </a>
+            <a href="{{ route('dashboard.payment.user') }}" class="sidebar-link {{ request()->routeIs('dashboard.payment.user') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
+                </svg>
+                Pembayaran User
+            </a>
             <a href="/admin" class="sidebar-link">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>
@@ -315,10 +361,48 @@
                         Pengaturan Akun
                     </a>
 
+            @if($user->hasRole(['super_admin', 'admin', 'vendor']))
+            <div class="pt-3">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 px-2 mb-2">Vendor</p>
+            </div>
+            <a href="{{ route('dashboard.vendor.vendors') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.vendors') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
+                </svg>
+                Vendor Saya
+            </a>
+            <a href="{{ route('dashboard.vendor.bookings') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.bookings') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Booking Masuk
+            </a>
+            <a href="{{ route('dashboard.vendor.payments') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.payments') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
+                </svg>
+                Pembayaran Masuk
+            </a>
+            @endif
+
                     @if($user->hasRole(['super_admin', 'admin']))
                     <div class="pt-3">
                         <p class="text-[10px] uppercase tracking-widest text-gray-400 px-2 mb-2">Admin</p>
                     </div>
+                    <a href="{{ route('dashboard.vendor.applications') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.applications') ? 'active' : '' }}">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4.5 4.5 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                        Pengajuan Vendor
+                    </a>
+                    <a href="{{ route('dashboard.payment.user') }}" class="sidebar-link {{ request()->routeIs('dashboard.payment.user') ? 'active' : '' }}">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
+                        </svg>
+                        Pembayaran User
+                    </a>
                     <a href="/admin" class="sidebar-link">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>

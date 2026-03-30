@@ -11,6 +11,7 @@ class Vendor extends Model
     use HasFactory;
 
     protected $fillable = [
+        'owner_user_id',
         'name', 
         'slug', 
         'type', 
@@ -35,14 +36,17 @@ class Vendor extends Model
         'badge', 
         'promo',
         'cover_image', 
+        'logo_vendor',
         'cover_video', 
         'is_active',
+        'is_profile_complete',
     ];
 
     protected $casts = [
         'badge'           => 'array',
         'promo'           => 'array',
         'is_active'       => 'boolean',
+        'is_profile_complete' => 'boolean',
         'rating'          => 'float',
         'discount'        => 'integer',
         'events_done'     => 'integer',
@@ -72,6 +76,11 @@ class Vendor extends Model
     public function packages()
     {
         return $this->hasMany(VendorPackage::class)->orderBy('sort_order');
+    }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'owner_user_id');
     }
 
     public function cheapestPackage()
@@ -127,5 +136,66 @@ class Vendor extends Model
         if (!$path) return null;
         if (str_starts_with($path, 'http')) return $path;
         return Storage::url($path);
+    }
+
+    public function computeProfileComplete(): bool
+    {
+        return $this->computeProfileProgress()['percent'] === 100;
+    }
+
+    public function computeProfileProgress(): array
+    {
+        $venueCategories = ['gedung', 'hotel', 'venue', 'rumah', 'wo'];
+        $isVenueCategory = in_array($this->category, $venueCategories, true);
+
+        $covers = array_values(array_filter((array) ($this->cover_image ?? [])));
+        $hasCovers = count($covers) >= 5;
+        $hasPackage = $this->packages()->exists();
+        $hasGallery = $this->galleries()->exists();
+
+        $required = [
+            'name' => ['label' => 'Nama vendor', 'ok' => filled($this->name)],
+            'category' => ['label' => 'Kategori', 'ok' => filled($this->category)],
+            'location' => ['label' => 'Alamat lengkap', 'ok' => filled($this->location)],
+            'province' => ['label' => 'Provinsi', 'ok' => filled($this->province)],
+            'city' => ['label' => 'Kota / Kabupaten', 'ok' => filled($this->city)],
+            'phone' => ['label' => 'No. WhatsApp', 'ok' => filled($this->phone)],
+            'description' => ['label' => 'Deskripsi', 'ok' => filled($this->description)],
+            'cover_image' => ['label' => 'Foto cover (min. 5)', 'ok' => $hasCovers],
+            'packages' => ['label' => 'Paket (min. 1)', 'ok' => $hasPackage],
+            'galleries' => ['label' => 'Galeri media (min. 1)', 'ok' => $hasGallery],
+        ];
+
+        if ($isVenueCategory) {
+            $required['capacity'] = ['label' => 'Kapasitas', 'ok' => filled($this->capacity)];
+            $required['venue_type'] = ['label' => 'Tipe venue', 'ok' => filled($this->venue_type)];
+            $required['facilities'] = ['label' => 'Fasilitas', 'ok' => filled($this->facilities)];
+        }
+
+        $total = count($required);
+        $done = collect($required)->filter(fn ($r) => (bool) $r['ok'])->count();
+        $percent = $total > 0 ? (int) round(($done / $total) * 100) : 0;
+
+        $missing = collect($required)
+            ->filter(fn ($r) => !(bool) $r['ok'])
+            ->map(fn ($r) => $r['label'])
+            ->values()
+            ->all();
+
+        return [
+            'percent' => $percent,
+            'done' => $done,
+            'total' => $total,
+            'missing' => $missing,
+        ];
+    }
+
+    public function computePriceStartFromPackages(): ?int
+    {
+        $pkg = $this->packages()
+            ->orderBy('price_raw')
+            ->first();
+        if (!$pkg) return null;
+        return max(0, (int) $pkg->price_raw - (int) ($pkg->discount ?? 0));
     }
 }

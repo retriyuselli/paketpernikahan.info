@@ -34,6 +34,11 @@ class VendorReviewController extends Controller
         }
 
         $user = $request->user();
+        if ($user && (int) $vendor->owner_user_id === (int) $user->id) {
+            return response()->json([
+                'message' => 'Anda tidak dapat memberi ulasan pada vendor milik sendiri.',
+            ], 403);
+        }
 
         VendorReview::create([
             'vendor_id'     => $vendor->id,

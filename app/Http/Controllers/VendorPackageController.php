@@ -8,17 +8,26 @@ use Illuminate\Http\Request;
 
 class VendorPackageController extends Controller
 {
-    private function authorizeRole(): void
+    private function authorizeRole(Vendor $vendor): void
     {
+        $user = \App\Models\User::find(\Illuminate\Support\Facades\Auth::id());
+        abort_unless($user, 403);
+
+        if ($user->hasRole(['super_admin', 'admin'])) {
+            return;
+        }
+
         abort_unless(
-            auth()->check() && auth()->user()->hasRole(['super_admin', 'admin']),
+            (int) $vendor->owner_user_id === (int) $user->id,
             403
         );
     }
 
     public function store(Request $request, Vendor $vendor)
     {
-        $this->authorizeRole();
+        $this->authorizeRole($vendor);
+        $user = \App\Models\User::find(\Illuminate\Support\Facades\Auth::id());
+        $isAdmin = $user?->hasRole(['super_admin', 'admin']) ?? false;
 
         $validated = $request->validate([
             'name'            => 'required|string|max:255',
@@ -45,13 +54,32 @@ class VendorPackageController extends Controller
             'is_active'       => (bool)($validated['is_active'] ?? true),
         ]);
 
+        $vendor->refresh();
+        $isComplete = $vendor->computeProfileComplete();
+        $priceStart = $vendor->computePriceStartFromPackages();
+        if (!$isAdmin && !$isComplete) {
+            $vendor->update([
+                'is_profile_complete' => false,
+                'is_active' => false,
+                'price_start' => $priceStart,
+            ]);
+        } else {
+            $vendor->update([
+                'is_profile_complete' => $isComplete,
+                'is_active' => $isComplete ? true : $vendor->is_active,
+                'price_start' => $priceStart,
+            ]);
+        }
+
         return response()->json(['success' => true, 'package' => $package]);
     }
 
     public function update(Request $request, Vendor $vendor, VendorPackage $package)
     {
-        $this->authorizeRole();
+        $this->authorizeRole($vendor);
         abort_if($package->vendor_id !== $vendor->id, 404);
+        $user = \App\Models\User::find(\Illuminate\Support\Facades\Auth::id());
+        $isAdmin = $user?->hasRole(['super_admin', 'admin']) ?? false;
 
         $validated = $request->validate([
             'name'            => 'required|string|max:255',
@@ -78,15 +106,51 @@ class VendorPackageController extends Controller
             'is_active'       => (bool)($validated['is_active'] ?? true),
         ]);
 
+        $vendor->refresh();
+        $isComplete = $vendor->computeProfileComplete();
+        $priceStart = $vendor->computePriceStartFromPackages();
+        if (!$isAdmin && !$isComplete) {
+            $vendor->update([
+                'is_profile_complete' => false,
+                'is_active' => false,
+                'price_start' => $priceStart,
+            ]);
+        } else {
+            $vendor->update([
+                'is_profile_complete' => $isComplete,
+                'is_active' => $isComplete ? true : $vendor->is_active,
+                'price_start' => $priceStart,
+            ]);
+        }
+
         return response()->json(['success' => true, 'package' => $package->fresh()]);
     }
 
     public function destroy(Vendor $vendor, VendorPackage $package)
     {
-        $this->authorizeRole();
+        $this->authorizeRole($vendor);
         abort_if($package->vendor_id !== $vendor->id, 404);
+        $user = \App\Models\User::find(\Illuminate\Support\Facades\Auth::id());
+        $isAdmin = $user?->hasRole(['super_admin', 'admin']) ?? false;
 
         $package->delete();
+
+        $vendor->refresh();
+        $isComplete = $vendor->computeProfileComplete();
+        $priceStart = $vendor->computePriceStartFromPackages();
+        if (!$isAdmin && !$isComplete) {
+            $vendor->update([
+                'is_profile_complete' => false,
+                'is_active' => false,
+                'price_start' => $priceStart,
+            ]);
+        } else {
+            $vendor->update([
+                'is_profile_complete' => $isComplete,
+                'is_active' => $isComplete ? true : $vendor->is_active,
+                'price_start' => $priceStart,
+            ]);
+        }
 
         return response()->json(['success' => true]);
     }

@@ -6,6 +6,7 @@ use App\Enums\VendorBadge;
 use App\Enums\VendorPromo;
 use App\Enums\ProvinsiEnum;
 use App\Models\CategoryVendor;
+use App\Models\User;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -29,6 +30,15 @@ class VendorForm
                         Tab::make('Informasi Utama')
                             ->columns(2)
                             ->schema([
+                                Select::make('owner_user_id')
+                                    ->label('Pemilik Vendor')
+                                    ->options(fn () => User::query()
+                                        ->orderBy('name')
+                                        ->pluck('name', 'id')
+                                        ->toArray())
+                                    ->searchable()
+                                    ->nullable()
+                                    ->columnSpanFull(),
                                 TextInput::make('name')
                                     ->required()
                                     ->maxLength(255)
@@ -147,6 +157,12 @@ class VendorForm
                         Tab::make('Galeri Foto')
                             ->columns(2)
                             ->schema([
+                                FileUpload::make('logo_vendor')
+                                    ->label('Logo Vendor')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('vendor_logos')
+                                    ->columnSpanFull(),
                                 FileUpload::make('cover_image')
                                     ->label('Foto Cover')
                                     ->image()

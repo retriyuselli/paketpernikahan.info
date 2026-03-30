@@ -27,7 +27,7 @@
             </nav>
 
             @auth
-                @if(auth()->user()->hasRole(['super_admin', 'admin']))
+                @if(auth()->user()->hasRole(['super_admin', 'admin']) || (int) $vendor->owner_user_id === (int) auth()->id())
                     <a href="{{ route('vendor.edit', $vendor) }}"
                        class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition hover:opacity-80"
                        style="color: var(--sage-green); border-color: var(--sage-green); background: transparent">
@@ -86,7 +86,9 @@
                         {{ $displayRating }}
                     </span>
                     <span class="text-white text-xs bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">{{ $vendor->approvedReviews->count() }} Ulasan</span>
-                    <span class="text-white text-xs bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">{{ $vendor->galleries->count() }} Foto</span>
+                    <span class="text-white text-xs bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">{{ count(array_filter((array) ($vendor->cover_image ?? []))) }} Foto</span>
+                    <span class="text-white text-xs bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">{{ $vendor->packages->count() }} Paket</span>
+                    <span class="text-white text-xs bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-full">{{ number_format($vendor->likes) }} Suka</span>
                 </div>
             </div>
 
@@ -113,12 +115,24 @@
 
                 <!-- Vendor Name + Type -->
                 <div class="flex items-start justify-between gap-4 pt-2">
-                    <div>
-                        <h1 class="text-2xl font-bold leading-tight mb-1" style="color: var(--dark-gray)">{{ $vendor->name }}</h1>
-                        <span class="text-sm font-medium" style="color: var(--sage-green)">{{ $vendor->type }}</span>
-                        <div class="flex items-center gap-1.5 mt-2 text-xs" style="color: var(--dark-gray); opacity: .65">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            {{ $vendor->location }}
+                    <div class="flex items-start gap-3 min-w-0">
+                        @if(!empty($vendor->logo_vendor))
+                            @php
+                                $logoUrl = str_starts_with($vendor->logo_vendor, 'http')
+                                    ? $vendor->logo_vendor
+                                    : asset('storage/' . ltrim($vendor->logo_vendor, '/'));
+                            @endphp
+                            <div class="w-12 h-12 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0">
+                                <img src="{{ $logoUrl }}" alt="Logo {{ $vendor->name }}" class="w-full h-full object-cover">
+                            </div>
+                        @endif
+                        <div class="min-w-0">
+                            <h1 class="text-2xl font-bold leading-tight mb-1" style="color: var(--dark-gray)">{{ $vendor->name }}</h1>
+                            <span class="text-sm font-medium" style="color: var(--sage-green)">{{ $vendor->type }}</span>
+                            <div class="flex items-center gap-1.5 mt-2 text-xs" style="color: var(--dark-gray); opacity: .65">
+                                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span class="truncate">{{ $vendor->location }}</span>
+                            </div>
                         </div>
                     </div>
                     <form action="{{ route('vendor.like', $vendor) }}" method="POST" class="m-0 p-0">
@@ -160,7 +174,7 @@
                     </div>
                 </div>
 
-                <div class="hidden sm:flex items-center gap-5 py-4 border-y border-gray-100 text-sm">
+                {{-- <div class="hidden sm:flex items-center gap-5 py-4 border-y border-gray-100 text-sm">
                     <div class="flex items-center gap-1.5">
                         <svg class="w-4 h-4" style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <span class="font-bold">{{ $displayRating }}</span>
@@ -186,7 +200,7 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                         {{ $vendor->comments_count }} Komentar
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- About -->
                 @php $cheapPkg = $vendor->cheapestPackage; @endphp
@@ -208,7 +222,13 @@
                             <p class="text-sm font-semibold" style="color: var(--sage-green)">{{ $cheapPkg->price }}</p>
                             @endif
                             @else
-                            <p class="text-sm font-semibold" style="color: var(--sage-green)">{{ $vendor->price_start ?? '—' }}</p>
+                            @php
+                                $rawPriceStart = $vendor->price_start;
+                                $formattedPriceStart = is_numeric($rawPriceStart)
+                                    ? 'Rp ' . number_format((int) $rawPriceStart, 0, ',', '.')
+                                    : ($rawPriceStart ?: '—');
+                            @endphp
+                            <p class="text-sm font-semibold" style="color: var(--sage-green)">{{ $formattedPriceStart }}</p>
                             @endif
                         </div>
                         <div class="rounded-xl p-3 border border-gray-100 bg-white">
@@ -240,7 +260,7 @@
                              onclick="openPackageModal({{ json_encode($pkg->only(['id','name','price','max_guests','card_color','card_text_color','items'])) }})">
                             <p class="text-xs font-bold uppercase tracking-widest mb-1 opacity-70">{{ $pkg->name }}</p>
                             <p class="text-xl font-bold leading-tight mb-1">{{ $pkg->price }}</p>
-                            <p class="text-xs mb-4 opacity-70">{{ $pkg->max_guests }}</p>
+                            <p class="text-xs mb-4 opacity-70">{{ $pkg->max_guests }} Pax</p>
                             @php $maxShow = 5; $total = count($pkg->items); $more = $total - $maxShow; @endphp
                             <ul class="space-y-1.5 flex-1 mb-4">
                                 @foreach ($pkg->items as $idx => $item)
@@ -271,8 +291,7 @@
                 <!-- Review Videos -->
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-base font-bold" style="color: var(--dark-gray)">Venue Review Videos</h2>
-                        {{-- <a href="#" class="text-xs font-semibold hover:opacity-70 transition" style="color: var(--sage-green)">Lihat Semua</a> --}}
+                        <h2 class="text-base font-bold" style="color: var(--dark-gray)">Videos</h2>
                     </div>
                     <!-- Horizontal scroll strip -->
                     <div class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none" style="-ms-overflow-style:none;scrollbar-width:none;">
@@ -300,8 +319,8 @@
                             <!-- Label bottom -->
                             <div class="absolute bottom-0 left-0 right-0 p-3">
                                 <p class="text-[9px] uppercase tracking-widest text-white/70 mb-0.5">Introducing</p>
-                                <p class="text-xs font-bold uppercase leading-tight text-white">{{ $vendor->name }}</p>
-                                <p class="text-[10px] text-white/60 mt-0.5">at {{ $vendor->location }}</p>
+                                <p class="text-xs font-bold uppercase leading-tight text-white">{{ $g->caption }}</p>
+                                <p class="text-[10px] text-white/60 mt-0.5">{{ $vendor->name }}</p>
                             </div>
                         </div>
                         @endforeach
@@ -463,6 +482,11 @@
                         @endguest
 
                         @auth
+                        @if((int) $vendor->owner_user_id === (int) auth()->id())
+                            <div class="text-xs font-semibold px-3 py-2 rounded-lg bg-yellow-50 text-yellow-700">
+                                Anda tidak dapat memberi ulasan pada vendor milik sendiri.
+                            </div>
+                        @else
                         {{-- Authenticated: show form --}}
                         <div class="flex items-center gap-2 mb-4 p-2.5 rounded-xl" style="background: var(--cream)">
                             <div class="w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold flex-shrink-0 text-white" style="background: var(--sage-green)">
@@ -503,6 +527,7 @@
                                 style="background: var(--sage-green); color: #fff">
                             Kirim Ulasan
                         </button>
+                        @endif
                         @endauth
                     </div>
                 </div>
@@ -524,7 +549,13 @@
                         <p class="text-2xl font-bold mb-0.5" id="sidebar-price" style="color: var(--sage-green)">{{ $cheapPkg->price }}</p>
                         @endif
                         @else
-                        <p class="text-2xl font-bold mb-0.5" id="sidebar-price" style="color: var(--sage-green)">{{ $vendor->price_start ?? '—' }}</p>
+                        @php
+                            $rawPriceStart = $vendor->price_start;
+                            $formattedPriceStart = is_numeric($rawPriceStart)
+                                ? 'Rp ' . number_format((int) $rawPriceStart, 0, ',', '.')
+                                : ($rawPriceStart ?: '—');
+                        @endphp
+                        <p class="text-2xl font-bold mb-0.5" id="sidebar-price" style="color: var(--sage-green)">{{ $formattedPriceStart }}</p>
                         @endif
                         <p class="text-xs text-gray-400 mb-5" id="sidebar-pkg-sub">*Tergantung paket & tanggal</p>
 
@@ -617,14 +648,24 @@
                         @endauth
 
                         <div class="flex gap-2">
-                            <button class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold border border-gray-200 hover:border-gray-300 transition" style="color: var(--dark-gray)">
+                            <button type="button" onclick="shareVendor()" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold border border-gray-200 hover:border-gray-300 transition" style="color: var(--dark-gray)">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
                                 Bagikan
                             </button>
-                            <button class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold border border-gray-200 hover:border-gray-300 transition" style="color: var(--dark-gray)">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
-                                Simpan
-                            </button>
+                            @auth
+                                <form method="POST" action="{{ route('vendor.like', $vendor) }}" class="flex-1">
+                                    @csrf
+                                    <button type="submit" class="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold border border-gray-200 hover:border-gray-300 transition" style="color: var(--dark-gray)">
+                                        <svg class="w-3.5 h-3.5" fill="{{ ($hasLiked ?? false) ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                                        {{ ($hasLiked ?? false) ? 'Tersimpan' : 'Simpan' }}
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}?redirect={{ urlencode(request()->fullUrl()) }}" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold border border-gray-200 hover:border-gray-300 transition" style="color: var(--dark-gray)">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                                    Simpan
+                                </a>
+                            @endauth
                         </div>
                     </div>
 
@@ -665,10 +706,15 @@
                             <img src="https://picsum.photos/seed/map-{{ $vendor->slug }}/600/200" 
                                  alt="Lokasi" class="w-full h-full object-cover opacity-70">
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="bg-white/90 rounded-xl px-3 py-2 flex items-center gap-2 shadow-sm">
-                                    <svg class="w-4 h-4" style="color: var(--sage-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+                                @php
+                                    $mapsQuery = trim(implode(' ', array_filter([$vendor->location, $vendor->city, $vendor->province])));
+                                    $mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' . urlencode($mapsQuery ?: $vendor->name);
+                                @endphp
+                                <a href="{{ $mapsUrl }}" target="_blank" rel="noopener noreferrer"
+                                   class="bg-white/90 rounded-xl px-3 py-2 flex items-center gap-2 shadow-sm transition hover:bg-white">
+                                    <svg class="w-4 h-4" style="color: var(--sage-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     <span class="text-xs font-semibold" style="color: var(--dark-gray)">Lihat di Maps</span>
-                                </div>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -987,7 +1033,7 @@
         // Fill data
         document.getElementById('modal-pkg-name').textContent    = pkg.name;
         document.getElementById('modal-price').textContent        = pkg.price;
-        document.getElementById('modal-guests').textContent       = pkg.max_guests;
+        document.getElementById('modal-guests').textContent       = `${pkg.max_guests} Pax`;
         document.getElementById('modal-summary-name').textContent  = pkg.name;
         document.getElementById('modal-summary-price').textContent = pkg.price;
 
@@ -1034,7 +1080,7 @@
         // Update sidebar
         document.getElementById('sidebar-price').textContent    = currentPackage.price;
         document.getElementById('sidebar-pkg-label').textContent = currentPackage.name;
-        document.getElementById('sidebar-pkg-sub').textContent   = currentPackage.max_guests;
+        document.getElementById('sidebar-pkg-sub').textContent   = `${currentPackage.max_guests} Pax`;
 
         selectedPackage = { id: currentPackage.id, name: currentPackage.name, price: currentPackage.price };
         try {
@@ -1168,6 +1214,63 @@
             icon.style.transform = 'rotate(180deg)';
             btn.dataset.open = '1';
         }
+    }
+    </script>
+
+    <script>
+    const SHARE_TITLE = @json($vendor->name);
+    const SHARE_URL = @json(request()->fullUrl());
+
+    function showShareToast(message) {
+        const existing = document.getElementById('share-toast');
+        if (existing) existing.remove();
+
+        const el = document.createElement('div');
+        el.id = 'share-toast';
+        el.textContent = message;
+        el.style.position = 'fixed';
+        el.style.left = '50%';
+        el.style.bottom = '24px';
+        el.style.transform = 'translateX(-50%)';
+        el.style.background = 'rgba(17, 24, 39, 0.92)';
+        el.style.color = '#fff';
+        el.style.padding = '10px 14px';
+        el.style.borderRadius = '12px';
+        el.style.fontSize = '12px';
+        el.style.fontWeight = '600';
+        el.style.zIndex = '9999';
+        el.style.maxWidth = '90vw';
+        el.style.boxShadow = '0 10px 30px rgba(0,0,0,0.15)';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 2200);
+    }
+
+    async function shareVendor() {
+        try {
+            if (navigator.share) {
+                await navigator.share({ title: SHARE_TITLE, url: SHARE_URL });
+                return;
+            }
+        } catch (_) {}
+
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(SHARE_URL);
+                showShareToast('Link berhasil disalin');
+                return;
+            }
+        } catch (_) {}
+
+        const ta = document.createElement('textarea');
+        ta.value = SHARE_URL;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (_) {}
+        ta.remove();
+        showShareToast('Link berhasil disalin');
     }
     </script>
 

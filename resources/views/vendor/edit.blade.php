@@ -4,8 +4,40 @@
 
 @section('body-class', 'bg-cream text-dark')
 
+@section('extra-head')
+    <style>
+        .vendor-form-scope input[type="text"],
+        .vendor-form-scope input[type="email"],
+        .vendor-form-scope input[type="tel"],
+        .vendor-form-scope input[type="url"],
+        .vendor-form-scope input[type="number"],
+        .vendor-form-scope input[type="date"],
+        .vendor-form-scope input[type="time"],
+        .vendor-form-scope input[type="password"],
+        .vendor-form-scope select {
+            height: 44px;
+            box-sizing: border-box;
+        }
+
+        .vendor-form-scope input[type="file"] {
+            height: 44px;
+            box-sizing: border-box;
+        }
+    </style>
+@endsection
+
 @section('content')
     @include('layout.header')
+
+    @php
+        $venueCategories = ['gedung', 'hotel', 'venue', 'rumah', 'wo'];
+        $selectedCategory = old('category', $vendor->category);
+        $isVenueCategory = in_array($selectedCategory, $venueCategories, true);
+        $editUser = auth()->user();
+        $editIsAdmin = $editUser && $editUser->hasRole(['super_admin', 'admin']);
+        $canToggleActive = $editIsAdmin || (bool) $vendor->is_profile_complete;
+        $activeChecked = $canToggleActive ? old('is_active', $vendor->is_active) : false;
+    @endphp
 
     <!-- Breadcrumb -->
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
@@ -20,7 +52,7 @@
         </nav>
     </div>
 
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-16">
+    <div class="vendor-form-scope max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-16">
 
         <!-- Page Header -->
         <div class="flex items-center justify-between mb-6">
@@ -112,17 +144,47 @@
             {{-- ══════════════════════════════════════════ --}}
             <div id="tab-info" class="tab-panel space-y-5">
 
+                @php
+                    $profileProgress = $vendor->computeProfileProgress();
+                @endphp
+
+                <div class="bg-white rounded-2xl border border-gray-100 px-5 py-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <p class="text-xs uppercase tracking-widest text-gray-400">Kelengkapan Profil</p>
+                            <p class="text-sm font-bold mt-1" style="color: var(--dark-gray)">{{ $profileProgress['percent'] }}%</p>
+                        </div>
+                        <p class="text-xs text-gray-400">{{ $profileProgress['done'] }}/{{ $profileProgress['total'] }} terisi</p>
+                    </div>
+                    <div class="mt-3 w-full h-2 rounded-full bg-gray-100 overflow-hidden">
+                        <div class="h-full rounded-full" style="width: {{ $profileProgress['percent'] }}%; background: var(--sage-green)"></div>
+                    </div>
+                    @if($profileProgress['percent'] < 100 && !empty($profileProgress['missing']))
+                        <div class="mt-3 text-xs text-gray-500">
+                            <span class="font-semibold text-gray-600">Yang perlu dilengkapi:</span>
+                            {{ implode(', ', $profileProgress['missing']) }}
+                        </div>
+                    @endif
+                </div>
+
                 {{-- Status Aktif (always visible at top) --}}
                 <div class="bg-white rounded-2xl border border-gray-100 px-5 py-4 flex items-center gap-3">
-                    <label class="relative inline-flex items-center cursor-pointer">
+                    <label class="relative inline-flex items-center {{ $canToggleActive ? 'cursor-pointer' : 'cursor-not-allowed opacity-60' }}">
                         <input type="hidden" name="is_active" value="0">
                         <input type="checkbox" name="is_active" value="1"
-                               @checked(old('is_active', $vendor->is_active))
+                               @checked($activeChecked)
+                               @disabled(!$canToggleActive)
                                class="sr-only peer">
                         <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sage" style="--sage: var(--sage-green)"></div>
                         <span class="ml-2 text-sm font-medium text-gray-700">Vendor Aktif</span>
                     </label>
-                    <p class="text-xs text-gray-400">(Jika tidak aktif, vendor tidak akan muncul di halaman listing)</p>
+                    <p class="text-xs text-gray-400">
+                        @if(!$canToggleActive)
+                            Lengkapi profil vendor terlebih dahulu untuk mengaktifkan.
+                        @else
+                            (Jika tidak aktif, vendor tidak akan muncul di halaman listing)
+                        @endif
+                    </p>
                 </div>
 
                 {{-- Informasi Utama --}}
@@ -144,7 +206,7 @@
                         {{-- Kategori --}}
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Kategori <span class="text-red-400">*</span></label>
-                            <select name="category"
+                            <select id="vendor-category" name="category"
                                     class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 @error('category') border-red-300 @enderror"
                                     style="--tw-ring-color: var(--sage-green)">
                                 @foreach(\App\Models\CategoryVendor::orderBy('sort_order')->get() as $cat)
@@ -155,7 +217,7 @@
                         </div>
 
                         {{-- Tipe --}}
-                        <div>
+                        <div id="venue-category-only-fields" class="{{ $isVenueCategory ? '' : 'hidden' }}">
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Tipe Venue</label>
                             <select name="type"
                                     class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
@@ -246,7 +308,7 @@
                 </div>
 
                 {{-- Detail Venue --}}
-                <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div id="venue-detail-section" class="bg-white rounded-2xl border border-gray-100 overflow-hidden {{ $isVenueCategory ? '' : 'hidden' }}">
                     <div class="px-5 py-3 border-b border-gray-100" style="background: var(--cream)">
                         <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Detail Venue</h2>
                     </div>
@@ -254,7 +316,7 @@
 
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Kapasitas</label>
-                            <input type="text" name="capacity" value="{{ old('capacity', $vendor->capacity) }}"
+                            <input type="text" name="capacity" value="{{ old('capacity', $vendor->capacity) }} Pax"
                                    placeholder="500 – 1.500 tamu"
                                    class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
                                    style="--tw-ring-color: var(--sage-green)">
@@ -298,20 +360,26 @@
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Harga Mulai (angka saja)</label>
                             <div class="flex items-center rounded-xl border border-gray-200 overflow-hidden focus-within:ring-2" style="--tw-ring-color: var(--sage-green)">
                                 <span class="px-3 py-2 text-xs text-gray-400 bg-gray-50 border-r border-gray-200 whitespace-nowrap">Rp.</span>
-                                @php $cheapPkg = $vendor->cheapestPackage; $pv2 = old('price_start', $vendor->price_start ?: ($cheapPkg ? $cheapPkg->price_raw : null)); @endphp
-                                <input type="text" inputmode="numeric" name="price_start"
-                                       value="{{ $pv2 ? number_format((int)$pv2, 0, ',', '.') : '' }}"
-                                       placeholder="35.000.000"
-                                       class="price-fmt flex-1 px-3 py-2 text-sm focus:outline-none bg-transparent">
+                                @php
+                                    $derivedStart = $vendor->computePriceStartFromPackages();
+                                @endphp
+                                <input type="text"
+                                       value="{{ $derivedStart !== null ? number_format($derivedStart, 0, ',', '.') : '' }}"
+                                       placeholder="{{ $derivedStart === null ? 'Buat minimal 1 paket' : '0' }}"
+                                       class="flex-1 px-3 py-2 text-sm focus:outline-none bg-transparent"
+                                       readonly
+                                       disabled>
                             </div>
-                            @error('price_start')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                            <p class="text-[10px] text-gray-400 mt-1">Nilai ini otomatis diambil dari harga paket termurah.</p>
                         </div>
 
-                        <div>
+                        <div>   
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Rating</label>
                             <input type="number" name="rating" value="{{ old('rating', $vendor->rating) }}"
                                    step="0.1" min="0" max="5" placeholder="4.8"
-                                   class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                                   class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
+                                   readonly
+                                   disabled
                                    style="--tw-ring-color: var(--sage-green)">
                         </div>
 
@@ -326,43 +394,23 @@
                     </div>
                 </div>
 
-                {{-- Label (Badge & Promo) --}}
                 <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                     <div class="px-5 py-3 border-b border-gray-100" style="background: var(--cream)">
-                        <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Label</h2>
+                        <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Promo</h2>
                     </div>
-                    <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-2">Badge</label>
-                            <div class="space-y-2">
-                                @foreach(\App\Enums\VendorBadge::cases() as $badge)
-                                <label class="flex items-center gap-2 cursor-pointer text-sm">
-                                    <input type="checkbox" name="badge[]" value="{{ $badge->value }}"
-                                           @checked(in_array($badge->value, old('badge', $vendor->badge ?? [])))
-                                           class="rounded border-gray-300 text-sage focus:ring-0"
-                                           style="accent-color: var(--sage-green)">
-                                    <span>{{ $badge->label() }}</span>
-                                </label>
-                                @endforeach
-                            </div>
+                    <div class="p-5">
+                        <label class="block text-xs font-semibold text-gray-500 mb-2">Promo</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            @foreach(\App\Enums\VendorPromo::cases() as $promo)
+                            <label class="flex items-center gap-2 cursor-pointer text-sm">
+                                <input type="checkbox" name="promo[]" value="{{ $promo->value }}"
+                                       @checked(in_array($promo->value, old('promo', $vendor->promo ?? [])))
+                                       class="rounded border-gray-300"
+                                       style="accent-color: var(--sage-green)">
+                                <span>{{ $promo->label() }}</span>
+                            </label>
+                            @endforeach
                         </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-2">Promo</label>
-                            <div class="space-y-2">
-                                @foreach(\App\Enums\VendorPromo::cases() as $promo)
-                                <label class="flex items-center gap-2 cursor-pointer text-sm">
-                                    <input type="checkbox" name="promo[]" value="{{ $promo->value }}"
-                                           @checked(in_array($promo->value, old('promo', $vendor->promo ?? [])))
-                                           class="rounded border-gray-300"
-                                           style="accent-color: var(--sage-green)">
-                                    <span>{{ $promo->label() }}</span>
-                                </label>
-                                @endforeach
-                            </div>
-                        </div>
-
                     </div>
                 </div>
 
@@ -440,7 +488,7 @@
                                         @if($pkg->max_guests)
                                         <div class="flex items-center gap-2 text-xs text-gray-500">
                                             <svg class="w-3.5 h-3.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                            {{ $pkg->max_guests }}
+                                            {{ $pkg->max_guests }} Pax
                                         </div>
                                         @endif
                                         @if(!empty($pkg->items))
@@ -458,7 +506,7 @@
                                     {{-- Actions --}}
                                     <div class="flex items-center gap-2 pt-2 border-t border-gray-100 mt-auto">
                                         <button type="button"
-                                                onclick="openPkgModal({{ $pkg->id }}, @json($pkg->name), {{ $pkg->price_raw }}, {{ $pkg->discount }}, @json($pkg->max_guests ?? ''), @json(implode("\n", $pkg->items ?? [])), @json($pkg->card_color), @json($pkg->card_text_color), {{ $pkg->sort_order }}, {{ $pkg->is_active ? 'true' : 'false' }})"
+                                                onclick='openPkgModal({{ $pkg->id }}, @json($pkg->name), {{ $pkg->price_raw }}, {{ $pkg->discount }}, @json($pkg->max_guests ?? ''), @json(implode("\n", $pkg->items ?? [])), @json($pkg->card_color), @json($pkg->card_text_color), {{ $pkg->sort_order }}, {{ $pkg->is_active ? 'true' : 'false' }})'
                                                 class="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition"
                                                 style="color: var(--dark-gray)">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
@@ -694,6 +742,23 @@
         var saved = sessionStorage.getItem('editVendorTab') || 'tab-info';
         switchTab(saved);
         @endif
+
+        var venueCategories = @json($venueCategories);
+        var categoryEl = document.getElementById('vendor-category');
+        var venueFieldsEl = document.getElementById('venue-category-only-fields');
+        var venueDetailEl = document.getElementById('venue-detail-section');
+
+        function toggleVenueFields() {
+            if (!categoryEl) return;
+            var isVenue = venueCategories.indexOf(categoryEl.value) !== -1;
+            if (venueFieldsEl) venueFieldsEl.classList.toggle('hidden', !isVenue);
+            if (venueDetailEl) venueDetailEl.classList.toggle('hidden', !isVenue);
+        }
+
+        if (categoryEl) {
+            categoryEl.addEventListener('change', toggleVenueFields);
+            toggleVenueFields();
+        }
     });
 
     const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
@@ -1088,7 +1153,6 @@
         btn.textContent = 'Menyimpan…';
 
         const payload = {
-            _token:           CSRF_TOKEN,
             name:             name,
             price_raw:        priceRaw,
             discount:         discount,
@@ -1104,7 +1168,6 @@
         if (id) {
             url    = PKG_UPDATE_URL.replace('__ID__', id);
             method = 'PUT';
-            payload._method = 'PUT';
         } else {
             url    = PKG_STORE_URL;
             method = 'POST';
@@ -1112,7 +1175,7 @@
 
         try {
             const res = await fetch(url, {
-                method: 'POST',
+                method: method,
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
                 body: JSON.stringify(payload),
             });
@@ -1140,9 +1203,9 @@
         const url = PKG_DELETE_URL.replace('__ID__', id);
         try {
             const res = await fetch(url, {
-                method: 'POST',
+                method: 'DELETE',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
-                body: JSON.stringify({ _method: 'DELETE', _token: CSRF_TOKEN }),
+                body: JSON.stringify({}),
             });
             if (res.ok) {
                 const card = btn.closest('.pkg-card');

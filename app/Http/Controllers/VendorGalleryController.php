@@ -9,17 +9,26 @@ use Illuminate\Support\Facades\Storage;
 
 class VendorGalleryController extends Controller
 {
-    private function authorizeRole(): void
+    private function authorizeRole(Vendor $vendor): void
     {
+        $user = \App\Models\User::find(\Illuminate\Support\Facades\Auth::id());
+        abort_unless($user, 403);
+
+        if ($user->hasRole(['super_admin', 'admin'])) {
+            return;
+        }
+
         abort_unless(
-            auth()->check() && auth()->user()->hasRole(['super_admin', 'admin']),
+            (int) $vendor->owner_user_id === (int) $user->id,
             403
         );
     }
 
     public function store(Request $request, Vendor $vendor)
     {
-        $this->authorizeRole();
+        $this->authorizeRole($vendor);
+        $user = \App\Models\User::find(\Illuminate\Support\Facades\Auth::id());
+        $isAdmin = $user?->hasRole(['super_admin', 'admin']) ?? false;
 
         $validated = $request->validate([
             'image'      => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -38,6 +47,20 @@ class VendorGalleryController extends Controller
             'is_cover'   => false,
         ]);
 
+        $vendor->refresh();
+        $isComplete = $vendor->computeProfileComplete();
+        if (!$isAdmin && !$isComplete) {
+            $vendor->update([
+                'is_profile_complete' => false,
+                'is_active' => false,
+            ]);
+        } else {
+            $vendor->update([
+                'is_profile_complete' => $isComplete,
+                'is_active' => $isComplete ? true : $vendor->is_active,
+            ]);
+        }
+
         return response()->json([
             'success' => true,
             'gallery' => [
@@ -51,7 +74,9 @@ class VendorGalleryController extends Controller
 
     public function update(Request $request, Vendor $vendor, VendorGallery $gallery)
     {
-        $this->authorizeRole();
+        $this->authorizeRole($vendor);
+        $user = \App\Models\User::find(\Illuminate\Support\Facades\Auth::id());
+        $isAdmin = $user?->hasRole(['super_admin', 'admin']) ?? false;
 
         abort_if($gallery->vendor_id !== $vendor->id, 404);
 
@@ -80,6 +105,20 @@ class VendorGalleryController extends Controller
         $gallery->update($data);
         $gallery->refresh();
 
+        $vendor->refresh();
+        $isComplete = $vendor->computeProfileComplete();
+        if (!$isAdmin && !$isComplete) {
+            $vendor->update([
+                'is_profile_complete' => false,
+                'is_active' => false,
+            ]);
+        } else {
+            $vendor->update([
+                'is_profile_complete' => $isComplete,
+                'is_active' => $isComplete ? true : $vendor->is_active,
+            ]);
+        }
+
         return response()->json([
             'success' => true,
             'gallery' => [
@@ -93,7 +132,9 @@ class VendorGalleryController extends Controller
 
     public function destroy(Vendor $vendor, VendorGallery $gallery)
     {
-        $this->authorizeRole();
+        $this->authorizeRole($vendor);
+        $user = \App\Models\User::find(\Illuminate\Support\Facades\Auth::id());
+        $isAdmin = $user?->hasRole(['super_admin', 'admin']) ?? false;
 
         abort_if($gallery->vendor_id !== $vendor->id, 404);
 
@@ -106,6 +147,20 @@ class VendorGalleryController extends Controller
         }
 
         $gallery->delete();
+
+        $vendor->refresh();
+        $isComplete = $vendor->computeProfileComplete();
+        if (!$isAdmin && !$isComplete) {
+            $vendor->update([
+                'is_profile_complete' => false,
+                'is_active' => false,
+            ]);
+        } else {
+            $vendor->update([
+                'is_profile_complete' => $isComplete,
+                'is_active' => $isComplete ? true : $vendor->is_active,
+            ]);
+        }
 
         return response()->json(['success' => true]);
     }

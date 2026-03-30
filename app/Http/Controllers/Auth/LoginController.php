@@ -22,7 +22,7 @@ class LoginController extends Controller
 
             // Honour ?redirect= param stored in session or query string
             $redirectTo = $request->session()->pull('url.intended',
-                $request->query('redirect', route('dashboard'))
+                $request->input('redirect', $request->query('redirect', route('dashboard')))
             );
 
             // Validate redirect URL stays on same host (prevent open redirect)
@@ -31,7 +31,7 @@ class LoginController extends Controller
                 $redirectTo = route('dashboard');
             }
 
-            return redirect($redirectTo);
+            return redirect()->to($redirectTo ?: route('dashboard'));
         }
 
         throw ValidationException::withMessages([
