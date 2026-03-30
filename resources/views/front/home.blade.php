@@ -892,6 +892,59 @@
             </div>
         </section>
 
+        <div id="home-ad-modal" class="fixed inset-0 z-[9998] hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.45)" onclick="if(event.target===this) closeHomeAdModal()">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+                <div class="relative">
+                    <img src="https://picsum.photos/seed/makna-ad/800/800" alt="Iklan" class="w-full aspect-square object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                    <button type="button" onclick="closeHomeAdModal()" class="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white/90 border border-gray-200 flex items-center justify-center hover:bg-white transition" aria-label="Tutup">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                    <div class="absolute bottom-0 left-0 right-0 p-4">
+                        <p class="text-white text-sm font-semibold leading-snug">Dapatkan promo spesial untuk booking vendor pilihanmu hari ini.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            (function () {
+                var key = 'home_ad_dismissed_v1';
+                var modal = document.getElementById('home-ad-modal');
+                if (!modal) return;
+
+                function openModal() {
+                    try {
+                        if (localStorage.getItem(key) === '1') return;
+                    } catch (e) {}
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                    document.body.style.overflow = 'hidden';
+                }
+
+                window.closeHomeAdModal = function (persist) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.style.overflow = '';
+                    if (persist) {
+                        try {
+                            localStorage.setItem(key, '1');
+                        } catch (e) {}
+                    }
+                };
+
+                window.setTimeout(openModal, 5000);
+
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                        window.closeHomeAdModal();
+                    }
+                });
+            })();
+        </script>
+
         @include('layout.footer')
 
     </body>
