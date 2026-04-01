@@ -8,141 +8,141 @@
     @include('layout.header')
 
     <!-- Highlight -->
-    <section class="py-10" style="background-color: var(--cream)">
+    <section class="py-10 bg-cream">
         <div class="px-4 sm:px-6 lg:px-8">
 
-            <h2 class="text-xl font-bold mb-5" style="color: var(--dark-gray)">Highlights</h2>
+            <h2 class="text-xl font-bold mb-5 text-dark">Highlights</h2>
 
             <div class="relative">
                 <button onclick="document.getElementById('vendor-highlights-scroll').scrollBy({left: -400, behavior: 'smooth'})"
                         class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
-                    <svg class="w-5 h-5" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 </button>
 
-                <div id="vendor-highlights-scroll" class="flex gap-2 overflow-x-auto scroll-smooth pb-2" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <div id="vendor-highlights-scroll" class="flex gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide">
 
                     <!-- Card 1 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh1/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
                             <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Rizky &amp; Nadya</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">More Info</a>
+                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
                         </div>
                     </div>
 
                     <!-- Card 2 — Promo Banner -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3; background-color: var(--soft-pink);">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3 bg-accent-pink">
                         <img src="https://picsum.photos/seed/vh-promo/640/480" alt="Promo" class="w-full h-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
-                            <p class="text-2xl font-bold leading-tight" style="color: var(--dark-gray)">Cari Vendor <span style="color: var(--sage-green)">Terpercaya</span><br>di Palembang</p>
-                            <p class="text-xs" style="color: var(--dark-gray)">Ratusan vendor pernikahan lokal<br>siap melayani Anda</p>
+                            <p class="text-2xl font-bold leading-tight text-dark">Cari Vendor <span class="text-accent">Terpercaya</span><br>di Palembang</p>
+                            <p class="text-xs text-dark">Ratusan vendor pernikahan lokal<br>siap melayani Anda</p>
                             <div class="flex gap-2 mt-2">
-                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">Chat Vendor</a>
-                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--dark-gray); color: var(--cream)">More Info</a>
+                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">Chat Vendor</a>
+                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90 bg-dark text-cream">More Info</a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card 3 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh3/640/480" alt="Tips Vendor" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Tips &amp; Tricks</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Tips &amp; Tricks</p>
                             <p class="text-white text-sm font-bold leading-snug">7 Cara Memilih Vendor Pernikahan yang Tepat Agar Hari H Berjalan Lancar.</p>
                         </div>
                     </div>
 
                     <!-- Card 4 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh4/640/480" alt="Venue Ideas" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Wedding Ideas</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Wedding Ideas</p>
                             <p class="text-white text-sm font-bold leading-snug">Venue Pernikahan Terbaik di Palembang yang Wajib Kamu Pertimbangkan.</p>
                         </div>
                     </div>
 
                     <!-- Card 5 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh5/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
                             <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Hendra &amp; Putri</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">More Info</a>
+                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
                         </div>
                     </div>
 
                     <!-- Card 6 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh6/640/480" alt="Budget Tips" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Budget Guide</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Budget Guide</p>
                             <p class="text-white text-sm font-bold leading-snug">Tips Mengelola Budget Pernikahan Agar Tetap Hemat dan Berkesan.</p>
                         </div>
                     </div>
 
                     <!-- Card 7 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh7/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
                             <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Farhan &amp; Dewi</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">More Info</a>
+                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
                         </div>
                     </div>
 
                     <!-- Card 8 — Promo Banner -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3; background-color: var(--light-sage);">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3 bg-light-sage">
                         <img src="https://picsum.photos/seed/vh8/640/480" alt="Promo" class="w-full h-full object-cover opacity-25 transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
-                            <p class="text-2xl font-bold leading-tight" style="color: var(--dark-gray)">Dapatkan <span style="color: var(--sage-green)">Harga Spesial</span><br>Vendor Impian</p>
-                            <p class="text-xs" style="color: var(--dark-gray)">Bandingkan harga & pilih<br>paket terbaik untuk Anda</p>
+                            <p class="text-2xl font-bold leading-tight text-dark">Dapatkan <span class="text-accent">Harga Spesial</span><br>Vendor Impian</p>
+                            <p class="text-xs text-dark">Bandingkan harga & pilih<br>paket terbaik untuk Anda</p>
                             <div class="flex gap-2 mt-2">
-                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">Lihat Promo</a>
+                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">Lihat Promo</a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card 9 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh9/640/480" alt="Dekorasi" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Inspirasi Dekorasi</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Inspirasi Dekorasi</p>
                             <p class="text-white text-sm font-bold leading-snug">Tren Dekorasi Pernikahan 2026 yang Wajib Kamu Coba di Palembang.</p>
                         </div>
                     </div>
 
                     <!-- Card 10 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh10/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
                             <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Arif &amp; Sari</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">More Info</a>
+                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
                         </div>
                     </div>
 
                     <!-- Card 11 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh11/640/480" alt="Katering" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Kuliner Wedding</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Kuliner Wedding</p>
                             <p class="text-white text-sm font-bold leading-snug">Rekomendasi Katering Pernikahan Terlezat di Palembang untuk Hari Spesial.</p>
                         </div>
                     </div>
 
                     <!-- Card 12 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh12/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
                             <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Doni &amp; Ratna</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">More Info</a>
+                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
                         </div>
                     </div>
 
@@ -232,7 +232,7 @@
 
                 <button onclick="document.getElementById('vendor-highlights-scroll').scrollBy({left: 400, behavior: 'smooth'})"
                         class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
-                    <svg class="w-5 h-5" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
             </div>
 
@@ -240,20 +240,20 @@
     </section>
 
     <!-- Advertising Banner -->
-    <div class="px-4 sm:px-6 lg:px-8 py-4" style="background-color: var(--cream)">
+    <div class="px-4 sm:px-6 lg:px-8 py-4 bg-cream">
         <div class="max-w-7xl mx-auto">
-            <a href="#" class="block relative rounded-2xl overflow-hidden group" style="aspect-ratio: 970/90;">
-                <img src="https://picsum.photos/seed/adsbanner/1200/120"
+            <a href="#" class="block relative rounded-2xl overflow-hidden group w-full max-w-[728px] mx-auto aspect-[728/90]">
+                <img src="https://picsum.photos/seed/adsbanner/728/90"
                      alt="Banner Iklan"
                      class="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90">
-                <div class="absolute inset-0 flex items-center justify-between px-8" style="background: linear-gradient(to right, rgba(249,213,229,0.75), rgba(156,175,136,0.75));">
+                <div class="absolute inset-0 flex items-center justify-between px-8 bg-sponsor-gradient">
                     <div>
-                        <p class="text-xs font-bold uppercase tracking-widest mb-0.5" style="color: var(--dark-gray)">Sponsor</p>
-                        <p class="text-base font-bold leading-snug" style="color: var(--dark-gray)">Nama Brand Sponsor — Tagline Promosi di Sini</p>
+                        <p class="text-xs font-bold uppercase tracking-widest mb-0.5 text-dark">Sponsor</p>
+                        <p class="text-base font-bold leading-snug text-dark">Nama Brand Sponsor — Tagline Promosi di Sini</p>
                     </div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full flex-shrink-0" style="background-color: var(--dark-gray); color: var(--cream)">Pelajari →</span>
+                    <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full flex-shrink-0 bg-dark text-cream">Pelajari →</span>
                 </div>
-                <span class="absolute top-1.5 right-2 text-[9px] font-semibold uppercase tracking-widest opacity-50" style="color: var(--dark-gray)">Iklan</span>
+                <span class="absolute top-1.5 right-2 text-[9px] font-semibold uppercase tracking-widest opacity-50 text-dark">Iklan</span>
             </a>
         </div>
     </div>
@@ -261,36 +261,35 @@
     <!-- Search Bar -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
         <form action="{{ route('vendor') }}" method="GET" class="flex flex-wrap gap-2 items-center">
-            <select name="category" class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer" style="color: var(--dark-gray);">
+            <select name="category" class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
                 <option value="">Semua Kategori</option>
                 @foreach ($categories as $cat)
                 <option value="{{ $cat->slug }}" {{ request('category') === $cat->slug ? 'selected' : '' }}>{{ $cat->name }}</option>
                 @endforeach
             </select>
-            <select name="province" class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer" style="color: var(--dark-gray);">
+            <select name="province" class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
                 <option value="">Semua Provinsi</option>
                 @foreach ($provinces as $prov)
                 <option value="{{ $prov }}" {{ request('province') === $prov ? 'selected' : '' }}>{{ $prov }}</option>
                 @endforeach
             </select>
             <select id="city-select" name="city"
-                    class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                    style="color: var(--dark-gray);">
+                    class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed text-dark">
                 <option value="">Pilih Provinsi Dulu</option>
             </select>
 
-            <select name="price" class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer" style="color: var(--dark-gray);">
+            <select name="price" class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
                 <option value="">Semua Harga</option>
                 <option value="0-5000000" {{ request('price') === '0-5000000' ? 'selected' : '' }}>Di bawah Rp 5 Juta</option>
                 <option value="5000000-15000000" {{ request('price') === '5000000-15000000' ? 'selected' : '' }}>Rp 5 – 15 Juta</option>
                 <option value="15000000-50000000" {{ request('price') === '15000000-50000000' ? 'selected' : '' }}>Rp 15 – 50 Juta</option>
                 <option value="50000000-99999999" {{ request('price') === '50000000-99999999' ? 'selected' : '' }}>Di atas Rp 50 Juta</option>
             </select>
-            <button type="submit" class="px-6 py-3 rounded-2xl text-sm font-semibold transition hover:opacity-90 flex-shrink-0" style="background-color: var(--dark-gray); color: var(--cream)">
+            <button type="submit" class="px-6 py-3 rounded-2xl text-sm font-semibold transition hover:opacity-90 flex-shrink-0 bg-dark text-cream">
                 Cari Vendor
             </button>
             @if (request()->hasAny(['category', 'province', 'city', 'price', 'q']))
-            <a href="{{ route('vendor') }}" class="px-6 py-3 rounded-2xl text-sm font-semibold border transition hover:bg-gray-50 flex-shrink-0" style="border-color: var(--dark-gray); color: var(--dark-gray)">
+            <a href="{{ route('vendor') }}" class="px-6 py-3 rounded-2xl text-sm font-semibold border border-dark text-dark transition hover:bg-gray-50 flex-shrink-0">
                 Reset
             </a>
             @endif
@@ -342,7 +341,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
                     </svg>
                 </div>
-                <h3 class="text-base font-bold mb-1" style="color: var(--dark-gray)">Belum ada vendor yang tersedia</h3>
+                <h3 class="text-base font-bold mb-1 text-dark">Belum ada vendor yang tersedia</h3>
                 <p class="text-sm text-gray-500 max-w-md">
                     Saat ini belum ada vendor yang aktif dan profilnya lengkap untuk ditampilkan.
                 </p>
@@ -487,7 +486,7 @@
                 <!-- Right Arrow -->
                 <button onclick="this.previousElementSibling.scrollBy({left: 300, behavior: 'smooth'})"
                         class="absolute right-0 top-1/3 -translate-y-1/2 translate-x-3 w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
-                    <svg class="w-4 h-4" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg class="w-4 h-4 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
             </div>
 
@@ -504,22 +503,21 @@
          class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden"
          onclick="if(event.target===this) closeVendorPreview()">
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden" style="max-height: 92vh; overflow-y: auto;">
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden max-h-[92vh] overflow-y-auto">
 
             <!-- Cover Image -->
-            <div class="relative" style="aspect-ratio: 16/9;">
+            <div class="relative ar-16x9">
                 <img id="vp-cover" src="" alt="" class="w-full h-full object-cover">
                 <button onclick="closeVendorPreview()"
-                        class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition"
-                        style="background: rgba(0,0,0,0.45)">
+                        class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition bg-backdrop-45">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
 
             <!-- Body -->
             <div class="p-5">
-                <p id="vp-type" class="text-xs font-semibold mb-0.5" style="color: var(--sage-green)"></p>
-                <h2 id="vp-name" class="text-lg font-bold leading-snug mb-1" style="color: var(--dark-gray)"></h2>
+                <p id="vp-type" class="text-xs font-semibold mb-0.5 text-accent"></p>
+                <h2 id="vp-name" class="text-lg font-bold leading-snug mb-1 text-dark"></h2>
                 <p class="flex items-center gap-1 text-xs text-gray-500 mb-3">
                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     <span id="vp-location"></span>
@@ -528,7 +526,7 @@
                 <!-- Stats -->
                 <div class="flex gap-4 text-xs text-gray-500 mb-4 pb-4 border-b border-gray-100">
                     <span class="flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5" style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-3.5 h-3.5 text-rating" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <strong id="vp-rating"></strong>
                     </span>
                     <span class="flex items-center gap-1">
@@ -542,22 +540,20 @@
                 </div>
 
                 <!-- Price -->
-                <div class="rounded-xl p-3 mb-4" style="background: var(--cream)">
+                <div class="rounded-xl p-3 mb-4 bg-cream">
                     <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Harga Mulai</p>
-                    <p id="vp-price" class="text-base font-bold" style="color: var(--sage-green)"></p>
+                    <p id="vp-price" class="text-base font-bold text-accent"></p>
                 </div>
 
                 <!-- Actions -->
                 <div class="flex flex-col gap-2">
                     <a id="vp-detail" href="#"
-                       class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90"
-                       style="background-color: var(--sage-green); color: var(--cream)">
+                       class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 bg-accent text-cream">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0m2.458-4.243A11 11 0 011.542 12 11 11 0 0122.458 7.757"/></svg>
                         Lihat Selengkapnya
                     </a>
                     <a id="vp-wa" href="#" target="_blank"
-                       class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90"
-                       style="background-color: #25D366; color: #fff">
+                       class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 btn-wa">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                         Chat WhatsApp
                     </a>
@@ -583,7 +579,7 @@
         if (v.pkg_price) {
             if (v.pkg_discount > 0) {
                 const discounted = Number(v.pkg_price_raw) - Number(v.pkg_discount);
-                priceEl.innerHTML = '<span style="text-decoration:line-through;color:#9ca3af;font-size:.75rem">' + v.pkg_price + '</span><br>' +
+                priceEl.innerHTML = '<span class="line-through text-gray-400 text-xs">' + v.pkg_price + '</span><br>' +
                     'Rp ' + discounted.toLocaleString('id-ID');
             } else {
                 priceEl.textContent = v.pkg_price;

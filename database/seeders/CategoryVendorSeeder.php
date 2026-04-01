@@ -20,6 +20,15 @@ class CategoryVendorSeeder extends Seeder
                 'is_active'   => true,
             ],
             [
+                'slug'        => 'paket-lengkap',
+                'name'        => 'Paket Lengkap',
+                'icon'        => 'shopping-bag',
+                'color'       => 'success',
+                'description' => 'Paket pernikahan lengkap dari berbagai vendor dalam satu paket.',
+                'sort_order'  => 0,
+                'is_active'   => true,
+            ],
+            [
                 'slug'        => 'hotel',
                 'name'        => 'Hotel & Ballroom',
                 'icon'        => 'building-office-2',

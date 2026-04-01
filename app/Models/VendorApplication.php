@@ -13,6 +13,7 @@ class VendorApplication extends Model
         'user_id',
         'business_name',
         'category',
+        'categories',
         'type',
         'city',
         'province',
@@ -30,6 +31,7 @@ class VendorApplication extends Model
     ];
 
     protected $casts = [
+        'categories' => 'array',
         'reviewed_at' => 'datetime',
     ];
 

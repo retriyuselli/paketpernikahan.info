@@ -51,7 +51,8 @@ class VendorApplicationController extends Controller
 
         $data = $request->validate([
             'business_name' => ['required', 'string', 'max:255'],
-            'category'      => ['required', 'string', Rule::exists('category_vendors', 'slug')],
+            'categories'    => ['required', 'array', 'min:1'],
+            'categories.*'  => ['required', 'string', 'distinct', Rule::exists('category_vendors', 'slug')],
             'province'      => ['required', 'string', Rule::in(array_keys(ProvinsiEnum::toArray()))],
             'city'          => ['required', 'string', Rule::in($citiesForProvince)],
             'location'      => ['required', 'string', 'max:255'],
@@ -67,10 +68,17 @@ class VendorApplicationController extends Controller
             $logoPath = $request->file('logo_vendor')->store('vendor_logos', 'public');
         }
 
+        $categories = collect($data['categories'] ?? [])
+            ->filter()
+            ->values()
+            ->all();
+        $primaryCategory = $categories[0] ?? null;
+
         VendorApplication::create([
             'user_id'        => $user->id,
             'business_name'  => $data['business_name'],
-            'category'       => $data['category'],
+            'category'       => $primaryCategory,
+            'categories'     => $categories,
             'city'           => $data['city'] ?? null,
             'province'       => $data['province'] ?? null,
             'location'       => $data['location'],

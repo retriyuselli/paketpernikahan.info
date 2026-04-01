@@ -11,21 +11,59 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @else
-        <style>* { font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif; }</style>
+        <style>
+            * {
+                font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+            }
+
+            :root {
+                --soft-pink: #F9D5E5;
+                --sage-green: #9CAF88;
+                --light-sage: #C8D5B9;
+                --cream: #FAF3E7;
+                --dark-gray: #444444;
+            }
+
+            body {
+                background-color: var(--cream);
+                color: var(--dark-gray);
+            }
+
+            .text-accent {
+                color: var(--sage-green);
+            }
+
+            .hover\:text-accent:hover {
+                color: var(--sage-green);
+            }
+
+            .text-dark {
+                color: var(--dark-gray);
+            }
+
+            .bg-accent {
+                background-color: var(--sage-green);
+            }
+
+            .bg-accent-pink {
+                background-color: var(--soft-pink);
+            }
+
+            .bg-light-sage {
+                background-color: var(--light-sage);
+            }
+
+            .bg-cream {
+                background-color: var(--cream);
+            }
+
+            .border-accent {
+                border-color: var(--sage-green);
+            }
+        </style>
     @endif
 
     <style>
-        :root {
-            --soft-pink:  #F9D5E5;
-            --sage-green: #9CAF88;
-            --light-sage: #C8D5B9;
-            --cream:      #FAF3E7;
-            --dark-gray:  #444444;
-        }
-        body { background-color: var(--cream); color: var(--dark-gray); }
-        .text-accent            { color: var(--sage-green); }
-        .hover\:text-accent:hover { color: var(--sage-green); }
-
         /* Sidebar link */
         .sidebar-link {
             display: flex;
@@ -48,18 +86,16 @@
 
 @include('layout.header')
 
-<div class="flex" style="min-height: calc(100vh - 130px)">
+<div class="flex min-h-[calc(100vh-130px)]">
 
     {{-- ─── Sidebar ────────────────────────────────────────────── --}}
-    <aside class="hidden lg:flex w-64 flex-shrink-0 bg-white border-r border-gray-100 flex-col"
-           style="min-height: 100%;">
+    <aside class="hidden lg:flex w-64 flex-shrink-0 bg-white border-r border-gray-100 flex-col min-h-full">
 
         {{-- Logo --}}
         <div class="hidden px-5 py-5 border-b border-gray-100 flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-2">
-                <span class="text-xl font-bold tracking-tight" style="color: var(--dark-gray)">Makna</span>
-                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
-                      style="background: var(--light-sage); color: var(--dark-gray)">WO</span>
+                <span class="text-xl font-bold tracking-tight text-dark">Makna</span>
+                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-light-sage text-dark">WO</span>
             </a>
             <button class="lg:hidden p-1 rounded-lg hover:bg-gray-100" onclick="closeSidebar()">
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,25 +112,22 @@
                      alt="{{ $user->name }}"
                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
                      class="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-white shadow-sm">
-                <div class="w-10 h-10 rounded-full items-center justify-center text-sm font-bold text-white flex-shrink-0"
-                     style="background: var(--sage-green); display:none">
+                <div class="w-10 h-10 rounded-full items-center justify-center text-sm font-bold text-white flex-shrink-0 bg-accent hidden">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
                 @else
-                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
-                     style="background: var(--sage-green)">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 bg-accent">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
                 @endif
                 <div class="min-w-0">
-                    <p class="text-sm font-semibold truncate" style="color: var(--dark-gray)">{{ $user->name }}</p>
+                    <p class="text-sm font-semibold truncate text-dark">{{ $user->name }}</p>
                     <p class="text-[10px] text-gray-400 truncate">{{ $user->email }}</p>
                 </div>
             </div>
             @if($user->hasRole(['super_admin', 'admin']))
             <div class="mt-2.5">
-                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                      style="background: var(--soft-pink); color: var(--dark-gray)">
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent-pink text-dark">
                     {{ $user->hasRole('super_admin') ? 'Super Admin' : 'Admin' }}
                 </span>
             </div>
@@ -119,19 +152,17 @@
                 </svg>
                 Favorit
                 @if(($favoriteCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
-                      style="background: var(--light-sage); color: var(--dark-gray)">{{ $favoriteCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $favoriteCount }}</span>
                 @endif
             </a>
 
-            <a href="{{ route('dashboard.booking') }}" class="sidebar-link {{ request()->routeIs('dashboard.booking') ? 'active' : '' }}">
+            <a href="{{ route('dashboard.booking') }}" class="sidebar-link {{ request()->routeIs('dashboard.booking*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 Booking
                 @if(($bookingCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
-                      style="background: var(--light-sage); color: var(--dark-gray)">{{ $bookingCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $bookingCount }}</span>
                 @endif
             </a>
 
@@ -142,8 +173,7 @@
                 </svg>
                 Booking User
                 @if(($bookingUserCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
-                      style="background: var(--light-sage); color: var(--dark-gray)">{{ $bookingUserCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $bookingUserCount }}</span>
                 @endif
             </a>
             @endif
@@ -154,8 +184,7 @@
                 </svg>
                 Ulasan Saya
                 @if($reviewCount > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
-                      style="background: var(--light-sage); color: var(--dark-gray)">{{ $reviewCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $reviewCount }}</span>
                 @endif
             </a>
 
@@ -176,20 +205,27 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
                     </svg>
                     Vendor Saya
+                    @if(($menuVendorCount ?? 0) > 0)
+                    <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorCount }}</span>
+                    @endif
                 </a>
             @endif
-            <a href="{{ route('dashboard.vendor.bookings') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.bookings') ? 'active' : '' }}">
+            <a href="{{ route('dashboard.vendor.bookings') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.bookings*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 Booking Masuk
+                @if(($menuVendorBookingPendingCount ?? 0) > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorBookingPendingCount }}</span>
+                @endif
             </a>
-            <a href="{{ route('dashboard.vendor.payments') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.payments') ? 'active' : '' }}">
+            <a href="{{ route('dashboard.vendor.payments') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.payments*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
                 </svg>
                 Pembayaran Masuk
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 {{ ($menuVendorPaymentPendingCount ?? 0) > 0 ? 'bg-light-sage text-dark' : 'bg-gray-100 text-gray-500' }}">{{ $menuVendorPaymentPendingCount ?? 0 }}</span>
             </a>
             @endif
 
@@ -197,26 +233,35 @@
             <div class="pt-3">
                 <p class="text-[10px] uppercase tracking-widest text-gray-400 px-2 mb-2">Admin</p>
             </div>
-            <a href="{{ route('dashboard.admin.vendors') }}" class="sidebar-link {{ request()->routeIs('dashboard.admin.vendors') ? 'active' : '' }}">
+            <a href="{{ route('dashboard.admin.vendors') }}" class="sidebar-link {{ request()->routeIs('dashboard.admin.vendors*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
                 </svg>
                 All Vendor
+                @if(($menuAllVendorCount ?? 0) > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuAllVendorCount }}</span>
+                @endif
             </a>
-            <a href="{{ route('dashboard.vendor.applications') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.applications') ? 'active' : '' }}">
+            <a href="{{ route('dashboard.vendor.applications') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.applications*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4.5 4.5 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>
                 Pengajuan Vendor
+                @if(($menuVendorApplicationPendingCount ?? 0) > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorApplicationPendingCount }}</span>
+                @endif
             </a>
-            <a href="{{ route('dashboard.payment.user') }}" class="sidebar-link {{ request()->routeIs('dashboard.payment.user') ? 'active' : '' }}">
+            <a href="{{ route('dashboard.payment.user') }}" class="sidebar-link {{ request()->routeIs('dashboard.payment.user*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
                 </svg>
                 Pembayaran User
+                @if(($menuPaymentUserPendingCount ?? 0) > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuPaymentUserPendingCount }}</span>
+                @endif
             </a>
-            <a href="/admin" class="sidebar-link">
+            <a href="/admin" class="sidebar-link {{ request()->is('admin*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>
                 </svg>
@@ -250,12 +295,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
-            <p class="text-sm font-semibold truncate" style="color: var(--dark-gray)">@yield('page-title', 'Dashboard')</p>
+            <p class="text-sm font-semibold truncate text-dark">@yield('page-title', 'Dashboard')</p>
             <a href="{{ url('/dashboard') }}" class="w-9 h-9 rounded-full overflow-hidden border border-gray-200 flex items-center justify-center bg-white">
                 @if($user->avatar_url)
                     <img src="{{ $user->avatarUrl() }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                 @else
-                    <span class="text-xs font-bold text-white" style="background: var(--sage-green); width: 100%; height: 100%; display:flex; align-items:center; justify-content:center;">
+                    <span class="w-full h-full flex items-center justify-center text-xs font-bold text-white bg-accent">
                         {{ strtoupper(substr($user->name, 0, 1)) }}
                     </span>
                 @endif
@@ -268,9 +313,9 @@
                 <div class="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="text-lg font-extrabold tracking-tight">
-                            <span style="color:var(--sage-green)">M</span><span style="color:var(--dark-gray)">W</span>
+                            <span class="text-accent">M</span><span class="text-dark">W</span>
                         </span>
-                        <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background: var(--light-sage); color: var(--dark-gray)">Dashboard</span>
+                        <span class="text-xs font-semibold px-2 py-1 rounded-full bg-light-sage text-dark">Dashboard</span>
                     </div>
                     <button type="button" onclick="closeDashboardMobileMenu()" class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Tutup">
                         <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -285,13 +330,13 @@
                             @if($user->avatar_url)
                                 <img src="{{ $user->avatarUrl() }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full flex items-center justify-center text-sm font-bold text-white" style="background: var(--sage-green)">
+                                <div class="w-full h-full flex items-center justify-center text-sm font-bold text-white bg-accent">
                                     {{ strtoupper(substr($user->name, 0, 1)) }}
                                 </div>
                             @endif
                         </div>
                         <div class="min-w-0">
-                            <p class="text-sm font-semibold truncate" style="color: var(--dark-gray)">{{ $user->name }}</p>
+                            <p class="text-sm font-semibold truncate text-dark">{{ $user->name }}</p>
                             <p class="text-[10px] text-gray-400 truncate">{{ $user->email }}</p>
                         </div>
                     </div>
@@ -314,19 +359,17 @@
                         </svg>
                         Favorit
                         @if(($favoriteCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
-                              style="background: var(--light-sage); color: var(--dark-gray)">{{ $favoriteCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $favoriteCount }}</span>
                         @endif
                     </a>
 
-                    <a href="{{ route('dashboard.booking') }}" class="sidebar-link {{ request()->routeIs('dashboard.booking') ? 'active' : '' }}">
+                    <a href="{{ route('dashboard.booking') }}" class="sidebar-link {{ request()->routeIs('dashboard.booking*') ? 'active' : '' }}">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                         Booking
                         @if(($bookingCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
-                              style="background: var(--light-sage); color: var(--dark-gray)">{{ $bookingCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $bookingCount }}</span>
                         @endif
                     </a>
 
@@ -337,8 +380,7 @@
                         </svg>
                         Booking User
                         @if(($bookingUserCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
-                              style="background: var(--light-sage); color: var(--dark-gray)">{{ $bookingUserCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $bookingUserCount }}</span>
                         @endif
                     </a>
                     @endif
@@ -349,8 +391,7 @@
                         </svg>
                         Ulasan Saya
                         @if(($reviewCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
-                              style="background: var(--light-sage); color: var(--dark-gray)">{{ $reviewCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $reviewCount }}</span>
                         @endif
                     </a>
 
@@ -365,24 +406,33 @@
             <div class="pt-3">
                 <p class="text-[10px] uppercase tracking-widest text-gray-400 px-2 mb-2">Vendor</p>
             </div>
+            @if($user->hasRole(['vendor']))
             <a href="{{ route('dashboard.vendor.vendors') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.vendors') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
                 </svg>
                 Vendor Saya
+                @if(($menuVendorCount ?? 0) > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorCount }}</span>
+                @endif
             </a>
-            <a href="{{ route('dashboard.vendor.bookings') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.bookings') ? 'active' : '' }}">
+            @endif
+            <a href="{{ route('dashboard.vendor.bookings') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.bookings*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 Booking Masuk
+                @if(($menuVendorBookingPendingCount ?? 0) > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorBookingPendingCount }}</span>
+                @endif
             </a>
-            <a href="{{ route('dashboard.vendor.payments') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.payments') ? 'active' : '' }}">
+            <a href="{{ route('dashboard.vendor.payments') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.payments*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
                 </svg>
                 Pembayaran Masuk
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 {{ ($menuVendorPaymentPendingCount ?? 0) > 0 ? 'bg-light-sage text-dark' : 'bg-gray-100 text-gray-500' }}">{{ $menuVendorPaymentPendingCount ?? 0 }}</span>
             </a>
             @endif
 
@@ -390,20 +440,35 @@
                     <div class="pt-3">
                         <p class="text-[10px] uppercase tracking-widest text-gray-400 px-2 mb-2">Admin</p>
                     </div>
-                    <a href="{{ route('dashboard.vendor.applications') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.applications') ? 'active' : '' }}">
+                    <a href="{{ route('dashboard.admin.vendors') }}" class="sidebar-link {{ request()->routeIs('dashboard.admin.vendors*') ? 'active' : '' }}">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
+                        </svg>
+                        All Vendor
+                        @if(($menuAllVendorCount ?? 0) > 0)
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuAllVendorCount }}</span>
+                        @endif
+                    </a>
+                    <a href="{{ route('dashboard.vendor.applications') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.applications*') ? 'active' : '' }}">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4.5 4.5 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
                         Pengajuan Vendor
+                        @if(($menuVendorApplicationPendingCount ?? 0) > 0)
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorApplicationPendingCount }}</span>
+                        @endif
                     </a>
-                    <a href="{{ route('dashboard.payment.user') }}" class="sidebar-link {{ request()->routeIs('dashboard.payment.user') ? 'active' : '' }}">
+                    <a href="{{ route('dashboard.payment.user') }}" class="sidebar-link {{ request()->routeIs('dashboard.payment.user*') ? 'active' : '' }}">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
                         </svg>
                         Pembayaran User
+                        @if(($menuPaymentUserPendingCount ?? 0) > 0)
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuPaymentUserPendingCount }}</span>
+                        @endif
                     </a>
-                    <a href="/admin" class="sidebar-link">
+                    <a href="/admin" class="sidebar-link {{ request()->is('admin*') ? 'active' : '' }}">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>
                         </svg>

@@ -31,16 +31,21 @@ class VendorBookingController extends Controller
                 ->withInput();
         }
 
-        VendorBooking::create([
+        $booking = VendorBooking::create([
             'vendor_id'         => $vendor->id,
             'user_id'           => $request->user()->id,
             'vendor_package_id' => $data['vendor_package_id'] ?? null,
+            'agreed_total'      => isset($data['vendor_package_id'])
+                ? (int) ($vendor->packages()->whereKey((int) $data['vendor_package_id'])->value('price_raw') ?? 0)
+                : null,
             'event_date'        => $data['event_date'],
             'phone'             => $normalizedPhone,
             'notes'             => $data['notes'] ?? null,
             'status'            => 'pending',
         ]);
 
-        return back()->with('booking_success', 'Booking berhasil dikirim. Tim kami akan segera menghubungi Anda.');
+        return back()
+            ->with('booking_success', 'Booking berhasil dikirim. Tim kami akan segera menghubungi Anda.')
+            ->with('booking_id', $booking->id);
     }
 }

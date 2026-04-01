@@ -5,8 +5,10 @@
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-bold mb-1" style="color: var(--dark-gray)">Pembayaran Booking</h1>
-    <p class="text-sm text-gray-500">Unggah bukti pembayaran untuk diverifikasi vendor.</p>
+    <h1 class="text-2xl font-bold mb-1" style="color: var(--dark-gray)">{{ in_array($booking->payment_status, ['dp_paid', 'paid'], true) ? 'Invoice Booking' : 'Pembayaran Booking' }}</h1>
+    <p class="text-sm text-gray-500">
+        {{ in_array($booking->payment_status, ['dp_paid', 'paid'], true) ? 'Rincian pembayaran yang sudah diverifikasi.' : 'Unggah bukti pembayaran untuk diverifikasi vendor.' }}
+    </p>
 </div>
 
 <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
@@ -38,8 +40,9 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('dashboard.booking.payment.store', $booking) }}" enctype="multipart/form-data" class="space-y-4">
-            @csrf
+        @if(!in_array($booking->payment_status, ['dp_paid', 'paid'], true))
+            <form method="POST" action="{{ route('dashboard.booking.payment.store', $booking) }}" enctype="multipart/form-data" class="space-y-4">
+                @csrf
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -64,7 +67,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Nominal (angka)</label>
-                    <input type="number" name="amount" min="0" value="{{ old('amount') }}"
+                    <input type="hidden" name="amount" id="amount_raw" value="{{ old('amount') }}">
+                    <input type="text" id="amount_display" inputmode="numeric" autocomplete="off"
+                           value="{{ old('amount') !== null && old('amount') !== '' ? number_format((int) old('amount'), 0, ',', '.') : '' }}"
                            class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition">
                 </div>
                 <div>
@@ -76,13 +81,15 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 mb-1">Nama pengirim (opsional)</label>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Nama pengirim</label>
                     <input type="text" name="sender_name" maxlength="120" value="{{ old('sender_name') }}"
+                           required
                            class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 mb-1">Bank pengirim (opsional)</label>
+                    <label class="block text-xs font-semibold text-gray-500 mb-1">Bank pengirim</label>
                     <input type="text" name="sender_bank" maxlength="80" value="{{ old('sender_bank') }}"
+                           required
                            class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition">
                 </div>
             </div>
@@ -90,19 +97,30 @@
             <div>
                 <label class="block text-xs font-semibold text-gray-500 mb-1">Bukti pembayaran</label>
                 <input type="file" name="proof" accept=".jpg,.jpeg,.png,.webp,.pdf"
+                       required
                        class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition bg-white">
                 <p class="text-[10px] text-gray-400 mt-1.5">Format: JPG/PNG/WEBP/PDF, maks 5MB.</p>
             </div>
 
-            <div class="flex items-center justify-end gap-2 pt-2">
-                <a href="{{ route('dashboard.booking') }}" class="text-xs font-bold px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
-                    Kembali
-                </a>
-                <button type="submit" class="text-xs font-bold px-4 py-2 rounded-lg transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">
-                    Kirim Bukti
-                </button>
+                <div class="flex items-center justify-end gap-2 pt-2">
+                    <a href="{{ route('dashboard.booking') }}" class="text-xs font-bold px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                        Kembali
+                    </a>
+                    <button type="submit" class="text-xs font-bold px-4 py-2 rounded-lg transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">
+                        Kirim Bukti
+                    </button>
+                </div>
+            </form>
+        @else
+            <div class="mb-6 text-xs font-semibold px-3 py-2 rounded-xl bg-green-50 text-green-700">
+                Pembayaran sudah diverifikasi. Silakan simpan invoice ini sebagai bukti.
             </div>
-        </form>
+            <div class="flex items-center justify-end gap-2 mb-2">
+                <a href="{{ route('dashboard.booking.invoice', $booking) }}" class="text-xs font-bold px-4 py-2 rounded-lg transition hover:opacity-90" style="background-color: var(--dark-gray); color: var(--cream)">
+                    Lihat Invoice
+                </a>
+            </div>
+        @endif
 
         <div class="mt-8">
             <div class="text-xs uppercase tracking-widest text-gray-400 mb-2">Riwayat Pembayaran</div>
@@ -152,5 +170,39 @@
         </div>
     </div>
 </div>
-@endsection
 
+<script>
+    (function () {
+        var display = document.getElementById('amount_display');
+        var raw = document.getElementById('amount_raw');
+        if (!display || !raw) return;
+
+        function digitsOnly(value) {
+            return String(value || '').replace(/\D+/g, '');
+        }
+
+        function formatId(value) {
+            if (!value) return '';
+            var n = Number(value);
+            if (!Number.isFinite(n)) return '';
+            return new Intl.NumberFormat('id-ID').format(n);
+        }
+
+        function syncFromDisplay() {
+            var digits = digitsOnly(display.value);
+            raw.value = digits;
+            display.value = digits ? formatId(digits) : '';
+        }
+
+        function syncFromRaw() {
+            var digits = digitsOnly(raw.value);
+            raw.value = digits;
+            display.value = digits ? formatId(digits) : '';
+        }
+
+        display.addEventListener('input', syncFromDisplay);
+        display.addEventListener('blur', syncFromDisplay);
+        syncFromRaw();
+    })();
+</script>
+@endsection

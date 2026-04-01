@@ -88,7 +88,12 @@
                             </td>
                             <td class="px-4 py-3 text-xs align-top">
                                 @if($p->proof_url)
-                                    <a href="{{ $p->proof_url }}" target="_blank" class="font-bold hover:underline" style="color: var(--dark-gray)">Lihat</a>
+                                    <button type="button"
+                                            onclick='openProofModal(@json($p->proof_url))'
+                                            class="font-bold hover:underline"
+                                            style="color: var(--dark-gray)">
+                                        Lihat
+                                    </button>
                                 @else
                                     <span class="text-gray-400">—</span>
                                 @endif
@@ -160,5 +165,78 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+</script>
+
+<div id="proof-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" onclick="if(event.target===this) closeProofModal()">
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-2xl w-full max-w-4xl">
+        <button type="button"
+                onclick="closeProofModal()"
+                class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-sm font-bold hover:bg-gray-50 transition"
+                style="color: var(--dark-gray)">
+            ×
+        </button>
+        <div class="p-4 border-b border-gray-100">
+            <p class="text-sm font-bold" style="color: var(--dark-gray)">Bukti Pembayaran</p>
+        </div>
+        <div class="p-4 bg-gray-50">
+            <img id="proof-modal-img" src="" alt="Bukti pembayaran" class="hidden w-full h-auto max-h-[75vh] object-contain bg-black rounded-xl">
+            <iframe id="proof-modal-frame" src="" class="hidden w-full h-[75vh] bg-white rounded-xl border border-gray-100"></iframe>
+            <div id="proof-modal-fallback" class="hidden text-sm text-gray-500">
+                <a id="proof-modal-link" href="#" target="_blank" class="font-bold hover:underline" style="color: var(--dark-gray)">Buka bukti di tab baru</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openProofModal(url) {
+        var modal = document.getElementById('proof-modal');
+        var img = document.getElementById('proof-modal-img');
+        var frame = document.getElementById('proof-modal-frame');
+        var fallback = document.getElementById('proof-modal-fallback');
+        var link = document.getElementById('proof-modal-link');
+        if (!modal || !img || !frame || !fallback || !link) return;
+
+        img.classList.add('hidden');
+        frame.classList.add('hidden');
+        fallback.classList.add('hidden');
+        img.src = '';
+        frame.src = '';
+        link.href = url || '#';
+
+        var lower = String(url || '').toLowerCase();
+        if (lower.endsWith('.pdf')) {
+            frame.src = url;
+            frame.classList.remove('hidden');
+        } else if (lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.png') || lower.endsWith('.webp') || lower.endsWith('.gif')) {
+            img.src = url;
+            img.classList.remove('hidden');
+        } else {
+            fallback.classList.remove('hidden');
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeProofModal() {
+        var modal = document.getElementById('proof-modal');
+        var img = document.getElementById('proof-modal-img');
+        var frame = document.getElementById('proof-modal-frame');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        if (img) img.src = '';
+        if (frame) frame.src = '';
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        var modal = document.getElementById('proof-modal');
+        if (modal && !modal.classList.contains('hidden')) closeProofModal();
+    });
 </script>
 @endsection

@@ -7,6 +7,7 @@ use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class VendorEditController extends Controller
 {
@@ -51,7 +52,8 @@ class VendorEditController extends Controller
         $validated = $request->validate([
             'name'         => 'required|string|max:255',
             'type'         => 'nullable|string|max:100',
-            'category'     => 'required|string|max:100',
+            'categories'   => ['required', 'array', 'min:1'],
+            'categories.*' => ['required', 'string', 'distinct', Rule::exists('category_vendors', 'slug')],
             'location'     => 'required|string|max:255',
             'province'     => 'nullable|string|max:100',
             'city'         => 'nullable|string|max:100',
@@ -72,6 +74,10 @@ class VendorEditController extends Controller
             'cover_image.*'   => 'image|max:1024',
             'cover_video'     => 'nullable|url|max:255',
         ]);
+
+        $categories = array_values(array_filter($validated['categories'] ?? []));
+        $validated['categories'] = $categories;
+        $validated['category'] = $categories[0] ?? $vendor->category;
 
         if ($isAdmin) {
             $labelValidated = $request->validate([

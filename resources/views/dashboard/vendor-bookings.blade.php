@@ -9,6 +9,12 @@
     <p class="text-sm text-gray-500">Booking terbaru untuk vendor yang Anda kelola (maks. 200).</p>
 </div>
 
+@if (session('vendor_booking_success'))
+    <div class="mb-4 text-xs font-semibold px-3 py-2 rounded-xl bg-green-50 text-green-700">
+        {{ session('vendor_booking_success') }}
+    </div>
+@endif
+
 @if($bookings->isEmpty())
     <div class="bg-white rounded-2xl border border-gray-100 p-10 text-center flex flex-col items-center">
         <div class="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-4">
@@ -83,6 +89,16 @@
                                     <a href="{{ route('dashboard.vendor.bookings.show', $b) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
                                         Kelola
                                     </a>
+                                    @if($user->hasRole(['super_admin', 'admin']))
+                                        <form method="POST" action="{{ route('dashboard.vendor.bookings.destroy', $b) }}" class="border-t border-gray-100"
+                                              onsubmit="return confirm('Hapus booking ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="w-full text-left text-xs font-bold px-3 py-2 hover:bg-gray-100 transition" style="color: #ef4444">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    @endif
                                     @if($b->vendor)
                                         <a href="{{ route('vendor.detail', $b->vendor->slug) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition border-t border-gray-100" style="color: var(--dark-gray)">
                                             Lihat

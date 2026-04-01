@@ -102,9 +102,15 @@
                                             Edit
                                         </a>
                                     @endif
-                                    <a href="{{ route('dashboard.booking.payment', $b) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition {{ $b->status === 'pending' ? 'border-t border-gray-100' : '' }}" style="color: var(--dark-gray)">
-                                        Bayar
-                                    </a>
+                                    @if($b->status === 'confirmed')
+                                        <a href="{{ route('dashboard.booking.invoice', $b) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition {{ $b->status === 'pending' ? 'border-t border-gray-100' : '' }}" style="color: var(--dark-gray)">
+                                            Invoice
+                                        </a>
+                                    @else
+                                        <a href="{{ route('dashboard.booking.payment', $b) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition {{ $b->status === 'pending' ? 'border-t border-gray-100' : '' }}" style="color: var(--dark-gray)">
+                                            Bayar
+                                        </a>
+                                    @endif
                                     @if($b->vendor)
                                         <a href="{{ route('vendor.detail', $b->vendor->slug) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition border-t border-gray-100" style="color: var(--dark-gray)">
                                             Lihat

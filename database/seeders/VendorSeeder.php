@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Vendor;
+use App\Models\User;
+use App\Models\VendorBooking;
 use App\Models\VendorGallery;
 use App\Models\VendorPackage;
 use App\Models\VendorReview;
@@ -15,6 +17,18 @@ class VendorSeeder extends Seeder
     {
         // ── Vendor data – 10 vendor per kategori (20 kategori = 200 vendor) ──
         $vendors = [
+            // ── PAKET LENGKAP (10) ───────────────────────────────────────────────
+            ['name'=>'PT Makna Signature Wedding',      'category'=>'paket-lengkap','type'=>'Paket Lengkap', 'location'=>'Jl. Sudirman No. 1',            'price'=>85_000_000,'cap'=>'300 – 1.000 tamu','rating'=>4.9,'promo'=>'Hemat 10jt',   'badge'=>'TOP PICK'],
+            ['name'=>'CV Royal Palembang Wedding Co.',  'category'=>'paket-lengkap','type'=>'Paket Lengkap', 'location'=>'Jl. Demang Lebar Daun No. 1',   'price'=>75_000_000,'cap'=>'250 – 900 tamu', 'rating'=>4.8,'promo'=>'Disc 15%',    'badge'=>'NEW REAL WEDDING'],
+            ['name'=>'Siger Wedding Collective',        'category'=>'paket-lengkap','type'=>'Paket Lengkap', 'location'=>'Jl. Kolonel Atmo No. 1',        'price'=>65_000_000,'cap'=>'200 – 800 tamu', 'rating'=>4.7,'promo'=>null,          'badge'=>'POPULAR'],
+            ['name'=>'Harmoni Wedding Partners',        'category'=>'paket-lengkap','type'=>'Paket Lengkap', 'location'=>'Jl. Veteran No. 1',             'price'=>70_000_000,'cap'=>'250 – 850 tamu', 'rating'=>4.7,'promo'=>'Free MC',     'badge'=>null],
+            ['name'=>'Pesona Garden Wedding House',     'category'=>'paket-lengkap','type'=>'Paket Lengkap', 'location'=>'Jl. Merdeka No. 1',             'price'=>60_000_000,'cap'=>'180 – 650 tamu', 'rating'=>4.6,'promo'=>'Disc 10%',    'badge'=>null],
+            ['name'=>'Ballroom Pro Wedding Group',      'category'=>'paket-lengkap','type'=>'Paket Lengkap', 'location'=>'Jl. POM IX No. 1',              'price'=>90_000_000,'cap'=>'400 – 1.500 tamu','rating'=>4.9,'promo'=>'Disc 20%',    'badge'=>'TOP PICK'],
+            ['name'=>'Elegant Day Wedding Studio',      'category'=>'paket-lengkap','type'=>'Paket Lengkap', 'location'=>'Jl. R. Sukamto No. 1',          'price'=>58_000_000,'cap'=>'150 – 600 tamu', 'rating'=>4.5,'promo'=>null,          'badge'=>null],
+            ['name'=>'All-in Wedding Enterprise',       'category'=>'paket-lengkap','type'=>'Paket Lengkap', 'location'=>'Jl. Basuki Rahmat No. 1',       'price'=>95_000_000,'cap'=>'500 – 2.000 tamu','rating'=>5.0,'promo'=>'All-Inclusive','badge'=>'TOP PICK'],
+            ['name'=>'Cendana Suite Wedding Company',   'category'=>'paket-lengkap','type'=>'Paket Lengkap', 'location'=>'Jl. Letkol Iskandar No. 1',     'price'=>72_000_000,'cap'=>'250 – 900 tamu', 'rating'=>4.7,'promo'=>'Hemat 5jt',   'badge'=>'NEW REAL WEDDING'],
+            ['name'=>'Sriwijaya Wedding Package Co.',   'category'=>'paket-lengkap','type'=>'Paket Lengkap', 'location'=>'Jl. Talang Semut No. 1',        'price'=>55_000_000,'cap'=>'120 – 500 tamu', 'rating'=>4.5,'promo'=>null,          'badge'=>null],
+
             // ── GEDUNG (10) ──────────────────────────────────────────────────────
             ['name'=>'Grand Ballroom Sriwijaya',     'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Sudirman No. 12',          'price'=>45_000_000,'cap'=>'500 – 1.500 tamu','rating'=>4.9,'promo'=>'Hemat 10jt',   'badge'=>'NEW REAL WEDDING'],
             ['name'=>'Ballroom Mahkota Indah',       'category'=>'gedung',     'type'=>'Indoor & Outdoor',     'location'=>'Jl. Demang Lebar Daun No. 5',  'price'=>40_000_000,'cap'=>'400 – 1.200 tamu','rating'=>4.8,'promo'=>'Disc 15%',    'badge'=>'TOP PICK'],
@@ -258,6 +272,11 @@ class VendorSeeder extends Seeder
 
         // Package templates per category
         $packageTpl = [
+            'paket-lengkap' => [
+                ['name'=>'Paket Lengkap Silver',   'mult'=>1, 'cap'=>300,  'color'=>'#C8D5B9','tcol'=>'#444444','items'=>['WO & Koordinasi', 'Venue / Gedung', 'Dekorasi Dasar', 'Katering', 'Sound System', 'MC', 'Dokumentasi Foto']],
+                ['name'=>'Paket Lengkap Gold',     'mult'=>2, 'cap'=>500,  'color'=>'#F9D5E5','tcol'=>'#444444','items'=>['WO Full Planning', 'Venue Premium', 'Dekorasi Premium', 'Katering', 'Sound & Lighting', 'MC Profesional', 'Foto & Video']],
+                ['name'=>'Paket Lengkap Platinum', 'mult'=>3, 'cap'=>1000, 'color'=>'#9CAF88','tcol'=>'#FFFFFF','items'=>['WO Full Service', 'Venue Full Day', 'Dekorasi Eksklusif', 'Katering', 'Full AV System', 'MC + Hiburan', 'Foto & Video Sinema', 'Mobil Pengantin', 'Kue Pengantin']],
+            ],
             'gedung' => [
                 ['name'=>'Paket Silver',   'mult'=>1,'cap'=>300,  'color'=>'#C8D5B9','tcol'=>'#444444','items'=>['Gedung 6 jam','Dekorasi Dasar','Sound System','MC Lokal','Perlengkapan Ibadah']],
                 ['name'=>'Paket Gold',     'mult'=>2,'cap'=>500,  'color'=>'#F9D5E5','tcol'=>'#444444','items'=>['Gedung 8 jam','Dekorasi Premium','Sound System Pro','MC Profesional','Kamar Pengantin','Dokumentasi Foto']],
@@ -362,8 +381,6 @@ class VendorSeeder extends Seeder
 
         // Map legacy free-text badge/promo values to valid enum backing values
         $badgeMap = [
-            'TOP PICK'         => 'top_rated',
-            'NEW REAL WEDDING' => 'baru',
             'POPULAR'          => 'unggulan',
         ];
         $promoMap = [
@@ -404,9 +421,20 @@ class VendorSeeder extends Seeder
         ];
         $provinceKeys = array_keys($provincePool);
 
+        $pengunjungUsers = User::role('pengunjung')->pluck('id')->all();
+        if (count($pengunjungUsers) < 20) {
+            $need = 20 - count($pengunjungUsers);
+            $extra = User::whereDoesntHave('roles')->inRandomOrder()->limit($need)->get();
+            foreach ($extra as $u) {
+                $u->assignRole('pengunjung');
+            }
+            $pengunjungUsers = User::role('pengunjung')->pluck('id')->all();
+        }
+
         foreach ($vendors as $i => $data) {
             $randProvince = $provinceKeys[$i % count($provinceKeys)];
             $randCity     = $provincePool[$randProvince][array_rand($provincePool[$randProvince])];
+            $brandName = $this->brandName((string) $data['name'], (string) $data['category']);
 
             // Hitung discount dari promo
             $discountRaw = 0;
@@ -418,33 +446,79 @@ class VendorSeeder extends Seeder
                 }
             }
 
+            $badgeValue = $data['badge'] ? ($badgeMap[$data['badge']] ?? null) : null;
+            $promoValue = $data['promo'] ? ($promoMap[$data['promo']] ?? 'bonus_gift') : null;
+            $createdAt = $i < 15
+                ? now()->subDays(rand(0, 20))
+                : now()->subDays(rand(31, 365));
+
+            $coverImages = [];
+            for ($c = 0; $c < 5; $c++) {
+                $coverImages[] = 'https://picsum.photos/seed/cover-' . ($i + 1) . '-' . $c . '/1200/800';
+            }
+
             $vendor = Vendor::create([
-                'name'            => $data['name'],
-                'slug'            => Str::slug($data['name']),
+                'name'            => $brandName,
+                'slug'            => Str::slug($brandName),
                 'type'            => $data['type'],
                 'category'        => $data['category'],
                 'location'        => $data['location'],
                 'city'            => $randCity,
                 'province'        => $randProvince,
-                'description'     => 'Kami adalah ' . $data['name'] . ', menyediakan layanan pernikahan terbaik di Palembang dengan pengalaman bertahun-tahun. Kepuasan pasangan adalah prioritas utama kami.',
+                'description'     => 'Kami adalah ' . $brandName . ', menyediakan layanan pernikahan terbaik di Palembang dengan pengalaman bertahun-tahun. Kepuasan pasangan adalah prioritas utama kami.',
                 'phone'           => '0811-' . str_pad($i + 1, 4, '0', STR_PAD_LEFT) . '-2025',
-                'email'           => Str::slug($data['name']) . '@example.com',
-                'instagram'       => '@' . Str::slug($data['name'], ''),
+                'email'           => Str::slug($brandName) . '@example.com',
+                'instagram'       => '@' . Str::slug($brandName, ''),
                 'capacity'        => $data['cap'],
-                'price_start'     => 'Rp ' . number_format($data['price'], 0, ',', '.'),
+                'price_start'     => $data['price'],
                 'discount'        => $discountRaw,
                 'experience'      => ($i + 3) . '+ Tahun',
-                'venue_type'      => in_array($data['category'], ['gedung','hotel']) ? 'Indoor & Outdoor' : 'Outdoor',
+                'venue_type'      => in_array($data['category'], ['gedung','hotel','paket-lengkap']) ? 'Indoor & Outdoor' : 'Outdoor',
                 'facilities'      => 'AC, Parkir, Mushola, Kamar Rias',
                 'events_done'     => ($i + 1) * 15 + 20,
                 'likes'           => 0,
                 'comments_count'  => 0,
                 'rating'          => 0,
-                'badge'           => $data['badge'] ? [$badgeMap[$data['badge']] ?? 'unggulan'] : null,
-                'promo'           => $data['promo'] ? [$promoMap[$data['promo']] ?? 'bonus_gift'] : null,
-                'cover_image'     => null,
+                'badge'           => $badgeValue ? [$badgeValue] : null,
+                'promo'           => $promoValue ? [$promoValue] : null,
+                'cover_image'     => $coverImages,
                 'is_active'       => true,
+                'is_profile_complete' => true,
+                'created_at'      => $createdAt,
+                'updated_at'      => $createdAt,
             ]);
+
+            $reviewCount = $i % 20 === 0 ? 25 : ($i % 10 === 0 ? 10 : ($i % 5 === 0 ? 5 : 0));
+            $bookingCount = $i % 25 === 0 ? 20 : ($i % 7 === 0 ? 6 : 0);
+
+            for ($b = 0; $b < $bookingCount; $b++) {
+                $uid = $pengunjungUsers[array_rand($pengunjungUsers)];
+                VendorBooking::create([
+                    'vendor_id' => $vendor->id,
+                    'user_id' => $uid,
+                    'vendor_package_id' => null,
+                    'event_date' => now()->addDays(rand(7, 180)),
+                    'phone' => '0812' . str_pad((string) rand(0, 99999999), 8, '0', STR_PAD_LEFT),
+                    'notes' => null,
+                    'status' => 'pending',
+                ]);
+            }
+
+            for ($r = 0; $r < $reviewCount; $r++) {
+                $uid = $pengunjungUsers[array_rand($pengunjungUsers)];
+                $u = User::find($uid);
+                VendorReview::create([
+                    'vendor_id' => $vendor->id,
+                    'user_id' => $uid,
+                    'reviewer_name' => $u?->name ?? 'Pengunjung',
+                    'reviewer_avatar' => null,
+                    'rating' => rand(4, 5),
+                    'body' => 'Pelayanan ramah dan respons cepat. Recommended.',
+                    'reviewed_at' => now()->subDays(rand(1, 180)),
+                    'is_approved' => true,
+                    'reviewer_ip' => '127.0.0.1',
+                ]);
+            }
 
             // Pool of demo YouTube video IDs (ganti dengan video asli sesuai vendor)
             $demoYoutubeIds = [
@@ -468,7 +542,7 @@ class VendorSeeder extends Seeder
             }
 
             // Packages (3 per vendor based on category)
-            $tpls = $packageTpl[$data['category']];
+            $tpls = $packageTpl[$data['category']] ?? $packageTpl['paket-lengkap'];
             foreach ($tpls as $idx => $tpl) {
                 $priceRaw = (int) round($data['price'] * ($tpl['mult'] * 0.75 + 0.5));
                 VendorPackage::create([
@@ -485,8 +559,6 @@ class VendorSeeder extends Seeder
                 ]);
             }
         }
-
-        $this->command->info('VendorSeeder: ' . count($vendors) . ' vendors seeded with galleries, packages & reviews.');
 
         // ── 2 Vendor premium dengan banyak fasilitas (uji tampilan modal) ──
         $premiumVendors = [
@@ -641,6 +713,15 @@ class VendorSeeder extends Seeder
                 }
             }
 
+            $pvBadgeValue = $pd['badge'] ? ($badgeMap[$pd['badge']] ?? null) : null;
+            $pvPromoValue = $pd['promo'] ? ($promoMap[$pd['promo']] ?? 'bonus_gift') : null;
+            $pvCreatedAt = now()->subDays(rand(60, 365));
+
+            $pvCoverImages = [];
+            for ($c = 0; $c < 6; $c++) {
+                $pvCoverImages[] = 'https://picsum.photos/seed/premium-cover-' . ($pi + 1) . '-' . $c . '/1200/800';
+            }
+
             $pv = Vendor::create([
                 'name'            => $pd['name'],
                 'slug'            => $pd['slug'],
@@ -654,7 +735,7 @@ class VendorSeeder extends Seeder
                 'email'           => $pd['slug'] . '@example.com',
                 'instagram'       => '@' . str_replace('-', '', $pd['slug']),
                 'capacity'        => $pd['cap'],
-                'price_start'     => 'Rp ' . number_format($pd['price'], 0, ',', '.'),
+                'price_start'     => $pd['price'],
                 'discount'        => $pvDiscountRaw,
                 'experience'      => '15+ Tahun',
                 'venue_type'      => 'Indoor & Outdoor',
@@ -663,11 +744,45 @@ class VendorSeeder extends Seeder
                 'likes'           => 800 + $pi * 100,
                 'comments_count'  => 120 + $pi * 30,
                 'rating'          => $pd['rating'],
-                'badge'           => $pd['badge'] ? [$badgeMap[$pd['badge']] ?? 'unggulan'] : null,
-                'promo'           => $pd['promo'] ? [$promoMap[$pd['promo']] ?? 'bonus_gift'] : null,
-                'cover_image'     => null,
+                'badge'           => $pvBadgeValue ? [$pvBadgeValue] : null,
+                'promo'           => $pvPromoValue ? [$pvPromoValue] : null,
+                'cover_image'     => $pvCoverImages,
                 'is_active'       => true,
+                'is_profile_complete' => true,
+                'created_at'      => $pvCreatedAt,
+                'updated_at'      => $pvCreatedAt,
             ]);
+
+            $pvReviewCount = 60 + $pi * 20;
+            $pvBookingCount = 50 + $pi * 20;
+            for ($b = 0; $b < $pvBookingCount; $b++) {
+                $uid = $pengunjungUsers[array_rand($pengunjungUsers)];
+                VendorBooking::create([
+                    'vendor_id' => $pv->id,
+                    'user_id' => $uid,
+                    'vendor_package_id' => null,
+                    'event_date' => now()->addDays(rand(7, 240)),
+                    'phone' => '0812' . str_pad((string) rand(0, 99999999), 8, '0', STR_PAD_LEFT),
+                    'notes' => null,
+                    'status' => 'pending',
+                ]);
+            }
+
+            for ($r = 0; $r < $pvReviewCount; $r++) {
+                $uid = $pengunjungUsers[array_rand($pengunjungUsers)];
+                $u = User::find($uid);
+                VendorReview::create([
+                    'vendor_id' => $pv->id,
+                    'user_id' => $uid,
+                    'reviewer_name' => $u?->name ?? 'Pengunjung',
+                    'reviewer_avatar' => null,
+                    'rating' => rand(4, 5),
+                    'body' => 'Venue sangat bagus dan tim sangat profesional.',
+                    'reviewed_at' => now()->subDays(rand(1, 240)),
+                    'is_approved' => true,
+                    'reviewer_ip' => '127.0.0.1',
+                ]);
+            }
 
             $premiumYoutubeIds = ['LXb3EKWsInQ', 'ZRv_GLiinVU'];
             $pvYoutubeId = $premiumYoutubeIds[$pi % 2];
@@ -699,6 +814,41 @@ class VendorSeeder extends Seeder
             }
         }
 
-        $this->command->info('Premium vendors seeded: The Royal Sriwijaya Palace & Pesona Grand Wedding Resort');
+        $this->command->info('VendorSeeder: ' . (count($vendors) + count($premiumVendors)) . ' vendors seeded with galleries, packages, bookings & reviews.');
+    }
+
+    private function brandName(string $name, string $category): string
+    {
+        $name = trim(preg_replace('/\s+/', ' ', $name));
+        if ($name === '') {
+            return $name;
+        }
+
+        $lower = strtolower($name);
+        $hasWeddingBrand = str_contains($lower, 'wedding') || str_contains($lower, 'bridal');
+
+        if ($hasWeddingBrand) {
+            return $name;
+        }
+
+        $suffix = match ($category) {
+            'gedung', 'hotel', 'rumah' => 'Wedding Venue',
+            'wo' => 'Wedding Organizer',
+            'catering' => 'Wedding Catering',
+            'dekorasi' => 'Wedding Decor',
+            'foto-video' => 'Wedding Photography',
+            'makeup' => 'Bridal Makeup',
+            'gaun' => 'Bridal Boutique',
+            'hiburan' => 'Wedding Entertainment',
+            'undangan' => 'Wedding Invitations',
+            'transportasi' => 'Wedding Transport',
+            'kue-pengantin' => 'Wedding Cake',
+            'mc' => 'Wedding MC',
+            'fotobooth' => 'Wedding Photobooth',
+            'perhiasan' => 'Bridal Jewelry',
+            default => '',
+        };
+
+        return $suffix !== '' ? ($name . ' ' . $suffix) : $name;
     }
 }

@@ -14,25 +14,188 @@
     </div>
 
     {{-- Stats --}}
+    @php
+        $isAdmin = $user->hasRole(['super_admin', 'admin']);
+        $isVendor = $user->hasRole(['vendor']);
+    @endphp
+
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-        <div class="bg-white rounded-2xl border border-gray-100 p-5">
-            <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Ulasan Dikirim</p>
-            <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $reviewCount }}</p>
-            <p class="text-xs text-gray-400 mt-0.5">total ulasan</p>
-        </div>
-        <div class="bg-white rounded-2xl border border-gray-100 p-5">
-            <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Bergabung</p>
-            <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ (int) $user->created_at->diffInDays(now()) }}</p>
-            <p class="text-xs text-gray-400 mt-0.5">hari lalu</p>
-        </div>
-        <div class="bg-white rounded-2xl border border-gray-100 p-5 col-span-2 sm:col-span-1">
-            <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Akun Sejak</p>
-            <p class="text-lg font-bold leading-tight" style="color: var(--dark-gray)">{{ $user->created_at->translatedFormat('M Y') }}</p>
-            <p class="text-xs mt-0.5 {{ $user->email_verified_at ? 'text-green-500' : 'text-amber-500' }}">
-                {{ $user->email_verified_at ? '✓ Terverifikasi' : '⚠ Belum verifikasi' }}
-            </p>
-        </div>
+        @if($isAdmin)
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Booking Aktif</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $bookingActiveCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">pending / contacted / confirmed</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Booking Selesai</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $bookingDoneCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">status done</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Pembayaran Masuk</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $paymentTotalCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">total data</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Menunggu Verifikasi</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $paymentPendingCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">pending</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Pembayaran Disetujui</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $paymentApprovedCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">approved</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 col-span-2 sm:col-span-1">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Nominal Disetujui</p>
+                <p class="text-lg font-bold leading-tight" style="color: var(--dark-gray)">{{ number_format((int) ($paymentApprovedSum ?? 0), 0, ',', '.') }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">
+                    DP {{ number_format((int) ($paymentApprovedDpSum ?? 0), 0, ',', '.') }} ·
+                    Lunas {{ number_format((int) ($paymentApprovedFinalSum ?? 0), 0, ',', '.') }} ·
+                    Cicilan {{ number_format((int) ($paymentApprovedInstallmentSum ?? 0), 0, ',', '.') }}
+                </p>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Total Vendor</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $vendorTotalCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">semua data</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Vendor Aktif</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $vendorActiveCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">is_active true</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Vendor Nonaktif</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $vendorInactiveCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">is_active false</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Pengajuan Vendor</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $menuVendorApplicationPendingCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">pending</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 col-span-2 sm:col-span-1">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Perlu Ditinjau</p>
+                <p class="text-lg font-bold leading-tight" style="color: var(--dark-gray)">{{ $vendorIncompleteCount ?? 0 }} vendor</p>
+                <p class="text-xs text-gray-400 mt-0.5">{{ $reviewPendingCount ?? 0 }} ulasan pending</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 col-span-2 sm:col-span-1">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Akun Sejak</p>
+                <p class="text-lg font-bold leading-tight" style="color: var(--dark-gray)">{{ $user->created_at->translatedFormat('M Y') }}</p>
+                <p class="text-xs mt-0.5 {{ $user->email_verified_at ? 'text-green-500' : 'text-amber-500' }}">
+                    {{ $user->email_verified_at ? '✓ Terverifikasi' : '⚠ Belum verifikasi' }}
+                </p>
+            </div>
+        @elseif($isVendor)
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Vendor Saya</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $menuVendorCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">terhubung ke akun</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Booking Aktif</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $bookingActiveCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">pending / contacted / confirmed</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Booking Selesai</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $bookingDoneCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">status done</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Pembayaran Masuk</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $paymentTotalCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">total data</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Menunggu Verifikasi</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $paymentPendingCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">pending</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Pembayaran Disetujui</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $paymentApprovedCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">approved</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 col-span-2 sm:col-span-1">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Nominal Disetujui</p>
+                <p class="text-lg font-bold leading-tight" style="color: var(--dark-gray)">{{ number_format((int) ($paymentApprovedSum ?? 0), 0, ',', '.') }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">
+                    DP {{ number_format((int) ($paymentApprovedDpSum ?? 0), 0, ',', '.') }} ·
+                    Lunas {{ number_format((int) ($paymentApprovedFinalSum ?? 0), 0, ',', '.') }} ·
+                    Cicilan {{ number_format((int) ($paymentApprovedInstallmentSum ?? 0), 0, ',', '.') }}
+                </p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Ulasan Dikirim</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $reviewCount }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">total ulasan</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 col-span-2 sm:col-span-1">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Akun Sejak</p>
+                <p class="text-lg font-bold leading-tight" style="color: var(--dark-gray)">{{ $user->created_at->translatedFormat('M Y') }}</p>
+                <p class="text-xs mt-0.5 {{ $user->email_verified_at ? 'text-green-500' : 'text-amber-500' }}">
+                    {{ $user->email_verified_at ? '✓ Terverifikasi' : '⚠ Belum verifikasi' }}
+                </p>
+            </div>
+        @else
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Booking Aktif</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $bookingActiveCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">pending / contacted / confirmed</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Booking Selesai</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $bookingDoneCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">status done</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Pembayaran Saya</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $paymentTotalCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">total data</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Menunggu Verifikasi</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $paymentPendingCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">pending</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 col-span-2 sm:col-span-1">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Nominal Disetujui</p>
+                <p class="text-lg font-bold leading-tight" style="color: var(--dark-gray)">{{ number_format((int) ($paymentApprovedSum ?? 0), 0, ',', '.') }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">
+                    DP {{ number_format((int) ($paymentApprovedDpSum ?? 0), 0, ',', '.') }} ·
+                    Lunas {{ number_format((int) ($paymentApprovedFinalSum ?? 0), 0, ',', '.') }} ·
+                    Cicilan {{ number_format((int) ($paymentApprovedInstallmentSum ?? 0), 0, ',', '.') }}
+                </p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Favorit</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $favoriteCount ?? 0 }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">vendor disimpan</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Ulasan Dikirim</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ $reviewCount }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">total ulasan</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Bergabung</p>
+                <p class="text-3xl font-bold" style="color: var(--dark-gray)">{{ (int) $user->created_at->diffInDays(now()) }}</p>
+                <p class="text-xs text-gray-400 mt-0.5">hari lalu</p>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 p-5 col-span-2 sm:col-span-1">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Akun Sejak</p>
+                <p class="text-lg font-bold leading-tight" style="color: var(--dark-gray)">{{ $user->created_at->translatedFormat('M Y') }}</p>
+                <p class="text-xs mt-0.5 {{ $user->email_verified_at ? 'text-green-500' : 'text-amber-500' }}">
+                    {{ $user->email_verified_at ? '✓ Terverifikasi' : '⚠ Belum verifikasi' }}
+                </p>
+            </div>
+        @endif
     </div>
+
+    
 
     {{-- Quick Links --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">

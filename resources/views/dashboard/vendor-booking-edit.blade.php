@@ -39,6 +39,12 @@
             @csrf
             @method('PUT')
 
+            @php
+                $defaultAgreed = $booking->vendorPackage?->price_raw ?? 0;
+                $agreedValue = old('agreed_total', $booking->agreed_total ?? $defaultAgreed);
+                $dpValue = old('dp_required_amount', $booking->dp_required_amount ?? 0);
+            @endphp
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Status Booking</label>
@@ -50,27 +56,50 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Total Deal (angka)</label>
-                    <input type="number" name="agreed_total" min="0" value="{{ old('agreed_total', $booking->agreed_total) }}"
-                           class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition">
+                    <input type="hidden" id="agreed_total" name="agreed_total" value="{{ (int) $agreedValue }}">
+                    <input type="text" id="agreed_total_text" readonly
+                           value="{{ number_format((int) $agreedValue, 0, ',', '.') }}"
+                           class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-gray-50 text-gray-700 cursor-not-allowed">
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-500 mb-1">DP yang Dibutuhkan (angka)</label>
-                    <input type="number" name="dp_required_amount" min="0" value="{{ old('dp_required_amount', $booking->dp_required_amount) }}"
+                    <input type="hidden" id="dp_required_amount" name="dp_required_amount" value="{{ (int) $dpValue }}">
+                    <input type="text" id="dp_required_amount_text" inputmode="numeric" autocomplete="off"
+                           value="{{ number_format((int) $dpValue, 0, ',', '.') }}"
                            class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition">
                 </div>
                 <div class="flex items-end justify-end gap-2">
                     <a href="{{ route('dashboard.vendor.bookings') }}" class="text-xs font-bold px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
                         Kembali
                     </a>
+                    @if($user->hasRole(['super_admin', 'admin']))
+                        <button type="submit"
+                                form="vendor-booking-delete-{{ $booking->id }}"
+                                class="text-xs font-bold px-4 py-2 rounded-lg transition hover:opacity-90"
+                                style="background-color: #ef4444; color: #fff">
+                            Hapus
+                        </button>
+                    @endif
                     <button type="submit" class="text-xs font-bold px-4 py-2 rounded-lg transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">
                         Simpan
                     </button>
                 </div>
             </div>
         </form>
+
+        @if($user->hasRole(['super_admin', 'admin']))
+            <form id="vendor-booking-delete-{{ $booking->id }}"
+                  method="POST"
+                  action="{{ route('dashboard.vendor.bookings.destroy', $booking) }}"
+                  onsubmit="return confirm('Hapus booking ini?');"
+                  class="hidden">
+                @csrf
+                @method('DELETE')
+            </form>
+        @endif
 
         <div class="mt-8">
             <div class="text-xs uppercase tracking-widest text-gray-400 mb-2">Riwayat Pembayaran</div>
@@ -96,7 +125,10 @@
                                     <td class="px-4 py-3 text-xs text-gray-600">{{ $p->type }}</td>
                                     <td class="px-4 py-3 text-xs text-gray-600">{{ number_format($p->amount) }}</td>
                                     <td class="px-4 py-3 text-xs text-gray-600">{{ $p->method }}</td>
-                                    <td class="px-4 py-3 text-xs text-gray-600">{{ $p->status }}</td>
+                                    <td class="px-4 py-3 text-xs">
+                                        <div class="font-bold" style="color: var(--dark-gray)">{{ $booking->status }}</div>
+                                        <div class="text-[10px] text-gray-400">pembayaran: {{ $booking->payment_status }} · verifikasi: {{ $p->status }}</div>
+                                    </td>
                                     <td class="px-4 py-3 text-xs">
                                         @if($p->proof_url)
                                             <a href="{{ $p->proof_url }}" target="_blank" class="font-bold hover:underline" style="color: var(--dark-gray)">Lihat</a>
@@ -120,5 +152,39 @@
         </div>
     </div>
 </div>
-@endsection
 
+<script>
+    (function () {
+        function bindMoney(textId, hiddenId) {
+            var text = document.getElementById(textId);
+            var hidden = document.getElementById(hiddenId);
+            if (!text || !hidden) return;
+            if (text.hasAttribute('readonly')) return;
+
+            function toInt(v) {
+                v = String(v || '').replace(/\D+/g, '');
+                v = parseInt(v || '0', 10);
+                if (!Number.isFinite(v) || v < 0) v = 0;
+                return v;
+            }
+
+            function fmt(v) {
+                return toInt(v).toLocaleString('id-ID');
+            }
+
+            function sync() {
+                var n = toInt(text.value);
+                hidden.value = String(n);
+                text.value = fmt(n);
+            }
+
+            text.addEventListener('input', sync);
+            text.addEventListener('blur', sync);
+            sync();
+        }
+
+        bindMoney('agreed_total_text', 'agreed_total');
+        bindMoney('dp_required_amount_text', 'dp_required_amount');
+    })();
+</script>
+@endsection

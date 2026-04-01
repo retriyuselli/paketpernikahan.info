@@ -52,14 +52,35 @@ class VendorForm
                                     ->unique(ignoreRecord: true)
                                     ->hidden()
                                     ->dehydrated(),
-                                Select::make('category')
+                                Select::make('categories')
+                                    ->label('Kategori')
                                     ->required()
+                                    ->multiple()
                                     ->options(fn () => CategoryVendor::orderBy('sort_order')
                                         ->pluck('name', 'slug')
                                         ->toArray()
                                     )
                                     ->searchable()
-                                    ->live(),
+                                    ->live()
+                                    ->afterStateHydrated(function ($state, callable $set, $record) {
+                                        if ($record) {
+                                            $cats = is_array($record->categories) && count($record->categories)
+                                                ? $record->categories
+                                                : ($record->category ? [$record->category] : []);
+                                            if (!is_array($state) || count($state) === 0) {
+                                                $set('categories', $cats);
+                                            }
+                                            $set('category', $cats[0] ?? $record->category);
+                                        }
+                                    })
+                                    ->afterStateUpdated(function ($state, callable $set) {
+                                        $primary = is_array($state) ? ($state[0] ?? null) : null;
+                                        $set('category', $primary);
+                                    }),
+                                TextInput::make('category')
+                                    ->required()
+                                    ->hidden()
+                                    ->dehydrated(),
                                 Select::make('type')
                                     ->required(fn ($get) => in_array($get('category'), ['gedung', 'hotel', 'venue', 'rumah']))
                                     ->visible(fn ($get) => in_array($get('category'), ['gedung', 'hotel', 'venue', 'rumah']))

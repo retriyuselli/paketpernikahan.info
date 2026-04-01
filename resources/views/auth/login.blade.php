@@ -7,33 +7,27 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=poppins:200,300,400,500,600,700" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <style>
-            * {
-                font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
-                font-weight: 300;
-            }
-        </style>
     </head>
-    <body class="bg-gray-100">
+    <body class="bg-gray-100 font-sans font-light">
         <div class="min-h-screen flex items-center justify-center px-4 py-12">
             <div class="w-full max-w-md">
                 <!-- Logo Section -->
                 <div class="text-center mb-8">
-                    <a href="{{ route('home') }}" class="inline-flex items-center space-x-2 mb-6" style="text-decoration: none;">
-                        {{-- <div class="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-lg" style="font-weight:300;">👰</div> --}}
-                        <span class="text-xl text-gray-900" style="font-weight:800;">PAKET PERNIKAHAN</span>
+                    <a href="{{ route('home') }}" class="inline-flex items-center space-x-2 mb-6 no-underline">
+                        {{-- <div class="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-lg">👰</div> --}}
+                        <span class="text-xl text-gray-900 font-extrabold">PAKET PERNIKAHAN</span>
                     </a>
                 </div>
 
                 <!-- Card -->
                 <div class="bg-white rounded-2xl shadow-sm p-8">
                     <div class="text-center mb-6">
-                        <h1 style="font-size: 1.5rem; font-weight: 500; color: #111827; margin-bottom: 0.5rem; line-height: 1.3;">Log in to your account</h1>
-                        <p style="font-size: 0.875rem; color: #6B7280;">Welcome back, enter your credentials to continue.</p>
+                        <h1 class="text-2xl font-medium text-gray-900 mb-2 leading-snug">Log in to your account</h1>
+                        <p class="text-sm text-gray-500">Welcome back, enter your credentials to continue.</p>
                     </div>
 
                     @if (session('status'))
-                        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6" style="font-size: 0.875rem;">
+                        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-6 text-sm">
                             {{ session('status') }}
                         </div>
                     @endif
@@ -44,50 +38,53 @@
                         
                         <!-- Email Field -->
                         <div>
-                            <label for="email" style="font-size: 0.875rem; font-weight: 300; color: #374151; display: block; margin-bottom: 0.375rem;">Email</label>
-                            <input type="email" name="email" id="email" placeholder="test@example.com" required style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'" onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'" value="{{ old('email', 'test@example.com') }}">
+                            <label for="email" class="text-sm font-light text-gray-700 block mb-1.5">Email</label>
+                            <input type="email" name="email" id="email" placeholder="test@example.com" required
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
+                                   value="{{ old('email', 'test@example.com') }}">
                             @error('email')
-                                <p style="font-size: 0.75rem; color: #EF4444; margin-top: 0.25rem;">{{ $message }}</p>
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Password Field -->
                         <div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.375rem;">
-                                <label for="password" style="font-size: 0.875rem; font-weight: 300; color: #374151;">Password</label>
-                                <a href="{{ route('password.request') }}" style="font-size: 0.875rem; color: #2563EB; font-weight: 300; text-decoration: none;" onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='#2563EB'">Forgot password?</a>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="password" class="text-sm font-light text-gray-700">Password</label>
+                                <a href="{{ route('password.request') }}" class="text-sm text-blue-600 font-light no-underline hover:text-blue-700">Forgot password?</a>
                             </div>
-                            <input type="password" name="password" id="password" placeholder="password" required style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; outline: none; transition: border-color 0.15s;" onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'" onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'">
+                            <input type="password" name="password" id="password" placeholder="password" required
+                                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20">
                             @error('password')
-                                <p style="font-size: 0.75rem; color: #EF4444; margin-top: 0.25rem;">{{ $message }}</p>
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Remember Me -->
-                        <div style="display: flex; align-items: center;">
-                            <input type="checkbox" name="remember" id="remember" style="width: 1rem; height: 1rem; border: 1px solid #D1D5DB; border-radius: 0.25rem; accent-color: #EF4444;">
-                            <label for="remember" style="margin-left: 0.5rem; font-size: 0.875rem; color: #374151; font-weight: 300;">Remember Me</label>
+                        <div class="flex items-center">
+                            <input type="checkbox" name="remember" id="remember" class="h-4 w-4 rounded border-gray-300 accent-red-500">
+                            <label for="remember" class="ml-2 text-sm text-gray-700 font-light">Remember Me</label>
                         </div>
 
                         <!-- Sign In Button -->
-                        <button type="submit" style="width: 100%; background-color: #DC2626; color: white; font-size: 0.9375rem; font-weight: 300; padding: 0.75rem 1rem; border-radius: 9999px; border: none; cursor: pointer; transition: background-color 0.15s;" onmouseover="this.style.backgroundColor='#B91C1C'" onmouseout="this.style.backgroundColor='#DC2626'">
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white text-[15px] font-light py-3 px-4 rounded-full transition">
                             Sign In
                         </button>
                     </form>
 
                     <!-- Divider -->
-                    <div style="position: relative; margin: 1.5rem 0;">
-                        <div style="position: absolute; inset: 0; display: flex; align-items: center;">
-                            <div style="width: 100%; border-top: 1px solid #E5E7EB;"></div>
+                    <div class="relative my-6">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-200"></div>
                         </div>
-                        <div style="position: relative; display: flex; justify-content: center;">
-                            <span style="padding: 0 0.5rem; background: white; font-size: 0.875rem; color: #9CA3AF;">Or continue with</span>
+                        <div class="relative flex justify-center">
+                            <span class="px-2 bg-white text-sm text-gray-400">Or continue with</span>
                         </div>
                     </div>
 
                     <!-- Social Login Buttons -->
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <a href="{{ route('auth.google', ['redirect' => request('redirect')]) }}" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.625rem; padding: 0.75rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; background: white; cursor: pointer; font-size: 0.875rem; color: #374151; font-weight: 300; transition: background 0.15s; text-decoration: none;" onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='white'">
+                    <div class="flex flex-col gap-3">
+                        <a href="{{ route('auth.google', ['redirect' => request('redirect')]) }}" class="w-full flex items-center justify-center gap-2.5 py-3 px-4 border border-gray-300 rounded-lg bg-white cursor-pointer text-sm text-gray-700 font-light transition hover:bg-gray-50 no-underline">
                             <svg width="20" height="20" viewBox="0 0 24 24">
                                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -99,11 +96,11 @@
                     </div>
 
                     <!-- Sign Up Link -->
-                    <p style="text-align: center; font-size: 0.875rem; color: #6B7280; margin-top: 1.5rem;">
-                        Don't have an account? <a href="{{ route('register') }}" style="color: #2563EB; font-weight: 300; text-decoration: none;" onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='#2563EB'">Sign up</a>
+                    <p class="text-center text-sm text-gray-500 mt-6">
+                        Don't have an account? <a href="{{ route('register') }}" class="text-blue-600 font-light no-underline hover:text-blue-700">Sign up</a>
                     </p>
-                    <p style="text-align: center; font-size: 0.875rem; color: #6B7280; margin-top: 0.75rem;">
-                        Ingin bergabung sebagai vendor? <a href="{{ route('join.vendor.signup') }}" style="color: #2563EB; font-weight: 300; text-decoration: none;" onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='#2563EB'">Join Vendor</a>
+                    <p class="text-center text-sm text-gray-500 mt-3">
+                        Ingin bergabung sebagai vendor? <a href="{{ route('join.vendor.signup') }}" class="text-blue-600 font-light no-underline hover:text-blue-700">Join Vendor</a>
                     </p>
                 </div>
             </div>

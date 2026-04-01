@@ -7,149 +7,142 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=poppins:200,300,400,500,600,700" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <style>
-            * {
-                font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
-                font-weight: 300;
-            }
-        </style>
     </head>
-    <body class="bg-gray-100">
+    <body class="bg-gray-100 font-sans font-light">
         @php
             $num1 = rand(1, 20);
             $num2 = rand(1, 20);
         @endphp
         <div class="min-h-screen flex items-center justify-center px-4 py-12">
-            <div style="width: 100%; max-width: 38rem;">
+            <div class="w-full max-w-[38rem]">
                 <!-- Logo -->
                 <div class="text-center mb-8">
-                    <a href="{{ route('home') }}" class="inline-flex items-center space-x-2 mb-6" style="text-decoration: none;">
-                        {{-- <div class="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-lg" style="font-weight:300;">👰</div> --}}
-                        <span class="text-xl text-gray-900" style="font-weight:800;">PAKET PERNIKAHAN</span>
+                    <a href="{{ route('home') }}" class="inline-flex items-center space-x-2 mb-6 no-underline">
+                        {{-- <div class="w-10 h-10 bg-gray-900 rounded-full flex items-center justify-center text-white text-lg">👰</div> --}}
+                        <span class="text-xl text-gray-900 font-extrabold">PAKET PERNIKAHAN</span>
                     </a>
                 </div>
 
                 <!-- Card -->
                 <div class="bg-white rounded-2xl shadow-sm p-8">
                     <div class="text-center mb-6">
-                        <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 0.375rem;">Create your account</h1>
-                        <p style="font-size: 0.875rem; color: #6B7280; font-weight: 300;">Start your journey — sign up to get access.</p>
+                        <h1 class="text-2xl font-bold text-gray-900 mb-1.5">Create your account</h1>
+                        <p class="text-sm text-gray-500 font-light">Start your journey — sign up to get access.</p>
                     </div>
 
                     <form method="POST" action="{{ route('register.post') }}">
                         @csrf
 
                         <!-- Row 1: Full Name + Email -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label style="font-size: 0.875rem; font-weight: 300; color: #374151; display: block; margin-bottom: 0.375rem;">Full Name</label>
+                                <label class="text-sm font-light text-gray-700 block mb-1.5">Full Name</label>
                                 <input type="text" name="name" placeholder="Your full name" required
-                                    style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; font-weight: 300; outline: none; box-sizing: border-box;"
-                                    onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'"
-                                    onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 font-light outline-none box-border transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
                                     value="{{ old('name') }}">
                                 @error('name')
-                                    <p style="font-size: 0.75rem; color: #EF4444; margin-top: 0.25rem;">{{ $message }}</p>
+                                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div>
-                                <label style="font-size: 0.875rem; font-weight: 300; color: #374151; display: block; margin-bottom: 0.375rem;">Email Address</label>
+                                <label class="text-sm font-light text-gray-700 block mb-1.5">Email Address</label>
                                 <input type="email" name="email" placeholder="Enter your email" required
-                                    style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; font-weight: 300; outline: none; box-sizing: border-box;"
-                                    onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'"
-                                    onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'"
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 font-light outline-none box-border transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20"
                                     value="{{ old('email') }}">
                                 @error('email')
-                                    <p style="font-size: 0.75rem; color: #EF4444; margin-top: 0.25rem;">{{ $message }}</p>
+                                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
                         </div>
 
                         <!-- Row 2: Password + Confirm Password -->
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label style="font-size: 0.875rem; font-weight: 300; color: #374151; display: block; margin-bottom: 0.375rem;">Password</label>
+                                <label class="text-sm font-light text-gray-700 block mb-1.5">Password</label>
                                 <input type="password" name="password" placeholder="Create a password" required
-                                    style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; font-weight: 300; outline: none; box-sizing: border-box;"
-                                    onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'"
-                                    onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'">
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 font-light outline-none box-border transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20">
                                 @error('password')
-                                    <p style="font-size: 0.75rem; color: #EF4444; margin-top: 0.25rem;">{{ $message }}</p>
+                                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div>
-                                <label style="font-size: 0.875rem; font-weight: 300; color: #374151; display: block; margin-bottom: 0.375rem;">Confirm Password</label>
+                                <label class="text-sm font-light text-gray-700 block mb-1.5">Confirm Password</label>
                                 <input type="password" name="password_confirmation" placeholder="Confirm your password" required
-                                    style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; font-weight: 300; outline: none; box-sizing: border-box;"
-                                    onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'"
-                                    onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'">
+                                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 font-light outline-none box-border transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20">
                             </div>
                         </div>
 
                         <!-- CAPTCHA -->
-                        <div style="margin-bottom: 1rem;">
-                            <label style="font-size: 0.875rem; font-weight: 300; color: #374151; display: block; margin-bottom: 0.375rem;">
+                        <div class="mb-4">
+                            <label class="text-sm font-light text-gray-700 block mb-1.5">
                                 What is the result of
-                                <span style="color: #EF4444; font-weight: 400;">{{ $num1 }}</span>
+                                <span class="text-red-500 font-normal">{{ $num1 }}</span>
                                 +
-                                <span style="color: #F97316; font-weight: 400;">{{ $num2 }}</span>
+                                <span class="text-orange-500 font-normal">{{ $num2 }}</span>
                                 ?
                             </label>
                             <input type="number" name="captcha" id="captcha" placeholder="Answer" required
-                                style="width: 100%; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; font-size: 0.875rem; color: #111827; font-weight: 300; outline: none; box-sizing: border-box;"
-                                onfocus="this.style.borderColor='#EF4444'; this.style.boxShadow='0 0 0 2px rgba(239,68,68,0.2)'"
-                                onblur="this.style.borderColor='#D1D5DB'; this.style.boxShadow='none'">
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 font-light outline-none box-border transition focus:border-red-500 focus:ring-2 focus:ring-red-500/20">
                             <input type="hidden" name="captcha_answer" value="{{ $num1 + $num2 }}">
                             @error('captcha')
-                                <p style="font-size: 0.75rem; color: #EF4444; margin-top: 0.25rem;">{{ $message }}</p>
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Privacy Policy Checkbox -->
-                        <div style="display: flex; align-items: center; margin-bottom: 1.25rem;">
+                        <div class="flex items-center mb-5">
                             <input type="checkbox" name="agree" id="agree" required
-                                style="width: 1rem; height: 1rem; border: 1px solid #D1D5DB; border-radius: 0.25rem; accent-color: #EF4444; flex-shrink: 0;">
-                            <label for="agree" style="margin-left: 0.5rem; font-size: 0.875rem; color: #374151; font-weight: 300;">
-                        I agree with the <a href="#" onclick="document.getElementById('privacy-modal').style.display='flex'; return false;" style="color: #2563EB; text-decoration: none; font-weight: 300;">Privacy Policy</a>
+                                class="h-4 w-4 rounded border-gray-300 accent-red-500 shrink-0">
+                            <label for="agree" class="ml-2 text-sm text-gray-700 font-light">
+                                I agree with the <a href="#" onclick="openPrivacyModal(); return false;" class="text-blue-600 no-underline font-light hover:text-blue-700">Privacy Policy</a>
                             </label>
                         </div>
 
                         <!-- Privacy Policy Modal -->
-                        <div id="privacy-modal" style="display: none; position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,0.4); align-items: center; justify-content: center;" onclick="if(event.target===this){closePrivacyModal();}">
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 40rem; background: white; border-radius: 1rem; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                        <div id="privacy-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 p-4" onclick="if(event.target===this){closePrivacyModal();}">
+                            <div class="relative w-full max-w-[40rem] bg-white rounded-2xl max-h-[80vh] flex flex-col shadow-2xl">
                                 <!-- Modal Header -->
-                                <div style="padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-between;">
-                                    <h2 style="font-size: 1.125rem; font-weight: 700; color: #111827; margin: 0;">Kebijakan Privasi</h2>
-                                    <button onclick="closePrivacyModal()" style="background: none; border: none; cursor: pointer; color: #6B7280; font-size: 1.25rem; line-height: 1; padding: 0.25rem;">&#10005;</button>
+                                <div class="px-6 pt-6 pb-4 border-b border-gray-200 flex items-center justify-between">
+                                    <h2 class="text-lg font-bold text-gray-900 m-0">Kebijakan Privasi</h2>
+                                    <button type="button" onclick="closePrivacyModal()" class="text-gray-500 hover:text-gray-700 text-xl leading-none p-1">&#10005;</button>
                                 </div>
                                 <!-- Modal Body -->
-                                <div style="padding: 1.5rem; overflow-y: auto; font-size: 0.875rem; color: #374151; font-weight: 300; line-height: 1.7;">
-                                    <p style="margin-bottom: 1.5rem;">Terima kasih atas kunjungan Anda di Makna Wedding. Kami menghargai privasi Anda dan berkomitmen untuk melindungi data pribadi Anda. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda saat Anda menggunakan situs web kami. Dengan menggunakan situs web kami, Anda menyetujui praktik yang dijelaskan dalam kebijakan privasi ini.</p>
+                                <div class="p-6 overflow-y-auto text-sm text-gray-700 font-light leading-relaxed">
+                                    <p class="mb-6">Terima kasih atas kunjungan Anda di Makna Wedding. Kami menghargai privasi Anda dan berkomitmen untuk melindungi data pribadi Anda. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda saat Anda menggunakan situs web kami. Dengan menggunakan situs web kami, Anda menyetujui praktik yang dijelaskan dalam kebijakan privasi ini.</p>
 
-                                    <h3 style="font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 0.75rem;">Pengumpulan Informasi Pribadi</h3>
-                                    <p style="margin-bottom: 1.5rem;">Kami mengumpulkan informasi pribadi yang Anda berikan secara sukarela, seperti nama, alamat email, dan informasi kontak lainnya. Kami juga dapat mengumpulkan informasi teknis, seperti alamat IP Anda, jenis perangkat keras dan perangkat lunak yang Anda gunakan, dan informasi tentang bagaimana Anda menggunakan situs web kami.</p>
+                                    <h3 class="text-base font-bold text-gray-900 mb-3">Pengumpulan Informasi Pribadi</h3>
+                                    <p class="mb-6">Kami mengumpulkan informasi pribadi yang Anda berikan secara sukarela, seperti nama, alamat email, dan informasi kontak lainnya. Kami juga dapat mengumpulkan informasi teknis, seperti alamat IP Anda, jenis perangkat keras dan perangkat lunak yang Anda gunakan, dan informasi tentang bagaimana Anda menggunakan situs web kami.</p>
 
-                                    <h3 style="font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 0.75rem;">Penggunaan Informasi Pribadi</h3>
-                                    <p style="margin-bottom: 1.5rem;">Kami menggunakan informasi pribadi Anda untuk menyediakan layanan yang diminta, seperti mengirimkan newsletter atau informasi tentang acara dan produk kami. Kami juga dapat menggunakan informasi pribadi Anda untuk mengirim pesan pemasaran tentang produk dan layanan kami, kecuali jika Anda telah memilih untuk tidak menerima pesan semacam itu. Kami tidak akan menjual atau menyewakan informasi pribadi Anda kepada pihak ketiga.</p>
+                                    <h3 class="text-base font-bold text-gray-900 mb-3">Penggunaan Informasi Pribadi</h3>
+                                    <p class="mb-6">Kami menggunakan informasi pribadi Anda untuk menyediakan layanan yang diminta, seperti mengirimkan newsletter atau informasi tentang acara dan produk kami. Kami juga dapat menggunakan informasi pribadi Anda untuk mengirim pesan pemasaran tentang produk dan layanan kami, kecuali jika Anda telah memilih untuk tidak menerima pesan semacam itu. Kami tidak akan menjual atau menyewakan informasi pribadi Anda kepada pihak ketiga.</p>
 
-                                    <h3 style="font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 0.75rem;">Keamanan Informasi Pribadi</h3>
-                                    <p style="margin-bottom: 1.5rem;">Kami mengambil tindakan yang tepat untuk melindungi informasi pribadi Anda dari akses yang tidak sah, penggunaan, atau pengungkapan. Kami menggunakan teknologi keamanan yang tepat untuk melindungi informasi pribadi Anda.</p>
+                                    <h3 class="text-base font-bold text-gray-900 mb-3">Keamanan Informasi Pribadi</h3>
+                                    <p class="mb-6">Kami mengambil tindakan yang tepat untuk melindungi informasi pribadi Anda dari akses yang tidak sah, penggunaan, atau pengungkapan. Kami menggunakan teknologi keamanan yang tepat untuk melindungi informasi pribadi Anda.</p>
 
-                                    <h3 style="font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 0.75rem;">Penggunaan Cookies</h3>
-                                    <p style="margin-bottom: 1.5rem;">Kami menggunakan cookies untuk mengumpulkan informasi tentang bagaimana Anda menggunakan situs web kami dan untuk meningkatkan pengalaman pengguna Anda. Cookie adalah file kecil yang disimpan oleh browser web Anda di hard drive perangkat Anda. Anda dapat mengatur browser web Anda untuk menolak cookies atau memberi tahu Anda saat cookie dikirim. Namun, jika Anda menolak cookie, Anda mungkin tidak dapat menggunakan beberapa bagian dari situs web kami.</p>
+                                    <h3 class="text-base font-bold text-gray-900 mb-3">Penggunaan Cookies</h3>
+                                    <p class="mb-6">Kami menggunakan cookies untuk mengumpulkan informasi tentang bagaimana Anda menggunakan situs web kami dan untuk meningkatkan pengalaman pengguna Anda. Cookie adalah file kecil yang disimpan oleh browser web Anda di hard drive perangkat Anda. Anda dapat mengatur browser web Anda untuk menolak cookies atau memberi tahu Anda saat cookie dikirim. Namun, jika Anda menolak cookie, Anda mungkin tidak dapat menggunakan beberapa bagian dari situs web kami.</p>
 
-                                    <h3 style="font-size: 1rem; font-weight: 700; color: #111827; margin-bottom: 0.75rem;">Perubahan Kebijakan Privasi</h3>
+                                    <h3 class="text-base font-bold text-gray-900 mb-3">Perubahan Kebijakan Privasi</h3>
                                     <p>Kami dapat memperbarui kebijakan privasi ini dari waktu ke waktu. Kami akan memberi tahu Anda tentang perubahan apa pun dengan memposting kebijakan privasi baru di halaman ini. Anda disarankan untuk meninjau kebijakan privasi ini secara berkala untuk setiap perubahan.</p>
                                 </div>
                                 <!-- Modal Footer -->
-                                <div style="padding: 1rem 1.5rem; border-top: 1px solid #E5E7EB; display: flex; justify-content: flex-end;">
-                                    <button onclick="closePrivacyModal()" style="background-color: #DC2626; color: white; font-size: 0.875rem; font-weight: 300; padding: 0.5rem 1.5rem; border-radius: 9999px; border: none; cursor: pointer;" onmouseover="this.style.backgroundColor='#B91C1C'" onmouseout="this.style.backgroundColor='#DC2626'">Tutup</button>
+                                <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
+                                    <button type="button" onclick="closePrivacyModal()" class="bg-red-600 hover:bg-red-700 text-white text-sm font-light py-2 px-6 rounded-full transition">Tutup</button>
                                 </div>
                             </div>
                         </div>
                         <script>
+                            function openPrivacyModal() {
+                                var el = document.getElementById('privacy-modal');
+                                if (!el) return;
+                                el.classList.remove('hidden');
+                                el.classList.add('flex');
+                            }
                             function closePrivacyModal() {
-                                document.getElementById('privacy-modal').style.display = 'none';
+                                var el = document.getElementById('privacy-modal');
+                                if (!el) return;
+                                el.classList.add('hidden');
+                                el.classList.remove('flex');
                             }
                             document.addEventListener('keydown', function(e) {
                                 if (e.key === 'Escape') closePrivacyModal();
@@ -158,28 +151,25 @@
 
                         <!-- Register Button -->
                         <button type="submit"
-                            style="width: 100%; background-color: #DC2626; color: white; font-size: 0.9375rem; font-weight: 300; padding: 0.75rem 1rem; border-radius: 9999px; border: none; cursor: pointer; transition: background-color 0.15s;"
-                            onmouseover="this.style.backgroundColor='#B91C1C'"
-                            onmouseout="this.style.backgroundColor='#DC2626'">
+                            class="w-full bg-red-600 hover:bg-red-700 text-white text-[15px] font-light py-3 px-4 rounded-full transition">
                             Register
                         </button>
                     </form>
 
                     <!-- Divider -->
-                    <div style="position: relative; margin: 1.5rem 0;">
-                        <div style="position: absolute; inset: 0; display: flex; align-items: center;">
-                            <div style="width: 100%; border-top: 1px solid #E5E7EB;"></div>
+                    <div class="relative my-6">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-200"></div>
                         </div>
-                        <div style="position: relative; display: flex; justify-content: center;">
-                            <span style="padding: 0 0.5rem; background: white; font-size: 0.875rem; color: #9CA3AF; font-weight: 300;">Or continue with</span>
+                        <div class="relative flex justify-center">
+                            <span class="px-2 bg-white text-sm text-gray-400 font-light">Or continue with</span>
                         </div>
                     </div>
 
                     <!-- Social Buttons -->
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    <div class="flex flex-col gap-3">
                         <button type="button"
-                            style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.625rem; padding: 0.75rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.5rem; background: white; cursor: pointer; font-size: 0.875rem; color: #374151; font-weight: 300; transition: background 0.15s;"
-                            onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='white'">
+                            class="w-full flex items-center justify-center gap-2.5 py-3 px-4 border border-gray-300 rounded-lg bg-white cursor-pointer text-sm text-gray-700 font-light transition hover:bg-gray-50">
                             <svg width="20" height="20" viewBox="0 0 24 24">
                                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -191,8 +181,8 @@
                     </div>
 
                     <!-- Sign In Link -->
-                    <p style="text-align: center; font-size: 0.875rem; color: #6B7280; margin-top: 1.5rem; font-weight: 300;">
-                        Already have an account? <a href="{{ route('login') }}" style="color: #2563EB; font-weight: 300; text-decoration: none;" onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='#2563EB'">Sign in</a>
+                    <p class="text-center text-sm text-gray-500 mt-6 font-light">
+                        Already have an account? <a href="{{ route('login') }}" class="text-blue-600 font-light no-underline hover:text-blue-700">Sign in</a>
                     </p>
                 </div>
             </div>

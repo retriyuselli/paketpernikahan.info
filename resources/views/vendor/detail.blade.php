@@ -12,25 +12,28 @@
         $reviewList = $vendor->approvedReviews;
         $reviewTotal = $reviewList->count();
         $displayRating = $reviewTotal > 0 ? round($reviewList->avg('rating'), 1) : 0;
-        $openBookingModal = ($errors->booking->any() ?? false) || session()->has('booking_success');
+        $openBookingModal = ($errors->booking->any() ?? false);
+        $categoryName = $vendor->categoryVendor?->name ?? $vendor->category;
+        $breadcrumbItems = [
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => 'Vendor', 'url' => route('vendor')],
+            ['label' => $categoryName, 'url' => route('vendor') . '?category=' . $vendor->category],
+            ['label' => $vendor->name, 'url' => null],
+        ];
+        $bookingPaymentUrl = session('booking_id')
+            ? route('dashboard.booking.payment', session('booking_id'))
+            : route('dashboard.booking');
     @endphp
 
     <!-- Breadcrumb -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-        <div class="flex items-center justify-between">
-            <nav class="flex items-center gap-2 text-xs" style="color: var(--dark-gray)">
-                <a href="{{ route('home') }}" class="hover:text-accent transition">Home</a>
-                <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                <a href="{{ route('vendor') }}" class="hover:text-accent transition">Vendor</a>
-                <svg class="w-3 h-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                <span class="font-semibold opacity-60">{{ $vendor->name }}</span>
-            </nav>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4">
+        <div class="flex items-center justify-between gap-4">
+            @include('layout.breadcrumb', ['items' => $breadcrumbItems])
 
             @auth
                 @if(auth()->user()->hasRole(['super_admin', 'admin']) || (int) $vendor->owner_user_id === (int) auth()->id())
                     <a href="{{ route('vendor.edit', $vendor) }}"
-                       class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition hover:opacity-80"
-                       style="color: var(--sage-green); border-color: var(--sage-green); background: transparent">
+                       class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-accent transition hover:opacity-80 text-accent bg-transparent">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                         </svg>
@@ -40,6 +43,28 @@
             @endauth
         </div>
     </div>
+
+    @if(($vendorDetailDisabled ?? false))
+        <div id="vendor-disabled-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+            <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+                <div class="p-6 pb-5 bg-cream">
+                    <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Pemberitahuan</p>
+                    <p class="text-xl font-bold text-dark">Vendor Belum Lengkap</p>
+                    <p class="text-xs text-gray-500 mt-1">Profil vendor ini belum lengkap 100% sehingga halaman belum dapat diakses.</p>
+                </div>
+                <div class="p-6">
+                    <a href="{{ $vendorDetailBackUrl ?? route('vendor') }}"
+                       class="flex items-center justify-center w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 bg-dark text-cream">
+                        Kembali
+                    </a>
+                </div>
+            </div>
+        </div>
+        <script>
+            document.body.style.overflow = 'hidden';
+        </script>
+    @endif
 
     <!-- Hero Section -->
     @php
@@ -74,7 +99,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
 
             <!-- Main Photo -->
-            <div class="lg:col-span-2 rounded-2xl overflow-hidden relative" style="aspect-ratio: 16/9;">
+            <div class="lg:col-span-2 rounded-2xl overflow-hidden relative ar-16x9">
                 <img :src="mainSrc" loading="lazy"
                      alt="{{ $vendor->name }}"
                      class="w-full h-full object-cover transition-all duration-500">
@@ -127,9 +152,9 @@
                             </div>
                         @endif
                         <div class="min-w-0">
-                            <h1 class="text-2xl font-bold leading-tight mb-1" style="color: var(--dark-gray)">{{ $vendor->name }}</h1>
-                            <span class="text-sm font-medium" style="color: var(--sage-green)">{{ $vendor->type }}</span>
-                            <div class="flex items-center gap-1.5 mt-2 text-xs" style="color: var(--dark-gray); opacity: .65">
+                            <h1 class="text-2xl font-bold leading-tight mb-1 text-dark">{{ $vendor->name }}</h1>
+                            <span class="text-sm font-medium text-accent">{{ $vendor->type }}</span>
+                            <div class="flex items-center gap-1.5 mt-2 text-xs text-gray-600">
                                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 <span class="truncate">{{ $vendor->location }}</span>
                             </div>
@@ -148,7 +173,7 @@
                 <!-- Stats Bar -->
                 <div class="sm:hidden flex items-center gap-3 py-3 border-y border-gray-100 text-xs text-gray-600 whitespace-nowrap overflow-x-auto">
                     <div class="flex items-center gap-1.5">
-                        <svg class="w-4 h-4" style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <svg class="w-4 h-4 text-rating" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <span class="font-bold">{{ $displayRating }}</span>
                         <span class="text-gray-400">({{ $vendor->approvedReviews->count() }})</span>
                     </div>
@@ -205,21 +230,21 @@
                 <!-- About -->
                 @php $cheapPkg = $vendor->cheapestPackage; @endphp
                 <div>
-                    <h2 class="text-base font-bold mb-3" style="color: var(--dark-gray)">Tentang Vendor</h2>
+                    <h2 class="text-base font-bold mb-3 text-dark">Tentang Vendor</h2>
                     <p class="text-sm leading-relaxed text-gray-600">{{ $vendor->description }}</p>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
                         <div class="rounded-xl p-3 border border-gray-100 bg-white">
                             <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Kapasitas</p>
-                            <p class="text-sm font-semibold" style="color: var(--dark-gray)">{{ $vendor->capacity }}</p>
+                            <p class="text-sm font-semibold text-dark">{{ $vendor->capacity }}</p>
                         </div>
                         <div class="rounded-xl p-3 border border-gray-100 bg-white">
                             <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Harga Mulai</p>
                             @if ($cheapPkg)
                             @if ($cheapPkg->discount > 0)
                             <p class="text-[10px] line-through text-gray-400 leading-none mb-0.5">{{ $cheapPkg->price }}</p>
-                            <p class="text-sm font-semibold" style="color: var(--sage-green)">Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}</p>
+                            <p class="text-sm font-semibold text-accent">Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}</p>
                             @else
-                            <p class="text-sm font-semibold" style="color: var(--sage-green)">{{ $cheapPkg->price }}</p>
+                            <p class="text-sm font-semibold text-accent">{{ $cheapPkg->price }}</p>
                             @endif
                             @else
                             @php
@@ -228,7 +253,7 @@
                                     ? 'Rp ' . number_format((int) $rawPriceStart, 0, ',', '.')
                                     : ($rawPriceStart ?: '—');
                             @endphp
-                            <p class="text-sm font-semibold" style="color: var(--sage-green)">{{ $formattedPriceStart }}</p>
+                            <p class="text-sm font-semibold text-accent">{{ $formattedPriceStart }}</p>
                             @endif
                         </div>
                         <div class="rounded-xl p-3 border border-gray-100 bg-white">
@@ -291,7 +316,7 @@
                 <!-- Review Videos -->
                 <div>
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-base font-bold" style="color: var(--dark-gray)">Videos</h2>
+                        <h2 class="text-base font-bold" style="color: var(--dark-gray)">Videos Vendor</h2>
                     </div>
                     <!-- Horizontal scroll strip -->
                     <div class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-none" style="-ms-overflow-style:none;scrollbar-width:none;">
@@ -614,12 +639,12 @@
                         <div id="booking-warning" class="hidden mb-3 text-xs font-semibold px-3 py-2 rounded-xl bg-yellow-50 text-yellow-700"></div>
 
                         @guest
-                            <a href="{{ route('login') }}?redirect={{ urlencode(request()->fullUrl() . '#booking') }}"
-                               class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 mb-4"
-                               style="background-color: var(--sage-green); color: var(--cream)">
+                            <button type="button" onclick="openBookingPage()"
+                                    class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 mb-4"
+                                    style="background-color: var(--sage-green); color: var(--cream)">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 Booking Sekarang
-                            </a>
+                            </button>
                         @endguest
 
                         @auth
@@ -637,7 +662,7 @@
                                     </a>
                                 </div>
                             @else
-                                <button type="button" onclick="openBookingModal()"
+                                <button type="button" onclick="openBookingPage()"
                                         class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 mb-4"
                                         style="background-color: var(--sage-green); color: var(--cream)">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -913,6 +938,40 @@
         </div>
     </div>
 
+    @if(session('booking_success'))
+        <div id="booking-success-modal"
+             class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden"
+             onclick="if(event.target===this) closeBookingSuccessModal()">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+            <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+                <div class="p-6 pb-5" style="background: var(--cream)">
+                    <button type="button" onclick="closeBookingSuccessModal()"
+                            class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/60 hover:bg-white/80 flex items-center justify-center transition">
+                        <svg class="w-4 h-4" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                    <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Booking</p>
+                    <p class="text-xl font-bold" style="color: var(--dark-gray)">Booking Berhasil</p>
+                    <p class="text-xs text-gray-500 mt-1">{{ session('booking_success') }}</p>
+                </div>
+                <div class="p-6 space-y-3">
+                    <a href="{{ $bookingPaymentUrl }}"
+                       class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90"
+                       style="background-color: var(--sage-green); color: var(--cream)">
+                        Lanjut Pembayaran
+                    </a>
+                    <button type="button"
+                            onclick="closeBookingSuccessModal()"
+                            class="w-full py-3 rounded-xl text-sm font-bold border border-gray-200 hover:bg-gray-50 transition"
+                            style="color: var(--dark-gray)">
+                        Kembali Ke Vendor
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <script>
         function openBookingModal() {
             const modal = document.getElementById('booking-modal');
@@ -937,6 +996,20 @@
             document.body.style.overflow = '';
         }
 
+        function openBookingSuccessModal() {
+            const modal = document.getElementById('booking-success-modal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBookingSuccessModal() {
+            const modal = document.getElementById('booking-success-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
         function showBookingWarning(message) {
             const el = document.getElementById('booking-warning');
             if (!el) return;
@@ -948,9 +1021,29 @@
             }, 4500);
         }
 
+        function openBookingPage() {
+            let pkgId = selectedPackage?.id ?? '';
+            if (!pkgId) {
+                try {
+                    const raw = localStorage.getItem(`bookingPkg:${vendorSlug}`);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        pkgId = parsed?.id ?? '';
+                    }
+                } catch {}
+            }
+            if (!pkgId) {
+                showBookingWarning('Silakan pilih paket terlebih dahulu sebelum booking.');
+                document.getElementById('packages')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
+            }
+            window.location.href = bookingVendorUrl + '?vendor_package_id=' + encodeURIComponent(String(pkgId));
+        }
+
         document.addEventListener('keydown', e => {
             if (e.key === 'Escape') {
                 closeBookingModal();
+                closeBookingSuccessModal();
             }
         });
 
@@ -958,6 +1051,11 @@
             const isAuth = {{ auth()->check() ? 'true' : 'false' }};
             const shouldOpen = {{ $openBookingModal ? 'true' : 'false' }};
             const hashOpen = window.location.hash === '#booking';
+            const hasBookingSuccess = {{ session()->has('booking_success') ? 'true' : 'false' }};
+            if (isAuth && hasBookingSuccess) {
+                openBookingSuccessModal();
+                return;
+            }
             if (isAuth && (shouldOpen || hashOpen)) {
                 openBookingModal();
             }
@@ -989,6 +1087,7 @@
     const vendorSlug = '{{ $vendor->slug }}';
     const waNumber = '{{ preg_replace('/[^0-9]/', '', $vendor->phone) }}';
     const vendorName = '{{ addslashes($vendor->name) }}';
+    const bookingVendorUrl = '{{ route('booking.vendor', $vendor) }}';
     const bookingSuccess = {{ session()->has('booking_success') ? 'true' : 'false' }};
     if (bookingSuccess) {
         try {
@@ -1089,9 +1188,7 @@
         syncBookingPackage();
 
         closePackageModal();
-
-        // Scroll to sidebar CTA smoothly
-        document.getElementById('contact-cta').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        window.location.href = bookingVendorUrl + '?vendor_package_id=' + encodeURIComponent(String(currentPackage.id));
     }
 
     // Close on Escape key

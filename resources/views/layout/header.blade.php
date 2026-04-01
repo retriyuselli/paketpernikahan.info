@@ -1,18 +1,9 @@
 <!-- Sticky Header Wrapper -->
 <div class="sticky top-0 z-40 bg-white border-b border-gray-200">
-    @php
-        $headerUser = auth()->user();
-        $headerIsPrivileged = $headerUser && $headerUser->hasRole(['super_admin', 'admin', 'vendor']);
-        $headerHasVendorApplication = $headerUser
-            ? \App\Models\VendorApplication::where('user_id', $headerUser->id)->whereIn('status', ['pending', 'approved'])->exists()
-            : false;
-        $headerShowJoinVendorForAuth = $headerUser && !$headerIsPrivileged && !$headerHasVendorApplication;
-    @endphp
-
     <!-- Collapsible: Announcement Banner + Top Contact Bar -->
-    <div id="collapsible-bar" class="overflow-hidden transition-all duration-300" style="max-height: 200px;">
+    <div id="collapsible-bar" class="overflow-hidden transition-all duration-300 max-h-[200px]">
         <!-- Top Announcement Banner -->
-        <div id="announcement-banner" class="text-white py-2 px-4 text-sm font-medium" style="background: linear-gradient(to right, var(--sage-green), var(--light-sage))">
+        <div id="announcement-banner" class="text-white py-2 px-4 text-sm font-medium bg-accent-gradient">
             <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
                 <div class="text-center flex-1">
                     Coming soon, Sumatera Selatan Wedding Expo 2026 Season 1
@@ -25,7 +16,7 @@
             </div>
         </div>
         <!-- Top Contact Bar -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <x-ui.container>
         <div class="hidden md:flex items-center justify-between py-3 text-xs border-b border-gray-100">
             <div class="flex items-center gap-6 text-gray-600">
                 <span>office@makruwedding.id</span>
@@ -54,18 +45,18 @@
                 <a href="#" class="font-medium hover:text-accent">Rp 0</a>
             </div>
         </div>
-        </div><!-- end max-w-7xl for contact bar -->
+        </x-ui.container>
     </div><!-- end collapsible-bar -->
 
     <!-- Main Header (always sticky) -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <x-ui.container>
         <div class="flex items-center justify-between py-3 lg:grid lg:grid-cols-3 lg:items-center">
 
             <!-- Logo (left) -->
             <div class="flex items-center gap-2 flex-shrink-0 h-10">
                 <a href="/" class="flex items-center gap-2">
                     <span class="text-2xl lg:text-3xl font-extrabold tracking-tight leading-none">
-                        <span style="color:var(--sage-green)">M</span><span style="color:var(--dark-gray)">W</span>
+                        <span class="text-accent">M</span><span class="text-dark">W</span>
                     </span>
                 </a>
             </div>
@@ -92,6 +83,7 @@
                     </div>
                 </div>
                 <a href="{{ route('vendor') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Vendor</a>
+                <a href="{{ route('store') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Store</a>
                 <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Promo</a>
                 <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Blog Makna</a>
                 <div class="relative group">
@@ -113,15 +105,15 @@
                     </div>
                 </div>
                 @auth
-                    @if($headerShowJoinVendorForAuth)
-                        <a href="{{ route('join.vendor') }}" class="text-xs font-bold tracking-wide px-4 py-2 rounded-full transition hover:opacity-90 uppercase" style="background: var(--sage-green); color: #fff">
+                    @if(($headerShowJoinVendorForAuth ?? false))
+                        <x-ui.button href="{{ route('join.vendor') }}" size="xs" class="tracking-wide uppercase">
                             Join Vendor
-                        </a>
+                        </x-ui.button>
                     @endif
                 @else
-                    <a href="{{ route('join.vendor.signup') }}" class="text-xs font-bold tracking-wide px-4 py-2 rounded-full transition hover:opacity-90 uppercase" style="background: var(--sage-green); color: #fff">
+                    <x-ui.button href="{{ route('join.vendor.signup') }}" size="xs" class="tracking-wide uppercase">
                         Join Vendor
-                    </a>
+                    </x-ui.button>
                 @endauth
             </nav>
 
@@ -140,17 +132,16 @@
                         <form method="GET" action="{{ route('vendor') }}" class="flex items-center gap-2">
                             <input type="text" name="q" placeholder="Cari vendor atau paket..."
                                    class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition">
-                            <button type="submit" class="px-4 py-2 rounded-xl text-sm font-bold transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                            <x-ui.button type="submit" size="sm" class="font-bold">
                                 Cari
-                            </button>
+                            </x-ui.button>
                         </form>
                     </div>
                 </div>
 
                 <!-- Theme Toggle (iPhone style) -->
                 <button id="theme-toggle" onclick="toggleTheme()"
-                        class="relative inline-flex items-center w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none"
-                        style="background: var(--sage-green)"
+                        class="relative inline-flex items-center w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none bg-accent"
                         aria-label="Toggle dark mode">
                     <span id="theme-knob"
                           class="inline-block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-1">
@@ -166,8 +157,7 @@
                                 <img src="{{ auth()->user()->avatarUrl() }}"
                                      alt="{{ auth()->user()->name }}" class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full flex items-center justify-center text-sm font-bold text-white"
-                                     style="background: var(--sage-green)">
+                                <div class="w-full h-full flex items-center justify-center text-sm font-bold text-white bg-accent">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </div>
                             @endif
@@ -185,7 +175,7 @@
                          class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
                         @auth
                             <div class="px-4 py-2.5 border-b border-gray-100">
-                                <p class="text-xs font-semibold truncate" style="color: var(--dark-gray)">{{ auth()->user()->name }}</p>
+                                <p class="text-xs font-semibold truncate text-dark">{{ auth()->user()->name }}</p>
                                 <p class="text-[10px] text-gray-400 truncate">{{ auth()->user()->email }}</p>
                             </div>
                             <a href="{{ url('/dashboard') }}"
@@ -241,7 +231,7 @@
             </div>
 
         </div>
-    </div><!-- end max-w-7xl main header -->
+    </x-ui.container>
 
         <!-- Category Navigation -->
         {{-- <div class="border-t border-gray-100 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
@@ -285,9 +275,9 @@
         <div class="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <span class="text-lg font-extrabold tracking-tight">
-                    <span style="color:var(--sage-green)">M</span><span style="color:var(--dark-gray)">W</span>
+                    <span class="text-accent">M</span><span class="text-dark">W</span>
                 </span>
-                <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background: var(--light-sage); color: var(--dark-gray)">Menu</span>
+                <span class="text-xs font-semibold px-2 py-1 rounded-full bg-light-sage text-dark">Menu</span>
             </div>
             <button type="button" onclick="closeMobileMenu()" class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Tutup menu">
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,9 +290,9 @@
             <form method="GET" action="{{ route('vendor') }}" class="flex items-center gap-2">
                 <input type="text" name="q" placeholder="Cari vendor atau paket..."
                        class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition">
-                <button type="submit" class="px-4 py-2 rounded-xl text-sm font-bold transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                <x-ui.button type="submit" size="sm" class="font-bold">
                     Cari
-                </button>
+                </x-ui.button>
             </form>
         </div>
 
@@ -341,8 +331,17 @@
                 Vendor
             </a>
 
+            <a href="{{ route('store') }}" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 7l1 13a1 1 0 001 1h14a1 1 0 001-1l1-13"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7a4 4 0 018 0"/>
+                </svg>
+                Store
+            </a>
+
             @auth
-                @if($headerShowJoinVendorForAuth)
+                @if(($headerShowJoinVendorForAuth ?? false))
                     <a href="{{ route('join.vendor') }}" class="flex items-center justify-between gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
                         <span class="flex items-center gap-3">
                             <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -350,7 +349,7 @@
                             </svg>
                             Join Vendor
                         </span>
-                        <span class="text-[10px] font-bold px-2 py-1 rounded-full" style="background: var(--light-sage); color: var(--dark-gray)">Daftar</span>
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-light-sage text-dark">Daftar</span>
                     </a>
                 @endif
             @else
@@ -361,7 +360,7 @@
                         </svg>
                         Join Vendor
                     </span>
-                    <span class="text-[10px] font-bold px-2 py-1 rounded-full" style="background: var(--light-sage); color: var(--dark-gray)">Daftar</span>
+                    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-light-sage text-dark">Daftar</span>
                 </a>
             @endauth
 
@@ -441,14 +440,14 @@
 <!-- Login Modal -->
 @guest
 <div id="login-modal"
-     style="display: none; position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.45); align-items: center; justify-content: center;"
+     class="hidden fixed inset-0 z-[9999] bg-backdrop-45 items-center justify-center p-4"
      onclick="if(event.target===this) closeLoginModal()">
-    <div style="background: white; border-radius: 1rem; width: 100%; max-width: 26rem; margin: 1rem; box-shadow: 0 20px 60px rgba(0,0,0,0.25); overflow: hidden; font-family: 'Poppins', sans-serif;">
+    <div class="bg-white rounded-2xl w-full max-w-[26rem] shadow-2xl overflow-hidden font-sans">
 
         <!-- Header -->
-        <div style="padding: 1.5rem 1.75rem 0; display: flex; align-items: center; justify-content: space-between;">
-            <h2 style="font-size: 1.25rem; font-weight: 700; color: #444444; margin: 0;">Masuk</h2>
-            <button onclick="closeLoginModal()" style="background: none; border: none; cursor: pointer; color: #9CA3AF; font-size: 1.25rem; line-height: 1; padding: 0.25rem; display: flex; align-items: center; justify-content: center;">
+        <div class="px-7 pt-6 flex items-center justify-between">
+            <h2 class="text-xl font-bold text-dark m-0">Masuk</h2>
+            <button type="button" onclick="closeLoginModal()" class="text-gray-400 hover:text-gray-600 text-xl leading-none p-1 flex items-center justify-center">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
@@ -456,15 +455,14 @@
         </div>
 
         <!-- Body -->
-        <div style="padding: 1.25rem 1.75rem 1.75rem;">
-            <p style="font-size: 0.8125rem; color: #6B7280; font-weight: 300; margin-bottom: 1.25rem; line-height: 1.5;">
+        <div class="px-7 pt-5 pb-7">
+            <p class="text-[13px] text-gray-500 font-light mb-5 leading-snug">
                 Mulai persiapan pernikahan Anda dengan penawaran terbaik &amp; fitur eksklusif di Paket Pernikahan
             </p>
 
             <!-- Google Button -->
             <a href="{{ route('auth.google') }}"
-                style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.625rem 1rem; border: 1px solid #D1D5DB; border-radius: 0.375rem; background: white; cursor: pointer; font-size: 0.875rem; color: #444444; font-weight: 400; transition: background 0.15s; margin-bottom: 1rem; text-decoration: none; box-sizing: border-box;"
-                onmouseover="this.style.background='#F9FAFB'" onmouseout="this.style.background='white'">
+                class="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-300 rounded-md bg-white cursor-pointer text-sm text-dark font-normal transition hover:bg-gray-50 no-underline box-border mb-4">
                 <svg width="17" height="17" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -475,52 +473,44 @@
             </a>
 
             <!-- Divider -->
-            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                <div style="flex: 1; height: 1px; background: #E5E7EB;"></div>
-                <span style="font-size: 0.7rem; color: #9CA3AF; font-weight: 300; letter-spacing: 0.05em;">ATAU</span>
-                <div style="flex: 1; height: 1px; background: #E5E7EB;"></div>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="flex-1 h-px bg-gray-200"></div>
+                <span class="text-[11px] text-gray-400 font-light tracking-wider">ATAU</span>
+                <div class="flex-1 h-px bg-gray-200"></div>
             </div>
 
             <!-- Form -->
             <form method="POST" action="{{ route('login.post') }}">
                 @csrf
 
-                <div style="margin-bottom: 0.75rem;">
+                <div class="mb-3">
                     <input type="email" name="email" placeholder="Alamat email" required
-                        style="width: 100%; padding: 0.65rem 1rem; border: none; border-bottom: 1px solid #D1D5DB; font-size: 0.875rem; color: #444444; font-weight: 300; outline: none; box-sizing: border-box; background: transparent;"
-                        onfocus="this.style.borderBottomColor='#9CAF88'"
-                        onblur="this.style.borderBottomColor='#D1D5DB'"
+                        class="w-full px-4 py-2.5 border-0 border-b border-gray-300 text-sm text-dark font-light outline-none box-border bg-transparent transition focus:border-accent"
                         value="{{ old('email') }}">
                 </div>
 
-                <div style="margin-bottom: 1.25rem;">
+                <div class="mb-5">
                     <input type="password" name="password" placeholder="Kata Sandi" required
-                        style="width: 100%; padding: 0.65rem 1rem; border: none; border-bottom: 1px solid #D1D5DB; font-size: 0.875rem; color: #444444; font-weight: 300; outline: none; box-sizing: border-box; background: transparent;"
-                        onfocus="this.style.borderBottomColor='#9CAF88'"
-                        onblur="this.style.borderBottomColor='#D1D5DB'">
+                        class="w-full px-4 py-2.5 border-0 border-b border-gray-300 text-sm text-dark font-light outline-none box-border bg-transparent transition focus:border-accent">
                 </div>
 
                 <button type="submit"
-                    style="width: 100%; background-color: #9CAF88; color: white; font-size: 0.9375rem; font-weight: 400; padding: 0.7rem 1rem; border-radius: 0.375rem; border: none; cursor: pointer; transition: background-color 0.15s; margin-bottom: 0.875rem; font-family: 'Poppins', sans-serif;"
-                    onmouseover="this.style.backgroundColor='#7A9068'"
-                    onmouseout="this.style.backgroundColor='#9CAF88'">
+                    class="w-full bg-accent hover:bg-accent-dark text-white text-[15px] font-normal py-2.5 px-4 rounded-md border-0 cursor-pointer transition mb-3.5">
                     Lanjutkan
                 </button>
             </form>
 
-            <p style="text-align: center; margin-bottom: 0.75rem;">
+            <p class="text-center mb-3">
                 <a href="{{ route('password.request') }}"
-                    style="font-size: 0.8125rem; color: #9CAF88; text-decoration: none; font-weight: 300;"
-                    onmouseover="this.style.color='#444444'" onmouseout="this.style.color='#9CAF88'">
+                    class="text-[13px] text-accent no-underline font-light hover:text-dark">
                     Saya lupa kata sandi
                 </a>
             </p>
 
-            <p style="text-align: center; font-size: 0.8125rem; color: #6B7280; font-weight: 300;">
+            <p class="text-center text-[13px] text-gray-500 font-light">
                 Belum punya akun?
                 <a href="{{ route('register') }}" onclick="closeLoginModal()"
-                    style="color: #9CAF88; text-decoration: none; font-weight: 500;"
-                    onmouseover="this.style.color='#444444'" onmouseout="this.style.color='#9CAF88'">
+                    class="text-accent no-underline font-medium hover:text-dark">
                     Daftar
                 </a>
             </p>
@@ -566,14 +556,16 @@ function dismissAnnouncement() {
 function openLoginModal() {
     var modal = document.getElementById('login-modal');
     if (modal) {
-        modal.style.display = 'flex';
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
 }
 function closeLoginModal() {
     var modal = document.getElementById('login-modal');
     if (modal) {
-        modal.style.display = 'none';
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
         document.body.style.overflow = '';
     }
 }
@@ -649,11 +641,17 @@ function applyTheme(isDark) {
     var knob   = document.getElementById('theme-knob');
     if (isDark) {
         document.documentElement.classList.add('dark');
-        if (toggle) toggle.style.background = '#374151';
+        if (toggle) {
+            toggle.classList.remove('bg-accent');
+            toggle.classList.add('bg-gray-700');
+        }
         if (knob)   knob.classList.replace('translate-x-1', 'translate-x-6');
     } else {
         document.documentElement.classList.remove('dark');
-        if (toggle) toggle.style.background = 'var(--sage-green)';
+        if (toggle) {
+            toggle.classList.remove('bg-gray-700');
+            toggle.classList.add('bg-accent');
+        }
         if (knob)   knob.classList.replace('translate-x-6', 'translate-x-1');
     }
 }

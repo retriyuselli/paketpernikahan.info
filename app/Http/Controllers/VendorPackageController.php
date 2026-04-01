@@ -23,6 +23,17 @@ class VendorPackageController extends Controller
         );
     }
 
+    public function edit(Vendor $vendor, VendorPackage $package)
+    {
+        $this->authorizeRole($vendor);
+        abort_if($package->vendor_id !== $vendor->id, 404);
+
+        return view('vendor.packages.edit', [
+            'vendor' => $vendor,
+            'package' => $package,
+        ]);
+    }
+
     public function store(Request $request, Vendor $vendor)
     {
         $this->authorizeRole($vendor);
@@ -71,7 +82,13 @@ class VendorPackageController extends Controller
             ]);
         }
 
-        return response()->json(['success' => true, 'package' => $package]);
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'package' => $package]);
+        }
+
+        return redirect()
+            ->route('vendor.edit', $vendor)
+            ->with('success', 'Paket berhasil ditambahkan.');
     }
 
     public function update(Request $request, Vendor $vendor, VendorPackage $package)
@@ -123,7 +140,13 @@ class VendorPackageController extends Controller
             ]);
         }
 
-        return response()->json(['success' => true, 'package' => $package->fresh()]);
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'package' => $package->fresh()]);
+        }
+
+        return redirect()
+            ->route('vendor.packages.edit', ['vendor' => $vendor->slug, 'package' => $package->id])
+            ->with('success', 'Paket berhasil disimpan.');
     }
 
     public function destroy(Vendor $vendor, VendorPackage $package)

@@ -31,8 +31,13 @@
 
     @php
         $venueCategories = ['gedung', 'hotel', 'venue', 'rumah', 'wo'];
-        $selectedCategory = old('category', $vendor->category);
-        $isVenueCategory = in_array($selectedCategory, $venueCategories, true);
+        $selectedCategories = old('categories');
+        if (!is_array($selectedCategories)) {
+            $selectedCategories = is_array($vendor->categories) && count($vendor->categories)
+                ? $vendor->categories
+                : ($vendor->category ? [$vendor->category] : []);
+        }
+        $isVenueCategory = count(array_intersect($selectedCategories, $venueCategories)) > 0;
         $editUser = auth()->user();
         $editIsAdmin = $editUser && $editUser->hasRole(['super_admin', 'admin']);
         $canToggleActive = $editIsAdmin || (bool) $vendor->is_profile_complete;
@@ -57,12 +62,11 @@
         <!-- Page Header -->
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-xl font-bold" style="color: var(--dark-gray)">Edit Vendor</h1>
+                <h1 class="text-xl font-bold text-dark">Edit Vendor</h1>
                 <p class="text-sm text-gray-500 mt-0.5">{{ $vendor->name }}</p>
             </div>
             <a href="{{ route('vendor.detail', $vendor) }}"
-               class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border border-gray-200 bg-white hover:border-gray-300 transition"
-               style="color: var(--dark-gray)">
+               class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
@@ -72,21 +76,20 @@
 
         @if(session('success'))
         {{-- Success Modal --}}
-        <div id="success-modal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.4)">
+        <div id="success-modal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-backdrop-40">
             <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-8 flex flex-col items-center text-center gap-4 animate-bounce-in">
-                <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background:#f0fdf4">
-                    <svg class="w-8 h-8" style="color:#22c55e" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-16 h-16 rounded-full flex items-center justify-center bg-green-50">
+                    <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold mb-1" style="color: var(--dark-gray)">Perubahan Tersimpan!</h3>
+                    <h3 class="text-lg font-bold mb-1 text-dark">Perubahan Tersimpan!</h3>
                     <p class="text-sm text-gray-500">{{ session('success') }}</p>
-                    <p class="text-sm font-medium mt-1" style="color: var(--sage-green)">Terima kasih 🎉</p>
+                    <p class="text-sm font-medium mt-1 text-accent">Terima kasih 🎉</p>
                 </div>
                 <a href="{{ route('vendor.detail', $vendor) }}"
-                   class="w-full py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90 mt-1 text-center block"
-                   style="background: var(--sage-green)">
+                   class="w-full py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90 mt-1 text-center block bg-accent">
                     Oke, Mengerti
                 </a>
             </div>
@@ -114,7 +117,7 @@
 
         {{-- ── Tab Navigation ── --}}
         <div class="mb-5">
-            <div class="flex gap-1 p-1 rounded-2xl" style="background: var(--cream); border: 1px solid #e5e7eb">
+            <div class="flex gap-1 p-1 rounded-2xl bg-cream border border-gray-200">
                 <button type="button" onclick="switchTab('tab-info')"
                         id="btn-tab-info"
                         class="tab-btn flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
@@ -152,12 +155,12 @@
                     <div class="flex items-center justify-between gap-3">
                         <div>
                             <p class="text-xs uppercase tracking-widest text-gray-400">Kelengkapan Profil</p>
-                            <p class="text-sm font-bold mt-1" style="color: var(--dark-gray)">{{ $profileProgress['percent'] }}%</p>
+                            <p class="text-sm font-bold mt-1 text-dark">{{ $profileProgress['percent'] }}%</p>
                         </div>
                         <p class="text-xs text-gray-400">{{ $profileProgress['done'] }}/{{ $profileProgress['total'] }} terisi</p>
                     </div>
                     <div class="mt-3 w-full h-2 rounded-full bg-gray-100 overflow-hidden">
-                        <div class="h-full rounded-full" style="width: {{ $profileProgress['percent'] }}%; background: var(--sage-green)"></div>
+                        <div class="h-full rounded-full bg-accent" style="width: {{ $profileProgress['percent'] }}%"></div>
                     </div>
                     @if($profileProgress['percent'] < 100 && !empty($profileProgress['missing']))
                         <div class="mt-3 text-xs text-gray-500">
@@ -175,7 +178,7 @@
                                @checked($activeChecked)
                                @disabled(!$canToggleActive)
                                class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sage" style="--sage: var(--sage-green)"></div>
+                        <div class="js-toggle-track w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                         <span class="ml-2 text-sm font-medium text-gray-700">Vendor Aktif</span>
                     </label>
                     <p class="text-xs text-gray-400">
@@ -206,14 +209,57 @@
                         {{-- Kategori --}}
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Kategori <span class="text-red-400">*</span></label>
-                            <select id="vendor-category" name="category"
-                                    class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 @error('category') border-red-300 @enderror"
-                                    style="--tw-ring-color: var(--sage-green)">
+                            @php
+                                $editCats = old('categories');
+                                if (!is_array($editCats)) {
+                                    $editCats = is_array($vendor->categories) && count($vendor->categories) ? $vendor->categories : ($vendor->category ? [$vendor->category] : []);
+                                }
+                            @endphp
+                            <select id="vendor-category" class="hidden">
                                 @foreach(\App\Models\CategoryVendor::orderBy('sort_order')->get() as $cat)
-                                <option value="{{ $cat->slug }}" @selected(old('category', $vendor->category) === $cat->slug)>{{ $cat->name }}</option>
+                                    <option value="{{ $cat->slug }}">{{ $cat->name }}</option>
                                 @endforeach
                             </select>
-                            @error('category')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                            <div class="relative" id="vendor-edit-category-select">
+                                <button type="button"
+                                        id="vendor-edit-category-button"
+                                        class="w-full h-10 rounded-xl border border-gray-200 px-3 text-sm flex items-center justify-between gap-3 hover:border-gray-300 transition bg-white"
+                                        style="color: var(--dark-gray)">
+                                    <span class="text-sm opacity-60" style="color: var(--dark-gray)" id="vendor-edit-category-placeholder">Pilih kategori vendor</span>
+                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+
+                                <div id="vendor-edit-category-dropdown" class="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-lg p-3 z-20 hidden">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-60 overflow-auto">
+                                        @foreach(\App\Models\CategoryVendor::orderBy('sort_order')->get() as $cat)
+                                            @php $checked = in_array($cat->slug, $editCats, true); @endphp
+                                            <label class="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-50 transition cursor-pointer">
+                                                <input type="checkbox"
+                                                       name="categories[]"
+                                                       value="{{ $cat->slug }}"
+                                                       class="h-4 w-4 rounded border-gray-300 text-[var(--sage-green)] focus:ring-[var(--sage-green)]"
+                                                       data-label="{{ $cat->name }}"
+                                                       {{ $checked ? 'checked' : '' }}>
+                                                <span class="text-sm font-semibold text-gray-700">{{ $cat->name }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                    <div class="flex items-center justify-between gap-3 pt-3 mt-3 border-t border-gray-100">
+                                        <button type="button" id="vendor-edit-category-clear" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                            Reset
+                                        </button>
+                                        <button type="button" id="vendor-edit-category-done" class="text-xs font-bold px-3 py-2 rounded-lg transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                                            Selesai
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="vendor-edit-category-chips" class="mt-2 flex flex-wrap gap-2"></div>
+                            </div>
+                            @error('categories')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
+                            @error('categories.*')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror
                         </div>
 
                         {{-- Tipe --}}
@@ -307,6 +353,29 @@
                     </div>
                 </div>
 
+                <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                    <div class="px-5 py-3 border-b border-gray-100" style="background: var(--cream)">
+                        <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Pengalaman & Fasilitas</h2>
+                    </div>
+                    <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">Pengalaman</label>
+                            <input type="text" name="experience" value="{{ old('experience', $vendor->experience) }}"
+                                   placeholder="10+ Tahun"
+                                   class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                                   style="--tw-ring-color: var(--sage-green)">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">Fasilitas</label>
+                            <input type="text" name="facilities" value="{{ old('facilities', $vendor->facilities) }}"
+                                   placeholder="AC, Parkir, Lift, Kamar Mandi"
+                                   class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                                   style="--tw-ring-color: var(--sage-green)">
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Detail Venue --}}
                 <div id="venue-detail-section" class="bg-white rounded-2xl border border-gray-100 overflow-hidden {{ $isVenueCategory ? '' : 'hidden' }}">
                     <div class="px-5 py-3 border-b border-gray-100" style="background: var(--cream)">
@@ -326,22 +395,6 @@
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Tipe Venue</label>
                             <input type="text" name="venue_type" value="{{ old('venue_type', $vendor->venue_type) }}"
                                    placeholder="Indoor & Outdoor"
-                                   class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
-                                   style="--tw-ring-color: var(--sage-green)">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">Pengalaman</label>
-                            <input type="text" name="experience" value="{{ old('experience', $vendor->experience) }}"
-                                   placeholder="10+ Tahun"
-                                   class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
-                                   style="--tw-ring-color: var(--sage-green)">
-                        </div>
-
-                        <div class="sm:col-span-3">
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">Fasilitas</label>
-                            <input type="text" name="facilities" value="{{ old('facilities', $vendor->facilities) }}"
-                                   placeholder="AC, Parkir, Lift, Kamar Mandi"
                                    class="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
                                    style="--tw-ring-color: var(--sage-green)">
                         </div>
@@ -505,13 +558,13 @@
 
                                     {{-- Actions --}}
                                     <div class="flex items-center gap-2 pt-2 border-t border-gray-100 mt-auto">
-                                        <button type="button"
-                                                onclick='openPkgModal({{ $pkg->id }}, @json($pkg->name), {{ $pkg->price_raw }}, {{ $pkg->discount }}, @json($pkg->max_guests ?? ''), @json(implode("\n", $pkg->items ?? [])), @json($pkg->card_color), @json($pkg->card_text_color), {{ $pkg->sort_order }}, {{ $pkg->is_active ? 'true' : 'false' }})'
-                                                class="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition"
-                                                style="color: var(--dark-gray)">
+                                        <a href="{{ route('vendor.packages.edit', ['vendor' => $vendor->slug, 'package' => $pkg->id]) }}"
+                                           onclick="sessionStorage.setItem('editVendorTab','tab-paket')"
+                                           class="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-gray-200 bg-white hover:bg-gray-50 transition"
+                                           style="color: var(--dark-gray)">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                             Edit
-                                        </button>
+                                        </a>
                                         <button type="button"
                                                 onclick="deletePkg({{ $pkg->id }}, this)"
                                                 class="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border transition"
@@ -586,7 +639,7 @@
                                     <svg class="w-7 h-7" style="color: var(--sage-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                                     </svg>
-                                    <span class="text-xs font-medium" style="color: var(--sage-green)">Klik untuk pilih foto (minimal 5 foto)</span>
+                                    <span class="text-xs font-medium text-accent">Klik untuk pilih foto (minimal 5 foto)</span>
                                     <span class="text-xs text-gray-400">JPG, PNG, WEBP · maks. 1MB/file</span>
                                     <input type="file" name="cover_image[]" accept="image/*" multiple
                                            class="hidden"
@@ -606,11 +659,10 @@
 
                 {{-- Galeri Foto & Video --}}
                 <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden mt-4">
-                    <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between" style="background: var(--cream)">
-                        <h2 class="text-sm font-bold" style="color: var(--dark-gray)">Galeri Foto & Video</h2>
+                    <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between bg-cream">
+                        <h2 class="text-sm font-bold text-dark">Galeri Foto & Video</h2>
                         <button type="button" onclick="openGalleryModal()"
-                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition hover:opacity-90"
-                                style="background: var(--sage-green); color: #fff">
+                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition hover:opacity-90 bg-accent text-white">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                             </svg>
@@ -620,12 +672,12 @@
                     <div class="p-5">
                         <div id="gallery-list" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                             @forelse($vendor->galleries->sortBy('sort_order') as $gal)
-                            <div class="gallery-card relative group rounded-xl overflow-hidden border border-gray-100 shadow-sm"
+                            <div class="gallery-card relative group rounded-xl overflow-hidden border border-gray-100 shadow-sm ar-9x16"
                                  data-id="{{ $gal->id }}"
                                  data-caption="{{ $gal->caption ?? '' }}"
                                  data-video-url="{{ $gal->video_url ?? '' }}"
                                  data-image-url="{{ $gal->image_url ?? '' }}"
-                                 style="aspect-ratio: 9/16">
+                            >
                                 @if($gal->image_url)
                                 <img src="{{ $gal->image_url }}"
                                      alt="{{ $gal->caption ?? 'Galeri' }}"
@@ -655,8 +707,7 @@
                                 <div class="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button type="button"
                                             onclick="openGalleryEditModal(this.closest('.gallery-card'))"
-                                            class="w-6 h-6 rounded-full flex items-center justify-center text-white transition hover:scale-110"
-                                            style="background: rgba(0,0,0,0.55)"
+                                            class="w-6 h-6 rounded-full flex items-center justify-center text-white transition hover:scale-110 bg-black/60"
                                             title="Edit">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -664,16 +715,15 @@
                                     </button>
                                     <button type="button"
                                             onclick="deleteGallery({{ $gal->id }}, this)"
-                                            class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold transition hover:scale-110"
-                                            style="background: rgba(248,113,113,0.9)"
+                                            class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold transition hover:scale-110 bg-red-400/90"
                                             title="Hapus">✕</button>
                                 </div>
                             </div>
                             @empty
                             <div id="gallery-empty-notice"
                                  class="col-span-2 sm:col-span-3 lg:col-span-4 flex flex-col items-center justify-center py-10 text-center">
-                                <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-3" style="background: var(--cream)">
-                                    <svg class="w-6 h-6" style="color: var(--sage-green); opacity:0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-3 bg-cream">
+                                    <svg class="w-6 h-6 text-accent opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
                                 </div>
@@ -688,13 +738,11 @@
                 {{-- Submit (Tab Media) --}}
                 <div class="flex items-center justify-end gap-3 pt-5">
                     <a href="{{ route('vendor.detail', $vendor) }}"
-                       class="px-5 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 bg-white hover:border-gray-300 transition"
-                       style="color: var(--dark-gray)">
+                       class="px-5 py-2.5 rounded-xl text-sm font-semibold border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
                         Batal
                     </a>
                     <button type="submit"
-                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90"
-                            style="background-color: var(--sage-green); color: var(--cream)">
+                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90 bg-accent text-cream">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
@@ -706,18 +754,6 @@
 
         </form>
     </div>
-
-    <style>
-    .tab-btn {
-        color: var(--dark-gray);
-        background: transparent;
-    }
-    .tab-btn.active {
-        background: white;
-        color: var(--sage-green);
-        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    }
-    </style>
 
     <script>
     // ── Tab switching ─────────────────────────────────────────────
@@ -735,6 +771,90 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        (function () {
+            var root = document.getElementById('vendor-edit-category-select');
+            if (!root) return;
+
+            var btn = document.getElementById('vendor-edit-category-button');
+            var dd = document.getElementById('vendor-edit-category-dropdown');
+            var chips = document.getElementById('vendor-edit-category-chips');
+            var placeholder = document.getElementById('vendor-edit-category-placeholder');
+            var done = document.getElementById('vendor-edit-category-done');
+            var clear = document.getElementById('vendor-edit-category-clear');
+            var primaryEl = document.getElementById('vendor-category');
+            var inputs = dd ? dd.querySelectorAll('input[type="checkbox"][name="categories[]"]') : [];
+
+            function selected() {
+                var list = [];
+                inputs.forEach(function (el) {
+                    if (el.checked) list.push({ value: el.value, label: el.getAttribute('data-label') || el.value, el: el });
+                });
+                return list;
+            }
+
+            function render() {
+                var s = selected();
+                chips.innerHTML = '';
+                if (s.length === 0) {
+                    placeholder.textContent = 'Pilih kategori vendor';
+                    placeholder.classList.add('opacity-60');
+                    placeholder.classList.remove('opacity-100', 'font-semibold');
+                    if (primaryEl) {
+                        primaryEl.value = '';
+                        primaryEl.dispatchEvent(new Event('change'));
+                    }
+                    return;
+                }
+                placeholder.textContent = s.length === 1 ? s[0].label : (s.length + ' kategori dipilih');
+                placeholder.classList.remove('opacity-60');
+                placeholder.classList.add('opacity-100', 'font-semibold');
+
+                if (primaryEl) {
+                    primaryEl.value = s[0].value;
+                    primaryEl.dispatchEvent(new Event('change'));
+                }
+
+                s.forEach(function (it) {
+                    var chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.className = 'inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border border-gray-200 bg-white hover:bg-gray-50 transition';
+                    chip.style.color = 'var(--dark-gray)';
+                    chip.innerHTML = '<span class="truncate max-w-[160px]">' + String(it.label).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>' +
+                        '<span class="text-gray-400">×</span>';
+                    chip.addEventListener('click', function () {
+                        it.el.checked = false;
+                        render();
+                    });
+                    chips.appendChild(chip);
+                });
+            }
+
+            function open() { dd.classList.remove('hidden'); }
+            function close() { dd.classList.add('hidden'); }
+
+            btn.addEventListener('click', function () {
+                if (dd.classList.contains('hidden')) open();
+                else close();
+            });
+            done.addEventListener('click', close);
+            clear.addEventListener('click', function () {
+                inputs.forEach(function (el) { el.checked = false; });
+                render();
+            });
+            inputs.forEach(function (el) {
+                el.addEventListener('change', render);
+            });
+            document.addEventListener('click', function (e) {
+                if (!dd || dd.classList.contains('hidden')) return;
+                if (root.contains(e.target)) return;
+                close();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') close();
+            });
+            render();
+        })();
+
         // Restore tab: if errors on form, stay on info tab; else check session
         @if($errors->any())
         switchTab('tab-info');
@@ -749,8 +869,12 @@
         var venueDetailEl = document.getElementById('venue-detail-section');
 
         function toggleVenueFields() {
-            if (!categoryEl) return;
-            var isVenue = venueCategories.indexOf(categoryEl.value) !== -1;
+            var selected = Array.from(document.querySelectorAll('input[name="categories[]"]:checked'))
+                .map(function (el) { return el.value; });
+            if (selected.length === 0 && categoryEl) {
+                selected = [categoryEl.value].filter(Boolean);
+            }
+            var isVenue = selected.some(function (v) { return venueCategories.indexOf(v) !== -1; });
             if (venueFieldsEl) venueFieldsEl.classList.toggle('hidden', !isVenue);
             if (venueDetailEl) venueDetailEl.classList.toggle('hidden', !isVenue);
         }
@@ -811,15 +935,16 @@
         if (keep) keep.remove();
     }
 
-    // Toggle switch styling
-    document.querySelectorAll('.peer-checked\\:bg-sage').forEach(el => {
+    document.querySelectorAll('.js-toggle-track').forEach(el => {
         const input = el.previousElementSibling;
         if (input && input.type === 'checkbox') {
             const update = () => {
                 if (input.checked) {
-                    el.style.backgroundColor = 'var(--sage-green)';
+                    el.classList.remove('bg-gray-200');
+                    el.classList.add('bg-accent');
                 } else {
-                    el.style.backgroundColor = '';
+                    el.classList.add('bg-gray-200');
+                    el.classList.remove('bg-accent');
                 }
             };
             update();
@@ -829,30 +954,29 @@
     </script>
 
     {{-- ── File Size Error Modal ── --}}
-    <div id="file-size-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4" style="background: rgba(0,0,0,0.45)">
+    <div id="file-size-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-backdrop-45">
         <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 flex flex-col items-center gap-4 text-center">
-            <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:#fef2f2">
-                <svg class="w-7 h-7" style="color:#f87171" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center bg-red-50">
+                <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                 </svg>
             </div>
-            <h3 class="text-base font-bold" style="color:#444">File Terlalu Besar</h3>
+            <h3 class="text-base font-bold text-dark">File Terlalu Besar</h3>
             <p class="text-sm text-gray-500">File berikut melebihi batas maksimal <strong>1MB</strong>:</p>
-            <p id="file-size-modal-body" class="text-xs text-left w-full bg-gray-50 rounded-lg p-3" style="color:#f87171; line-height:1.8"></p>
+            <p id="file-size-modal-body" class="text-xs text-left w-full bg-gray-50 rounded-lg p-3 text-red-400 leading-relaxed"></p>
             <p class="text-xs text-gray-400">Silakan kompres gambar terlebih dahulu menggunakan tools seperti <strong>TinyPNG</strong> atau <strong>Squoosh</strong>.</p>
             <button onclick="closeFileSizeModal()"
-                    class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90"
-                    style="background: var(--sage-green)">
+                    class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 bg-accent">
                 Mengerti
             </button>
         </div>
     </div>
 
     {{-- ── Package Modal ── --}}
-    <div id="pkg-modal" class="hidden fixed inset-0 z-[9990] flex items-start justify-center p-4 overflow-y-auto" style="background: rgba(0,0,0,0.45)">
+    <div id="pkg-modal" class="hidden fixed inset-0 z-[9990] flex items-start justify-center p-4 overflow-y-auto bg-backdrop-45">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg my-8">
             <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                <h3 id="pkg-modal-title" class="text-base font-bold" style="color: var(--dark-gray)">Tambah Paket</h3>
+                <h3 id="pkg-modal-title" class="text-base font-bold text-dark">Tambah Paket</h3>
                 <button type="button" onclick="closePkgModal()" class="text-gray-400 hover:text-gray-600 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
@@ -861,60 +985,53 @@
                 <input type="hidden" id="pkg-id">
 
                 <div>
-                    <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Nama Paket <span style="color:#f87171">*</span></label>
+                    <label class="block text-xs font-semibold mb-1.5 text-dark">Nama Paket <span class="text-red-400">*</span></label>
                     <input type="text" id="pkg-name" placeholder="Contoh: Paket Silver"
-                           class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none focus:border-sage-green transition"
-                           style="color: var(--dark-gray)">
+                           class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none focus:border-sage-green transition text-dark">
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Harga (Rp) <span style="color:#f87171">*</span></label>
+                        <label class="block text-xs font-semibold mb-1.5 text-dark">Harga (Rp) <span class="text-red-400">*</span></label>
                         <input type="text" id="pkg-price-raw" placeholder="35.000.000"
-                               class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition pkg-price-fmt"
-                               style="color: var(--dark-gray)">
+                               class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition pkg-price-fmt text-dark">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Diskon (Rp)</label>
+                        <label class="block text-xs font-semibold mb-1.5 text-dark">Diskon (Rp)</label>
                         <input type="text" id="pkg-discount" placeholder="0"
-                               class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition pkg-price-fmt"
-                               style="color: var(--dark-gray)">
+                               class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition pkg-price-fmt text-dark">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Kapasitas Tamu</label>
+                    <label class="block text-xs font-semibold mb-1.5 text-dark">Kapasitas Tamu</label>
                     <input type="text" id="pkg-max-guests" placeholder="Contoh: Maks. 300 tamu"
-                           class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition"
-                           style="color: var(--dark-gray)">
+                           class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition text-dark">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Item Paket <span class="font-normal text-gray-400">(satu per baris)</span></label>
+                    <label class="block text-xs font-semibold mb-1.5 text-dark">Item Paket <span class="font-normal text-gray-400">(satu per baris)</span></label>
                     <textarea id="pkg-items" rows="5" placeholder="Gedung 6 jam&#10;Katering 300 tamu&#10;Dekorasi pelaminan"
-                              class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition resize-none"
-                              style="color: var(--dark-gray)"></textarea>
+                              class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition resize-none text-dark"></textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Warna Kartu</label>
+                        <label class="block text-xs font-semibold mb-1.5 text-dark">Warna Kartu</label>
                         <div class="flex items-center gap-2">
                             <input type="color" id="pkg-card-color" value="#C8D5B9"
                                    class="w-9 h-9 rounded-lg border border-gray-200 cursor-pointer p-0.5">
                             <input type="text" id="pkg-card-color-text" value="#C8D5B9" maxlength="7"
-                                   class="flex-1 px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none transition font-mono"
-                                   style="color: var(--dark-gray)">
+                                   class="flex-1 px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none transition font-mono text-dark">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold mb-1.5" style="color: var(--dark-gray)">Warna Teks</label>
+                        <label class="block text-xs font-semibold mb-1.5 text-dark">Warna Teks</label>
                         <div class="flex items-center gap-2">
                             <input type="color" id="pkg-text-color" value="#444444"
                                    class="w-9 h-9 rounded-lg border border-gray-200 cursor-pointer p-0.5">
                             <input type="text" id="pkg-text-color-text" value="#444444" maxlength="7"
-                                   class="flex-1 px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none transition font-mono"
-                                   style="color: var(--dark-gray)">
+                                   class="flex-1 px-3 py-2 text-xs rounded-xl border border-gray-200 focus:outline-none transition font-mono text-dark">
                         </div>
                     </div>
                 </div>
@@ -932,7 +1049,7 @@
                             <div class="relative">
                                 <input type="checkbox" id="pkg-is-active" class="sr-only" checked>
                                 <div id="pkg-toggle-track"
-                                     onclick="togglePkgActive()"
+                                     onclick="event.preventDefault(); event.stopPropagation(); togglePkgActive()"
                                      class="w-10 h-5 rounded-full cursor-pointer transition-colors duration-200"
                                      style="background: var(--sage-green)">
                                     <div id="pkg-toggle-thumb"
@@ -1089,6 +1206,14 @@
         });
     });
 
+    function syncPkgActiveUI() {
+        const check = document.getElementById('pkg-is-active');
+        if (!check) return;
+        const on = !!check.checked;
+        document.getElementById('pkg-toggle-track').style.background = on ? 'var(--sage-green)' : '#d1d5db';
+        document.getElementById('pkg-toggle-thumb').style.transform   = on ? 'translateX(20px)' : 'translateX(0)';
+    }
+
     function openPkgModal(id, name, priceRaw, discount, maxGuests, items, cardColor, textColor, sortOrder, isActive) {
         document.getElementById('pkg-id').value          = id ?? '';
         document.getElementById('pkg-name').value        = name ?? '';
@@ -1102,10 +1227,11 @@
         document.getElementById('pkg-text-color-text').value = textColor ?? '#444444';
         document.getElementById('pkg-sort-order').value  = sortOrder ?? 0;
 
-        const pkgActive = (isActive === true || isActive === 'true');
+        const pkgActive = (isActive === undefined || isActive === null)
+            ? true
+            : (isActive === true || isActive === 'true' || isActive === 1 || isActive === '1');
         document.getElementById('pkg-is-active').checked = pkgActive;
-        document.getElementById('pkg-toggle-track').style.background = pkgActive ? 'var(--sage-green)' : '#d1d5db';
-        document.getElementById('pkg-toggle-thumb').style.transform   = pkgActive ? 'translateX(20px)' : 'translateX(0)';
+        syncPkgActiveUI();
 
         document.getElementById('pkg-modal-title').textContent = id ? 'Edit Paket' : 'Tambah Paket';
         document.getElementById('pkg-error').classList.add('hidden');
@@ -1121,9 +1247,10 @@
     function togglePkgActive() {
         const check = document.getElementById('pkg-is-active');
         check.checked = !check.checked;
-        document.getElementById('pkg-toggle-track').style.background = check.checked ? 'var(--sage-green)' : '#d1d5db';
-        document.getElementById('pkg-toggle-thumb').style.transform   = check.checked ? 'translateX(20px)' : 'translateX(0)';
+        syncPkgActiveUI();
     }
+
+    document.getElementById('pkg-is-active').addEventListener('change', syncPkgActiveUI);
 
     function parsePkgPrice(str) {
         return parseInt(str.replace(/\./g, '').replace(/\D/g, '') || '0', 10);
@@ -1388,12 +1515,11 @@
                 if (empty) empty.remove();
 
                 const card = document.createElement('div');
-                card.className = 'gallery-card relative group rounded-xl overflow-hidden border border-gray-100 shadow-sm';
+                card.className = 'gallery-card relative group rounded-xl overflow-hidden border border-gray-100 shadow-sm ar-9x16';
                 card.dataset.id       = g.id;
                 card.dataset.caption  = g.caption  || '';
                 card.dataset.videoUrl = g.video_url || '';
                 card.dataset.imageUrl = g.image_url || '';
-                card.style.aspectRatio = '9/16';
                 card.innerHTML = _buildGalleryCardInnerHTML(g);
                 list.appendChild(card);
             }
@@ -1424,7 +1550,7 @@
                     const div = document.createElement('div');
                     div.id = 'gallery-empty-notice';
                     div.className = 'col-span-2 sm:col-span-3 lg:col-span-4 flex flex-col items-center justify-center py-10 text-center';
-                    div.innerHTML = '<div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-3" style="background: var(--cream)"><svg class="w-6 h-6" style="color: var(--sage-green); opacity:0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div><p class="text-sm font-semibold text-gray-400">Belum ada foto galeri</p><p class="text-xs text-gray-300 mt-0.5">Klik "Tambah Item" untuk mulai mengunggah.</p>';
+                    div.innerHTML = '<div class="w-12 h-12 rounded-2xl flex items-center justify-center mb-3 bg-cream"><svg class="w-6 h-6 text-accent opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div><p class="text-sm font-semibold text-gray-400">Belum ada foto galeri</p><p class="text-xs text-gray-300 mt-0.5">Klik "Tambah Item" untuk mulai mengunggah.</p>';
                     list.appendChild(div);
                 }
             }

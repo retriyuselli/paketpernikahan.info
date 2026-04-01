@@ -19,8 +19,8 @@ class VendorBookingPaymentController extends Controller
             'type'        => ['required', 'in:dp,final,installment'],
             'amount'      => ['required', 'integer', 'min:0'],
             'method'      => ['required', 'in:transfer,qris,cash,other'],
-            'sender_name' => ['nullable', 'string', 'max:120'],
-            'sender_bank' => ['nullable', 'string', 'max:80'],
+            'sender_name' => ['required', 'string', 'max:120'],
+            'sender_bank' => ['required', 'string', 'max:80'],
             'paid_at'     => ['nullable', 'date'],
             'proof'       => ['required', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
         ]);
@@ -96,7 +96,11 @@ class VendorBookingPaymentController extends Controller
             ->exists();
 
         if ($hasApprovedFinal) {
-            $booking->update(['payment_status' => 'paid']);
+            $updates = ['payment_status' => 'paid'];
+            if ($booking->status === 'pending') {
+                $updates['status'] = 'confirmed';
+            }
+            $booking->update($updates);
             return;
         }
 
@@ -106,7 +110,11 @@ class VendorBookingPaymentController extends Controller
             ->exists();
 
         if ($hasApprovedDp) {
-            $booking->update(['payment_status' => 'dp_paid']);
+            $updates = ['payment_status' => 'dp_paid'];
+            if ($booking->status === 'pending') {
+                $updates['status'] = 'confirmed';
+            }
+            $booking->update($updates);
             return;
         }
 

@@ -15,7 +15,8 @@ class Vendor extends Model
         'name', 
         'slug', 
         'type', 
-        'category', 
+        'category',
+        'categories',
         'location', 
         'province', 
         'city', 
@@ -45,6 +46,7 @@ class Vendor extends Model
     protected $casts = [
         'badge'           => 'array',
         'promo'           => 'array',
+        'categories'      => 'array',
         'is_active'       => 'boolean',
         'is_profile_complete' => 'boolean',
         'rating'          => 'float',

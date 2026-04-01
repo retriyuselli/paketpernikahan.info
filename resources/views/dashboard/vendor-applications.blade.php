@@ -104,7 +104,11 @@
                                 <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $a->business_name }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $a->phone }}</div>
                             </td>
-                            <td class="px-4 py-3 text-xs text-gray-600 align-top">{{ $a->category }}</td>
+                            @php
+                                $appCats = is_array($a->categories) && count($a->categories) ? $a->categories : ($a->category ? [$a->category] : []);
+                                $appCatsLabel = collect($appCats)->filter()->join(', ');
+                            @endphp
+                            <td class="px-4 py-3 text-xs text-gray-600 align-top">{{ $appCatsLabel }}</td>
                             <td class="px-4 py-3 text-xs text-gray-600 align-top">{{ $a->city }}</td>
                             <td class="px-4 py-3 align-top">
                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs {{ $statusClass }}">

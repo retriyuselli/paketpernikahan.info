@@ -19,49 +19,104 @@
                 * {
                     font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
                 }
+
+                :root {
+                    --soft-pink: #F9D5E5;
+                    --sage-green: #9CAF88;
+                    --light-sage: #C8D5B9;
+                    --cream: #FAF3E7;
+                    --dark-gray: #444444;
+                }
+
+                body {
+                    background-color: var(--cream);
+                    color: var(--dark-gray);
+                }
+
+                .text-accent {
+                    color: var(--sage-green);
+                }
+
+                .text-accent-pink {
+                    color: var(--soft-pink);
+                }
+
+                .text-dark {
+                    color: var(--dark-gray);
+                }
+
+                .bg-accent {
+                    background-color: var(--sage-green);
+                }
+
+                .bg-accent-pink {
+                    background-color: var(--soft-pink);
+                }
+
+                .bg-light-sage {
+                    background-color: var(--light-sage);
+                }
+
+                .bg-cream {
+                    background-color: var(--cream);
+                }
+
+                .border-accent {
+                    border-color: var(--sage-green);
+                }
+
+                .from-accent {
+                    --tw-gradient-from: var(--sage-green);
+                }
+
+                .to-accent {
+                    --tw-gradient-to: var(--sage-green);
+                }
+
+                .to-accent-dark {
+                    --tw-gradient-to: #7d9469;
+                }
+
+                .from-soft-pink {
+                    --tw-gradient-from: var(--soft-pink);
+                }
+
+                .hover\:text-accent:hover {
+                    color: var(--sage-green);
+                }
+
+                .focus\:ring-accent:focus {
+                    --tw-ring-color: rgba(156, 175, 136, 0.4);
+                    box-shadow: 0 0 0 3px rgba(156, 175, 136, 0.4);
+                }
+
+                .bg-accent-gradient {
+                    background: linear-gradient(to right, var(--sage-green), var(--light-sage));
+                }
+
+                @keyframes marquee {
+                    0% {
+                        transform: translateX(0);
+                    }
+                    100% {
+                        transform: translateX(-50%);
+                    }
+                }
+
+                .animate-marquee {
+                    animation: marquee 30s linear infinite;
+                }
+
+                .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                }
+
+                .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
             </style>
         @endif
-
-        <!-- Custom CSS Variables -->
-        <style>
-            :root {
-                --soft-pink:   #F9D5E5;
-                --sage-green:  #9CAF88;
-                --light-sage:  #C8D5B9;
-                --cream:       #FAF3E7;
-                --dark-gray:   #444444;
-            }
-
-            /* Global body background */
-            body { background-color: var(--cream); color: var(--dark-gray); }
-
-            /* Color Utilities */
-            .text-accent            { color: var(--sage-green); }
-            .text-accent-pink       { color: var(--soft-pink); }
-            .text-dark              { color: var(--dark-gray); }
-            .bg-accent              { background-color: var(--sage-green); }
-            .bg-accent-pink         { background-color: var(--soft-pink); }
-            .bg-light-sage          { background-color: var(--light-sage); }
-            .bg-cream               { background-color: var(--cream); }
-            .border-accent          { border-color: var(--sage-green); }
-            .from-accent            { --tw-gradient-from: var(--sage-green); }
-            .to-accent              { --tw-gradient-to: var(--sage-green); }
-            .to-accent-dark         { --tw-gradient-to: #7d9469; }
-            .from-soft-pink         { --tw-gradient-from: var(--soft-pink); }
-            .hover\:text-accent:hover { color: var(--sage-green); }
-            .focus\:ring-accent:focus { --tw-ring-color: rgba(156,175,136,.4); box-shadow: 0 0 0 3px rgba(156,175,136,.4); }
-
-            @keyframes marquee {
-                0%   { transform: translateX(0); }
-                100% { transform: translateX(-50%); }
-            }
-            .animate-marquee {
-                animation: marquee 30s linear infinite;
-            }
-
-            .scrollbar-hide::-webkit-scrollbar { display: none; }
-            .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        </style>
 
         @yield('extra-head')
     </head>
@@ -72,19 +127,17 @@
         {{-- ── Error Modal (PostTooLarge / upload errors) ── --}}
         @if(session('error_modal'))
         <div id="error-modal"
-             class="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-             style="background: rgba(0,0,0,0.45)">
+             class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-backdrop-45">
             <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 flex flex-col items-center gap-4 text-center">
-                <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:#fef2f2">
-                    <svg class="w-7 h-7" style="color:#f87171" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-14 h-14 rounded-full flex items-center justify-center bg-red-50">
+                    <svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                     </svg>
                 </div>
-                <h3 class="text-base font-bold" style="color:#444">File Terlalu Besar</h3>
+                <h3 class="text-base font-bold text-dark">File Terlalu Besar</h3>
                 <p class="text-sm text-gray-500">{{ session('error_modal') }}</p>
                 <button onclick="document.getElementById('error-modal').remove()"
-                        class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90"
-                        style="background: var(--sage-green)">
+                        class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 bg-accent">
                     Mengerti
                 </button>
             </div>

@@ -54,14 +54,16 @@ class VendorApplicationAdminController extends Controller
 
         $vendor = $application->vendor_id ? Vendor::find($application->vendor_id) : null;
         if (!$vendor) {
+            $appCategories = is_array($application->categories) ? $application->categories : [];
+            $primaryCategory = $application->category ?: ($appCategories[0] ?? null);
             $slug = $this->uniqueVendorSlug($application->business_name);
             $vendorType = $application->type
-                ?: CategoryVendor::where('slug', $application->category)->value('name')
-                ?: $application->category;
+                ?: ($primaryCategory ? CategoryVendor::where('slug', $primaryCategory)->value('name') : null)
+                ?: ($primaryCategory ?: $application->category);
             $vendor = Vendor::create([
                 'name' => $application->business_name,
                 'slug' => $slug,
-                'category' => $application->category,
+                'category' => $primaryCategory ?: $application->category,
                 'type' => $vendorType,
                 'location' => $application->location,
                 'province' => $application->province,
