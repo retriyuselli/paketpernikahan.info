@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="mb-8">
-    <h1 class="text-2xl font-bold mb-2" style="color: var(--dark-gray)">Vendor Favorit</h1>
+    <h1 class="text-2xl font-bold mb-2 text-dark">Vendor Favorit</h1>
     <p class="text-sm text-gray-500">Daftar vendor yang telah Anda simpan dan sukai.</p>
 </div>
 
@@ -16,9 +16,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
             </svg>
         </div>
-        <h3 class="text-base font-bold mb-1" style="color: var(--dark-gray)">Belum ada vendor favorit</h3>
+        <h3 class="text-base font-bold mb-1 text-dark">Belum ada vendor favorit</h3>
         <p class="text-sm text-gray-500 max-w-sm mb-6">Anda belum menyukai vendor apa pun. Jelajahi berbagai vendor terbaik kami dan temukan pilihan yang pas untuk pernikahan Anda.</p>
-        <a href="{{ route('vendor') }}" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl text-sm font-bold text-white transition hover:opacity-90" style="background-color: var(--sage-green)">
+        <a href="{{ route('vendor') }}" class="inline-flex items-center justify-center px-6 py-2.5 rounded-xl text-sm font-bold bg-accent text-white transition hover:opacity-90">
             Jelajahi Vendor
         </a>
     </div>
@@ -42,16 +42,15 @@
                     </div>
                 </a>
                     <div class="p-2.5 sm:p-4 flex-1 flex flex-col">
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-widest text-gray-400">{{ $vendor->type }}</span>
-                        <div class="flex items-center gap-1 text-[10px] sm:text-xs font-medium" style="color: #f59e0b">
+                    <div class="flex items-center justify-end mb-1">
+                        <div class="flex items-center gap-1 text-[10px] sm:text-xs font-medium text-rating">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                             </svg>
                             {{ number_format($vendor->rating, 1) }}
                         </div>
                     </div>
-                    <a href="{{ route('vendor.detail', $vendor->slug) }}" class="text-[13px] sm:text-base font-bold mb-2 group-hover:text-accent transition leading-snug" style="color: var(--dark-gray)">
+                    <a href="{{ route('vendor.detail', $vendor->slug) }}" class="text-[13px] sm:text-base font-bold mb-2 text-dark group-hover:text-accent transition leading-snug">
                         {{ $vendor->name }}
                     </a>
                     <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500 mb-3">
@@ -69,19 +68,19 @@
                             @if ($cheapPkg)
                                 @if ($cheapPkg->discount > 0)
                                     <p class="text-[8px] sm:text-[10px] line-through text-gray-400 leading-none mb-0.5">{{ $cheapPkg->price }}</p>
-                                    <p class="text-[11px] sm:text-sm font-bold leading-none" style="color: var(--sage-green)">
+                                    <p class="text-[11px] sm:text-sm font-bold leading-none text-accent">
                                         Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}
                                     </p>
                                 @else
-                                    <p class="text-[11px] sm:text-sm font-bold" style="color: var(--sage-green)">{{ $cheapPkg->price }}</p>
+                                    <p class="text-[11px] sm:text-sm font-bold text-accent">{{ $cheapPkg->price }}</p>
                                 @endif
                             @else
-                                <p class="text-[11px] sm:text-sm font-bold" style="color: var(--sage-green)">
+                                <p class="text-[11px] sm:text-sm font-bold text-accent">
                                     {{ $vendor->price_start ? 'Rp ' . number_format($vendor->price_start, 0, ',', '.') : '—' }}
                                 </p>
                             @endif
                         </div>
-                        <a href="{{ route('vendor.detail', $vendor->slug) }}" class="text-[10px] sm:text-xs font-bold px-2.5 sm:px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                        <a href="{{ route('vendor.detail', $vendor->slug) }}" class="text-[10px] sm:text-xs font-bold px-2.5 sm:px-4 py-2 rounded-lg bg-gray-50 text-dark hover:bg-gray-100 transition">
                             Detail
                         </a>
                     </div>

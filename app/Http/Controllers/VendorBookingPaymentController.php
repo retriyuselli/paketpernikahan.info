@@ -15,6 +15,8 @@ class VendorBookingPaymentController extends Controller
         $user = $request->user();
         abort_unless($user && (int) $booking->user_id === (int) $user->id, 403);
 
+        $booking->loadMissing(['vendorPackage']);
+
         $data = $request->validateWithBag('payment', [
             'type'        => ['required', 'in:dp,final,installment'],
             'amount'      => ['required', 'integer', 'min:0'],
@@ -24,6 +26,22 @@ class VendorBookingPaymentController extends Controller
             'paid_at'     => ['nullable', 'date'],
             'proof'       => ['required', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
         ]);
+
+        $dpRequired = (int) ($booking->dp_required_amount ?? ($booking->vendorPackage?->dp_paket ?? 0));
+        if (($data['type'] ?? null) === 'dp' && $dpRequired > 0 && (int) ($data['amount'] ?? 0) !== $dpRequired) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Nominal DP harus sama dengan DP paket.',
+                    'errors' => [
+                        'amount' => ['Nominal DP harus sama dengan DP paket.'],
+                    ],
+                ], 422);
+            }
+
+            return back()
+                ->withErrors(['amount' => 'Nominal DP harus sama dengan DP paket.'], 'payment')
+                ->withInput();
+        }
 
         $path = $request->file('proof')->store('payments', 'public');
 
@@ -42,8 +60,8 @@ class VendorBookingPaymentController extends Controller
         $this->recalcBookingPaymentStatus($booking);
 
         return redirect()
-            ->route('dashboard.booking.payment', $booking)
-            ->with('payment_success', 'Bukti pembayaran berhasil dikirim. Menunggu verifikasi.');
+            ->route('dashboard.booking')
+            ->with('booking_success', 'Bukti pembayaran berhasil dikirim. Menunggu verifikasi.');
     }
 
     public function verify(Request $request, VendorBookingPayment $payment)

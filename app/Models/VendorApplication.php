@@ -14,7 +14,6 @@ class VendorApplication extends Model
         'business_name',
         'category',
         'categories',
-        'type',
         'city',
         'province',
         'location',

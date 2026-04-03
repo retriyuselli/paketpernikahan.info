@@ -97,7 +97,7 @@
                 <span class="text-xl font-bold tracking-tight text-dark">Makna</span>
                 <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-light-sage text-dark">WO</span>
             </a>
-            <button class="lg:hidden p-1 rounded-lg hover:bg-gray-100" onclick="closeSidebar()">
+            <button type="button" class="lg:hidden p-1 rounded-lg hover:bg-gray-100" data-close-sidebar>
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -108,11 +108,11 @@
         <div class="px-4 py-4 mt-5 border-b border-gray-100">
             <div class="flex items-center gap-3">
                 @if($user->avatar_url)
-                <img src="{{ $user->avatarUrl() }}"
+                <img id="dashboard-sidebar-avatar"
+                     src="{{ $user->avatarUrl() }}"
                      alt="{{ $user->name }}"
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
                      class="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-white shadow-sm">
-                <div class="w-10 h-10 rounded-full items-center justify-center text-sm font-bold text-white flex-shrink-0 bg-accent hidden">
+                <div id="dashboard-sidebar-avatar-fallback" class="w-10 h-10 rounded-full items-center justify-center text-sm font-bold text-white flex-shrink-0 bg-accent hidden">
                     {{ strtoupper(substr($user->name, 0, 1)) }}
                 </div>
                 @else
@@ -290,7 +290,7 @@
 
         {{-- Mobile top bar --}}
         <header class="lg:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between gap-3">
-            <button type="button" onclick="openDashboardMobileMenu()" class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Menu">
+            <button type="button" data-open-dashboard-mobile-menu class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Menu">
                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
@@ -307,7 +307,7 @@
             </a>
         </header>
 
-        <div id="dashboard-mobile-menu" class="hidden fixed inset-0 z-50 lg:hidden" onclick="if(event.target===this) closeDashboardMobileMenu()">
+        <div id="dashboard-mobile-menu" class="hidden fixed inset-0 z-50 lg:hidden">
             <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
             <div class="absolute left-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl flex flex-col">
                 <div class="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -317,7 +317,7 @@
                         </span>
                         <span class="text-xs font-semibold px-2 py-1 rounded-full bg-light-sage text-dark">Dashboard</span>
                     </div>
-                    <button type="button" onclick="closeDashboardMobileMenu()" class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Tutup">
+                    <button type="button" data-close-dashboard-mobile-menu class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Tutup">
                         <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -505,16 +505,57 @@ function openDashboardMobileMenu() {
     var menu = document.getElementById('dashboard-mobile-menu');
     if (!menu) return;
     menu.classList.remove('hidden');
+    menu.classList.add('flex');
     document.body.style.overflow = 'hidden';
 }
 function closeDashboardMobileMenu() {
     var menu = document.getElementById('dashboard-mobile-menu');
     if (!menu) return;
     menu.classList.add('hidden');
+    menu.classList.remove('flex');
     document.body.style.overflow = '';
 }
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeDashboardMobileMenu();
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    var avatar = document.getElementById('dashboard-sidebar-avatar');
+    if (avatar) {
+        avatar.addEventListener('error', function () {
+            avatar.classList.add('hidden');
+            var fallback = document.getElementById('dashboard-sidebar-avatar-fallback');
+            if (fallback) {
+                fallback.classList.remove('hidden');
+                fallback.classList.add('flex');
+            }
+        });
+    }
+
+    document.querySelectorAll('[data-open-dashboard-mobile-menu]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            openDashboardMobileMenu();
+        });
+    });
+
+    document.querySelectorAll('[data-close-dashboard-mobile-menu]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            closeDashboardMobileMenu();
+        });
+    });
+
+    var menu = document.getElementById('dashboard-mobile-menu');
+    if (menu) {
+        menu.addEventListener('click', function (e) {
+            if (e.target === menu) closeDashboardMobileMenu();
+        });
+    }
+
+    document.querySelectorAll('[data-close-sidebar]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            closeDashboardMobileMenu();
+        });
+    });
 });
 </script>
 

@@ -14,14 +14,20 @@ return new class extends Migration
         Schema::create('vendor_packages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('vendor_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('category_vendor_id')->nullable()->constrained('category_vendors')->nullOnDelete();
             $table->string('name');                         // Paket Silver, Gold, Platinum
             $table->string('price');                        // Rp 35.000.000 (display)
             $table->unsignedBigInteger('price_raw');        // 35000000 (for sorting/calc)
             $table->unsignedBigInteger('discount')->default(0); // potongan harga (nominal)
+            $table->unsignedBigInteger('dp_paket')->default(0); // DP Paket (nominal)
             $table->string('max_guests');                   // Maks. 300 tamu
             $table->string('card_color')->default('#C8D5B9');
             $table->string('card_text_color')->default('#444444');
             $table->json('items');                          // ["Gedung 6 jam", ...]
+            $table->string('type')->nullable();             // Indoor/Outdoor/Semi Outdoor/Lainnya
+            $table->integer('capacity')->nullable();        // Kapasitas venue (orang)
+            $table->json('facilities')->nullable();         // Fasilitas venue
+            $table->json('image_path')->nullable();         // Foto paket (multiple)
             $table->unsignedSmallInteger('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();

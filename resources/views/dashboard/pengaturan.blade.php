@@ -6,7 +6,7 @@
 @section('content')
 
     <div class="mb-6">
-        <h1 class="text-xl font-bold" style="color: var(--dark-gray)">Pengaturan Akun</h1>
+        <h1 class="text-xl font-bold text-dark">Pengaturan Akun</h1>
         <p class="text-sm text-gray-400 mt-1">Kelola foto profil, nama, dan password kamu.</p>
     </div>
 
@@ -23,17 +23,15 @@
               enctype="multipart/form-data"
               class="bg-white rounded-2xl border border-gray-100 p-5 sm:col-span-2">
             @csrf
-            <p class="text-xs font-bold mb-4" style="color: var(--dark-gray)">Foto Profil</p>
+            <p class="text-xs font-bold mb-4 text-dark">Foto Profil</p>
             <div class="flex items-center gap-5">
                 <div class="flex-shrink-0">
                     @if($user->avatar_url)
                     <img id="avatar-preview" src="{{ $user->avatarUrl() }}"
-                         alt="Avatar" class="w-20 h-20 rounded-full object-cover border-4 border-gray-100 shadow"
-                         onerror="this.style.display='none';document.getElementById('avatar-preview-initials').style.display='flex'">
+                         alt="Avatar" class="w-20 h-20 rounded-full object-cover border-4 border-gray-100 shadow">
                     @else
                     <div id="avatar-preview-initials"
-                         class="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white border-4 border-gray-100 shadow"
-                         style="background: var(--sage-green)">
+                         class="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white border-4 border-gray-100 shadow bg-accent">
                         {{ strtoupper(substr($user->name, 0, 1)) }}
                     </div>
                     @endif
@@ -42,7 +40,6 @@
                     <label class="text-[10px] uppercase tracking-widest text-gray-400 block mb-2">Pilih Gambar</label>
                     <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp"
                            id="avatar-input"
-                           onchange="previewAvatar(event)"
                            class="hidden">
                     <label for="avatar-input"
                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-dashed border-gray-300 text-xs text-gray-500 cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition">
@@ -58,8 +55,7 @@
                 </div>
             </div>
             <button type="submit"
-                    class="mt-4 w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90"
-                    style="background: var(--sage-green); color: #fff">
+                    class="mt-4 w-full sm:w-auto px-6 py-2.5 rounded-xl text-sm font-bold bg-accent text-white transition hover:opacity-90">
                 Simpan Foto
             </button>
         </form>
@@ -68,7 +64,7 @@
         <form method="POST" action="{{ route('dashboard.profile.update') }}"
               class="bg-white rounded-2xl border border-gray-100 p-5">
             @csrf
-            <p class="text-xs font-bold mb-4" style="color: var(--dark-gray)">Ubah Nama</p>
+            <p class="text-xs font-bold mb-4 text-dark">Ubah Nama</p>
 
             <div class="mb-3">
                 <label class="text-[10px] uppercase tracking-widest text-gray-400 block mb-1">Nama</label>
@@ -89,8 +85,7 @@
             </div>
 
             <button type="submit"
-                    class="w-full py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90"
-                    style="background: var(--sage-green); color: #fff">
+                    class="w-full py-2.5 rounded-xl text-sm font-bold bg-accent text-white transition hover:opacity-90">
                 Simpan Nama
             </button>
         </form>
@@ -99,7 +94,7 @@
         <form method="POST" action="{{ route('dashboard.whatsapp.update') }}"
               class="bg-white rounded-2xl border border-gray-100 p-5">
             @csrf
-            <p class="text-xs font-bold mb-4" style="color: var(--dark-gray)">Nomor WhatsApp</p>
+            <p class="text-xs font-bold mb-4 text-dark">Nomor WhatsApp</p>
 
             <div class="mb-4">
                 <label class="text-[10px] uppercase tracking-widest text-gray-400 block mb-1">WhatsApp</label>
@@ -119,8 +114,7 @@
             </div>
 
             <button type="submit"
-                    class="w-full py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90"
-                    style="background: var(--sage-green); color: #fff">
+                    class="w-full py-2.5 rounded-xl text-sm font-bold bg-accent text-white transition hover:opacity-90">
                 Simpan WhatsApp
             </button>
         </form>
@@ -129,7 +123,7 @@
         <form method="POST" action="{{ route('dashboard.password.update') }}"
               class="bg-white rounded-2xl border border-gray-100 p-5">
             @csrf
-            <p class="text-xs font-bold mb-4" style="color: var(--dark-gray)">Ganti Password</p>
+            <p class="text-xs font-bold mb-4 text-dark">Ganti Password</p>
 
             <div class="mb-3">
                 <label class="text-[10px] uppercase tracking-widest text-gray-400 block mb-1">Password Saat Ini</label>
@@ -158,8 +152,7 @@
             </div>
 
             <button type="submit"
-                    class="w-full py-2.5 rounded-xl text-sm font-bold transition hover:opacity-90"
-                    style="background: var(--dark-gray); color: #fff">
+                    class="w-full py-2.5 rounded-xl text-sm font-bold bg-dark text-white transition hover:opacity-90">
                 Ganti Password
             </button>
         </form>
@@ -170,6 +163,29 @@
 
 @section('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    var img = document.getElementById('avatar-preview');
+    var input = document.getElementById('avatar-input');
+    if (input) {
+        input.addEventListener('change', previewAvatar);
+    }
+    if (!img) return;
+    img.addEventListener('error', function () {
+        img.classList.add('hidden');
+        var initials = document.getElementById('avatar-preview-initials');
+        if (!initials) {
+            initials = document.createElement('div');
+            initials.id = 'avatar-preview-initials';
+            initials.className = 'w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white border-4 border-gray-100 shadow bg-accent';
+            initials.textContent = @json(strtoupper(substr($user->name, 0, 1)));
+            img.insertAdjacentElement('afterend', initials);
+        } else {
+            initials.classList.remove('hidden');
+            initials.classList.add('flex');
+        }
+    });
+});
+
 function previewAvatar(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -183,6 +199,8 @@ function previewAvatar(event) {
         const initials = document.getElementById('avatar-preview-initials');
         if (existing) {
             existing.src = e.target.result;
+            existing.classList.remove('hidden');
+            if (initials) initials.classList.add('hidden');
         } else if (initials) {
             const img = document.createElement('img');
             img.id = 'avatar-preview';

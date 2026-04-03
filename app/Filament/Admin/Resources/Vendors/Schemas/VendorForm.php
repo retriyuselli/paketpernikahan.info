@@ -81,15 +81,6 @@ class VendorForm
                                     ->required()
                                     ->hidden()
                                     ->dehydrated(),
-                                Select::make('type')
-                                    ->required(fn ($get) => in_array($get('category'), ['gedung', 'hotel', 'venue', 'rumah']))
-                                    ->visible(fn ($get) => in_array($get('category'), ['gedung', 'hotel', 'venue', 'rumah']))
-                                    ->options([
-                                        'Indoor'           => 'Indoor',
-                                        'Outdoor'          => 'Outdoor',
-                                        'Indoor & Outdoor' => 'Indoor & Outdoor',
-                                    ])
-                                    ->searchable(),
                                 TextInput::make('location')
                                     ->required()
                                     ->label('Alamat')
@@ -130,15 +121,6 @@ class VendorForm
                                     ->maxLength(100),
                             ]),
 
-                        Tab::make('Detail Venue')
-                            ->columns(3)
-                            ->schema([
-                                TextInput::make('capacity')->maxLength(100),
-                                TextInput::make('venue_type')->maxLength(100),
-                                TextInput::make('experience')->maxLength(50),
-                                TextInput::make('facilities')->columnSpanFull(),
-                            ]),
-
                         Tab::make('Harga & Statistik')
                             ->columns(3)
                             ->schema([
@@ -152,6 +134,11 @@ class VendorForm
                                     ->numeric()->minValue(0)->maxValue(5)->step(0.1),
                                 TextInput::make('events_done')
                                     ->numeric()->default(0),
+                                TextInput::make('experience')
+                                    ->label('Pengalaman (Tahun)')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->default(0),
                                 TextInput::make('likes')
                                     ->numeric()->default(0),
                                 TextInput::make('comments_count')

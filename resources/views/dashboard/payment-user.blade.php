@@ -7,7 +7,7 @@
 <div class="mb-8">
     <div class="flex items-start justify-between gap-3">
         <div>
-            <h1 class="text-2xl font-bold mb-2" style="color: var(--dark-gray)">Pembayaran User</h1>
+            <h1 class="text-2xl font-bold mb-2 text-dark">Pembayaran User</h1>
             <p class="text-sm text-gray-500">Pantau pembayaran dari semua vendor (maks. 300).</p>
         </div>
         <div class="inline-flex rounded-xl overflow-hidden border border-gray-100 bg-white flex-shrink-0">
@@ -19,8 +19,7 @@
                class="text-xs font-bold px-3 py-2 transition border-l border-gray-100 {{ ($status ?? null) === 'pending_verification' ? 'bg-gray-50 text-gray-700' : 'bg-white text-gray-500' }}">
                 Pending
                 @if(($pendingPaymentCount ?? 0) > 0)
-                    <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold"
-                          style="background: var(--light-sage); color: var(--dark-gray)">{{ $pendingPaymentCount }}</span>
+                    <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-light-sage text-dark">{{ $pendingPaymentCount }}</span>
                 @endif
             </a>
         </div>
@@ -47,12 +46,12 @@
                 </select>
             </div>
             <div class="flex gap-2">
-                <button type="submit" class="flex-1 text-xs font-bold px-4 py-3 rounded-xl transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                <x-ui.button type="submit" class="flex-1" variant="primary" size="md">
                     Terapkan
-                </button>
-                <a href="{{ route('dashboard.payment.user') }}" class="text-xs font-bold px-4 py-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                </x-ui.button>
+                <x-ui.button href="{{ route('dashboard.payment.user') }}" variant="ghost" size="md">
                     Reset
-                </a>
+                </x-ui.button>
             </div>
         </form>
     </div>
@@ -72,7 +71,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
             </svg>
         </div>
-        <h3 class="text-base font-bold mb-1" style="color: var(--dark-gray)">Belum ada pembayaran</h3>
+        <h3 class="text-base font-bold mb-1 text-dark">Belum ada pembayaran</h3>
         <p class="text-sm text-gray-500 max-w-sm">Belum ada bukti pembayaran yang masuk.</p>
     </div>
 @else
@@ -104,11 +103,11 @@
                         <tr class="hover:bg-gray-50/60 transition">
                             <td class="px-4 py-3 text-xs text-gray-500 align-top">{{ $i + 1 }}</td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $p->booking?->vendor?->name ?? '—' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $p->booking?->vendor?->name ?? '—' }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $p->created_at?->format('d M Y, H:i') }}</div>
                             </td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $p->booking?->user?->name ?? '—' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $p->booking?->user?->name ?? '—' }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $p->booking?->user?->email ?? '' }}</div>
                             </td>
                             <td class="px-4 py-3 text-xs text-gray-600 align-top">{{ $p->type }}</td>
@@ -121,7 +120,7 @@
                             </td>
                             <td class="px-4 py-3 text-xs align-top">
                                 @if($p->proof_url)
-                                    <a href="{{ $p->proof_url }}" target="_blank" class="font-bold hover:underline" style="color: var(--dark-gray)">Lihat</a>
+                                    <a href="{{ $p->proof_url }}" target="_blank" class="font-bold text-dark hover:underline">Lihat</a>
                                 @else
                                     <span class="text-gray-400">—</span>
                                 @endif
@@ -132,17 +131,17 @@
                                         <form method="POST" action="{{ route('dashboard.vendor.payments.verify', $p) }}">
                                             @csrf
                                             <input type="hidden" name="action" value="approve">
-                                            <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                                            <x-ui.button type="submit" variant="primary" size="compact">
                                                 Approve
-                                            </button>
+                                            </x-ui.button>
                                         </form>
                                         <form method="POST" action="{{ route('dashboard.vendor.payments.verify', $p) }}" data-reject-form>
                                             @csrf
                                             <input type="hidden" name="action" value="reject">
                                             <input type="hidden" name="note" value="">
-                                            <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                            <x-ui.button type="submit" variant="ghost" size="compact">
                                                 Reject
-                                            </button>
+                                            </x-ui.button>
                                         </form>
                                     </div>
                                 @endif
@@ -193,4 +192,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endsection
-

@@ -144,7 +144,6 @@ return [
         'email'          => 'email',
         'instagram'      => 'instagram',
         'capacity'       => 'kapasitas',
-        'venue_type'     => 'tipe venue',
         'experience'     => 'pengalaman',
         'facilities'     => 'fasilitas',
         'price_start'    => 'harga mulai',

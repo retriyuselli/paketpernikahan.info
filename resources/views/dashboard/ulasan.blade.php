@@ -6,21 +6,20 @@
 @section('content')
 
     <div class="mb-6">
-        <h1 class="text-xl font-bold" style="color: var(--dark-gray)">Ulasan Saya</h1>
+        <h1 class="text-xl font-bold text-dark">Ulasan Saya</h1>
         <p class="text-sm text-gray-400 mt-1">Semua ulasan yang pernah kamu tulis.</p>
     </div>
 
     @if($myReviews->isEmpty())
     <div class="bg-white rounded-2xl border border-gray-100 p-10 flex flex-col items-center text-center gap-3">
-        <div class="w-12 h-12 rounded-full flex items-center justify-center" style="background: var(--light-sage)">
-            <svg class="w-6 h-6" style="color: var(--sage-green)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center bg-light-sage">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
             </svg>
         </div>
         <p class="text-sm text-gray-500">Kamu belum menulis ulasan apa pun.</p>
         <a href="{{ route('vendor') }}"
-           class="text-xs font-semibold px-4 py-2 rounded-xl transition hover:opacity-90"
-           style="background: var(--sage-green); color: #fff">
+           class="text-xs font-semibold px-4 py-2 rounded-xl bg-accent text-white transition hover:opacity-90">
             Temukan Vendor
         </a>
     </div>
@@ -30,7 +29,7 @@
         <div class="bg-white rounded-2xl border border-gray-100 p-4 flex items-start gap-4">
             <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between gap-2 mb-1.5">
-                    <p class="text-sm font-semibold truncate" style="color: var(--dark-gray)">
+                    <p class="text-sm font-semibold truncate text-dark">
                         {{ $rev->vendor?->name ?? '(Vendor dihapus)' }}
                     </p>
                     <span class="text-[10px] flex-shrink-0 px-1.5 py-0.5 rounded-full font-semibold
@@ -40,8 +39,7 @@
                 </div>
                 <div class="flex items-center gap-0.5 mb-1.5">
                     @for($s = 1; $s <= 5; $s++)
-                    <svg class="w-3 h-3 {{ $s <= $rev->rating ? '' : 'opacity-20' }}"
-                         style="color: #f59e0b" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-3 h-3 text-rating {{ $s <= $rev->rating ? '' : 'opacity-20' }}" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                     </svg>
                     @endfor
@@ -75,9 +73,14 @@
 
     @if($user->hasRole(['super_admin', 'admin']))
         <div class="mt-10">
+            @if(session('review_success'))
+                <div class="mb-4 rounded-2xl border border-green-100 bg-green-50 px-4 py-3 text-xs text-green-700 font-semibold">
+                    {{ session('review_success') }}
+                </div>
+            @endif
             <div class="mb-4 flex items-start justify-between gap-3">
                 <div>
-                <h2 class="text-lg font-bold" style="color: var(--dark-gray)">Ulasan User</h2>
+                <h2 class="text-lg font-bold text-dark">Ulasan User</h2>
                 <p class="text-sm text-gray-500">Ulasan terbaru dari semua user (maks. 200).</p>
                 </div>
                 <div class="inline-flex rounded-xl overflow-hidden border border-gray-100 bg-white flex-shrink-0">
@@ -89,8 +92,7 @@
                        class="text-xs font-bold px-3 py-2 transition border-l border-gray-100 {{ ($reviewFilter ?? null) === 'pending' ? 'bg-gray-50 text-gray-700' : 'bg-white text-gray-500' }}">
                         Menunggu
                         @if(($pendingReviewCount ?? 0) > 0)
-                            <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold"
-                                  style="background: var(--light-sage); color: var(--dark-gray)">{{ $pendingReviewCount }}</span>
+                            <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-light-sage text-dark">{{ $pendingReviewCount }}</span>
                         @endif
                     </a>
                 </div>
@@ -127,11 +129,11 @@
                                     <tr class="hover:bg-gray-50/60 transition">
                                         <td class="px-4 py-3 text-xs text-gray-500 align-top">{{ $i + 1 }}</td>
                                         <td class="px-4 py-3 align-top">
-                                            <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $rev->user?->name ?? $rev->reviewer_name }}</div>
+                                            <div class="font-bold text-xs text-dark">{{ $rev->user?->name ?? $rev->reviewer_name }}</div>
                                             <div class="text-[10px] mt-1 text-gray-400">{{ $rev->user?->email ?? '' }}</div>
                                         </td>
                                         <td class="px-4 py-3 align-top">
-                                            <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $rev->vendor?->name ?? '—' }}</div>
+                                            <div class="font-bold text-xs text-dark">{{ $rev->vendor?->name ?? '—' }}</div>
                                         </td>
                                         <td class="px-4 py-3 align-top">
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-yellow-50 text-yellow-700">
@@ -152,11 +154,24 @@
                                             {{ $rev->reviewed_at?->translatedFormat('d M Y') }}
                                         </td>
                                         <td class="px-4 py-3 align-top">
-                                            @if($rev->vendor)
-                                                <a href="{{ route('vendor.detail', $rev->vendor->slug) }}" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
-                                                    Lihat
-                                                </a>
-                                            @endif
+                                            <div class="flex items-center gap-2">
+                                                <form method="POST" action="{{ route('dashboard.ulasan.approve', $rev) }}">
+                                                    @csrf
+                                                    <button type="submit"
+                                                            class="text-[11px] font-bold px-3 py-2 rounded-lg transition {{ $rev->is_approved ? 'bg-gray-50 text-gray-300 cursor-not-allowed' : 'bg-green-50 text-green-700 hover:bg-green-100' }}"
+                                                            @disabled($rev->is_approved)>
+                                                        Approve
+                                                    </button>
+                                                </form>
+                                                <form method="POST" action="{{ route('dashboard.ulasan.reject', $rev) }}">
+                                                    @csrf
+                                                    <button type="submit"
+                                                            class="text-[11px] font-bold px-3 py-2 rounded-lg transition {{ $rev->is_approved ? 'bg-rose-50 text-rose-700 hover:bg-rose-100' : 'bg-gray-50 text-gray-300 cursor-not-allowed' }}"
+                                                            @disabled(!$rev->is_approved)>
+                                                        Reject
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                     <tr class="bg-gray-50/40">

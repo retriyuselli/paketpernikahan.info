@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoryVendor;
 use App\Models\Vendor;
 use App\Models\VendorPackage;
 use Illuminate\Http\Request;
@@ -31,6 +32,7 @@ class VendorPackageController extends Controller
         return view('vendor.packages.edit', [
             'vendor' => $vendor,
             'package' => $package,
+            'categoryVendors' => CategoryVendor::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get(),
         ]);
     }
 
@@ -44,8 +46,13 @@ class VendorPackageController extends Controller
             'name'            => 'required|string|max:255',
             'price_raw'       => 'required|integer|min:0',
             'discount'        => 'nullable|integer|min:0',
+            'dp_paket'        => 'nullable|integer|min:0',
+            'category_vendor_id' => 'nullable|integer|exists:category_vendors,id',
             'max_guests'      => 'nullable|string|max:100',
             'items'           => 'nullable|string',
+            'type'            => 'nullable|string|max:255',
+            'capacity'        => 'nullable|integer|min:0',
+            'facilities'      => 'nullable|string',
             'card_color'      => 'nullable|string|max:20',
             'card_text_color' => 'nullable|string|max:20',
             'sort_order'      => 'nullable|integer|min:0',
@@ -57,8 +64,13 @@ class VendorPackageController extends Controller
             'price'           => 'Rp ' . number_format((int)$validated['price_raw'], 0, ',', '.'),
             'price_raw'       => (int)$validated['price_raw'],
             'discount'        => (int)($validated['discount'] ?? 0),
+            'dp_paket'        => (int)($validated['dp_paket'] ?? 0),
+            'category_vendor_id' => $validated['category_vendor_id'] ?? null,
             'max_guests'      => $validated['max_guests'] ?? '',
             'items'           => $this->parseItems($validated['items'] ?? ''),
+            'type'            => $validated['type'] ?? null,
+            'capacity'        => isset($validated['capacity']) ? (int)$validated['capacity'] : null,
+            'facilities'      => isset($validated['facilities']) ? array_map('trim', explode(',', $validated['facilities'])) : null,
             'card_color'      => $validated['card_color'] ?? '#C8D5B9',
             'card_text_color' => $validated['card_text_color'] ?? '#444444',
             'sort_order'      => (int)($validated['sort_order'] ?? 0),
@@ -102,8 +114,13 @@ class VendorPackageController extends Controller
             'name'            => 'required|string|max:255',
             'price_raw'       => 'required|integer|min:0',
             'discount'        => 'nullable|integer|min:0',
+            'dp_paket'        => 'nullable|integer|min:0',
+            'category_vendor_id' => 'nullable|integer|exists:category_vendors,id',
             'max_guests'      => 'nullable|string|max:100',
             'items'           => 'nullable|string',
+            'type'            => 'nullable|string|max:255',
+            'capacity'        => 'nullable|integer|min:0',
+            'facilities'      => 'nullable|string',
             'card_color'      => 'nullable|string|max:20',
             'card_text_color' => 'nullable|string|max:20',
             'sort_order'      => 'nullable|integer|min:0',
@@ -115,8 +132,13 @@ class VendorPackageController extends Controller
             'price'           => 'Rp ' . number_format((int)$validated['price_raw'], 0, ',', '.'),
             'price_raw'       => (int)$validated['price_raw'],
             'discount'        => (int)($validated['discount'] ?? 0),
+            'dp_paket'        => (int)($validated['dp_paket'] ?? 0),
+            'category_vendor_id' => $validated['category_vendor_id'] ?? null,
             'max_guests'      => $validated['max_guests'] ?? '',
             'items'           => $this->parseItems($validated['items'] ?? ''),
+            'type'            => $validated['type'] ?? null,
+            'capacity'        => isset($validated['capacity']) ? (int)$validated['capacity'] : null,
+            'facilities'      => isset($validated['facilities']) ? array_map('trim', explode(',', $validated['facilities'])) : null,
             'card_color'      => $validated['card_color'] ?? '#C8D5B9',
             'card_text_color' => $validated['card_text_color'] ?? '#444444',
             'sort_order'      => (int)($validated['sort_order'] ?? 0),

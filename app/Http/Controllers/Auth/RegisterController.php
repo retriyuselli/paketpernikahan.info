@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class RegisterController extends Controller
 {
@@ -31,6 +32,7 @@ class RegisterController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        Role::findOrCreate('pengunjung', 'web');
         $user->assignRole('pengunjung');
 
         $user->sendEmailVerificationNotification();

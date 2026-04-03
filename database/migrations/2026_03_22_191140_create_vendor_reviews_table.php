@@ -19,8 +19,12 @@ return new class extends Migration
             $table->string('reviewer_avatar')->nullable();
             $table->unsignedTinyInteger('rating');          // 1-5
             $table->text('body');
+            $table->text('admin_reply')->nullable();
+            $table->foreignId('admin_reply_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('admin_replied_at')->nullable();
             $table->date('reviewed_at');
             $table->boolean('is_approved')->default(true);
+            $table->string('reviewer_ip', 45)->nullable();
             $table->timestamps();
         });
     }

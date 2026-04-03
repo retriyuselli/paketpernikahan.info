@@ -6,11 +6,12 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        if (Schema::hasTable('category_vendors')) {
+            return;
+        }
+
         Schema::create('category_vendors', function (Blueprint $table) {
             $table->id();
             $table->string('slug')->unique();
@@ -24,11 +25,9 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('category_vendors');
     }
 };
+

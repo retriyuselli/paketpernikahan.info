@@ -14,7 +14,6 @@ class Vendor extends Model
         'owner_user_id',
         'name', 
         'slug', 
-        'type', 
         'category',
         'categories',
         'location', 
@@ -24,12 +23,9 @@ class Vendor extends Model
         'phone', 
         'email', 
         'instagram', 
-        'capacity', 
         'price_start', 
         'discount',
-        'experience', 
-        'venue_type', 
-        'facilities', 
+        'experience',
         'events_done',
         'likes', 
         'comments_count', 
@@ -51,6 +47,7 @@ class Vendor extends Model
         'is_profile_complete' => 'boolean',
         'rating'          => 'float',
         'discount'        => 'integer',
+        'experience'      => 'integer',
         'events_done'     => 'integer',
         'likes'           => 'integer',
         'comments_count'  => 'integer',
@@ -147,9 +144,6 @@ class Vendor extends Model
 
     public function computeProfileProgress(): array
     {
-        $venueCategories = ['gedung', 'hotel', 'venue', 'rumah', 'wo'];
-        $isVenueCategory = in_array($this->category, $venueCategories, true);
-
         $covers = array_values(array_filter((array) ($this->cover_image ?? [])));
         $hasCovers = count($covers) >= 5;
         $hasPackage = $this->packages()->exists();
@@ -167,12 +161,6 @@ class Vendor extends Model
             'packages' => ['label' => 'Paket (min. 1)', 'ok' => $hasPackage],
             'galleries' => ['label' => 'Galeri media (min. 1)', 'ok' => $hasGallery],
         ];
-
-        if ($isVenueCategory) {
-            $required['capacity'] = ['label' => 'Kapasitas', 'ok' => filled($this->capacity)];
-            $required['venue_type'] = ['label' => 'Tipe venue', 'ok' => filled($this->venue_type)];
-            $required['facilities'] = ['label' => 'Fasilitas', 'ok' => filled($this->facilities)];
-        }
 
         $total = count($required);
         $done = collect($required)->filter(fn ($r) => (bool) $r['ok'])->count();

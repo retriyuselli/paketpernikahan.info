@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('type');                          // e.g. Gedung Wedding Venue
+            $table->foreignId('owner_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('category');                      // gedung | hotel | rumah | wo
+            $table->json('categories')->nullable();
             $table->string('location');
             $table->string('province')->nullable();
             $table->string('city')->default('Palembang');
@@ -24,21 +25,20 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
             $table->string('instagram')->nullable();
-            $table->string('capacity')->nullable();          // e.g. 500 – 1.500 tamu
-            $table->string('price_start')->nullable();       // e.g. Rp 35.000.000
+            $table->unsignedBigInteger('price_start')->nullable();
             $table->unsignedInteger('discount')->default(0);     // potongan harga (nominal)
-            $table->string('experience')->nullable();        // e.g. 10+ Tahun
-            $table->string('venue_type')->nullable();        // Indoor & Outdoor
-            $table->string('facilities')->nullable();        // AC, Parkir, Lift
+            $table->unsignedInteger('experience')->default(0);   // pengalaman (tahun)
             $table->integer('events_done')->default(0);
             $table->unsignedSmallInteger('likes')->default(0);
             $table->unsignedSmallInteger('comments_count')->default(0);
             $table->decimal('rating', 2, 1)->nullable();
             $table->text('badge')->nullable();               // terlaris | top_rated | unggulan | verified
             $table->text('promo')->nullable();               // diskon | flash_sale | early_bird dll
-            $table->string('cover_image')->nullable();       // main hero photo path
+            $table->text('cover_image')->nullable();         // main hero photo path
+            $table->string('logo_vendor', 255)->nullable();
             $table->string('cover_video')->nullable();       // YouTube URL for cover video
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_profile_complete')->default(false);
             $table->timestamps();
         });
     }

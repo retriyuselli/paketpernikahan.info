@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="mb-8">
-    <h1 class="text-2xl font-bold mb-2" style="color: var(--dark-gray)">Booking Masuk</h1>
+    <h1 class="text-2xl font-bold mb-2 text-dark">Booking Masuk</h1>
     <p class="text-sm text-gray-500">Booking terbaru untuk vendor yang Anda kelola (maks. 200).</p>
 </div>
 
@@ -22,7 +22,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
         </div>
-        <h3 class="text-base font-bold mb-1" style="color: var(--dark-gray)">Belum ada booking masuk</h3>
+        <h3 class="text-base font-bold mb-1 text-dark">Belum ada booking masuk</h3>
         <p class="text-sm text-gray-500 max-w-sm">Belum ada booking yang masuk untuk vendor yang Anda kelola.</p>
     </div>
 @else
@@ -57,15 +57,15 @@
                         <tr class="hover:bg-gray-50/60 transition">
                             <td class="px-4 py-3 text-xs text-gray-500 align-top">{{ $i + 1 }}</td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $b->vendor?->name ?? '—' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $b->vendor?->name ?? '—' }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $b->created_at?->format('d M Y, H:i') }}</div>
                             </td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $b->user?->name ?? '—' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $b->user?->name ?? '—' }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $b->user?->email ?? '' }}</div>
                             </td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $b->vendorPackage?->name ?? 'Tanpa paket' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $b->vendorPackage?->name ?? 'Tanpa paket' }}</div>
                                 @if($b->agreed_total)
                                     <div class="text-[10px] mt-1 text-gray-400">Deal: {{ number_format($b->agreed_total) }}</div>
                                 @endif
@@ -86,7 +86,7 @@
                             </td>
                             <td class="px-4 py-3 align-top">
                                 <div class="inline-flex flex-col rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
-                                    <a href="{{ route('dashboard.vendor.bookings.show', $b) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                    <a href="{{ route('dashboard.vendor.bookings.show', $b) }}" class="text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition">
                                         Kelola
                                     </a>
                                     @if($user->hasRole(['super_admin', 'admin']))
@@ -94,13 +94,13 @@
                                               onsubmit="return confirm('Hapus booking ini?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="w-full text-left text-xs font-bold px-3 py-2 hover:bg-gray-100 transition" style="color: #ef4444">
+                                            <button type="submit" class="w-full text-left text-xs font-bold px-3 py-2 text-red-500 hover:bg-gray-100 transition">
                                                 Hapus
                                             </button>
                                         </form>
                                     @endif
                                     @if($b->vendor)
-                                        <a href="{{ route('vendor.detail', $b->vendor->slug) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition border-t border-gray-100" style="color: var(--dark-gray)">
+                                        <a href="{{ route('vendor.detail', $b->vendor->slug) }}" class="text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition border-t border-gray-100">
                                             Lihat
                                         </a>
                                     @endif

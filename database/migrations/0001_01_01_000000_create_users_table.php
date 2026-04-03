@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('whatsapp', 30)->nullable();
+            $table->string(config('filament-edit-profile.avatar_column', 'avatar_url'))->nullable();
+            $table->string(config('filament-edit-profile.locale_column', 'locale'))->nullable();
+            $table->string(config('filament-edit-profile.theme_color_column', 'theme_color'))->nullable();
+            $table->json('custom_fields')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

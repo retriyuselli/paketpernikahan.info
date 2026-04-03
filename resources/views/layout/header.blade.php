@@ -8,7 +8,7 @@
                 <div class="text-center flex-1">
                     Coming soon, Sumatera Selatan Wedding Expo 2026 Season 1
                 </div>
-                <button type="button" onclick="dismissAnnouncement()" class="p-1 rounded-lg hover:bg-white/10 transition" aria-label="Tutup pengumuman">
+                <button type="button" data-dismiss-announcement class="p-1 rounded-lg hover:bg-white/10 transition" aria-label="Tutup pengumuman">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -40,7 +40,7 @@
                 @auth
                     <a href="{{ url('/dashboard') }}" class="font-medium hover:text-accent">Dashboard</a>
                 @else
-                    <button onclick="openLoginModal()" class="font-medium hover:text-accent">Login</button>
+                    <button type="button" data-open-login-modal class="font-medium hover:text-accent">Login</button>
                 @endauth
                 <a href="#" class="font-medium hover:text-accent">Rp 0</a>
             </div>
@@ -63,9 +63,17 @@
 
             <!-- Main Navigation (center) -->
             <nav class="hidden lg:flex items-center justify-center gap-6 whitespace-nowrap relative z-20">
-                <a href="{{ route('home') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Home</a>
+                @php
+                    $navIsHome = request()->routeIs('home');
+                    $navIsVendor = request()->routeIs('vendor') || request()->is('vendor*');
+                    $navIsStore = request()->routeIs('store') || request()->is('store*');
+                @endphp
+                <a href="{{ route('home') }}"
+                   class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsHome ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
+                    Home
+                </a>
                 <div class="relative group">
-                    <button type="button" onclick="toggleHeaderDropdown('wedding')"
+                    <button type="button" data-toggle-header-dropdown="wedding"
                             class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase"
                             aria-expanded="false" aria-controls="dropdown-wedding">
                         Wedding Package
@@ -82,12 +90,18 @@
                         </a>
                     </div>
                 </div>
-                <a href="{{ route('vendor') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Vendor</a>
-                <a href="{{ route('store') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Store</a>
+                <a href="{{ route('vendor') }}"
+                   class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsVendor ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
+                    Vendor
+                </a>
+                <a href="{{ route('store') }}"
+                   class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsStore ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
+                    Store
+                </a>
                 <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Promo</a>
                 <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Blog Makna</a>
                 <div class="relative group">
-                    <button type="button" onclick="toggleHeaderDropdown('lain')"
+                    <button type="button" data-toggle-header-dropdown="lain"
                             class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase"
                             aria-expanded="false" aria-controls="dropdown-lain">
                         Lain lain
@@ -121,7 +135,7 @@
             <div class="flex items-center justify-end gap-2 relative z-10" id="header-actions">
                 <!-- Search Icon -->
                 <div class="relative" id="header-search-wrapper">
-                    <button type="button" onclick="toggleHeaderSearch()"
+                    <button type="button" data-toggle-header-search
                             class="p-2 text-gray-600 hover:text-accent transition rounded-full hover:bg-gray-100"
                             aria-label="Cari" aria-expanded="false" aria-controls="header-search-panel">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,7 +154,7 @@
                 </div>
 
                 <!-- Theme Toggle (iPhone style) -->
-                <button id="theme-toggle" onclick="toggleTheme()"
+                <button id="theme-toggle" type="button" data-toggle-theme
                         class="relative inline-flex items-center w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none bg-accent"
                         aria-label="Toggle dark mode">
                     <span id="theme-knob"
@@ -150,7 +164,7 @@
 
                 <!-- Profile Dropdown -->
                 <div class="relative" id="main-profile-wrapper">
-                    <button onclick="toggleMainDropdown()"
+                    <button type="button" data-toggle-main-dropdown
                             class="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-gray-200 hover:border-gray-400 transition focus:outline-none">
                         @auth
                             @if(auth()->user()->avatar_url)
@@ -221,7 +235,7 @@
                     </div>
                 </div>
 
-                <button type="button" onclick="openMobileMenu()"
+                <button type="button" data-open-mobile-menu
                         class="lg:hidden p-2 text-gray-600 hover:text-accent transition rounded-full hover:bg-gray-100"
                         aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -269,7 +283,7 @@
 
 </div><!-- end sticky wrapper -->
 
-<div id="mobile-menu" class="hidden fixed inset-0 z-50 lg:hidden" onclick="if(event.target===this) closeMobileMenu()">
+<div id="mobile-menu" class="hidden fixed inset-0 z-50 lg:hidden">
     <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
     <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl flex flex-col">
         <div class="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -279,7 +293,7 @@
                 </span>
                 <span class="text-xs font-semibold px-2 py-1 rounded-full bg-light-sage text-dark">Menu</span>
             </div>
-            <button type="button" onclick="closeMobileMenu()" class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Tutup menu">
+            <button type="button" data-close-mobile-menu class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Tutup menu">
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -419,7 +433,7 @@
                     </a>
                 @endif
             @else
-                <button type="button" onclick="closeMobileMenu(); openLoginModal();" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                <button type="button" data-mobile-login class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
                     <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
@@ -441,13 +455,13 @@
 @guest
 <div id="login-modal"
      class="hidden fixed inset-0 z-[9999] bg-backdrop-45 items-center justify-center p-4"
-     onclick="if(event.target===this) closeLoginModal()">
+    >
     <div class="bg-white rounded-2xl w-full max-w-[26rem] shadow-2xl overflow-hidden font-sans">
 
         <!-- Header -->
         <div class="px-7 pt-6 flex items-center justify-between">
             <h2 class="text-xl font-bold text-dark m-0">Masuk</h2>
-            <button type="button" onclick="closeLoginModal()" class="text-gray-400 hover:text-gray-600 text-xl leading-none p-1 flex items-center justify-center">
+            <button type="button" data-close-login-modal class="text-gray-400 hover:text-gray-600 text-xl leading-none p-1 flex items-center justify-center">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
@@ -509,7 +523,7 @@
 
             <p class="text-center text-[13px] text-gray-500 font-light">
                 Belum punya akun?
-                <a href="{{ route('register') }}" onclick="closeLoginModal()"
+                <a href="{{ route('register') }}" data-close-login-modal
                     class="text-accent no-underline font-medium hover:text-dark">
                     Daftar
                 </a>
@@ -629,6 +643,83 @@ document.addEventListener('click', function (e) {
     var dl = document.getElementById('dropdown-lain');
     if (dw && !dw.parentElement.contains(e.target)) dw.classList.add('hidden');
     if (dl && !dl.parentElement.contains(e.target)) dl.classList.add('hidden');
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-dismiss-announcement]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            dismissAnnouncement();
+        });
+    });
+
+    document.querySelectorAll('[data-open-login-modal]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            openLoginModal();
+        });
+    });
+
+    document.querySelectorAll('[data-close-login-modal]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            closeLoginModal();
+        });
+    });
+
+    document.querySelectorAll('[data-toggle-header-dropdown]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            toggleHeaderDropdown(btn.getAttribute('data-toggle-header-dropdown'));
+        });
+    });
+
+    document.querySelectorAll('[data-toggle-header-search]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            toggleHeaderSearch();
+        });
+    });
+
+    document.querySelectorAll('[data-toggle-theme]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            toggleTheme();
+        });
+    });
+
+    document.querySelectorAll('[data-toggle-main-dropdown]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            toggleMainDropdown();
+        });
+    });
+
+    document.querySelectorAll('[data-open-mobile-menu]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            openMobileMenu();
+        });
+    });
+
+    document.querySelectorAll('[data-close-mobile-menu]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            closeMobileMenu();
+        });
+    });
+
+    document.querySelectorAll('[data-mobile-login]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            closeMobileMenu();
+            openLoginModal();
+        });
+    });
+
+    var mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenu) {
+        mobileMenu.addEventListener('click', function (e) {
+            if (e.target === mobileMenu) closeMobileMenu();
+        });
+    }
+
+    var loginModal = document.getElementById('login-modal');
+    if (loginModal) {
+        loginModal.addEventListener('click', function (e) {
+            if (e.target === loginModal) closeLoginModal();
+        });
+    }
 });
 
 (function () {

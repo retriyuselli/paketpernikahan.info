@@ -12,20 +12,21 @@ document.addEventListener("DOMContentLoaded", function () {
     // Check for saved theme preference or default to light mode
     const currentTheme = localStorage.getItem("theme") || "light";
     htmlElement.classList.toggle("dark", currentTheme === "dark");
-    themeIcon.textContent = currentTheme === "dark" ? "☀️" : "🌙";
+    if (themeIcon) themeIcon.textContent = currentTheme === "dark" ? "☀️" : "🌙";
 
     // Toggle theme on button click
+    if (!themeToggle) return;
     themeToggle.addEventListener("click", function () {
         const isDark = htmlElement.classList.contains("dark");
 
         if (isDark) {
             htmlElement.classList.remove("dark");
             localStorage.setItem("theme", "light");
-            themeIcon.textContent = "🌙";
+            if (themeIcon) themeIcon.textContent = "🌙";
         } else {
             htmlElement.classList.add("dark");
             localStorage.setItem("theme", "dark");
-            themeIcon.textContent = "☀️";
+            if (themeIcon) themeIcon.textContent = "☀️";
         }
     });
 });

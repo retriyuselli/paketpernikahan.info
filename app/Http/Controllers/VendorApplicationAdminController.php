@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Models\VendorApplication;
-use App\Models\CategoryVendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -57,14 +56,10 @@ class VendorApplicationAdminController extends Controller
             $appCategories = is_array($application->categories) ? $application->categories : [];
             $primaryCategory = $application->category ?: ($appCategories[0] ?? null);
             $slug = $this->uniqueVendorSlug($application->business_name);
-            $vendorType = $application->type
-                ?: ($primaryCategory ? CategoryVendor::where('slug', $primaryCategory)->value('name') : null)
-                ?: ($primaryCategory ?: $application->category);
             $vendor = Vendor::create([
                 'name' => $application->business_name,
                 'slug' => $slug,
                 'category' => $primaryCategory ?: $application->category,
-                'type' => $vendorType,
                 'location' => $application->location,
                 'province' => $application->province,
                 'city' => $application->city ?: 'Palembang',

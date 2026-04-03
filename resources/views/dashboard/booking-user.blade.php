@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="mb-8">
-    <h1 class="text-2xl font-bold mb-2" style="color: var(--dark-gray)">Booking User</h1>
+    <h1 class="text-2xl font-bold mb-2 text-dark">Booking User</h1>
     <p class="text-sm text-gray-500">Daftar booking terbaru dari semua user.</p>
 </div>
 
@@ -16,7 +16,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
         </div>
-        <h3 class="text-base font-bold mb-1" style="color: var(--dark-gray)">Belum ada booking</h3>
+        <h3 class="text-base font-bold mb-1 text-dark">Belum ada booking</h3>
         <p class="text-sm text-gray-500 max-w-sm">Belum ada booking yang masuk.</p>
     </div>
 @else
@@ -58,15 +58,15 @@
                         <tr class="hover:bg-gray-50/60 transition {{ $b->status === 'pending' ? 'bg-amber-50/20' : '' }}">
                             <td class="px-4 py-3 text-xs text-gray-500 align-top">{{ $i + 1 }}</td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $b->user?->name ?? '—' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $b->user?->name ?? '—' }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $b->user?->email ?? '' }}</div>
                             </td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $b->vendor?->name ?? '—' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $b->vendor?->name ?? '—' }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $b->created_at?->format('d M Y, H:i') }}</div>
                             </td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $b->vendorPackage?->name ?? 'Tanpa paket' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $b->vendorPackage?->name ?? 'Tanpa paket' }}</div>
                                 @if($b->vendorPackage?->price)
                                     <div class="text-[10px] mt-1 text-gray-400">{{ $b->vendorPackage->price }}</div>
                                 @endif
@@ -84,7 +84,7 @@
                             </td>
                             <td class="px-4 py-3 align-top">
                                 @if($b->vendor)
-                                    <a href="{{ route('vendor.detail', $b->vendor->slug) }}" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                    <a href="{{ route('vendor.detail', $b->vendor->slug) }}" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 text-dark hover:bg-gray-100 transition">
                                         Lihat
                                     </a>
                                 @endif

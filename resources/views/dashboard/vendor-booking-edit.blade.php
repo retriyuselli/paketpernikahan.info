@@ -5,14 +5,14 @@
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-bold mb-1" style="color: var(--dark-gray)">Kelola Booking</h1>
+    <h1 class="text-2xl font-bold mb-1 text-dark">Kelola Booking</h1>
     <p class="text-sm text-gray-500">Atur status booking dan info pembayaran (DP & total).</p>
 </div>
 
 <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
     <div class="p-6 border-b border-gray-100">
         <div class="text-xs uppercase tracking-widest text-gray-400 mb-1">Vendor</div>
-        <div class="text-lg font-bold" style="color: var(--dark-gray)">{{ $booking->vendor?->name ?? '—' }}</div>
+        <div class="text-lg font-bold text-dark">{{ $booking->vendor?->name ?? '—' }}</div>
         <div class="text-xs text-gray-500 mt-1">User: <span class="font-semibold">{{ $booking->user?->name ?? '—' }}</span> <span class="text-gray-400">{{ $booking->user?->email ? '— ' . $booking->user->email : '' }}</span></div>
         <div class="text-xs text-gray-500 mt-1">Tanggal acara: <span class="font-semibold">{{ $booking->event_date?->format('d M Y') }}</span></div>
         <div class="text-xs text-gray-500 mt-1">Status pembayaran: <span class="font-semibold">{{ $booking->payment_status }}</span></div>
@@ -72,20 +72,20 @@
                            class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition">
                 </div>
                 <div class="flex items-end justify-end gap-2">
-                    <a href="{{ route('dashboard.vendor.bookings') }}" class="text-xs font-bold px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                    <x-ui.button href="{{ route('dashboard.vendor.bookings') }}" variant="ghost" size="compact">
                         Kembali
-                    </a>
+                    </x-ui.button>
                     @if($user->hasRole(['super_admin', 'admin']))
-                        <button type="submit"
-                                form="vendor-booking-delete-{{ $booking->id }}"
-                                class="text-xs font-bold px-4 py-2 rounded-lg transition hover:opacity-90"
-                                style="background-color: #ef4444; color: #fff">
+                        <x-ui.button type="submit"
+                                    form="vendor-booking-delete-{{ $booking->id }}"
+                                    variant="danger"
+                                    size="compact">
                             Hapus
-                        </button>
+                        </x-ui.button>
                     @endif
-                    <button type="submit" class="text-xs font-bold px-4 py-2 rounded-lg transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">
+                    <x-ui.button type="submit" variant="primary" size="compact">
                         Simpan
-                    </button>
+                    </x-ui.button>
                 </div>
             </div>
         </form>
@@ -126,12 +126,12 @@
                                     <td class="px-4 py-3 text-xs text-gray-600">{{ number_format($p->amount) }}</td>
                                     <td class="px-4 py-3 text-xs text-gray-600">{{ $p->method }}</td>
                                     <td class="px-4 py-3 text-xs">
-                                        <div class="font-bold" style="color: var(--dark-gray)">{{ $booking->status }}</div>
+                                        <div class="font-bold text-dark">{{ $booking->status }}</div>
                                         <div class="text-[10px] text-gray-400">pembayaran: {{ $booking->payment_status }} · verifikasi: {{ $p->status }}</div>
                                     </td>
                                     <td class="px-4 py-3 text-xs">
                                         @if($p->proof_url)
-                                            <a href="{{ $p->proof_url }}" target="_blank" class="font-bold hover:underline" style="color: var(--dark-gray)">Lihat</a>
+                                            <a href="{{ $p->proof_url }}" target="_blank" class="font-bold text-dark hover:underline">Lihat</a>
                                         @else
                                             <span class="text-gray-400">—</span>
                                         @endif

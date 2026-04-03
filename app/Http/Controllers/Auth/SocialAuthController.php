@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Spatie\Permission\Models\Role;
 
 class SocialAuthController extends Controller
 {
@@ -40,6 +41,7 @@ class SocialAuthController extends Controller
 
         // Assign default role for new users
         if ($user->wasRecentlyCreated && !$user->hasAnyRole(['super_admin', 'admin', 'vendor', 'pengunjung'])) {
+            Role::findOrCreate('pengunjung', 'web');
             $user->assignRole('pengunjung');
         }
 

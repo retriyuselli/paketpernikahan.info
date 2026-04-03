@@ -136,13 +136,23 @@
                 </div>
                 <h3 class="text-base font-bold text-dark">File Terlalu Besar</h3>
                 <p class="text-sm text-gray-500">{{ session('error_modal') }}</p>
-                <button onclick="document.getElementById('error-modal').remove()"
-                        class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 bg-accent">
+                <button type="button" data-close-error-modal class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 bg-accent">
                     Mengerti
                 </button>
             </div>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('[data-close-error-modal]').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        var modal = document.getElementById('error-modal');
+                        if (modal) modal.remove();
+                    });
+                });
+            });
+        </script>
         @endif
 
     </body>
+</html>
 </html>

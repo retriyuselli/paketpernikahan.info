@@ -77,7 +77,7 @@ $g->image_url
 | Foto hero & side photos                         | `$vendor->cover_image_url`, `$vendor->galleries`                                                                              |
 | Rating, jumlah ulasan, jumlah foto              | `$vendor->rating`, `$vendor->approvedReviews->count()`, `$vendor->galleries->count()`                                         |
 | Stats bar (like, komentar)                      | `$vendor->likes`, `$vendor->comments_count`                                                                                   |
-| About cards (kapasitas, harga, pengalaman, dll) | `$vendor->capacity`, `$cheapPkg`, `$vendor->experience`, `$vendor->events_done`, `$vendor->venue_type`, `$vendor->facilities` |
+| About cards (kapasitas, harga, pengalaman, dll) | `$vendor->cheapestPackage` (mis. `->capacity`, `->type`, `->experience`, `->facilities`) + `$vendor->events_done`            |
 | Harga Mulai + diskon                            | `$vendor->cheapestPackage` (via relasi `hasOne` → `VendorPackage`)                                                            |
 | Paket & Harga cards                             | `$vendor->packages` (loop dengan `card_color`, `card_text_color`, `items`)                                                    |
 | Review Videos                                   | `$vendor->galleries` (filter `video_url`)                                                                                     |

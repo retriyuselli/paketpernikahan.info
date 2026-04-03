@@ -10,6 +10,7 @@ use App\Models\VendorPackage;
 use App\Models\VendorReview;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class VendorSeeder extends Seeder
 {
@@ -421,6 +422,7 @@ class VendorSeeder extends Seeder
         ];
         $provinceKeys = array_keys($provincePool);
 
+        Role::findOrCreate('pengunjung', 'web');
         $pengunjungUsers = User::role('pengunjung')->pluck('id')->all();
         if (count($pengunjungUsers) < 20) {
             $need = 20 - count($pengunjungUsers);
@@ -460,7 +462,6 @@ class VendorSeeder extends Seeder
             $vendor = Vendor::create([
                 'name'            => $brandName,
                 'slug'            => Str::slug($brandName),
-                'type'            => $data['type'],
                 'category'        => $data['category'],
                 'location'        => $data['location'],
                 'city'            => $randCity,
@@ -469,12 +470,9 @@ class VendorSeeder extends Seeder
                 'phone'           => '0811-' . str_pad($i + 1, 4, '0', STR_PAD_LEFT) . '-2025',
                 'email'           => Str::slug($brandName) . '@example.com',
                 'instagram'       => '@' . Str::slug($brandName, ''),
-                'capacity'        => $data['cap'],
                 'price_start'     => $data['price'],
                 'discount'        => $discountRaw,
-                'experience'      => ($i + 3) . '+ Tahun',
-                'venue_type'      => in_array($data['category'], ['gedung','hotel','paket-lengkap']) ? 'Indoor & Outdoor' : 'Outdoor',
-                'facilities'      => 'AC, Parkir, Mushola, Kamar Rias',
+                'experience'      => rand(2, 10),
                 'events_done'     => ($i + 1) * 15 + 20,
                 'likes'           => 0,
                 'comments_count'  => 0,
@@ -545,12 +543,19 @@ class VendorSeeder extends Seeder
             $tpls = $packageTpl[$data['category']] ?? $packageTpl['paket-lengkap'];
             foreach ($tpls as $idx => $tpl) {
                 $priceRaw = (int) round($data['price'] * ($tpl['mult'] * 0.75 + 0.5));
+                $dpPaket = (int) round($priceRaw * 0.3);
+                $cap = (int)preg_replace('/\D/', '', str_replace('.', '', $tpl['cap'] ?? '0'));
+                
                 VendorPackage::create([
                     'vendor_id'       => $vendor->id,
                     'name'            => $tpl['name'],
                     'price'           => 'Rp ' . number_format($priceRaw, 0, ',', '.'),
                     'price_raw'       => $priceRaw,
+                    'dp_paket'        => $dpPaket,
                     'max_guests'      => $tpl['cap'] ? 'Maks. ' . $tpl['cap'] . ' tamu' : 'Tanpa batas',
+                    'type'            => $data['category'] === 'gedung' ? 'Indoor' : null,
+                    'capacity'        => $cap ?: null,
+                    'facilities'      => $data['category'] === 'gedung' ? ['Parkir Luas', 'Ruang Rias', 'Toilet', 'AC'] : null,
                     'card_color'      => $tpl['color'],
                     'card_text_color' => $tpl['tcol'],
                     'items'           => $tpl['items'],
@@ -725,7 +730,6 @@ class VendorSeeder extends Seeder
             $pv = Vendor::create([
                 'name'            => $pd['name'],
                 'slug'            => $pd['slug'],
-                'type'            => $pd['type'],
                 'category'        => $pd['category'],
                 'location'        => $pd['location'],
                 'city'            => $pvCity,
@@ -734,12 +738,9 @@ class VendorSeeder extends Seeder
                 'phone'           => '0812-' . str_pad($pi + 1, 4, '0', STR_PAD_LEFT) . '-8888',
                 'email'           => $pd['slug'] . '@example.com',
                 'instagram'       => '@' . str_replace('-', '', $pd['slug']),
-                'capacity'        => $pd['cap'],
                 'price_start'     => $pd['price'],
                 'discount'        => $pvDiscountRaw,
-                'experience'      => '15+ Tahun',
-                'venue_type'      => 'Indoor & Outdoor',
-                'facilities'      => 'AC, Parkir VIP, Valet, Mushola, Kamar Rias, Lounge VVIP',
+                'experience'      => rand(8, 20),
                 'events_done'     => 300 + $pi * 50,
                 'likes'           => 800 + $pi * 100,
                 'comments_count'  => 120 + $pi * 30,
@@ -799,12 +800,19 @@ class VendorSeeder extends Seeder
 
             foreach ($pd['packages'] as $idx => $tpl) {
                 $priceRaw = (int) round($pd['price'] * $tpl['mult']);
+                $dpPaket = (int) round($priceRaw * 0.3);
+                $cap = (int)preg_replace('/\D/', '', str_replace('.', '', $tpl['cap'] ?? '0'));
+                
                 VendorPackage::create([
                     'vendor_id'       => $pv->id,
                     'name'            => $tpl['name'],
                     'price'           => 'Rp ' . number_format($priceRaw, 0, ',', '.'),
                     'price_raw'       => $priceRaw,
+                    'dp_paket'        => $dpPaket,
                     'max_guests'      => $tpl['cap'],
+                    'type'            => $pd['category'] === 'gedung' ? 'Indoor' : null,
+                    'capacity'        => $cap ?: null,
+                    'facilities'      => $pd['category'] === 'gedung' ? ['Parkir VIP', 'AC Sentral', 'Toilet Eksklusif', 'Ruang Rias', 'Sound System Pro'] : null,
                     'card_color'      => $tpl['color'],
                     'card_text_color' => $tpl['tcol'],
                     'items'           => $tpl['items'],

@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="mb-6">
-    <h1 class="text-2xl font-bold mb-1" style="color: var(--dark-gray)">Edit Booking</h1>
+    <h1 class="text-2xl font-bold mb-1 text-dark">Edit Booking</h1>
     <p class="text-sm text-gray-500">Ubah detail booking selama status masih pending.</p>
 </div>
 
@@ -13,15 +13,15 @@
     <div class="bg-white rounded-2xl border border-gray-100 p-6">
         <div class="text-sm font-semibold text-gray-700 mb-1">Booking tidak bisa diedit</div>
         <div class="text-sm text-gray-500 mb-4">Status booking saat ini: <span class="font-bold">{{ $booking->status }}</span></div>
-        <a href="{{ route('dashboard.booking') }}" class="text-xs font-bold px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+        <x-ui.button href="{{ route('dashboard.booking') }}" variant="ghost" size="compact">
             Kembali
-        </a>
+        </x-ui.button>
     </div>
 @else
     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         <div class="p-6 border-b border-gray-100">
             <div class="text-xs uppercase tracking-widest text-gray-400 mb-1">Vendor</div>
-            <div class="text-lg font-bold" style="color: var(--dark-gray)">{{ $booking->vendor?->name ?? '—' }}</div>
+            <div class="text-lg font-bold text-dark">{{ $booking->vendor?->name ?? '—' }}</div>
             <div class="text-xs text-gray-500 mt-1">Dibuat: {{ $booking->created_at?->format('d M Y, H:i') }}</div>
         </div>
 
@@ -89,12 +89,12 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-2 pt-2">
-                    <a href="{{ route('dashboard.booking') }}" class="text-xs font-bold px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                    <x-ui.button href="{{ route('dashboard.booking') }}" variant="ghost" size="compact">
                         Batal
-                    </a>
-                    <button type="submit" class="text-xs font-bold px-4 py-2 rounded-lg transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">
+                    </x-ui.button>
+                    <x-ui.button type="submit" variant="primary" size="compact">
                         Simpan
-                    </button>
+                    </x-ui.button>
                 </div>
             </form>
         </div>

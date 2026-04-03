@@ -6,7 +6,7 @@
 @section('content')
 <div class="mb-8 flex items-start justify-between gap-3">
     <div>
-        <h1 class="text-2xl font-bold mb-2" style="color: var(--dark-gray)">Pembayaran Masuk</h1>
+        <h1 class="text-2xl font-bold mb-2 text-dark">Pembayaran Masuk</h1>
         <p class="text-sm text-gray-500">Daftar pembayaran terbaru (maks. 200).</p>
     </div>
     <div class="inline-flex rounded-xl overflow-hidden border border-gray-100 bg-white flex-shrink-0">
@@ -18,8 +18,7 @@
            class="text-xs font-bold px-3 py-2 transition border-l border-gray-100 {{ ($paymentFilter ?? null) === 'pending' ? 'bg-gray-50 text-gray-700' : 'bg-white text-gray-500' }}">
             Pending
             @if(($pendingPaymentCount ?? 0) > 0)
-                <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold"
-                      style="background: var(--light-sage); color: var(--dark-gray)">{{ $pendingPaymentCount }}</span>
+                <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-light-sage text-dark">{{ $pendingPaymentCount }}</span>
             @endif
         </a>
     </div>
@@ -39,7 +38,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
             </svg>
         </div>
-        <h3 class="text-base font-bold mb-1" style="color: var(--dark-gray)">Belum ada pembayaran</h3>
+        <h3 class="text-base font-bold mb-1 text-dark">Belum ada pembayaran</h3>
         <p class="text-sm text-gray-500 max-w-sm">Belum ada bukti pembayaran yang masuk.</p>
     </div>
 @else
@@ -71,11 +70,11 @@
                         <tr class="hover:bg-gray-50/60 transition">
                             <td class="px-4 py-3 text-xs text-gray-500 align-top">{{ $i + 1 }}</td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $p->booking?->vendor?->name ?? '—' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $p->booking?->vendor?->name ?? '—' }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $p->created_at?->format('d M Y, H:i') }}</div>
                             </td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $p->booking?->user?->name ?? '—' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $p->booking?->user?->name ?? '—' }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $p->booking?->user?->email ?? '' }}</div>
                             </td>
                             <td class="px-4 py-3 text-xs text-gray-600 align-top">{{ $p->type }}</td>
@@ -89,9 +88,9 @@
                             <td class="px-4 py-3 text-xs align-top">
                                 @if($p->proof_url)
                                     <button type="button"
-                                            onclick='openProofModal(@json($p->proof_url))'
-                                            class="font-bold hover:underline"
-                                            style="color: var(--dark-gray)">
+                                            data-proof-open
+                                            data-proof-url="{{ $p->proof_url }}"
+                                            class="font-bold text-dark hover:underline">
                                         Lihat
                                     </button>
                                 @else
@@ -104,7 +103,7 @@
                                         <form method="POST" action="{{ route('dashboard.vendor.payments.verify', $p) }}">
                                             @csrf
                                             <input type="hidden" name="action" value="approve">
-                                            <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                                            <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg bg-accent text-white transition hover:opacity-90">
                                                 Approve
                                             </button>
                                         </form>
@@ -112,7 +111,7 @@
                                             @csrf
                                             <input type="hidden" name="action" value="reject">
                                             <input type="hidden" name="note" value="">
-                                            <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                            <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 text-dark hover:bg-gray-100 transition">
                                                 Reject
                                             </button>
                                         </form>
@@ -167,27 +166,23 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<div id="proof-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" onclick="if(event.target===this) closeProofModal()">
-    <div class="absolute inset-0 bg-black/60"></div>
-    <div class="relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-2xl w-full max-w-4xl">
-        <button type="button"
-                onclick="closeProofModal()"
-                class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-sm font-bold hover:bg-gray-50 transition"
-                style="color: var(--dark-gray)">
-            ×
-        </button>
-        <div class="p-4 border-b border-gray-100">
-            <p class="text-sm font-bold" style="color: var(--dark-gray)">Bukti Pembayaran</p>
-        </div>
-        <div class="p-4 bg-gray-50">
-            <img id="proof-modal-img" src="" alt="Bukti pembayaran" class="hidden w-full h-auto max-h-[75vh] object-contain bg-black rounded-xl">
-            <iframe id="proof-modal-frame" src="" class="hidden w-full h-[75vh] bg-white rounded-xl border border-gray-100"></iframe>
-            <div id="proof-modal-fallback" class="hidden text-sm text-gray-500">
-                <a id="proof-modal-link" href="#" target="_blank" class="font-bold hover:underline" style="color: var(--dark-gray)">Buka bukti di tab baru</a>
-            </div>
+<x-ui.modal id="proof-modal" size="4xl" backdrop-class="bg-black/60" panel-class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-2xl w-full" class="place-items-center">
+    <button type="button"
+            data-proof-close
+            class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-sm font-bold text-dark hover:bg-gray-50 transition">
+        ×
+    </button>
+    <div class="p-4 border-b border-gray-100">
+        <p class="text-sm font-bold text-dark">Bukti Pembayaran</p>
+    </div>
+    <div class="p-4 bg-gray-50">
+        <img id="proof-modal-img" src="" alt="Bukti pembayaran" class="hidden w-full h-auto max-h-[75vh] object-contain bg-black rounded-xl">
+        <iframe id="proof-modal-frame" src="" class="hidden w-full h-[75vh] bg-white rounded-xl border border-gray-100"></iframe>
+        <div id="proof-modal-fallback" class="hidden text-sm text-gray-500">
+            <a id="proof-modal-link" href="#" target="_blank" class="font-bold text-dark hover:underline">Buka bukti di tab baru</a>
         </div>
     </div>
-</div>
+</x-ui.modal>
 
 <script>
     function openProofModal(url) {
@@ -217,8 +212,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        document.body.style.overflow = 'hidden';
+        modal.classList.add('grid');
+        document.body.classList.add('overflow-hidden');
     }
 
     function closeProofModal() {
@@ -227,11 +222,29 @@ document.addEventListener('DOMContentLoaded', function () {
         var frame = document.getElementById('proof-modal-frame');
         if (!modal) return;
         modal.classList.add('hidden');
-        modal.classList.remove('flex');
+        modal.classList.remove('grid');
         if (img) img.src = '';
         if (frame) frame.src = '';
-        document.body.style.overflow = '';
+        document.body.classList.remove('overflow-hidden');
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('proof-modal');
+        if (!modal) return;
+
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) closeProofModal();
+        });
+
+        var closeBtn = modal.querySelector('[data-proof-close]');
+        if (closeBtn) closeBtn.addEventListener('click', closeProofModal);
+
+        document.querySelectorAll('[data-proof-open][data-proof-url]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                openProofModal(btn.getAttribute('data-proof-url'));
+            });
+        });
+    });
 
     document.addEventListener('keydown', function (e) {
         if (e.key !== 'Escape') return;

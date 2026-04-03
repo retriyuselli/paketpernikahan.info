@@ -5,24 +5,21 @@
 
 @section('content')
 <div class="mb-8">
-    <h1 class="text-2xl font-bold mb-2" style="color: var(--dark-gray)">All Vendor</h1>
+    <h1 class="text-2xl font-bold mb-2 text-dark">All Vendor</h1>
     <p class="text-sm text-gray-500">Daftar semua vendor yang terdaftar di sistem.</p>
 </div>
 
 <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-6">
     <form method="GET" action="{{ route('dashboard.admin.vendors') }}" class="p-4 flex flex-col sm:flex-row gap-3 sm:items-center">
         <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Cari vendor / slug / kategori / kota..."
-               class="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2"
-               style="--tw-ring-color: var(--sage-green)">
+               class="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:border-accent focus:ring-accent">
         <div class="flex items-center gap-2">
             <button type="submit"
-                    class="px-4 py-2 rounded-xl text-sm font-bold transition hover:opacity-90"
-                    style="background-color: var(--sage-green); color: var(--cream)">
+                    class="px-4 py-2 rounded-xl text-sm font-bold bg-accent text-cream transition hover:opacity-90">
                 Cari
             </button>
             <a href="{{ route('dashboard.admin.vendors') }}"
-               class="px-4 py-2 rounded-xl text-sm font-bold border border-gray-200 bg-white hover:border-gray-300 transition"
-               style="color: var(--dark-gray)">
+               class="px-4 py-2 rounded-xl text-sm font-bold border border-gray-200 bg-white text-dark hover:border-gray-300 transition">
                 Reset
             </a>
         </div>
@@ -37,7 +34,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
         </div>
-        <h3 class="text-base font-bold mb-1" style="color: var(--dark-gray)">Tidak ada vendor</h3>
+        <h3 class="text-base font-bold mb-1 text-dark">Tidak ada vendor</h3>
         <p class="text-sm text-gray-500 max-w-sm">Coba ubah kata kunci pencarian.</p>
     </div>
 @else
@@ -60,13 +57,13 @@
                         <tr class="hover:bg-gray-50/60 transition">
                             <td class="px-4 py-3 text-xs text-gray-500 align-top">{{ $i + 1 }}</td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $v->name }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $v->name }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $v->location }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $v->slug }}</div>
                             </td>
                             <td class="px-4 py-3 text-xs text-gray-600 align-top">
                                 @if($v->owner)
-                                    <div class="font-semibold" style="color: var(--dark-gray)">{{ $v->owner->name }}</div>
+                                    <div class="font-semibold text-dark">{{ $v->owner->name }}</div>
                                     <div class="text-[10px] text-gray-400 mt-1">{{ $v->owner->email }}</div>
                                 @else
                                     <span class="text-[10px] text-gray-400">Belum ada pemilik</span>
@@ -86,18 +83,18 @@
                             </td>
                             <td class="px-4 py-3 align-top">
                                 <div class="inline-flex flex-col rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
-                                    <a href="{{ route('vendor.edit', $v) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                    <a href="{{ route('vendor.edit', $v) }}" class="text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition">
                                         Kelola
                                     </a>
-                                    <a href="{{ url('/admin/vendors/' . $v->slug . '/edit') }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition border-t border-gray-100" style="color: var(--dark-gray)">
+                                    <a href="{{ url('/admin/vendors/' . $v->slug . '/edit') }}" class="text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition border-t border-gray-100">
                                         Panel Admin
                                     </a>
-                                    <a href="{{ route('vendor.detail', $v->slug) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition border-t border-gray-100" style="color: var(--dark-gray)">
+                                    <a href="{{ route('vendor.detail', $v->slug) }}" class="text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition border-t border-gray-100">
                                         Lihat
                                     </a>
                                     <form method="POST" action="{{ route('dashboard.admin.vendors.toggle', $v) }}" class="border-t border-gray-100">
                                         @csrf
-                                        <button type="submit" class="w-full text-left text-xs font-bold px-3 py-2 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                        <button type="submit" class="w-full text-left text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition">
                                             {{ $v->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
                                         </button>
                                     </form>

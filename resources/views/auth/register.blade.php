@@ -94,17 +94,17 @@
                             <input type="checkbox" name="agree" id="agree" required
                                 class="h-4 w-4 rounded border-gray-300 accent-red-500 shrink-0">
                             <label for="agree" class="ml-2 text-sm text-gray-700 font-light">
-                                I agree with the <a href="#" onclick="openPrivacyModal(); return false;" class="text-blue-600 no-underline font-light hover:text-blue-700">Privacy Policy</a>
+                                I agree with the <a href="#" data-privacy-open class="text-blue-600 no-underline font-light hover:text-blue-700">Privacy Policy</a>
                             </label>
                         </div>
 
                         <!-- Privacy Policy Modal -->
-                        <div id="privacy-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 p-4" onclick="if(event.target===this){closePrivacyModal();}">
+                        <div id="privacy-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 p-4">
                             <div class="relative w-full max-w-[40rem] bg-white rounded-2xl max-h-[80vh] flex flex-col shadow-2xl">
                                 <!-- Modal Header -->
                                 <div class="px-6 pt-6 pb-4 border-b border-gray-200 flex items-center justify-between">
                                     <h2 class="text-lg font-bold text-gray-900 m-0">Kebijakan Privasi</h2>
-                                    <button type="button" onclick="closePrivacyModal()" class="text-gray-500 hover:text-gray-700 text-xl leading-none p-1">&#10005;</button>
+                                    <button type="button" data-privacy-close class="text-gray-500 hover:text-gray-700 text-xl leading-none p-1">&#10005;</button>
                                 </div>
                                 <!-- Modal Body -->
                                 <div class="p-6 overflow-y-auto text-sm text-gray-700 font-light leading-relaxed">
@@ -127,7 +127,7 @@
                                 </div>
                                 <!-- Modal Footer -->
                                 <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
-                                    <button type="button" onclick="closePrivacyModal()" class="bg-red-600 hover:bg-red-700 text-white text-sm font-light py-2 px-6 rounded-full transition">Tutup</button>
+                                    <button type="button" data-privacy-close class="bg-red-600 hover:bg-red-700 text-white text-sm font-light py-2 px-6 rounded-full transition">Tutup</button>
                                 </div>
                             </div>
                         </div>
@@ -144,6 +144,19 @@
                                 el.classList.add('hidden');
                                 el.classList.remove('flex');
                             }
+                            document.addEventListener('click', function (e) {
+                                if (e.target.closest('[data-privacy-open]')) {
+                                    e.preventDefault();
+                                    openPrivacyModal();
+                                    return;
+                                }
+                                if (e.target.closest('[data-privacy-close]')) {
+                                    closePrivacyModal();
+                                    return;
+                                }
+                                var modal = document.getElementById('privacy-modal');
+                                if (modal && e.target === modal) closePrivacyModal();
+                            });
                             document.addEventListener('keydown', function(e) {
                                 if (e.key === 'Escape') closePrivacyModal();
                             });

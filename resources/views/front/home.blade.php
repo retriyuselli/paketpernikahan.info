@@ -18,7 +18,7 @@
                 <!-- Slider Container -->
                 <div class="relative">
                     <!-- Left Arrow -->
-                    <button onclick="document.getElementById('highlights-scroll').scrollBy({left: -400, behavior: 'smooth'})"
+                    <button type="button" data-scroll-target="highlights-scroll" data-scroll-by="-400"
                             class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
                         <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     </button>
@@ -83,7 +83,7 @@
                     </div>
 
                     <!-- Right Arrow -->
-                    <button onclick="document.getElementById('highlights-scroll').scrollBy({left: 400, behavior: 'smooth'})"
+                    <button type="button" data-scroll-target="highlights-scroll" data-scroll-by="400"
                             class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
                         <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
@@ -469,7 +469,7 @@
                 <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
 
                     <!-- Video Card 1 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 140px; aspect-ratio: 9 / 16;">
+                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
                         <img src="https://picsum.photos/seed/ballroom1/300/533" alt="Aston Ballroom Review" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <!-- Play button -->
@@ -485,7 +485,7 @@
                     </div>
 
                     <!-- Video Card 2 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 140px; aspect-ratio: 9 / 16;">
+                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
                         <img src="https://picsum.photos/seed/ballroom2/300/533" alt="Beston Hotel Review" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -499,7 +499,7 @@
                     </div>
 
                     <!-- Video Card 3 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 140px; aspect-ratio: 9 / 16;">
+                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
                         <img src="https://picsum.photos/seed/ballroom3/300/533" alt="Swiss-Belhotel Review" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -513,7 +513,7 @@
                     </div>
 
                     <!-- Video Card 4 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 140px; aspect-ratio: 9 / 16;">
+                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
                         <img src="https://picsum.photos/seed/ballroom4/300/533" alt="The Zuri Review" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -527,7 +527,7 @@
                     </div>
 
                     <!-- Video Card 5 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 140px; aspect-ratio: 9 / 16;">
+                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
                         <img src="https://picsum.photos/seed/ballroom5/300/533" alt="Jakabaring Convention Review" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -541,7 +541,7 @@
                     </div>
 
                     <!-- Video Card 6 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 140px; aspect-ratio: 9 / 16;">
+                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
                         <img src="https://picsum.photos/seed/ballroom6/300/533" alt="Garden Venue Review" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
@@ -653,12 +653,12 @@
                     </div>
 
                     <!-- Arrow prev -->
-                    <button onclick="document.getElementById('vendor-promo-scroll').scrollBy({left: -300, behavior: 'smooth'})"
+                    <button type="button" data-scroll-target="vendor-promo-scroll" data-scroll-by="-300"
                             class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
                         <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     </button>
                     <!-- Arrow next -->
-                    <button onclick="document.getElementById('vendor-promo-scroll').scrollBy({left: 300, behavior: 'smooth'})"
+                    <button type="button" data-scroll-target="vendor-promo-scroll" data-scroll-by="300"
                             class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
                         <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
@@ -680,7 +680,7 @@
                     <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide" id="real-wedding-scroll">
 
                         <!-- Wedding Card 1 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 160px; aspect-ratio: 3 / 4;">
+                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
                             <img src="https://picsum.photos/seed/wedding1/400/533" alt="Reza & Aulia" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                             <div class="absolute bottom-4 left-4 right-4 text-white">
@@ -690,7 +690,7 @@
                         </div>
 
                         <!-- Wedding Card 2 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 160px; aspect-ratio: 3 / 4;">
+                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
                             <img src="https://picsum.photos/seed/wedding2/400/533" alt="Bagas & Tiara" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                             <div class="absolute bottom-4 left-4 right-4 text-white">
@@ -700,7 +700,7 @@
                         </div>
 
                         <!-- Wedding Card 3 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 160px; aspect-ratio: 3 / 4;">
+                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
                             <img src="https://picsum.photos/seed/wedding3/400/533" alt="Dimas & Sari" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                             <div class="absolute bottom-4 left-4 right-4 text-white">
@@ -711,7 +711,7 @@
                         </div>
 
                         <!-- Wedding Card 4 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 160px; aspect-ratio: 3 / 4;">
+                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
                             <img src="https://picsum.photos/seed/wedding4/400/533" alt="Andi & Dewi" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                             <div class="absolute bottom-4 left-4 right-4 text-white">
@@ -722,7 +722,7 @@
                         </div>
 
                         <!-- Wedding Card 5 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 160px; aspect-ratio: 3 / 4;">
+                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
                             <img src="https://picsum.photos/seed/wedding5/400/533" alt="Fajar & Nisa" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                             <div class="absolute bottom-4 left-4 right-4 text-white">
@@ -732,7 +732,7 @@
                         </div>
 
                         <!-- Wedding Card 6 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group" style="width: calc((100% - 4 * 1rem) / 5); min-width: 160px; aspect-ratio: 3 / 4;">
+                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
                             <img src="https://picsum.photos/seed/wedding6/400/533" alt="Hendra & Putri" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                             <div class="absolute bottom-4 left-4 right-4 text-white">
@@ -745,7 +745,7 @@
                     </div>
 
                     <!-- Arrow next -->
-                    <button onclick="document.getElementById('real-wedding-scroll').scrollBy({left: 300, behavior: 'smooth'})"
+                    <button type="button" data-scroll-target="real-wedding-scroll" data-scroll-by="300"
                             class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
                         <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
@@ -892,12 +892,12 @@
             </x-ui.container>
         </section>
 
-        <div id="home-ad-modal" class="fixed inset-0 z-[9998] hidden items-center justify-center p-4" style="background: rgba(0,0,0,0.45)" onclick="if(event.target===this) closeHomeAdModal()">
+        <div id="home-ad-modal" class="fixed inset-0 z-[9998] hidden items-center justify-center p-4 bg-backdrop-45">
             <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
                 <div class="relative">
                     <img src="https://picsum.photos/seed/makna-ad/800/800" alt="Iklan" class="w-full aspect-square object-cover">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                    <button type="button" onclick="closeHomeAdModal()" class="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white/90 border border-gray-200 flex items-center justify-center hover:bg-white transition" aria-label="Tutup">
+                    <button type="button" data-home-ad-close class="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white/90 border border-gray-200 flex items-center justify-center hover:bg-white transition" aria-label="Tutup">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
@@ -914,6 +914,17 @@
                 var key = 'home_ad_dismissed_v1';
                 var modal = document.getElementById('home-ad-modal');
                 if (!modal) return;
+
+                document.addEventListener('click', function (e) {
+                    var btn = e.target.closest('[data-scroll-target][data-scroll-by]');
+                    if (!btn) return;
+                    var targetId = btn.getAttribute('data-scroll-target');
+                    var by = parseInt(btn.getAttribute('data-scroll-by') || '0', 10);
+                    if (!targetId || !Number.isFinite(by) || by === 0) return;
+                    var el = document.getElementById(targetId);
+                    if (!el || typeof el.scrollBy !== 'function') return;
+                    el.scrollBy({ left: by, behavior: 'smooth' });
+                });
 
                 function openModal() {
                     try {
@@ -934,6 +945,16 @@
                         } catch (e) {}
                     }
                 };
+
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) window.closeHomeAdModal();
+                });
+                var closeBtn = modal.querySelector('[data-home-ad-close]');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function () {
+                        window.closeHomeAdModal();
+                    });
+                }
 
                 window.setTimeout(openModal, 5000);
 

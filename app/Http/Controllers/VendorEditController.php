@@ -39,7 +39,10 @@ class VendorEditController extends Controller
 
         $vendor->load(['packages', 'galleries']);
 
-        return view('vendor.edit', compact('vendor'));
+        return view('vendor.edit', [
+            'vendor' => $vendor,
+            'categoryVendors' => CategoryVendor::orderBy('sort_order')->get(),
+        ]);
     }
 
     public function update(Request $request, Vendor $vendor)
@@ -51,7 +54,6 @@ class VendorEditController extends Controller
 
         $validated = $request->validate([
             'name'         => 'required|string|max:255',
-            'type'         => 'nullable|string|max:100',
             'categories'   => ['required', 'array', 'min:1'],
             'categories.*' => ['required', 'string', 'distinct', Rule::exists('category_vendors', 'slug')],
             'location'     => 'required|string|max:255',
@@ -61,11 +63,8 @@ class VendorEditController extends Controller
             'phone'        => 'nullable|string|max:30',
             'email'        => 'nullable|email|max:255',
             'instagram'    => 'nullable|string|max:100',
-            'capacity'     => 'nullable|string|max:100',
-            'venue_type'   => 'nullable|string|max:100',
-            'experience'   => 'nullable|string|max:50',
-            'facilities'   => 'nullable|string',
             'events_done'  => 'nullable|integer|min:0',
+            'experience'   => 'nullable|integer|min:0',
             // rating, likes, comments_count dikelola otomatis dari frontend — tidak diubah di sini
             'promo'           => 'nullable|array',
             'promo.*'         => 'string',
@@ -85,10 +84,6 @@ class VendorEditController extends Controller
                 'badge.*'         => 'string',
             ]);
             $validated = array_merge($validated, $labelValidated);
-        }
-
-        if (empty($validated['type'])) {
-            $validated['type'] = CategoryVendor::where('slug', $validated['category'])->value('name') ?: $validated['category'];
         }
 
         // Handle slug update if name changed

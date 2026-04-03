@@ -14,7 +14,7 @@
             <h2 class="text-xl font-bold mb-5 text-dark">Highlights</h2>
 
             <div class="relative">
-                <button onclick="document.getElementById('vendor-highlights-scroll').scrollBy({left: -400, behavior: 'smooth'})"
+                <button type="button" data-scroll-target="vendor-highlights-scroll" data-scroll-by="-400"
                         class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
                     <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 </button>
@@ -147,90 +147,90 @@
                     </div>
 
                     <!-- Card 13 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh13/640/480" alt="Fotografer" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Foto & Video</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Foto & Video</p>
                             <p class="text-white text-sm font-bold leading-snug">5 Fotografer Pernikahan Terbaik Palembang yang Harus Kamu Tahu.</p>
                         </div>
                     </div>
 
                     <!-- Card 14 — Promo Banner -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3; background-color: var(--soft-pink);">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3 bg-accent-pink">
                         <img src="https://picsum.photos/seed/vh14/640/480" alt="Promo" class="w-full h-full object-cover opacity-20 transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
-                            <p class="text-2xl font-bold leading-tight" style="color: var(--dark-gray)">Konsultasi <span style="color: var(--sage-green)">Gratis</span><br>dengan WO Kami</p>
-                            <p class="text-xs" style="color: var(--dark-gray)">Tim profesional kami siap<br>membantu merencanakan hari H</p>
+                            <p class="text-2xl font-bold leading-tight text-dark">Konsultasi <span class="text-accent">Gratis</span><br>dengan WO Kami</p>
+                            <p class="text-xs text-dark">Tim profesional kami siap<br>membantu merencanakan hari H</p>
                             <div class="flex gap-2 mt-2">
-                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--dark-gray); color: var(--cream)">Hubungi Kami</a>
+                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90 bg-dark text-cream">Hubungi Kami</a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card 15 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh15/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
                             <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Bayu &amp; Lestari</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">More Info</a>
+                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
                         </div>
                     </div>
 
                     <!-- Card 16 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh16/640/480" alt="Gaun Pengantin" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Fashion Bride</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Fashion Bride</p>
                             <p class="text-white text-sm font-bold leading-snug">Koleksi Gaun Pengantin Terbaru 2026 yang Bikin Kamu Semakin Memesona.</p>
                         </div>
                     </div>
 
                     <!-- Card 17 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh17/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
                             <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Reza &amp; Anisa</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">More Info</a>
+                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
                         </div>
                     </div>
 
                     <!-- Card 18 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh18/640/480" alt="Undangan" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Undangan Digital</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Undangan Digital</p>
                             <p class="text-white text-sm font-bold leading-snug">Tren Undangan Pernikahan Digital yang Elegan dan Mudah Dibagikan.</p>
                         </div>
                     </div>
 
                     <!-- Card 19 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh19/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
                             <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Aldi &amp; Maya</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90" style="background-color: var(--sage-green); color: var(--cream)">More Info</a>
+                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
                         </div>
                     </div>
 
                     <!-- Card 20 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition" style="aspect-ratio: 4/3;">
+                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
                         <img src="https://picsum.photos/seed/vh20/640/480" alt="Honeymoon" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color: var(--soft-pink)">Honeymoon</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Honeymoon</p>
                             <p class="text-white text-sm font-bold leading-snug">10 Destinasi Honeymoon Romantis Favorit Pasangan Indonesia Tahun Ini.</p>
                         </div>
                     </div>
 
                 </div>
 
-                <button onclick="document.getElementById('vendor-highlights-scroll').scrollBy({left: 400, behavior: 'smooth'})"
+                <button type="button" data-scroll-target="vendor-highlights-scroll" data-scroll-by="400"
                         class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
                     <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
@@ -352,24 +352,23 @@
 
             <!-- Category Title -->
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-bold" style="color: var(--dark-gray)">{{ $cat->name }}</h2>
-                <a href="#" class="text-xs font-semibold hover:underline" style="color: var(--sage-green)">Lihat Semua →</a>
+                <h2 class="text-lg font-bold text-dark">{{ $cat->name }}</h2>
+                <a href="#" class="text-xs font-semibold hover:underline text-accent">Lihat Semua →</a>
             </div>
 
             <!-- Scrollable Row -->
             <div class="relative">
                 <!-- Left Arrow -->
-                <button onclick="this.nextElementSibling.scrollBy({left: -300, behavior: 'smooth'})"
+                <button type="button" data-scroll-sibling="next" data-scroll-by="-300"
                         class="absolute left-0 top-1/3 -translate-y-1/2 -translate-x-3 w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
-                    <svg class="w-4 h-4" style="color: var(--dark-gray)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    <svg class="w-4 h-4 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 </button>
 
-                <div class="flex gap-1 overflow-x-auto scroll-smooth pb-1" style="scrollbar-width: none; -ms-overflow-style: none;">
+                <div class="flex gap-1 overflow-x-auto scroll-smooth pb-1 scrollbar-hide">
                     @foreach ($cat->vendors as $i => $v)
                     @php
                     $vData = [
                         'name'           => $v->name,
-                        'type'           => $v->type,
                         'city'           => $v->city,
                         'location'       => $v->location,
                         'rating'         => $v->rating,
@@ -386,22 +385,21 @@
                         'price_start'    => is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : ($v->price_start ?: '—'),
                     ];
                     @endphp
-                    <div onclick="openVendorPreview(this)" data-vendor='@json($vData)' class="flex-none w-56 cursor-pointer group border border-gray-200 rounded-2xl p-2 hover:border-gray-300 transition bg-white block">
+                    <div data-vendor-preview-open data-vendor='@json($vData)' class="flex-none w-56 cursor-pointer group border border-gray-200 rounded-2xl p-2 hover:border-gray-300 transition bg-white block">
                         <!-- Photo -->
-                        <div class="relative rounded-xl overflow-hidden mb-2" style="aspect-ratio: 4/5;">
+                        <div class="relative rounded-xl overflow-hidden mb-2 aspect-[4/5]">
                             <img src="{{ $v->cover_image_url ?: (optional($v->galleries->first())->image_url ?? 'https://picsum.photos/seed/'.$v->id.'/350/260') }}"
                                  alt="{{ $v->name }}"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             @if (!empty($v->promo))
                             <div class="absolute top-2 left-2 flex flex-col gap-1">
                                 @foreach ((array) $v->promo as $p)
-                                <span class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full text-white" style="background-color: var(--sage-green)">{{ \App\Enums\VendorPromo::from($p)->label() }}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full text-white bg-accent">{{ \App\Enums\VendorPromo::from($p)->label() }}</span>
                                 @endforeach
                             </div>
                             @endif
                             @if (!empty($v->badge))
-                            <div class="absolute bottom-0 left-0 right-0 px-2 py-1.5 flex items-center gap-1"
-                                 style="background: linear-gradient(to right, var(--soft-pink), var(--sage-green))">
+                            <div class="absolute bottom-0 left-0 right-0 px-2 py-1.5 flex items-center gap-1 bg-accent-gradient">
                                 <svg class="w-3 h-3 text-white flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                 @php $allBadges = (array) $v->badge; $extraBadges = count($allBadges) - 2; @endphp
                                 @foreach (array_slice($allBadges, 0, 2) as $b)
@@ -415,7 +413,7 @@
                             @endif
                             @if ($v->city)
                             <div class="absolute {{ !empty($v->badge) ? 'bottom-8' : 'bottom-2' }} left-0 right-0 flex justify-center z-10">
-                                <span class="flex items-center gap-1 text-[10px] font-semibold text-white px-2.5 py-0.5 rounded-full" style="background: rgba(0,0,0,0.45); backdrop-filter: blur(2px);">
+                                <span class="flex items-center gap-1 text-[10px] font-semibold text-white px-2.5 py-0.5 rounded-full bg-backdrop-45 backdrop-blur-[2px]">
                                     <svg class="w-2.5 h-2.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
                                     {{ $v->city }}
                                 </span>
@@ -424,23 +422,22 @@
                         </div>
 
                         <!-- Info -->
-                        <p class="font-bold text-sm leading-snug group-hover:underline" style="color: var(--dark-gray)">{{ $v->name }}</p>
-                        <p class="text-xs mt-0.5" style="color: var(--sage-green)">{{ $v->type }}</p>
+                        <p class="font-bold text-sm leading-snug group-hover:underline text-dark">{{ $v->name }}</p>
                         @php $pkg = $v->cheapestPackage; @endphp
                         @if ($pkg)
                         <div class="flex items-center gap-1.5 mt-1 mb-2">
                             <span class="text-[9px] text-gray-400">Mulai</span>
                             @if ($pkg->discount > 0)
                             <span class="text-[10px] line-through text-gray-400">{{ $pkg->price }}</span>
-                            <span class="text-[11px] font-bold" style="color: var(--dark-gray)">Rp {{ number_format($pkg->price_raw - $pkg->discount, 0, ',', '.') }}</span>
+                            <span class="text-[11px] font-bold text-dark">Rp {{ number_format($pkg->price_raw - $pkg->discount, 0, ',', '.') }}</span>
                             @else
-                            <span class="text-[11px] font-semibold" style="color: var(--dark-gray)">{{ $pkg->price }}</span>
+                            <span class="text-[11px] font-semibold text-dark">{{ $pkg->price }}</span>
                             @endif
                         </div>
                         @else
                         <div class="flex items-center gap-1.5 mt-1 mb-2">
                             <span class="text-[9px] text-gray-400">Mulai</span>
-                            <span class="text-[11px] font-semibold" style="color: var(--dark-gray)">{{ is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : ($v->price_start ?: '—') }}</span>
+                            <span class="text-[11px] font-semibold text-dark">{{ is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : ($v->price_start ?: '—') }}</span>
                         </div>
                         @endif
 
@@ -460,7 +457,7 @@
                                     </span>
                                 @endif
                                 @if($vRating >= 1)
-                                    <span class="flex items-center gap-0.5 font-semibold" style="color: #f59e0b">
+                                    <span class="flex items-center gap-0.5 font-semibold text-rating">
                                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                         {{ number_format($vRating, 1) }}
                                     </span>
@@ -484,7 +481,7 @@
                 </div>
 
                 <!-- Right Arrow -->
-                <button onclick="this.previousElementSibling.scrollBy({left: 300, behavior: 'smooth'})"
+                <button type="button" data-scroll-sibling="prev" data-scroll-by="300"
                         class="absolute right-0 top-1/3 -translate-y-1/2 translate-x-3 w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
                     <svg class="w-4 h-4 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
@@ -500,15 +497,14 @@
 
     <!-- Vendor Quick Preview Modal -->
     <div id="vendor-preview-modal"
-         class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden"
-         onclick="if(event.target===this) closeVendorPreview()">
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+         class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
+        <div data-vendor-preview-backdrop class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
         <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden max-h-[92vh] overflow-y-auto">
 
             <!-- Cover Image -->
             <div class="relative ar-16x9">
                 <img id="vp-cover" src="" alt="" class="w-full h-full object-cover">
-                <button onclick="closeVendorPreview()"
+                <button type="button" data-vendor-preview-close
                         class="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition bg-backdrop-45">
                     <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
@@ -516,7 +512,6 @@
 
             <!-- Body -->
             <div class="p-5">
-                <p id="vp-type" class="text-xs font-semibold mb-0.5 text-accent"></p>
                 <h2 id="vp-name" class="text-lg font-bold leading-snug mb-1 text-dark"></h2>
                 <p class="flex items-center gap-1 text-xs text-gray-500 mb-3">
                     <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -568,7 +563,6 @@
 
         document.getElementById('vp-cover').src = v.cover || '';
         document.getElementById('vp-cover').alt = v.name;
-        document.getElementById('vp-type').textContent = v.type || '';
         document.getElementById('vp-name').textContent = v.name || '';
         document.getElementById('vp-location').textContent = v.city || v.location || '';
         document.getElementById('vp-rating').textContent = v.rating || '-';
@@ -591,14 +585,52 @@
         document.getElementById('vp-wa').href     = v.wa_url || '#';
         document.getElementById('vp-detail').href = v.detail_url || '#';
 
-        document.getElementById('vendor-preview-modal').classList.remove('hidden');
+        var modal = document.getElementById('vendor-preview-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
         document.body.style.overflow = 'hidden';
     }
 
     function closeVendorPreview() {
-        document.getElementById('vendor-preview-modal').classList.add('hidden');
+        var modal = document.getElementById('vendor-preview-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
         document.body.style.overflow = '';
     }
+
+    document.addEventListener('click', function (e) {
+        var scrollBtn = e.target.closest('[data-scroll-by]');
+        if (scrollBtn) {
+            var by = parseInt(scrollBtn.getAttribute('data-scroll-by') || '0', 10);
+            if (Number.isFinite(by) && by !== 0) {
+                var targetId = scrollBtn.getAttribute('data-scroll-target');
+                var el = null;
+                if (targetId) el = document.getElementById(targetId);
+                if (!el) {
+                    var sibling = scrollBtn.getAttribute('data-scroll-sibling');
+                    if (sibling === 'next') el = scrollBtn.nextElementSibling;
+                    if (sibling === 'prev') el = scrollBtn.previousElementSibling;
+                }
+                if (el && typeof el.scrollBy === 'function') {
+                    el.scrollBy({ left: by, behavior: 'smooth' });
+                }
+            }
+        }
+
+        var openBtn = e.target.closest('[data-vendor-preview-open]');
+        if (openBtn) {
+            openVendorPreview(openBtn);
+            return;
+        }
+
+        if (e.target.closest('[data-vendor-preview-close]') || e.target.closest('[data-vendor-preview-backdrop]')) {
+            closeVendorPreview();
+        }
+    });
 
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeVendorPreview();

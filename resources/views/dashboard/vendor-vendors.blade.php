@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="mb-8">
-    <h1 class="text-2xl font-bold mb-2" style="color: var(--dark-gray)">Vendor Saya</h1>
+    <h1 class="text-2xl font-bold mb-2 text-dark">Vendor Saya</h1>
     <p class="text-sm text-gray-500">Lengkapi profil vendor terlebih dahulu sebelum tampil di halaman vendor.</p>
 </div>
 
@@ -17,7 +17,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
         </div>
-        <h3 class="text-base font-bold mb-1" style="color: var(--dark-gray)">Belum ada vendor</h3>
+        <h3 class="text-base font-bold mb-1 text-dark">Belum ada vendor</h3>
         <p class="text-sm text-gray-500 max-w-sm">Silakan minta admin menghubungkan akun Anda ke vendor (field Pemilik Vendor).</p>
     </div>
 @else
@@ -38,7 +38,7 @@
                         <tr class="hover:bg-gray-50/60 transition">
                             <td class="px-4 py-3 text-xs text-gray-500 align-top">{{ $i + 1 }}</td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $v->name }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $v->name }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $v->location }}</div>
                                 @if(!$v->is_profile_complete)
                                     <div class="mt-2">
@@ -52,11 +52,11 @@
                             <td class="px-4 py-3 text-xs text-gray-600 align-top">{{ $v->city }}</td>
                             <td class="px-4 py-3 align-top">
                                 <div class="inline-flex flex-col rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
-                                    <a href="{{ route('vendor.edit', $v) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                    <a href="{{ route('vendor.edit', $v) }}" class="text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition">
                                         {{ $v->is_profile_complete ? 'Kelola' : 'Lengkapi' }}
                                     </a>
                                     @if($v->is_profile_complete)
-                                        <a href="{{ route('vendor.detail', $v->slug) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition border-t border-gray-100" style="color: var(--dark-gray)">
+                                        <a href="{{ route('vendor.detail', $v->slug) }}" class="text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition border-t border-gray-100">
                                             Lihat
                                         </a>
                                     @endif

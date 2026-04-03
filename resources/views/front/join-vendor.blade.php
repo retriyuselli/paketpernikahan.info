@@ -5,11 +5,11 @@
 @section('content')
     @include('layout.header')
 
-    <section class="py-10" style="background-color: var(--cream)">
+    <section class="py-10 bg-cream">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-6">
-                <h1 class="text-2xl text-black font-bold" style="color: var(--dark-gray)">Join Vendor</h1>
-                <p class="text-sm text-black mt-1">Ajukan vendor Anda untuk dapat mengelola paket dan pembayaran.</p>
+                <h1 class="text-2xl font-bold text-dark">Join Vendor</h1>
+                <p class="text-sm text-gray-600 mt-1">Ajukan vendor Anda untuk dapat mengelola paket dan pembayaran.</p>
             </div>
 
             @if (session('join_vendor_success'))
@@ -29,7 +29,7 @@
                     <div class="flex items-center justify-between gap-3">
                         <div>
                             <p class="text-xs uppercase tracking-widest text-gray-400">Status</p>
-                            <p class="text-lg font-bold" style="color: var(--dark-gray)">Menunggu verifikasi</p>
+                            <p class="text-lg font-bold text-dark">Menunggu verifikasi</p>
                             <p class="text-sm text-gray-500 mt-1">Admin sedang memproses pengajuan Anda.</p>
                         </div>
                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-yellow-50 text-yellow-700">Pending</span>
@@ -51,13 +51,13 @@
                     <div class="flex items-center justify-between gap-3">
                         <div>
                             <p class="text-xs uppercase tracking-widest text-gray-400">Status</p>
-                            <p class="text-lg font-bold" style="color: var(--dark-gray)">Disetujui</p>
+                            <p class="text-lg font-bold text-dark">Disetujui</p>
                             <p class="text-sm text-gray-500 mt-1">Anda sudah bisa mengelola vendor di dashboard.</p>
                         </div>
                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700">Approved</span>
                     </div>
                     <div class="mt-4">
-                        <a href="{{ url('/dashboard/vendor/vendors') }}" class="inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-bold transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                        <a href="{{ url('/dashboard/vendor/vendors') }}" class="inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-bold bg-accent text-white transition hover:opacity-90">
                             Buka Vendor Saya
                         </a>
                     </div>
@@ -89,9 +89,9 @@
                                 <div class="relative" id="join-vendor-category-select">
                                     <button type="button"
                                             id="join-vendor-category-button"
-                                            class="w-full h-11 border border-gray-200 rounded-xl px-3.5 text-sm flex items-center justify-between gap-3 hover:border-gray-300 transition bg-white"
-                                            style="color: var(--dark-gray)">
-                                        <span class="text-sm opacity-60" style="color: var(--dark-gray)" id="join-vendor-category-placeholder">Pilih kategori vendor</span>
+                                            class="w-full h-11 border border-gray-200 rounded-xl px-3.5 text-sm flex items-center justify-between gap-3 hover:border-gray-300 transition bg-white text-dark"
+                                            >
+                                        <span class="text-sm text-dark opacity-60" id="join-vendor-category-placeholder">Pilih kategori vendor</span>
                                         <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                         </svg>
@@ -105,7 +105,7 @@
                                                     <input type="checkbox"
                                                            name="categories[]"
                                                            value="{{ $cat->slug }}"
-                                                           class="h-4 w-4 rounded border-gray-300 text-[var(--sage-green)] focus:ring-[var(--sage-green)]"
+                                                           class="h-4 w-4 rounded border-gray-300 accent-accent focus:ring-accent"
                                                            data-label="{{ $cat->name }}"
                                                            {{ $checked ? 'checked' : '' }}>
                                                     <span class="text-sm font-semibold text-gray-700">{{ $cat->name }}</span>
@@ -113,10 +113,10 @@
                                             @endforeach
                                         </div>
                                         <div class="flex items-center justify-between gap-3 pt-3 mt-3 border-t border-gray-100">
-                                            <button type="button" id="join-vendor-category-clear" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                                            <button type="button" id="join-vendor-category-clear" class="text-xs font-bold px-3 py-2 rounded-lg bg-gray-50 text-dark hover:bg-gray-100 transition">
                                                 Reset
                                             </button>
-                                            <button type="button" id="join-vendor-category-done" class="text-xs font-bold px-3 py-2 rounded-lg transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                                            <button type="button" id="join-vendor-category-done" class="text-xs font-bold px-3 py-2 rounded-lg bg-accent text-white transition hover:opacity-90">
                                                 Selesai
                                             </button>
                                         </div>
@@ -206,10 +206,10 @@
                         </div>
 
                         <div class="flex items-center justify-end gap-2">
-                            <a href="{{ route('home') }}" class="text-xs font-bold px-4 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition" style="color: var(--dark-gray)">
+                            <a href="{{ route('home') }}" class="text-xs font-bold px-4 py-2 rounded-lg bg-gray-50 text-dark hover:bg-gray-100 transition">
                                 Kembali
                             </a>
-                            <button type="submit" class="text-xs font-bold px-4 py-2 rounded-lg transition hover:opacity-90" style="background: var(--sage-green); color: #fff">
+                            <button type="submit" class="text-xs font-bold px-4 py-2 rounded-lg bg-accent text-white transition hover:opacity-90">
                                 Kirim Pengajuan
                             </button>
                         </div>
@@ -257,8 +257,7 @@
                 s.forEach(function (it) {
                     var chip = document.createElement('button');
                     chip.type = 'button';
-                    chip.className = 'inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border border-gray-200 bg-white hover:bg-gray-50 transition';
-                    chip.style.color = 'var(--dark-gray)';
+                    chip.className = 'inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border border-gray-200 bg-white text-dark hover:bg-gray-50 transition';
                     chip.innerHTML = '<span class="truncate max-w-[160px]">' + String(it.label).replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</span>' +
                         '<span class="text-gray-400">×</span>';
                     chip.addEventListener('click', function () {

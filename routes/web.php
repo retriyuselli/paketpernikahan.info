@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\VendorApplicationController;
 use App\Http\Controllers\VendorApplicationAdminController;
+use App\Http\Controllers\VendorReviewModerationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -136,6 +137,7 @@ Route::get('/store/kategori/{category:slug}', function (\App\Models\CategoryVend
 Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $package) {
     abort_unless($package->is_active, 404);
     $package->load([
+        'categoryVendor' => fn ($q) => $q->select('id', 'slug', 'name', 'sort_order', 'is_active', 'color', 'icon', 'description'),
         'vendor' => fn ($q) => $q->with([
             'galleries' => fn ($g) => $g->orderBy('sort_order'),
             'categoryVendor' => fn ($c) => $c->select('id', 'slug', 'name', 'sort_order', 'is_active', 'color', 'icon', 'description'),
@@ -145,10 +147,29 @@ Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $packag
     $vendor = $package->vendor;
     abort_unless($vendor && $vendor->is_active && $vendor->is_profile_complete, 404);
 
-    $images = collect($vendor->galleries)
-        ->pluck('image_url')
+    $images = collect(is_array($package->image_path ?? null) ? $package->image_path : [$package->image_path])
+        ->filter()
+        ->map(function ($path) {
+            if (!$path) {
+                return null;
+            }
+            if (is_string($path) && str_starts_with($path, 'http')) {
+                return $path;
+            }
+            if (is_string($path)) {
+                return \Illuminate\Support\Facades\Storage::url($path);
+            }
+            return null;
+        })
         ->filter()
         ->values();
+
+    if ($images->isEmpty()) {
+        $images = collect($vendor->galleries)
+            ->pluck('image_url')
+            ->filter()
+            ->values();
+    }
 
     if ($images->isEmpty() && is_array($vendor->cover_image ?? null)) {
         $images = collect($vendor->cover_image)
@@ -179,7 +200,11 @@ Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $packag
         ->orderBy('price_raw')
         ->get();
 
-    return view('store.store-detail', compact('package', 'vendor', 'images', 'otherPackages'));
+    $videos = $package->galleries()
+        ->orderBy('id')
+        ->get();
+
+    return view('store.store-detail', compact('package', 'vendor', 'images', 'otherPackages', 'videos'));
 })->name('store.package.show');
 
 Route::get('/vendor', function () {
@@ -233,7 +258,7 @@ Route::get('/vendor', function () {
         ->withCount([
             'bookings as pengunjung_bookings_count' => fn ($q) => $q->whereHas(
                 'user',
-                fn ($u) => $u->role('pengunjung')
+                fn ($u) => $u->whereHas('roles', fn ($r) => $r->where('name', 'pengunjung')->where('guard_name', 'web'))
             ),
         ])
         ->orderByDesc('pengunjung_bookings_count')
@@ -365,6 +390,7 @@ Route::get('/booking/vendor/{vendor:slug}', function (\App\Models\Vendor $vendor
     $authUser = Auth::check() ? \App\Models\User::find(Auth::id()) : null;
     $isPrivileged = $authUser?->hasRole(['super_admin', 'admin']) ?? false;
     $isVendorOwner = $authUser?->hasRole(['vendor']) && (int) $vendor->owner_user_id === (int) $authUser->id;
+    $bookingOwnerBlocked = $authUser && (int) $vendor->owner_user_id === (int) $authUser->id;
     abort_if(!$vendor->is_active && !($isPrivileged || $isVendorOwner), 404);
 
     $vendorBookingDisabled = !$vendor->is_profile_complete && !$isPrivileged;
@@ -379,14 +405,15 @@ Route::get('/booking/vendor/{vendor:slug}', function (\App\Models\Vendor $vendor
     $selectedPackageId = (int) request()->query('vendor_package_id', 0);
     $selectedPackage = $selectedPackageId ? $packages->firstWhere('id', $selectedPackageId) : null;
 
-    return view('booking.create', compact('vendor', 'packages', 'selectedPackage', 'vendorBookingDisabled', 'vendorBookingBackUrl'));
+    return view('booking.create', compact('vendor', 'packages', 'selectedPackage', 'vendorBookingDisabled', 'vendorBookingBackUrl', 'bookingOwnerBlocked'));
 })->name('booking.vendor');
 
 Route::get('/booking/paket/{package}', function (\App\Models\VendorPackage $package) {
     abort_unless($package->is_active, 404);
 
+    $qty = max(1, min(99, (int) request()->query('qty', 1)));
     $package->load([
-        'vendor' => fn ($q) => $q->select('id', 'owner_user_id', 'name', 'slug', 'type', 'category', 'categories', 'city', 'is_active', 'is_profile_complete'),
+        'vendor' => fn ($q) => $q->select('id', 'owner_user_id', 'name', 'slug', 'category', 'categories', 'city', 'is_active', 'is_profile_complete'),
     ]);
 
     $vendor = $package->vendor;
@@ -395,6 +422,7 @@ Route::get('/booking/paket/{package}', function (\App\Models\VendorPackage $pack
     $authUser = Auth::check() ? \App\Models\User::find(Auth::id()) : null;
     $isPrivileged = $authUser?->hasRole(['super_admin', 'admin']) ?? false;
     $isVendorOwner = $authUser?->hasRole(['vendor']) && (int) $vendor->owner_user_id === (int) $authUser->id;
+    $bookingOwnerBlocked = $authUser && (int) $vendor->owner_user_id === (int) $authUser->id;
 
     $vendorBookingDisabled = !$vendor->is_profile_complete && !$isPrivileged;
     $vendorBookingBackUrl = $isVendorOwner || $isPrivileged ? route('vendor.edit', $vendor) : route('store.package.show', $package);
@@ -407,7 +435,8 @@ Route::get('/booking/paket/{package}', function (\App\Models\VendorPackage $pack
 
     $selectedPackage = $packages->firstWhere('id', $package->id);
 
-    return view('booking.create', compact('vendor', 'packages', 'selectedPackage', 'vendorBookingDisabled', 'vendorBookingBackUrl'));
+    return view('booking.create', compact('vendor', 'packages', 'selectedPackage', 'vendorBookingDisabled', 'vendorBookingBackUrl', 'bookingOwnerBlocked'))
+        ->with('qty', $qty);
 })->name('booking.package');
 
 Route::middleware(['auth'])->group(function () {
@@ -564,6 +593,14 @@ Route::get('/dashboard/ulasan', function () {
 
     return view('dashboard.ulasan', compact('user', 'myReviews', 'allReviews', 'pendingReviewCount', 'reviewFilter', 'reviewCount', 'favoriteCount', 'bookingCount', 'bookingUserCount'));
 })->name('dashboard.ulasan')->middleware(['auth', 'verified']);
+
+Route::post('/dashboard/ulasan/{review}/approve', [VendorReviewModerationController::class, 'approve'])
+    ->name('dashboard.ulasan.approve')
+    ->middleware(['auth', 'verified']);
+
+Route::post('/dashboard/ulasan/{review}/reject', [VendorReviewModerationController::class, 'reject'])
+    ->name('dashboard.ulasan.reject')
+    ->middleware(['auth', 'verified']);
 
 Route::get('/dashboard/booking', function () {
     $user = \App\Models\User::findOrFail(Auth::id());

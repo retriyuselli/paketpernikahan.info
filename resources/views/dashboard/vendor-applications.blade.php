@@ -7,7 +7,7 @@
 <div class="mb-8">
     <div class="flex items-start justify-between gap-3">
         <div>
-            <h1 class="text-2xl font-bold mb-2" style="color: var(--dark-gray)">Pengajuan Vendor</h1>
+            <h1 class="text-2xl font-bold mb-2 text-dark">Pengajuan Vendor</h1>
             <p class="text-sm text-gray-500">Kelola pendaftaran vendor (approve / reject).</p>
         </div>
         <div class="inline-flex rounded-xl overflow-hidden border border-gray-100 bg-white flex-shrink-0">
@@ -55,7 +55,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
             </svg>
         </div>
-        <h3 class="text-base font-bold mb-1" style="color: var(--dark-gray)">Belum ada pengajuan</h3>
+        <h3 class="text-base font-bold mb-1 text-dark">Belum ada pengajuan</h3>
         <p class="text-sm text-gray-500 max-w-sm">Belum ada pendaftaran vendor.</p>
     </div>
 @else
@@ -86,7 +86,7 @@
                         <tr class="hover:bg-gray-50/60 transition">
                             <td class="px-4 py-3 text-xs text-gray-500 align-top">{{ $i + 1 }}</td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $a->user?->name ?? '—' }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $a->user?->name ?? '—' }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $a->user?->email ?? '' }}</div>
                             </td>
                             <td class="px-4 py-3 align-top">
@@ -101,7 +101,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3 align-top">
-                                <div class="font-bold text-xs" style="color: var(--dark-gray)">{{ $a->business_name }}</div>
+                                <div class="font-bold text-xs text-dark">{{ $a->business_name }}</div>
                                 <div class="text-[10px] mt-1 text-gray-400">{{ $a->phone }}</div>
                             </td>
                             @php
@@ -120,7 +120,7 @@
                                     @if($a->status !== 'approved')
                                         <form method="POST" action="{{ route('dashboard.vendor.applications.approve', $a) }}">
                                             @csrf
-                                            <button type="submit" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition text-left w-full" style="color: var(--dark-gray)">
+                                            <button type="submit" class="text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition text-left w-full">
                                                 Approve
                                             </button>
                                         </form>
@@ -129,13 +129,13 @@
                                         <form method="POST" action="{{ route('dashboard.vendor.applications.reject', $a) }}" data-reject-form class="{{ $a->status !== 'approved' ? 'border-t border-gray-100' : '' }}">
                                             @csrf
                                             <input type="hidden" name="admin_note" value="">
-                                            <button type="submit" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition text-left w-full" style="color: var(--dark-gray)">
+                                            <button type="submit" class="text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition text-left w-full">
                                                 Reject
                                             </button>
                                         </form>
                                     @endif
                                     @if($a->vendor)
-                                        <a href="{{ route('vendor.detail', $a->vendor->slug) }}" class="text-xs font-bold px-3 py-2 hover:bg-gray-100 transition border-t border-gray-100" style="color: var(--dark-gray)">
+                                        <a href="{{ route('vendor.detail', $a->vendor->slug) }}" class="text-xs font-bold px-3 py-2 text-dark hover:bg-gray-100 transition border-t border-gray-100">
                                             Lihat Vendor
                                         </a>
                                     @endif

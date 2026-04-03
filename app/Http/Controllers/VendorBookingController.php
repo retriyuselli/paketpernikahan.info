@@ -11,6 +11,18 @@ class VendorBookingController extends Controller
 {
     public function store(Request $request, Vendor $vendor)
     {
+        if ((int) $vendor->owner_user_id === (int) $request->user()->id) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Anda tidak dapat melakukan booking pada vendor milik sendiri.',
+                ], 403);
+            }
+
+            return back()->withErrors([
+                'booking' => 'Anda tidak dapat melakukan booking pada vendor milik sendiri.',
+            ], 'booking');
+        }
+
         $hasPackages = $vendor->packages()->exists();
 
         $data = $request->validateWithBag('booking', [
@@ -19,6 +31,7 @@ class VendorBookingController extends Controller
                 'integer',
                 Rule::exists('vendor_packages', 'id')->where('vendor_id', $vendor->id),
             ],
+            'qty'        => ['nullable', 'integer', 'min:1', 'max:99'],
             'event_date' => ['required', 'date', 'after_or_equal:today'],
             'phone'      => ['required', 'string', 'max:30', 'regex:/^[0-9+()\s.-]{8,30}$/'],
             'notes'      => ['nullable', 'string', 'max:2000'],
@@ -31,13 +44,32 @@ class VendorBookingController extends Controller
                 ->withInput();
         }
 
+        $qty = max(1, min(99, (int) ($data['qty'] ?? 1)));
+        $package = isset($data['vendor_package_id'])
+            ? $vendor->packages()
+                ->select(['id', 'price_raw', 'discount', 'dp_paket'])
+                ->whereKey((int) $data['vendor_package_id'])
+                ->first()
+            : null;
+
+        $agreedTotal = null;
+        $dpRequiredAmount = null;
+        if ($package) {
+            $priceRaw = (int) ($package->price_raw ?? 0);
+            $discount = (int) ($package->discount ?? 0);
+            $unitFinal = max($priceRaw - $discount, 0);
+            $agreedTotal = $unitFinal * $qty;
+
+            $dp = (int) ($package->dp_paket ?? 0);
+            $dpRequiredAmount = $dp > 0 ? ($dp * $qty) : null;
+        }
+
         $booking = VendorBooking::create([
             'vendor_id'         => $vendor->id,
             'user_id'           => $request->user()->id,
             'vendor_package_id' => $data['vendor_package_id'] ?? null,
-            'agreed_total'      => isset($data['vendor_package_id'])
-                ? (int) ($vendor->packages()->whereKey((int) $data['vendor_package_id'])->value('price_raw') ?? 0)
-                : null,
+            'agreed_total'      => $agreedTotal,
+            'dp_required_amount'=> $dpRequiredAmount,
             'event_date'        => $data['event_date'],
             'phone'             => $normalizedPhone,
             'notes'             => $data['notes'] ?? null,
