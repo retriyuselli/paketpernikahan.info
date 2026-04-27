@@ -11,7 +11,77 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     $heroCircles = \App\Models\HeroCircle::active()->get();
-    return view('front.home', compact('heroCircles'));
+
+    $homeCategories = \App\Models\CategoryVendor::where('is_active', true)
+        ->orderBy('sort_order')
+        ->get();
+
+    $homePackages = \App\Models\VendorPackage::query()
+        ->where('is_active', true)
+        ->whereHas('vendor', fn ($q) => $q->where('is_active', true)->where('is_profile_complete', true))
+        ->with([
+            'vendor' => fn ($q) => $q->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'cover_image'),
+        ])
+        ->orderBy('sort_order')
+        ->orderBy('price_raw')
+        ->get();
+
+    $activeCategorySlugs = $homeCategories->pluck('slug')->filter()->all();
+    $homePackagesByCategory = collect();
+    foreach ($homePackages as $p) {
+        if (!$p->vendor) continue;
+        $vendorCats = is_array($p->vendor->categories) && count($p->vendor->categories)
+            ? $p->vendor->categories
+            : ($p->vendor->category ? [$p->vendor->category] : []);
+        foreach ($vendorCats as $slug) {
+            if (!$slug || !in_array($slug, $activeCategorySlugs, true)) continue;
+            $homePackagesByCategory[$slug] = ($homePackagesByCategory[$slug] ?? collect())->push($p);
+        }
+    }
+
+    $homePackagesByCity = collect();
+    foreach ($homePackages as $p) {
+        if (!$p->vendor || !$p->vendor->city) continue;
+        $city = $p->vendor->city;
+        $homePackagesByCity[$city] = ($homePackagesByCity[$city] ?? collect())->push($p);
+    }
+
+    $homePromoPackages = \App\Models\VendorPackage::query()
+        ->where('is_active', true)
+        ->where('discount', '>', 0)
+        ->whereHas('vendor', fn ($q) => $q->where('is_active', true)->where('is_profile_complete', true))
+        ->with([
+            'vendor' => fn ($q) => $q->select('id', 'name', 'slug', 'city', 'cover_image', 'logo_vendor'),
+            'categoryVendor' => fn ($q) => $q->select('id', 'name'),
+        ])
+        ->orderByDesc('discount')
+        ->limit(12)
+        ->get();
+
+    $venueReviewVideos = \App\Models\VenueReviewVideo::where('is_active', true)
+        ->orderBy('sort_order')
+        ->get();
+
+    $realWeddings = \App\Models\RealWedding::where('is_active', true)
+        ->orderBy('sort_order')
+        ->limit(10)
+        ->get();
+
+    $homeAd = \App\Models\HomeAd::where('is_active', true)
+        ->orderBy('sort_order')
+        ->first();
+
+    $homeFeaturedBlogs = \App\Models\Blog::published()
+        ->orderBy('published_at', 'desc')
+        ->limit(2)
+        ->get();
+
+    $homePopularBlogs = \App\Models\Blog::published()
+        ->orderBy('views_count', 'desc')
+        ->limit(3)
+        ->get();
+
+    return view('front.home', compact('heroCircles', 'homeCategories', 'homePackagesByCategory', 'homePackagesByCity', 'homePromoPackages', 'venueReviewVideos', 'realWeddings', 'homeAd', 'homeFeaturedBlogs', 'homePopularBlogs'));
 })->name('home');
 
 Route::get('/join-vendor/signup', function () {
@@ -37,19 +107,37 @@ Route::post('/join-vendor', [VendorApplicationController::class, 'store'])
     ->middleware(['auth', 'verified']);
 
 Route::get('/store', function () {
+    $search = trim(request('q', ''));
+    $kategori = trim(request('kategori', ''));
+
     $categories = \App\Models\CategoryVendor::where('is_active', true)
         ->orderBy('sort_order')
         ->get();
 
-    $packages = \App\Models\VendorPackage::query()
+    $query = \App\Models\VendorPackage::query()
         ->where('is_active', true)
         ->whereHas('vendor', fn ($q) => $q->where('is_active', true)->where('is_profile_complete', true))
         ->with([
             'vendor' => fn ($q) => $q->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'price_start', 'discount', 'cover_image'),
         ])
         ->orderBy('sort_order')
-        ->orderBy('price_raw')
-        ->get();
+        ->orderBy('price_raw');
+
+    if ($search !== '') {
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhereHas('vendor', fn ($vq) => $vq->where('name', 'like', "%{$search}%")
+                  ->orWhere('city', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%"));
+        });
+    }
+
+    if ($kategori !== '') {
+        $query->whereHas('vendor', fn ($vq) => $vq->where('category', $kategori)
+            ->orWhereJsonContains('categories', $kategori));
+    }
+
+    $packages = $query->get();
 
     $activeCategorySlugs = $categories->pluck('slug')->filter()->all();
     $packagesByCategory = collect();
@@ -83,7 +171,7 @@ Route::get('/store', function () {
         return true;
     });
 
-    return view('front.store', compact('categories', 'packagesByCategory', 'uncategorizedPackages'));
+    return view('front.store', compact('categories', 'packagesByCategory', 'uncategorizedPackages', 'search', 'kategori'));
 })->name('store');
 
 Route::get('/store/kategori/{category:slug}', function (\App\Models\CategoryVendor $category) {
@@ -133,6 +221,193 @@ Route::get('/store/kategori/{category:slug}', function (\App\Models\CategoryVend
 
     return view('store.store-category', compact('category', 'packages', 'sort', 'q'));
 })->name('store.category');
+
+Route::get('/store/kota/{city}', function (string $city) {
+    $sort = request()->query('sort', 'rekomendasi');
+    $allowedSort = ['rekomendasi', 'termurah', 'termahal', 'terbaru'];
+    if (!in_array($sort, $allowedSort, true)) {
+        $sort = 'rekomendasi';
+    }
+
+    $q = trim((string) request()->query('q', ''));
+
+    $packagesQuery = \App\Models\VendorPackage::query()
+        ->where('is_active', true)
+        ->whereHas('vendor', fn ($vq) => $vq
+            ->where('is_active', true)
+            ->where('is_profile_complete', true)
+            ->where('city', $city)
+        )
+        ->with([
+            'vendor' => fn ($vq) => $vq->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'cover_image'),
+            'categoryVendor',
+        ]);
+
+    if ($q !== '') {
+        $packagesQuery->where(function ($qq) use ($q) {
+            $qq->where('name', 'like', '%' . $q . '%')
+                ->orWhereHas('vendor', function ($vq) use ($q) {
+                    $vq->where('name', 'like', '%' . $q . '%')
+                        ->orWhere('location', 'like', '%' . $q . '%');
+                });
+        });
+    }
+
+    $packagesQuery = match ($sort) {
+        'termurah' => $packagesQuery->orderBy('price_raw')->orderBy('sort_order'),
+        'termahal' => $packagesQuery->orderByDesc('price_raw')->orderBy('sort_order'),
+        'terbaru' => $packagesQuery->orderByDesc('created_at')->orderBy('sort_order'),
+        default => $packagesQuery->orderBy('sort_order')->orderBy('price_raw'),
+    };
+
+    $packages = $packagesQuery->paginate(24)->withQueryString();
+
+    return view('store.store-city', compact('city', 'packages', 'sort', 'q'));
+})->name('store.city');
+
+Route::get('/store/promo', function () {
+    $sort = request()->query('sort', 'diskon');
+    $allowedSort = ['diskon', 'termurah', 'termahal', 'terbaru'];
+    if (!in_array($sort, $allowedSort, true)) {
+        $sort = 'diskon';
+    }
+
+    $q = trim((string) request()->query('q', ''));
+
+    $packagesQuery = \App\Models\VendorPackage::query()
+        ->where('is_active', true)
+        ->where('discount', '>', 0)
+        ->whereHas('vendor', fn ($vq) => $vq
+            ->where('is_active', true)
+            ->where('is_profile_complete', true)
+        )
+        ->with([
+            'vendor' => fn ($vq) => $vq->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'cover_image', 'logo_vendor'),
+            'categoryVendor',
+        ]);
+
+    if ($q !== '') {
+        $packagesQuery->where(function ($qq) use ($q) {
+            $qq->where('name', 'like', '%' . $q . '%')
+                ->orWhereHas('vendor', function ($vq) use ($q) {
+                    $vq->where('name', 'like', '%' . $q . '%')
+                        ->orWhere('city', 'like', '%' . $q . '%');
+                });
+        });
+    }
+
+    $packagesQuery = match ($sort) {
+        'termurah' => $packagesQuery->orderBy('price_raw')->orderBy('sort_order'),
+        'termahal' => $packagesQuery->orderByDesc('price_raw')->orderBy('sort_order'),
+        'terbaru' => $packagesQuery->orderByDesc('created_at')->orderBy('sort_order'),
+        default => $packagesQuery->orderByDesc('discount')->orderBy('sort_order'),
+    };
+
+    $packages = $packagesQuery->paginate(24)->withQueryString();
+
+    return view('store.store-promo', compact('packages', 'sort', 'q'));
+})->name('store.promo');
+
+Route::get('/blog', function () {
+    $q        = request('q');
+    $category = request('category');
+    $sort     = request('sort', 'terbaru');
+
+    $query = \App\Models\Blog::published();
+
+    if ($q) {
+        $query->where(function ($sub) use ($q) {
+            $sub->where('title', 'like', "%{$q}%")
+                ->orWhere('excerpt', 'like', "%{$q}%");
+        });
+    }
+
+    if ($category) {
+        $query->where('category', $category);
+    }
+
+    $query = match ($sort) {
+        'populer' => $query->orderByDesc('views_count'),
+        default   => $query->orderByDesc('published_at'),
+    };
+
+    $blogs = $query->paginate(12)->withQueryString();
+
+    $categories = \App\Models\Blog::published()
+        ->select('category')
+        ->distinct()
+        ->whereNotNull('category')
+        ->pluck('category');
+
+    $popularBlogs = \App\Models\Blog::published()
+        ->orderByDesc('views_count')
+        ->limit(5)
+        ->get();
+
+    return view('blog.index', compact('blogs', 'categories', 'popularBlogs', 'q', 'sort', 'category'));
+})->name('blog.index');
+
+Route::get('/blog/{blog:slug}', function (\App\Models\Blog $blog) {
+    abort_unless($blog->is_published, 404);
+
+    $blog->increment('views_count');
+
+    $related = \App\Models\Blog::published()
+        ->where('id', '!=', $blog->id)
+        ->when($blog->category, fn ($q) => $q->where('category', $blog->category))
+        ->orderByDesc('published_at')
+        ->limit(3)
+        ->get();
+
+    $popularBlogs = \App\Models\Blog::published()
+        ->where('id', '!=', $blog->id)
+        ->orderByDesc('views_count')
+        ->limit(5)
+        ->get();
+
+    return view('blog.show', compact('blog', 'related', 'popularBlogs'));
+})->name('blog.show');
+
+Route::get('/real-wedding', function () {
+    $q    = request('q');
+    $sort = request('sort', 'terbaru');
+
+    $query = \App\Models\RealWedding::where('is_active', true);
+
+    if ($q) {
+        $query->where(function ($sub) use ($q) {
+            $sub->where('title', 'like', "%{$q}%")
+                ->orWhere('couple_names', 'like', "%{$q}%")
+                ->orWhere('venue_name', 'like', "%{$q}%");
+        });
+    }
+
+    $query = match ($sort) {
+        'terlama'   => $query->orderBy('wedding_date'),
+        'az'        => $query->orderBy('couple_names'),
+        default     => $query->orderByDesc('wedding_date'),
+    };
+
+    $realWeddings = $query->paginate(20)->withQueryString();
+
+    return view('real-wedding.index', compact('realWeddings', 'sort', 'q'));
+})->name('real-wedding.index');
+
+Route::get('/real-wedding/{realWedding:slug}', function (\App\Models\RealWedding $realWedding) {
+    abort_unless($realWedding->is_active, 404);
+
+    $realWedding->increment('views_count');
+
+    $realWedding->load(['vendors', 'vendorPackages.vendor']);
+
+    $related = \App\Models\RealWedding::where('is_active', true)
+        ->where('id', '!=', $realWedding->id)
+        ->orderByDesc('wedding_date')
+        ->limit(5)
+        ->get();
+
+    return view('real-wedding.show', compact('realWedding', 'related'));
+})->name('real-wedding.show');
 
 Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $package) {
     abort_unless($package->is_active, 404);

@@ -13,7 +13,7 @@
         <section class="py-10 bg-cream">
             <x-ui.container>
 
-                <h2 class="text-xl font-bold mb-5 text-dark">Highlights</h2>
+                <h2 class="text-xl font-bold mb-5 text-dark">Highlights (coming soon)</h2>
 
                 <!-- Slider Container -->
                 <div class="relative">
@@ -92,24 +92,6 @@
             </x-ui.container>
         </section>
 
-    <!-- Advertising Banner -->
-    <div class="py-4 bg-cream">
-        <x-ui.container>
-            <a href="#" class="block relative rounded-2xl overflow-hidden group w-full max-w-[728px] mx-auto aspect-[728/90]">
-                <img src="https://picsum.photos/seed/adsbanner/728/90"
-                     alt="Banner Iklan"
-                     class="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90">
-                <div class="absolute inset-0 flex flex-col justify-between p-4 sm:flex-row sm:items-center sm:justify-between sm:px-8 bg-sponsor-gradient">
-                    <div>
-                        <p class="text-xs font-bold uppercase tracking-widest mb-0.5 text-dark">Sponsor</p>
-                        <p class="text-sm sm:text-base font-bold leading-snug text-dark">Nama Brand Sponsor — Tagline Promosi di Sini</p>
-                    </div>
-                    <span class="mt-3 sm:mt-0 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full flex-shrink-0 w-fit bg-dark text-cream">Pelajari →</span>
-                </div>
-                <span class="absolute top-2 right-2 text-[9px] font-semibold uppercase tracking-widest opacity-60 text-dark">Iklan</span>
-            </a>
-        </x-ui.container>
-    </div>
 
         <!-- Partner/Vendor Marquee -->
         <section class="py-8 overflow-hidden bg-accent">
@@ -207,127 +189,99 @@
 
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-dark">Wedding Package</h2>
-                    <a href="#" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
+                    <!-- <a href="{{ route('store') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a> -->
                 </div>
 
-                <div class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
+                @php $catIndex = 0; @endphp
+                @foreach($homeCategories as $category)
+                    @php $group = $homePackagesByCategory->get($category->slug, collect()); @endphp
+                    @if($group->isNotEmpty())
+                        @php $catIndex++; @endphp
+                        <div class="mb-10 pkg-category-block" @if($catIndex > 3) style="display:none" @endif>
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <p class="text-base font-bold text-dark">{{ $category->name }}</p>
+                                </div>
+                                <a href="{{ route('store.category', $category) }}" class="text-xs font-medium hover:underline text-accent">Lihat Semua</a>
+                            </div>
 
-                    <!-- Card 1 - No badge -->
-                    <div class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=280&fit=crop" alt="Gold Package" class="w-full h-48 object-cover">
-                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Palembang, ID
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">Gold Package</p>
-                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">Makna Wedding</span> — Paket Gedung</p>
-                            <p class="font-bold text-base mb-3 text-accent">IDR 15.000.000</p>
-                            <div class="flex flex-nowrap gap-1.5 overflow-hidden">
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Prewedding</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Wedding</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">+1</span>
+                            <div class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
+                                @foreach($group->take(8) as $pkg)
+                                    @php
+                                        $vendor = $pkg->vendor;
+                                        $price = (int) ($pkg->price_raw ?? 0);
+                                        $discount = (int) ($pkg->discount ?? 0);
+                                        $final = max($price - $discount, 0);
+                                        $cover = $pkg->image_url;
+                                        if (!$cover && $vendor) {
+                                            $cover = $vendor->cover_image_url ?? null;
+                                        }
+                                        $cover = $cover ?: 'data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="280" viewBox="0 0 400 280"><rect width="400" height="280" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial" font-size="16">No Image</text></svg>');
+                                        $items = $pkg->items;
+                                        $maxTags = 2;
+                                        $shownTags = array_slice($items, 0, $maxTags);
+                                        $extraTags = max(0, count($items) - $maxTags);
+                                    @endphp
+                                    <a href="{{ route('store.package.show', $pkg) }}"
+                                       class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
+                                        <div class="relative">
+                                            <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-48 object-cover">
+                                            @if($discount > 0)
+                                                <span class="absolute top-2 left-2 bg-accent text-white text-xs font-bold px-2.5 py-1 rounded-full leading-tight text-center">
+                                                    Promo
+                                                </span>
+                                            @endif
+                                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                                                {{ $vendor->city ?? 'Indonesia' }}
+                                            </span>
+                                        </div>
+                                        <div class="p-4">
+                                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">{{ $pkg->name }}</p>
+                                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">{{ $vendor->name }}</span> — {{ $category->name }}</p>
+                                            @if($discount > 0)
+                                                <p class="text-xs text-gray-400 line-through mb-0.5">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                                            @endif
+                                            <p class="font-bold text-base text-accent">IDR {{ number_format($final ?: $price, 0, ',', '.') }}</p>
+                                        </div>
+                                    </a>
+                                @endforeach
                             </div>
                         </div>
-                    </div>
+                    @endif
+                @endforeach
 
-                    <!-- Card 2 - Hemat badge -->
-                    <div class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400&h=280&fit=crop" alt="Hotel Package 500 pax" class="w-full h-48 object-cover">
-                            <span class="absolute top-2 left-2 text-white text-xs font-bold px-2.5 py-1 rounded-full leading-tight text-center bg-accent">
-                                Hemat<br>630rb
-                            </span>
-                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Palembang, ID
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">Aston Grand Ballroom — 500 Pax</p>
-                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">Makna Wedding</span> — Paket Hotel</p>
-                            <p class="text-xs text-gray-400 line-through mb-0.5">IDR 214.480.000</p>
-                            <p class="font-bold text-base mb-3 text-accent">IDR 213.850.000</p>
-                            <div class="flex flex-nowrap gap-1.5 overflow-hidden">
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">500 pax</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Hotel</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">+1</span>
-                            </div>
-                        </div>
+                @if($catIndex > 3)
+                    <div class="text-center mt-2" id="pkg-more-btn-wrap">
+                        <button type="button" id="pkg-show-more"
+                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-gray-300 text-sm font-medium text-gray-700 hover:border-accent hover:text-accent transition">
+                            Lihat Kategori Lainnya
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
                     </div>
+                    <script>
+                        (function () {
+                            var hiddenBlocks = Array.from(document.querySelectorAll('.pkg-category-block')).filter(function (el) {
+                                return el.style.display === 'none';
+                            });
+                            var btn = document.getElementById('pkg-show-more');
+                            var wrap = document.getElementById('pkg-more-btn-wrap');
+                            btn.addEventListener('click', function () {
+                                var shown = 0;
+                                while (hiddenBlocks.length > 0 && shown < 3) {
+                                    hiddenBlocks.shift().style.display = '';
+                                    shown++;
+                                }
+                                if (hiddenBlocks.length === 0) {
+                                    wrap.style.display = 'none';
+                                }
+                            });
+                        })();
+                    </script>
+                @endif
 
-                    <!-- Card 3 - No badge -->
-                    <div class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=280&fit=crop" alt="Catering Package" class="w-full h-48 object-cover">
-                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Palembang, ID
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">Catering Package — 1000 Pax</p>
-                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">Makna Wedding</span> — Catering & Kue</p>
-                            <p class="font-bold text-base mb-3 text-accent">IDR 85.000.000</p>
-                            <div class="flex flex-nowrap gap-1.5 overflow-hidden">
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">1000 pax</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Catering</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 4 - Hemat + Harga Terbaik badge -->
-                    <div class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=400&h=280&fit=crop" alt="Beston Hotel 1000 pax" class="w-full h-48 object-cover">
-                            <span class="absolute top-2 left-2 text-white text-xs font-bold px-2.5 py-1 rounded-full leading-tight text-center bg-accent">
-                                Hemat<br>6jt
-                            </span>
-                            <span class="absolute top-2 right-2 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 bg-accent-pink text-dark">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                Harga Terbaik
-                            </span>
-                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Palembang, ID
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">Beston Hotel — 1000 Pax</p>
-                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">Makna Wedding</span> — Aula & Function Hall</p>
-                            <p class="text-xs text-gray-400 line-through mb-0.5">IDR 299.000.000</p>
-                            <p class="font-bold text-base mb-3 text-accent">IDR 293.000.000</p>
-                            <div class="flex flex-nowrap gap-1.5 overflow-hidden">
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">1000 pax</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">PROMO</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">+1</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 5 - No badge -->
-                    <div class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400&h=280&fit=crop" alt="Prewedding Package" class="w-full h-48 object-cover">
-                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Palembang, ID
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">Prewedding Outdoor Package</p>
-                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">Makna Wedding</span> — Foto & Video Pernikahan</p>
-                            <p class="font-bold text-base mb-3 text-accent">IDR 35.000.000</p>
-                            <div class="flex flex-nowrap gap-1.5 overflow-hidden">
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Photo</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Video</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
             </x-ui.container>
         </section>
 
@@ -336,124 +290,95 @@
             <x-ui.container>
 
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-dark">Venue di Palembang</h2>
-                    <a href="#" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
+                    <h2 class="text-2xl font-bold text-dark">Paket Pernikahan per Kota</h2>
+                    <!-- <a href="{{ route('store') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a> -->
                 </div>
 
-                <div class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
-
-                    <!-- Venue Card 1 -->
-                    <div class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=400&h=280&fit=crop" alt="Aston Hotel" class="w-full h-48 object-cover">
-                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Palembang, ID
-                            </span>
+                @php $cityIndex = 0; @endphp
+                @foreach($homePackagesByCity as $city => $cityPackages)
+                    @php $cityIndex++; @endphp
+                    <div class="mb-10 venue-city-block" @if($cityIndex > 3) style="display:none" @endif>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-base font-bold text-dark">{{ $city }}</p>
+                            <a href="{{ route('store.city', $city) }}" class="text-xs text-accent font-medium hover:underline">Lihat semua</a>
                         </div>
-                        <div class="p-4">
-                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">Aston Grand Ballroom</p>
-                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">Makna Wedding</span> — Hotel</p>
-                            <p class="font-bold text-base mb-3 text-accent">IDR 213.850.000</p>
-                            <div class="flex flex-nowrap gap-1.5 overflow-hidden">
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">500 pax</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Hotel</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">+1</span>
-                            </div>
+
+                        <div class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
+                            @foreach($cityPackages->take(8) as $pkg)
+                                @php
+                                    $vendor = $pkg->vendor;
+                                    $price = (int) ($pkg->price_raw ?? 0);
+                                    $discount = (int) ($pkg->discount ?? 0);
+                                    $final = max($price - $discount, 0);
+                                    $cover = $pkg->image_url;
+                                    if (!$cover && $vendor) {
+                                        $cover = $vendor->cover_image_url ?? null;
+                                    }
+                                    $cover = $cover ?: 'data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="280" viewBox="0 0 400 280"><rect width="400" height="280" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial" font-size="16">No Image</text></svg>');
+                                    $items = $pkg->items;
+                                    $maxTags = 2;
+                                    $shownTags = array_slice($items, 0, $maxTags);
+                                    $extraTags = max(0, count($items) - $maxTags);
+                                @endphp
+                                <a href="{{ route('store.package.show', $pkg) }}"
+                                   class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
+                                    <div class="relative">
+                                        <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-48 object-cover">
+                                        @if($discount > 0)
+                                            <span class="absolute top-2 left-2 bg-accent text-white text-xs font-bold px-2.5 py-1 rounded-full leading-tight text-center">
+                                                Promo
+                                            </span>
+                                        @endif
+                                        <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                                            {{ $city }}
+                                        </span>
+                                    </div>
+                                    <div class="p-4">
+                                        <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">{{ $pkg->name }}</p>
+                                        <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">{{ $vendor->name }}</span></p>
+                                        @if($discount > 0)
+                                            <p class="text-xs text-gray-400 line-through mb-0.5">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                                        @endif
+                                        <p class="font-bold text-base text-accent">IDR {{ number_format($final ?: $price, 0, ',', '.') }}</p>
+                                    </div>
+                                </a>
+                            @endforeach
                         </div>
                     </div>
+                @endforeach
 
-                    <!-- Venue Card 2 -->
-                    <div class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=400&h=280&fit=crop" alt="Beston Hotel" class="w-full h-48 object-cover">
-                            <span class="absolute top-2 right-2 text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 bg-accent-pink text-dark">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                Harga Terbaik
-                            </span>
-                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Palembang, ID
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">Beston Hotel</p>
-                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">Makna Wedding</span> — Aula & Function Hall</p>
-                            <p class="font-bold text-base mb-3 text-accent">IDR 293.000.000</p>
-                            <div class="flex flex-nowrap gap-1.5 overflow-hidden">
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">1000 pax</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Hotel</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">+1</span>
-                            </div>
-                        </div>
+                @if($cityIndex > 3)
+                    <div class="text-center mt-2" id="venue-more-btn-wrap">
+                        <button type="button" id="venue-show-more"
+                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-gray-300 text-sm font-medium text-gray-700 hover:border-accent hover:text-accent transition">
+                            Lihat Kota Lainnya
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
                     </div>
+                    <script>
+                        (function () {
+                            var hiddenBlocks = Array.from(document.querySelectorAll('.venue-city-block')).filter(function (el) {
+                                return el.style.display === 'none';
+                            });
+                            var btn = document.getElementById('venue-show-more');
+                            var wrap = document.getElementById('venue-more-btn-wrap');
+                            btn.addEventListener('click', function () {
+                                var shown = 0;
+                                while (hiddenBlocks.length > 0 && shown < 3) {
+                                    hiddenBlocks.shift().style.display = '';
+                                    shown++;
+                                }
+                                if (hiddenBlocks.length === 0) {
+                                    wrap.style.display = 'none';
+                                }
+                            });
+                        })();
+                    </script>
+                @endif
 
-                    <!-- Venue Card 3 -->
-                    <div class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=400&h=280&fit=crop" alt="Gedung Serbaguna" class="w-full h-48 object-cover">
-                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Palembang, ID
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">Gedung Serbaguna Jakabaring</p>
-                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">Makna Wedding</span> — Gedung</p>
-                            <p class="font-bold text-base mb-3 text-accent">IDR 45.000.000</p>
-                            <div class="flex flex-nowrap gap-1.5 overflow-hidden">
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">800 pax</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Gedung</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Venue Card 4 -->
-                    <div class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&h=280&fit=crop" alt="The Zuri Hotel" class="w-full h-48 object-cover">
-                            <span class="absolute top-2 left-2 text-white text-xs font-bold px-2.5 py-1 rounded-full leading-tight text-center bg-accent">
-                                Hemat<br>2jt
-                            </span>
-                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Palembang, ID
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">The Zuri Hotel Palembang</p>
-                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">Makna Wedding</span> — Hotel</p>
-                            <p class="text-xs text-gray-400 line-through mb-0.5">IDR 125.000.000</p>
-                            <p class="font-bold text-base mb-3 text-accent">IDR 123.000.000</p>
-                            <div class="flex flex-nowrap gap-1.5 overflow-hidden">
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">300 pax</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Hotel</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">+1</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Venue Card 5 -->
-                    <div class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                        <div class="relative">
-                            <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?w=400&h=280&fit=crop" alt="Swiss-Belhotel" class="w-full h-48 object-cover">
-                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                Palembang, ID
-                            </span>
-                        </div>
-                        <div class="p-4">
-                            <p class="font-bold text-gray-900 text-base leading-snug mb-0.5">Swiss-Belhotel Palembang</p>
-                            <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">Makna Wedding</span> — Hotel</p>
-                            <p class="font-bold text-base mb-3 text-accent">IDR 180.000.000</p>
-                            <div class="flex flex-nowrap gap-1.5 overflow-hidden">
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">400 pax</span>
-                                <span class="text-[10px] border border-gray-300 rounded-full px-3 py-1 text-gray-600">Hotel</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
             </x-ui.container>
         </section>
 
@@ -462,99 +387,106 @@
             <x-ui.container>
 
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-dark">Venue Review Videos</h2>
+                    <h2 class="text-2xl font-bold text-dark">Review Videos</h2>
                     <a href="#" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
                 </div>
 
                 <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
 
-                    <!-- Video Card 1 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
-                        <img src="https://picsum.photos/seed/ballroom1/300/533" alt="Aston Ballroom Review" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <!-- Play button -->
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
+                    @forelse($venueReviewVideos as $video)
+                        @php
+                            $thumb = $video->thumbnail_url ?: 'https://picsum.photos/seed/vrvideo-' . $video->id . '/300/533';
+                            $hasVideo = !empty($video->video_url);
+                        @endphp
+                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16"
+                             @if($hasVideo) data-video-popup="{{ $video->video_url }}" @endif>
+                            <img src="{{ $thumb }}" alt="{{ $video->title }}" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                            <div class="absolute inset-0 flex items-center justify-center @if(!$hasVideo) opacity-0 @endif group-hover:opacity-100 transition-opacity duration-200">
+                                <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
+                            </div>
+                            <div class="absolute bottom-4 left-4 right-4 text-white">
+                                <p class="text-[10px] uppercase tracking-widest opacity-80 mb-1">{{ $video->subtitle }}</p>
+                                <p class="font-bold text-sm leading-tight">{{ $video->title }}</p>
+                                @if($video->location)
+                                    <p class="text-[10px] opacity-70 mt-1">{{ $video->location }}</p>
+                                @endif
+                            </div>
                         </div>
-                        <!-- Text overlay -->
-                        <div class="absolute bottom-4 left-4 right-4 text-white">
-                            <p class="text-[10px] uppercase tracking-widest opacity-80 mb-1">Introducing</p>
-                            <p class="font-bold text-sm leading-tight">ASTON GRAND BALLROOM</p>
-                            <p class="text-[10px] opacity-70 mt-1">at Aston Palembang</p>
-                        </div>
-                    </div>
-
-                    <!-- Video Card 2 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
-                        <img src="https://picsum.photos/seed/ballroom2/300/533" alt="Beston Hotel Review" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
-                        </div>
-                        <div class="absolute bottom-4 left-4 right-4 text-white">
-                            <p class="text-[10px] uppercase tracking-widest opacity-80 mb-1">Introducing</p>
-                            <p class="font-bold text-sm leading-tight">BESTON BALLROOM</p>
-                            <p class="text-[10px] opacity-70 mt-1">at Beston Hotel Palembang</p>
-                        </div>
-                    </div>
-
-                    <!-- Video Card 3 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
-                        <img src="https://picsum.photos/seed/ballroom3/300/533" alt="Swiss-Belhotel Review" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
-                        </div>
-                        <div class="absolute bottom-4 left-4 right-4 text-white">
-                            <p class="text-[10px] uppercase tracking-widest opacity-80 mb-1">Introducing</p>
-                            <p class="font-bold text-sm leading-tight">SWISS-BELHOTEL BALLROOM</p>
-                            <p class="text-[10px] opacity-70 mt-1">at Swiss-Belhotel Palembang</p>
-                        </div>
-                    </div>
-
-                    <!-- Video Card 4 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
-                        <img src="https://picsum.photos/seed/ballroom4/300/533" alt="The Zuri Review" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
-                        </div>
-                        <div class="absolute bottom-4 left-4 right-4 text-white">
-                            <p class="text-[10px] uppercase tracking-widest opacity-80 mb-1">Introducing</p>
-                            <p class="font-bold text-sm leading-tight">THE ZURI GRAND HALL</p>
-                            <p class="text-[10px] opacity-70 mt-1">at The Zuri Hotel Palembang</p>
-                        </div>
-                    </div>
-
-                    <!-- Video Card 5 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
-                        <img src="https://picsum.photos/seed/ballroom5/300/533" alt="Jakabaring Convention Review" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
-                        </div>
-                        <div class="absolute bottom-4 left-4 right-4 text-white">
-                            <p class="text-[10px] uppercase tracking-widest opacity-80 mb-1">Introducing</p>
-                            <p class="font-bold text-sm leading-tight">JAKABARING CONVENTION CENTER</p>
-                            <p class="text-[10px] opacity-70 mt-1">at Jakabaring Palembang</p>
-                        </div>
-                    </div>
-
-                    <!-- Video Card 6 -->
-                    <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16">
-                        <img src="https://picsum.photos/seed/ballroom6/300/533" alt="Garden Venue Review" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
-                        </div>
-                        <div class="absolute bottom-4 left-4 right-4 text-white">
-                            <p class="text-[10px] uppercase tracking-widest opacity-80 mb-1">Introducing</p>
-                            <p class="font-bold text-sm leading-tight">GARDEN BALLROOM</p>
-                            <p class="text-[10px] opacity-70 mt-1">at Novotel Palembang</p>
-                        </div>
-                    </div>
+                    @empty
+                        <p class="text-sm text-gray-400">Belum ada video venue.</p>
+                    @endforelse
 
                 </div>
+
+                <!-- Video Popup Modal -->
+                <div id="venue-video-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-black/80">
+                    <div class="relative w-full max-w-3xl">
+                        <button type="button" id="venue-video-close"
+                                class="absolute -top-10 right-0 text-white hover:text-gray-300 transition flex items-center gap-1 text-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Tutup
+                        </button>
+                        <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden">
+                            <iframe id="venue-video-iframe"
+                                    src=""
+                                    class="w-full h-full"
+                                    frameborder="0"
+                                    allow="autoplay; encrypted-media; picture-in-picture"
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                (function () {
+                    function toEmbedUrl(url) {
+                        if (!url) return '';
+                        // youtu.be/ID
+                        var m = url.match(/youtu\.be\/([^?&]+)/);
+                        if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1';
+                        // youtube.com/watch?v=ID
+                        m = url.match(/[?&]v=([^&]+)/);
+                        if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1';
+                        // youtube.com/embed/...
+                        if (url.includes('/embed/')) return url + (url.includes('?') ? '&' : '?') + 'autoplay=1';
+                        return url;
+                    }
+
+                    var modal = document.getElementById('venue-video-modal');
+                    var iframe = document.getElementById('venue-video-iframe');
+                    var closeBtn = document.getElementById('venue-video-close');
+
+                    function openModal(url) {
+                        iframe.src = toEmbedUrl(url);
+                        modal.classList.remove('hidden');
+                        modal.classList.add('flex');
+                        document.body.style.overflow = 'hidden';
+                    }
+
+                    function closeModal() {
+                        iframe.src = '';
+                        modal.classList.add('hidden');
+                        modal.classList.remove('flex');
+                        document.body.style.overflow = '';
+                    }
+
+                    document.querySelectorAll('[data-video-popup]').forEach(function (el) {
+                        el.addEventListener('click', function () {
+                            openModal(el.getAttribute('data-video-popup'));
+                        });
+                    });
+
+                    closeBtn.addEventListener('click', closeModal);
+                    modal.addEventListener('click', function (e) {
+                        if (e.target === modal) closeModal();
+                    });
+                    document.addEventListener('keydown', function (e) {
+                        if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
+                    });
+                })();
+                </script>
             </x-ui.container>
         </section>
 
@@ -564,91 +496,60 @@
 
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-dark">Vendor Event dan Promo</h2>
-                    <a href="#" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
+                    <a href="{{ route('store.promo') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
                 </div>
 
+                @if($homePromoPackages->isNotEmpty())
                 <div class="relative">
                     <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide" id="vendor-promo-scroll">
 
-                        <!-- Vendor Card 1 -->
-                        <div class="flex-none w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition relative">
-                            <div class="absolute top-3 left-3 z-10">
-                                <span class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-accent-pink text-dark">VENDOR PROMO</span>
-                            </div>
-                            <div class="flex flex-col items-center px-6 pt-10 pb-5">
-                                <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4">
-                                    <img src="https://picsum.photos/seed/vendor1/200/200" alt="Aston Palembang" class="w-full h-full object-cover">
+                        @foreach($homePromoPackages as $pkg)
+                            @php
+                                $vendor = $pkg->vendor;
+                                $price = (int) ($pkg->price_raw ?? 0);
+                                $discount = (int) ($pkg->discount ?? 0);
+                                $final = max($price - $discount, 0);
+                                $logo = $vendor->logo_vendor
+                                    ? (str_starts_with($vendor->logo_vendor, 'http') ? $vendor->logo_vendor : \Illuminate\Support\Facades\Storage::url($vendor->logo_vendor))
+                                    : null;
+                                $logo = $logo ?: $pkg->image_url ?: ($vendor->cover_image_url ?? null);
+                            @endphp
+                            <a href="{{ route('store.package.show', $pkg) }}"
+                               class="flex-none w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition relative">
+                                <div class="absolute top-3 left-3 z-10">
+                                    <span class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-accent-pink text-dark">PROMO</span>
                                 </div>
-                                <p class="font-bold text-sm text-center uppercase text-gray-900 leading-snug mb-1">ASTON GRAND BALLROOM</p>
-                                <p class="text-xs text-gray-500 text-center mb-2">Hotel Wedding Venue</p>
-                                <p class="text-xs text-gray-500 flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                    Palembang
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Vendor Card 2 -->
-                        <div class="flex-none w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition relative">
-                            <div class="absolute top-3 left-3 z-10">
-                                <span class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-accent-pink text-dark">VENDOR PROMO</span>
-                            </div>
-                            <div class="flex flex-col items-center px-6 pt-10 pb-5">
-                                <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4">
-                                    <img src="https://picsum.photos/seed/vendor2/200/200" alt="The Zuri Hotel" class="w-full h-full object-cover">
+                                <div class="flex flex-col items-center px-6 pt-10 pb-5">
+                                    <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4 bg-gray-50">
+                                        @if($logo)
+                                            <img src="{{ $logo }}" alt="{{ $vendor->name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <p class="font-bold text-sm text-center text-gray-900 leading-snug mb-1">{{ $pkg->name }}</p>
+                                    <p class="text-xs text-gray-500 text-center mb-2">{{ $vendor->name }}{{ $pkg->categoryVendor ? ' — ' . $pkg->categoryVendor->name : '' }}</p>
+                                    <p class="text-[11px] text-gray-400 line-through">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                                    <p class="text-sm font-bold text-accent">IDR {{ number_format($final, 0, ',', '.') }}</p>
+                                    @if($vendor->city)
+                                        <p class="text-xs text-gray-500 flex items-center gap-1 mt-2">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                                            {{ $vendor->city }}
+                                        </p>
+                                    @endif
                                 </div>
-                                <p class="font-bold text-sm text-center uppercase text-gray-900 leading-snug mb-1">THE ZURI PALEMBANG</p>
-                                <p class="text-xs text-gray-500 text-center mb-2">Hotel Wedding Venue</p>
-                                <p class="text-xs text-gray-500 flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                    Palembang
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Vendor Card 3 -->
-                        <div class="flex-none w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition relative">
-                            <div class="absolute top-3 left-3 z-10">
-                                <span class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-accent-pink text-dark">VENDOR PROMO</span>
-                            </div>
-                            <div class="flex flex-col items-center px-6 pt-10 pb-5">
-                                <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4">
-                                    <img src="https://picsum.photos/seed/vendor3/200/200" alt="Swiss-Belhotel" class="w-full h-full object-cover">
-                                </div>
-                                <p class="font-bold text-sm text-center uppercase text-gray-900 leading-snug mb-1">SWISS-BELHOTEL PALEMBANG</p>
-                                <p class="text-xs text-gray-500 text-center mb-2">Hotel Wedding Venue</p>
-                                <p class="text-xs text-gray-500 flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                    Palembang
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Vendor Card 4 -->
-                        <div class="flex-none w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition relative">
-                            <div class="absolute top-3 left-3 z-10">
-                                <span class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-accent-pink text-dark">VENDOR PROMO</span>
-                            </div>
-                            <div class="flex flex-col items-center px-6 pt-10 pb-5">
-                                <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4">
-                                    <img src="https://picsum.photos/seed/vendor4/200/200" alt="Makna Wedding Organizer" class="w-full h-full object-cover">
-                                </div>
-                                <p class="font-bold text-sm text-center uppercase text-gray-900 leading-snug mb-1">MAKNA WEDDING ORGANIZER</p>
-                                <p class="text-xs text-gray-500 text-center mb-2">Wedding Planner & Organizer</p>
-                                <p class="text-xs text-gray-500 flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                    Palembang
-                                </p>
-                            </div>
-                        </div>
+                            </a>
+                        @endforeach
 
                         <!-- View All Card -->
-                        <div class="flex-none w-56 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:shadow-md transition flex flex-col items-center justify-center gap-3 py-10">
+                        <a href="{{ route('store.promo') }}" class="flex-none w-56 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:shadow-md transition flex flex-col items-center justify-center gap-3 py-10">
                             <div class="w-14 h-14 rounded-full border-2 border-gray-400 flex items-center justify-center">
                                 <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">VIEW ALL EVENT PROMO</p>
-                        </div>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">LIHAT SEMUA PROMO</p>
+                        </a>
 
                     </div>
 
@@ -663,6 +564,9 @@
                         <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
                 </div>
+                @else
+                    <p class="text-sm text-gray-400">Belum ada promo saat ini.</p>
+                @endif
 
             </x-ui.container>
         </section>
@@ -673,74 +577,33 @@
 
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-dark">Real Wedding</h2>
-                    <a href="#" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
+                    <a href="{{ route('real-wedding.index') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
                 </div>
 
                 <div class="relative">
                     <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide" id="real-wedding-scroll">
 
-                        <!-- Wedding Card 1 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
-                            <img src="https://picsum.photos/seed/wedding1/400/533" alt="Reza & Aulia" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-                            <div class="absolute bottom-4 left-4 right-4 text-white">
-                                <span class="inline-block text-[9px] border border-white/70 rounded-full px-2 py-0.5 mb-2 bg-black/20 backdrop-blur-sm">Editor's Collection</span>
-                                <p class="font-bold text-base leading-tight tracking-wide uppercase">REZA & AULIA</p>
-                            </div>
-                        </div>
-
-                        <!-- Wedding Card 2 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
-                            <img src="https://picsum.photos/seed/wedding2/400/533" alt="Bagas & Tiara" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-                            <div class="absolute bottom-4 left-4 right-4 text-white">
-                                <span class="inline-block text-[9px] border border-white/70 rounded-full px-2 py-0.5 mb-2 bg-black/20 backdrop-blur-sm">Editor's Collection</span>
-                                <p class="font-bold text-base leading-tight tracking-wide uppercase">BAGAS & TIARA</p>
-                            </div>
-                        </div>
-
-                        <!-- Wedding Card 3 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
-                            <img src="https://picsum.photos/seed/wedding3/400/533" alt="Dimas & Sari" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-                            <div class="absolute bottom-4 left-4 right-4 text-white">
-                                <span class="inline-block text-[9px] border border-white/70 rounded-full px-2 py-0.5 mb-2 bg-black/20 backdrop-blur-sm">Editor's Collection</span>
-                                <p class="font-bold text-base leading-tight tracking-wide uppercase">DIMAS & SARI</p>
-                                <p class="text-[11px] opacity-70 mt-1">Hotel Santika Palembang</p>
-                            </div>
-                        </div>
-
-                        <!-- Wedding Card 4 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
-                            <img src="https://picsum.photos/seed/wedding4/400/533" alt="Andi & Dewi" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-                            <div class="absolute bottom-4 left-4 right-4 text-white">
-                                <span class="inline-block text-[9px] border border-white/70 rounded-full px-2 py-0.5 mb-2 bg-black/20 backdrop-blur-sm">Editor's Collection</span>
-                                <p class="font-bold text-base leading-tight tracking-wide uppercase">ANDI & DEWI</p>
-                                <p class="text-[11px] opacity-70 mt-1">Aston Palembang</p>
-                            </div>
-                        </div>
-
-                        <!-- Wedding Card 5 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
-                            <img src="https://picsum.photos/seed/wedding5/400/533" alt="Fajar & Nisa" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-                            <div class="absolute bottom-4 left-4 right-4 text-white">
-                                <span class="inline-block text-[9px] border border-white/70 rounded-full px-2 py-0.5 mb-2 bg-black/20 backdrop-blur-sm">Editor's Collection</span>
-                                <p class="font-bold text-base leading-tight tracking-wide uppercase">FAJAR & NISA</p>
-                            </div>
-                        </div>
-
-                        <!-- Wedding Card 6 -->
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4]">
-                            <img src="https://picsum.photos/seed/wedding6/400/533" alt="Hendra & Putri" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-                            <div class="absolute bottom-4 left-4 right-4 text-white">
-                                <span class="inline-block text-[9px] border border-white/70 rounded-full px-2 py-0.5 mb-2 bg-black/20 backdrop-blur-sm">Editor's Collection</span>
-                                <p class="font-bold text-base leading-tight tracking-wide uppercase">HENDRA & PUTRI</p>
-                                <p class="text-[11px] opacity-70 mt-1">The Zuri Hotel Palembang</p>
-                            </div>
-                        </div>
+                        @forelse($realWeddings as $rw)
+                            @php
+                                $rwImage = $rw->cover_image_url ?: 'https://picsum.photos/seed/rw-' . $rw->id . '/400/533';
+                            @endphp
+                            <a href="{{ route('real-wedding.show', $rw->slug) }}"
+                               class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4] block">
+                                <img src="{{ $rwImage }}" alt="{{ $rw->couple_names }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                                <div class="absolute bottom-4 left-4 right-4 text-white">
+                                    @if($rw->badge)
+                                        <span class="inline-block text-[9px] border border-white/70 rounded-full px-2 py-0.5 mb-2 bg-black/20 backdrop-blur-sm">{{ $rw->badge }}</span>
+                                    @endif
+                                    <p class="font-bold text-base leading-tight tracking-wide uppercase">{{ $rw->couple_names }}</p>
+                                    @if($rw->venue_name)
+                                        <p class="text-[11px] opacity-70 mt-1">{{ $rw->venue_name }}</p>
+                                    @endif
+                                </div>
+                            </a>
+                        @empty
+                            <p class="text-sm text-gray-400">Belum ada Real Wedding.</p>
+                        @endforelse
 
                     </div>
 
@@ -797,123 +660,198 @@
 
                 <!-- Right: CTA Button -->
                 <div class="flex-shrink-0">
-                    <a href="#" class="inline-block px-6 py-3 rounded-xl font-semibold text-sm transition hover:opacity-90 bg-cream text-dark">
+                    <button type="button" onclick="document.getElementById('cta-coming-soon-modal').classList.remove('hidden');document.getElementById('cta-coming-soon-modal').classList.add('flex');document.body.style.overflow='hidden';"
+                            class="inline-block px-6 py-3 rounded-xl font-semibold text-sm transition hover:opacity-90 bg-cream text-dark cursor-pointer">
                         Daftar Sekarang
-                    </a>
+                    </button>
                 </div>
 
             </x-ui.container>
         </section>
 
+        <!-- Coming Soon Modal: Daftar Sekarang -->
+        <div id="cta-coming-soon-modal"
+             class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-black/60"
+             onclick="if(event.target===this){this.classList.add('hidden');this.classList.remove('flex');document.body.style.overflow='';}">
+            <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden">
+
+                <!-- Top decorative bar -->
+                <div class="h-2 bg-gradient-to-r from-accent via-light-sage to-accent"></div>
+
+                <div class="px-8 py-8 text-center">
+
+                    <!-- Icon -->
+                    <div class="w-16 h-16 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-5">
+                        <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+
+                    <!-- Title -->
+                    <p class="text-xs font-bold uppercase tracking-widest text-accent mb-2">Segera Hadir</p>
+                    <h2 class="text-xl font-extrabold text-dark mb-3">Coming Soon</h2>
+
+                    <!-- Description -->
+                    <p class="text-sm text-gray-500 leading-relaxed mb-6">
+                        Fitur pendaftaran member sedang dalam pengembangan. Segera hadir dengan berbagai keuntungan eksklusif untuk merencanakan pernikahan impianmu.
+                    </p>
+
+                    <!-- Benefits list -->
+                    <div class="text-left space-y-2.5 mb-7">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-3 h-3 text-accent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            </div>
+                            <p class="text-xs text-gray-700">Akses promo &amp; diskon eksklusif member</p>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-3 h-3 text-accent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            </div>
+                            <p class="text-xs text-gray-700">Simpan vendor favorit &amp; wishlist paket</p>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-3 h-3 text-accent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            </div>
+                            <p class="text-xs text-gray-700">Kelola booking &amp; pembayaran dalam satu dashboard</p>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-3 h-3 text-accent" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            </div>
+                            <p class="text-xs text-gray-700">Cicilan 0% hingga 24 bulan tanpa biaya tambahan</p>
+                        </div>
+                    </div>
+
+                    <!-- Close button -->
+                    <button type="button"
+                            onclick="document.getElementById('cta-coming-soon-modal').classList.add('hidden');document.getElementById('cta-coming-soon-modal').classList.remove('flex');document.body.style.overflow='';"
+                            class="w-full py-3 rounded-xl bg-accent text-cream font-semibold text-sm hover:opacity-90 transition">
+                        Oke, Ditunggu!
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
         <!-- Blog Section -->
+        @if($homeFeaturedBlogs->isNotEmpty() || $homePopularBlogs->isNotEmpty())
         <section class="py-16 bg-light-sage" id="blog">
             <x-ui.container>
 
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-2xl font-bold text-dark">Jangan Lewatkan Blog Post Ini</h2>
-                    <a href="#" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
+                    <a href="{{ route('blog.index') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     <!-- Featured Posts (2 cards side by side) -->
                     <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-                        <!-- Blog Card 1 -->
-                        <div class="bg-white rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition group">
-                            <div class="overflow-hidden">
-                                <img src="https://picsum.photos/seed/blog1/600/400" alt="Blog 1" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105">
-                            </div>
-                            <div class="p-4">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xs font-semibold text-accent">Relationship Tips</span>
-                                    <span class="text-xs text-gray-400">· Mar 17, 2026 | 35 views</span>
+                        @forelse($homeFeaturedBlogs as $blog)
+                            @php
+                                $blogImage = $blog->cover_image_url ?: 'https://picsum.photos/seed/blog-' . $blog->id . '/600/400';
+                            @endphp
+                            <a href="{{ route('blog.show', $blog->slug) }}" class="bg-white rounded-2xl overflow-hidden hover:shadow-md transition group block">
+                                <div class="overflow-hidden">
+                                    <img src="{{ $blogImage }}" alt="{{ $blog->title }}" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105">
                                 </div>
-                                <p class="font-bold text-gray-900 text-sm leading-snug hover:underline">8 Etika Silaturahmi ke Rumah Calon Mertua demi Beri Kesan Positif</p>
-                            </div>
-                        </div>
-
-                        <!-- Blog Card 2 -->
-                        <div class="bg-white rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition group">
-                            <div class="overflow-hidden">
-                                <img src="https://picsum.photos/seed/blog2/600/400" alt="Blog 2" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105">
-                            </div>
-                            <div class="p-4">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <span class="text-xs font-semibold text-accent">Wedding Ideas</span>
-                                    <span class="text-xs text-gray-400">· Mar 16, 2026 | 30 views</span>
+                                <div class="p-4">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        @if($blog->category)
+                                            <span class="text-xs font-semibold text-accent">{{ $blog->category }}</span>
+                                            <span class="text-xs text-gray-400">·</span>
+                                        @endif
+                                        <span class="text-xs text-gray-400">{{ $blog->published_at?->format('M d, Y') }} | {{ number_format($blog->views_count) }} views</span>
+                                    </div>
+                                    <p class="font-bold text-gray-900 text-sm leading-snug group-hover:underline">{{ $blog->title }}</p>
                                 </div>
-                                <p class="font-bold text-gray-900 text-sm leading-snug hover:underline">Begini Cara Atur THR untuk DP Vendor tanpa Ganggu Budget Lebaran</p>
-                            </div>
-                        </div>
-
+                            </a>
+                        @empty
+                            <p class="text-sm text-gray-400 col-span-2">Belum ada blog post.</p>
+                        @endforelse
                     </div>
 
                     <!-- Artikel Terpopuler Sidebar -->
+                    @if($homePopularBlogs->isNotEmpty())
                     <div class="lg:col-span-1">
                         <h3 class="text-base font-bold mb-4 text-dark">Artikel Terpopuler</h3>
                         <div class="flex flex-col gap-4">
-
-                            <!-- Popular Item 1 -->
-                            <a href="#" class="flex gap-3 group cursor-pointer">
-                                <img src="https://picsum.photos/seed/popular1/160/120" alt="Popular 1" class="w-16 h-14 rounded-xl object-cover flex-shrink-0">
-                                <div>
-                                    <p class="text-[11px] font-semibold mb-0.5 text-accent">Wedding Ideas <span class="text-gray-400 font-normal">· 577271 views</span></p>
-                                    <p class="text-xs font-semibold text-gray-800 leading-snug group-hover:underline">12 Tahap dalam Susunan Acara Lamaran Pernikahan</p>
-                                </div>
-                            </a>
-
-                            <div class="border-t border-gray-200"></div>
-
-                            <!-- Popular Item 2 -->
-                            <a href="#" class="flex gap-3 group cursor-pointer">
-                                <img src="https://picsum.photos/seed/popular2/160/120" alt="Popular 2" class="w-16 h-14 rounded-xl object-cover flex-shrink-0">
-                                <div>
-                                    <p class="text-[11px] font-semibold mb-0.5 text-accent">Wedding Ideas <span class="text-gray-400 font-normal">· 560122 views</span></p>
-                                    <p class="text-xs font-semibold text-gray-800 leading-snug group-hover:underline">18 Ide Unik dan Romantis untuk Melamar Sang Kekasih</p>
-                                </div>
-                            </a>
-
-                            <div class="border-t border-gray-200"></div>
-
-                            <!-- Popular Item 3 -->
-                            <a href="#" class="flex gap-3 group cursor-pointer">
-                                <img src="https://picsum.photos/seed/popular3/160/120" alt="Popular 3" class="w-16 h-14 rounded-xl object-cover flex-shrink-0">
-                                <div>
-                                    <p class="text-[11px] font-semibold mb-0.5 text-accent">Wedding Ideas <span class="text-gray-400 font-normal">· 443946 views</span></p>
-                                    <p class="text-xs font-semibold text-gray-800 leading-snug group-hover:underline">Panduan Rangkaian Prosesi Pernikahan Adat Jawa Beserta Makna di Balik Setiap Ritualnya</p>
-                                </div>
-                            </a>
-
+                            @foreach($homePopularBlogs as $loop_index => $popular)
+                                @php
+                                    $popularImage = $popular->cover_image_url ?: 'https://picsum.photos/seed/popular-' . $popular->id . '/160/120';
+                                @endphp
+                                @if($loop_index > 0)
+                                    <div class="border-t border-gray-200"></div>
+                                @endif
+                                <a href="{{ route('blog.show', $popular->slug) }}" class="flex gap-3 group cursor-pointer">
+                                    <img src="{{ $popularImage }}" alt="{{ $popular->title }}" class="w-16 h-14 rounded-xl object-cover flex-shrink-0">
+                                    <div>
+                                        <p class="text-[11px] font-semibold mb-0.5 text-accent">
+                                            {{ $popular->category ?: '—' }}
+                                            <span class="text-gray-400 font-normal">· {{ number_format($popular->views_count) }} views</span>
+                                        </p>
+                                        <p class="text-xs font-semibold text-gray-800 leading-snug group-hover:underline">{{ $popular->title }}</p>
+                                    </div>
+                                </a>
+                            @endforeach
                         </div>
                     </div>
+                    @endif
 
                 </div>
             </x-ui.container>
         </section>
+        @endif
 
+        @if($homeAd)
+        @php
+            $adImage = $homeAd->image_url ?: 'https://picsum.photos/seed/makna-ad/800/800';
+            $adDelay = (int) ($homeAd->delay_seconds ?? 5) * 1000;
+            $adKey   = 'home_ad_dismissed_v' . $homeAd->id;
+        @endphp
         <div id="home-ad-modal" class="fixed inset-0 z-[9998] hidden items-center justify-center p-4 bg-backdrop-45">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden" style="max-width:min(90vw,600px);max-height:90vh;">
                 <div class="relative">
-                    <img src="https://picsum.photos/seed/makna-ad/800/800" alt="Iklan" class="w-full aspect-square object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                    @if($homeAd->link_url)
+                        <a href="{{ $homeAd->link_url }}" class="block">
+                    @endif
+                    <img src="{{ $adImage }}" alt="{{ $homeAd->title ?: 'Iklan' }}" class="block w-auto h-auto" style="max-width:min(90vw,600px);max-height:85vh;display:block;">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"></div>
+                    @if($homeAd->link_url)
+                        </a>
+                    @endif
+
                     <button type="button" data-home-ad-close class="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white/90 border border-gray-200 flex items-center justify-center hover:bg-white transition" aria-label="Tutup">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
-                    <div class="absolute bottom-0 left-0 right-0 p-4">
-                        <p class="text-white text-sm font-semibold leading-snug">Dapatkan promo spesial untuk booking vendor pilihanmu hari ini.</p>
-                    </div>
+
+                    @if($homeAd->caption || $homeAd->link_url)
+                        <div class="absolute bottom-0 left-0 right-0 p-4 pointer-events-none">
+                            @if($homeAd->caption)
+                                <p class="text-white text-sm font-semibold leading-snug">{{ $homeAd->caption }}</p>
+                            @endif
+                            @if($homeAd->link_url && $homeAd->link_label)
+                                <a href="{{ $homeAd->link_url }}"
+                                   class="pointer-events-auto mt-2 inline-block px-4 py-1.5 rounded-xl bg-white text-dark text-xs font-bold hover:opacity-90 transition">
+                                    {{ $homeAd->link_label }}
+                                </a>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
+        @endif
 
         <script>
             (function () {
-                var key = 'home_ad_dismissed_v1';
+                var key = '{{ $adKey ?? "home_ad_dismissed_v1" }}';
+                var delay = {{ $adDelay ?? 5000 }};
                 var modal = document.getElementById('home-ad-modal');
-                if (!modal) return;
 
                 document.addEventListener('click', function (e) {
                     var btn = e.target.closest('[data-scroll-target][data-scroll-by]');
@@ -925,6 +863,8 @@
                     if (!el || typeof el.scrollBy !== 'function') return;
                     el.scrollBy({ left: by, behavior: 'smooth' });
                 });
+
+                if (!modal) return;
 
                 function openModal() {
                     try {
@@ -956,7 +896,7 @@
                     });
                 }
 
-                window.setTimeout(openModal, 5000);
+                window.setTimeout(openModal, delay);
 
                 document.addEventListener('keydown', function (e) {
                     if (e.key === 'Escape' && !modal.classList.contains('hidden')) {

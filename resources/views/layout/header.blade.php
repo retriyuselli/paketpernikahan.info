@@ -1,23 +1,7 @@
-<!-- Sticky Header Wrapper -->
-<div class="sticky top-0 z-40 bg-white border-b border-gray-200">
-    <!-- Collapsible: Announcement Banner + Top Contact Bar -->
-    <div id="collapsible-bar" class="overflow-hidden transition-all duration-300 max-h-[200px]">
-        <!-- Top Announcement Banner -->
-        <div id="announcement-banner" class="text-white py-2 px-4 text-sm font-medium bg-accent-gradient">
-            <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
-                <div class="text-center flex-1">
-                    Coming soon, Sumatera Selatan Wedding Expo 2026 Season 1
-                </div>
-                <button type="button" data-dismiss-announcement class="p-1 rounded-lg hover:bg-white/10 transition" aria-label="Tutup pengumuman">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <!-- Top Contact Bar -->
-        <x-ui.container>
-        <div class="hidden md:flex items-center justify-between py-3 text-xs border-b border-gray-100">
+<!-- Top Contact Bar (scrolls away naturally, NOT sticky) -->
+<div class="bg-white border-b border-gray-100">
+    <x-ui.container>
+        <div class="hidden md:flex items-center justify-between py-3 text-xs">
             <div class="flex items-center gap-6 text-gray-600">
                 <span>office@makruwedding.id</span>
                 <span>+62 812-7893-2624</span>
@@ -45,10 +29,11 @@
                 <a href="#" class="font-medium hover:text-accent">Rp 0</a>
             </div>
         </div>
-        </x-ui.container>
-    </div><!-- end collapsible-bar -->
+    </x-ui.container>
+</div>
 
-    <!-- Main Header (always sticky) -->
+<!-- Sticky Header Wrapper (main nav only, no collapsible) -->
+<div class="sticky top-0 z-40 bg-white border-b border-gray-200">
     <x-ui.container>
         <div class="flex items-center justify-between py-3 lg:grid lg:grid-cols-3 lg:items-center">
 
@@ -72,7 +57,7 @@
                    class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsHome ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
                     Home
                 </a>
-                <div class="relative group">
+                <!-- <div class="relative group">
                     <button type="button" data-toggle-header-dropdown="wedding"
                             class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase"
                             aria-expanded="false" aria-controls="dropdown-wedding">
@@ -89,7 +74,7 @@
                             Cari Paket
                         </a>
                     </div>
-                </div>
+                </div> -->
                 <a href="{{ route('vendor') }}"
                    class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsVendor ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
                     Vendor
@@ -534,38 +519,6 @@
 @endguest
 
 <script>
-(function () {
-    var bar = document.getElementById('collapsible-bar');
-    var lastScrollY = window.scrollY;
-    var banner = document.getElementById('announcement-banner');
-    var isAnnouncementDismissed = localStorage.getItem('announcement_dismissed') === '1';
-
-    if (isAnnouncementDismissed) {
-        if (banner) banner.style.display = 'none';
-    }
-
-    window.addEventListener('scroll', function () {
-        if (localStorage.getItem('announcement_dismissed') === '1') {
-            bar.style.maxHeight = '0';
-            return;
-        }
-        var currentScrollY = window.scrollY;
-        if (currentScrollY > lastScrollY && currentScrollY > 60) {
-            bar.style.maxHeight = '0';
-        } else {
-            bar.style.maxHeight = '200px';
-        }
-        lastScrollY = currentScrollY;
-    }, { passive: true });
-})();
-
-function dismissAnnouncement() {
-    localStorage.setItem('announcement_dismissed', '1');
-    var banner = document.getElementById('announcement-banner');
-    if (banner) banner.style.display = 'none';
-    var bar = document.getElementById('collapsible-bar');
-    if (bar) bar.style.maxHeight = '0';
-}
 
 function openLoginModal() {
     var modal = document.getElementById('login-modal');
@@ -646,12 +599,6 @@ document.addEventListener('click', function (e) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('[data-dismiss-announcement]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            dismissAnnouncement();
-        });
-    });
-
     document.querySelectorAll('[data-open-login-modal]').forEach(function (btn) {
         btn.addEventListener('click', function () {
             openLoginModal();

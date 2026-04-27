@@ -63,7 +63,7 @@
                     <p class="text-sm text-gray-500">Belum ada paket untuk kategori ini.</p>
                 </div>
             @else
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     @foreach($packages as $pkg)
                         @php
                             $vendor = $pkg->vendor;
@@ -79,12 +79,12 @@
 
                         <a href="{{ route('store.package.show', $pkg) }}"
                            class="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition">
-                            <div class="relative ar-4x3">
+                            <div class="relative ar-4x5">
                                 <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
                                 @if($discount > 0)
                                     <span class="absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-full bg-white/90 border border-gray-200 text-dark">
-                                        Diskon
+                                        Promo
                                     </span>
                                 @endif
                                 <div class="absolute bottom-0 left-0 right-0 p-3">

@@ -9,6 +9,23 @@ class VendorPackage extends Model
 {
     use HasFactory;
 
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $package) {
+            if (empty($package->price_raw) && !empty($package->price)) {
+                $package->price_raw = (int) preg_replace('/[^\d]/', '', (string) $package->price);
+            }
+        });
+
+        static::updating(function (self $package) {
+            if (empty($package->price_raw) && !empty($package->price)) {
+                $package->price_raw = (int) preg_replace('/[^\d]/', '', (string) $package->price);
+            }
+        });
+    }
+
     protected $fillable = [
         'vendor_id', 
         'category_vendor_id',
@@ -21,7 +38,7 @@ class VendorPackage extends Model
         'card_color', 
         'card_text_color', 
         'image_path',
-        'items', 
+        'item', 
         'type',
         'capacity',
         'facilities',
@@ -31,7 +48,6 @@ class VendorPackage extends Model
 
     protected $casts = [
         'image_path' => 'array',
-        'items'      => 'array',
         'facilities' => 'array',
         'is_active'  => 'boolean',
         'price_raw'  => 'integer',
@@ -64,5 +80,33 @@ class VendorPackage extends Model
         if (!$path) return null;
         if (is_string($path) && str_starts_with($path, 'http')) return $path;
         return \Illuminate\Support\Facades\Storage::url($path);
+    }
+
+    /**
+     * Parse kolom `item` (HTML RichEditor) menjadi array teks dari setiap <li>.
+     *
+     * @return array<string>
+     */
+    public function getItemsAttribute(): array
+    {
+        if (empty($this->item)) {
+            return [];
+        }
+
+        $dom = new \DOMDocument();
+        @$dom->loadHTML(
+            mb_convert_encoding($this->item, 'HTML-ENTITIES', 'UTF-8'),
+            LIBXML_NOERROR | LIBXML_NOWARNING
+        );
+
+        $items = [];
+        foreach ($dom->getElementsByTagName('li') as $li) {
+            $text = trim($li->textContent);
+            if ($text !== '') {
+                $items[] = $text;
+            }
+        }
+
+        return $items;
     }
 }

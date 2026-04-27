@@ -558,7 +558,7 @@ class VendorSeeder extends Seeder
                     'facilities'      => $data['category'] === 'gedung' ? ['Parkir Luas', 'Ruang Rias', 'Toilet', 'AC'] : null,
                     'card_color'      => $tpl['color'],
                     'card_text_color' => $tpl['tcol'],
-                    'items'           => $tpl['items'],
+                    'item'            => '<ul><li>' . implode('</li><li>', $tpl['items']) . '</li></ul>',
                     'sort_order'      => $idx,
                     'is_active'       => true,
                 ]);
@@ -815,7 +815,7 @@ class VendorSeeder extends Seeder
                     'facilities'      => $pd['category'] === 'gedung' ? ['Parkir VIP', 'AC Sentral', 'Toilet Eksklusif', 'Ruang Rias', 'Sound System Pro'] : null,
                     'card_color'      => $tpl['color'],
                     'card_text_color' => $tpl['tcol'],
-                    'items'           => $tpl['items'],
+                    'item'            => '<ul><li>' . implode('</li><li>', $tpl['items']) . '</li></ul>',
                     'sort_order'      => $idx,
                     'is_active'       => true,
                 ]);

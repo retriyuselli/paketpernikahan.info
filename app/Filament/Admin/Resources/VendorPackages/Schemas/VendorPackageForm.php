@@ -7,6 +7,7 @@ use App\Models\Vendor;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -94,13 +95,18 @@ class VendorPackageForm
 
                         Tab::make('Fasilitas Termasuk')
                             ->schema([
-                                Repeater::make('items')
+                                RichEditor::make('item')
                                     ->label('Item Fasilitas')
-                                    ->simple(
-                                        TextInput::make('item')->required()
-                                    )
-                                    ->addActionLabel('Tambah Fasilitas')
-                                    ->reorderable()
+                                    ->toolbarButtons([
+                                        'bold',
+                                        'italic',
+                                        'underline',
+                                        'bulletList',
+                                        'orderedList',
+                                        'h2',
+                                        'h3',
+                                    ])
+                                    ->columnSpanFull()
                                     ->required(),
                             ]),
 

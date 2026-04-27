@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('max_guests');                   // Maks. 300 tamu
             $table->string('card_color')->default('#C8D5B9');
             $table->string('card_text_color')->default('#444444');
-            $table->json('items');                          // ["Gedung 6 jam", ...]
+            $table->longText('item')->nullable();           // HTML dari RichEditor
             $table->string('type')->nullable();             // Indoor/Outdoor/Semi Outdoor/Lainnya
             $table->integer('capacity')->nullable();        // Kapasitas venue (orang)
             $table->json('facilities')->nullable();         // Fasilitas venue

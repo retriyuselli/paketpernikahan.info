@@ -428,10 +428,10 @@
                         <div class="flex items-center gap-1.5 mt-1 mb-2">
                             <span class="text-[9px] text-gray-400">Mulai</span>
                             @if ($pkg->discount > 0)
-                            <span class="text-[10px] line-through text-gray-400">{{ $pkg->price }}</span>
+                            <span class="text-[10px] line-through text-gray-400">Rp {{ number_format($pkg->price_raw, 0, ',', '.') }}</span>
                             <span class="text-[11px] font-bold text-dark">Rp {{ number_format($pkg->price_raw - $pkg->discount, 0, ',', '.') }}</span>
                             @else
-                            <span class="text-[11px] font-semibold text-dark">{{ $pkg->price }}</span>
+                            <span class="text-[11px] font-semibold text-dark">Rp {{ number_format($pkg->price_raw, 0, ',', '.') }}</span>
                             @endif
                         </div>
                         @else
@@ -570,13 +570,14 @@
         document.getElementById('vp-comments').textContent = v.comments_count || 0;
 
         const priceEl = document.getElementById('vp-price');
-        if (v.pkg_price) {
+        const fmtRp = (raw) => raw > 0 ? 'Rp ' + parseInt(raw).toLocaleString('id-ID') : '—';
+        if (v.pkg_price_raw) {
             if (v.pkg_discount > 0) {
                 const discounted = Number(v.pkg_price_raw) - Number(v.pkg_discount);
-                priceEl.innerHTML = '<span class="line-through text-gray-400 text-xs">' + v.pkg_price + '</span><br>' +
+                priceEl.innerHTML = '<span class="line-through text-gray-400 text-xs">' + fmtRp(v.pkg_price_raw) + '</span><br>' +
                     'Rp ' + discounted.toLocaleString('id-ID');
             } else {
-                priceEl.textContent = v.pkg_price;
+                priceEl.textContent = fmtRp(v.pkg_price_raw);
             }
         } else {
             priceEl.textContent = v.price_start || '—';

@@ -5,10 +5,50 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Vendor extends Model
 {
     use HasFactory;
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $vendor) {
+            if (empty($vendor->slug)) {
+                $vendor->slug = static::generateUniqueSlug($vendor->name);
+            }
+            if (empty($vendor->category) && !empty($vendor->categories)) {
+                $cats = is_array($vendor->categories) ? $vendor->categories : json_decode($vendor->categories, true);
+                $vendor->category = $cats[0] ?? null;
+            }
+        });
+
+        static::updating(function (self $vendor) {
+            if (empty($vendor->slug)) {
+                $vendor->slug = static::generateUniqueSlug($vendor->name);
+            }
+            if (empty($vendor->category) && !empty($vendor->categories)) {
+                $cats = is_array($vendor->categories) ? $vendor->categories : json_decode($vendor->categories, true);
+                $vendor->category = $cats[0] ?? null;
+            }
+        });
+    }
+
+    private static function generateUniqueSlug(string $name): string
+    {
+        $base = Str::slug($name);
+        $slug = $base;
+        $i = 1;
+
+        while (static::where('slug', $slug)->exists()) {
+            $slug = "{$base}-{$i}";
+            $i++;
+        }
+
+        return $slug;
+    }
 
     protected $fillable = [
         'owner_user_id',

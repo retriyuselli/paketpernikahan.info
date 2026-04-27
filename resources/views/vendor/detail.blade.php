@@ -236,10 +236,10 @@
                             <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Harga Mulai</p>
                             @if ($cheapPkg)
                             @if ($cheapPkg->discount > 0)
-                            <p class="text-[10px] line-through text-gray-400 leading-none mb-0.5">{{ $cheapPkg->price }}</p>
+                            <p class="text-[10px] line-through text-gray-400 leading-none mb-0.5">Rp {{ number_format($cheapPkg->price_raw, 0, ',', '.') }}</p>
                             <p class="text-sm font-semibold text-accent">Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}</p>
                             @else
-                            <p class="text-sm font-semibold text-accent">{{ $cheapPkg->price }}</p>
+                            <p class="text-sm font-semibold text-accent">Rp {{ number_format($cheapPkg->price_raw, 0, ',', '.') }}</p>
                             @endif
                             @else
                             @php
@@ -271,7 +271,7 @@
                              data-action="open-package"
                              data-package='@json($pkgData)'>
                             <p class="text-xs font-bold uppercase tracking-widest mb-1 opacity-70">{{ $pkg->name }}</p>
-                            <p class="text-xl font-bold leading-tight mb-1">{{ $pkg->price }}</p>
+                            <p class="text-sm font-bold leading-tight mb-1">Rp {{ number_format($pkg->price_raw, 0, ',', '.') }}</p>
                             <p class="text-xs mb-4 opacity-70">{{ $pkg->max_guests ?: '0' }} Pax</p>
                             @php $maxShow = 5; $total = count($pkg->items); $more = $total - $maxShow; @endphp
                             <ul class="space-y-1.5 flex-1 mb-4">
@@ -561,14 +561,14 @@
                         @if ($cheapPkg)
                         @if ($cheapPkg->discount > 0)
                         <p id="sidebar-price-original"
-                           class="text-sm line-through text-gray-400 mb-0">{{ $cheapPkg->price }}</p>
+                           class="text-sm line-through text-gray-400 mb-0">Rp {{ number_format($cheapPkg->price_raw, 0, ',', '.') }}</p>
                         <p class="text-2xl font-bold mb-0.5 text-accent"
                            id="sidebar-price"
                            >Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}</p>
                         @else
                         <p class="text-2xl font-bold mb-0.5 text-accent"
                            id="sidebar-price"
-                           >{{ $cheapPkg->price }}</p>
+                           >Rp {{ number_format($cheapPkg->price_raw, 0, ',', '.') }}</p>
                         @endif
                         <div id="sidebar-dp-wrap" class="mt-1">
                             <p class="text-xs text-gray-400 mb-0">DP: <span id="sidebar-dp" class="font-semibold text-gray-600">{{ ($cheapPkg->dp_paket ?? 0) > 0 ? ('Rp ' . number_format((int) $cheapPkg->dp_paket, 0, ',', '.')) : '—' }}</span></p>
@@ -926,7 +926,7 @@
                         @endphp
                         <input type="hidden" name="vendor_package_id" id="booking-vendor-package-id" value="{{ $oldBookingPkg?->id }}">
                         <input type="text" id="booking-vendor-package-label"
-                               value="{{ $oldBookingPkg ? ($oldBookingPkg->name . ' — ' . $oldBookingPkg->price) : 'Tanpa paket' }}"
+                               value="{{ $oldBookingPkg ? ($oldBookingPkg->name . ' — Rp ' . number_format($oldBookingPkg->price_raw, 0, ',', '.')) : 'Tanpa paket' }}"
                                readonly
                                class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-gray-50 text-gray-700">
                     </div>
@@ -1150,7 +1150,8 @@
 
         if (selectedPackage?.id) {
             idEl.value = selectedPackage.id;
-            labelEl.value = `${selectedPackage.name} — ${selectedPackage.price}`;
+            const fmtPkgPrice = (pkg) => pkg.price_raw > 0 ? ('Rp ' + parseInt(pkg.price_raw).toLocaleString('id-ID')) : (pkg.price || '—');
+            labelEl.value = `${selectedPackage.name} — ${fmtPkgPrice(selectedPackage)}`;
             return;
         }
 
@@ -1172,10 +1173,11 @@
 
         // Fill data
         document.getElementById('modal-pkg-name').textContent    = pkg.name;
-        document.getElementById('modal-price').textContent        = pkg.price;
+        const fmtPrice = (raw, fallback) => raw > 0 ? ('Rp ' + parseInt(raw).toLocaleString('id-ID')) : (fallback || '—');
+        document.getElementById('modal-price').textContent        = fmtPrice(pkg.price_raw, pkg.price);
         document.getElementById('modal-guests').textContent       = pkg.max_guests || '—';
         document.getElementById('modal-summary-name').textContent  = pkg.name;
-        document.getElementById('modal-summary-price').textContent = pkg.price;
+        document.getElementById('modal-summary-price').textContent = fmtPrice(pkg.price_raw, pkg.price);
 
         // Venue Info
         const venueInfo = document.getElementById('modal-venue-info');

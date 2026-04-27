@@ -78,6 +78,32 @@
             </div>
 
             <div id="store-sections"></div>
+
+            @if(!empty($search) || !empty($kategori))
+                <div class="flex items-center justify-between gap-4 mb-6 p-4 bg-white rounded-2xl border border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-4 h-4 text-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <p class="text-sm text-gray-700">
+                            Hasil pencarian untuk:
+                            @if(!empty($search))
+                                <strong>"{{ $search }}"</strong>
+                            @endif
+                            @if(!empty($kategori))
+                                <span class="ml-1 inline-block bg-accent/10 text-accent text-xs font-semibold px-2 py-0.5 rounded-full">{{ ucfirst($kategori) }}</span>
+                            @endif
+                        </p>
+                    </div>
+                    <a href="{{ route('store') }}" class="text-xs text-gray-400 hover:text-accent transition flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Reset
+                    </a>
+                </div>
+            @endif
+
             @foreach($categories as $category)
                 @php
                     $group = $packagesByCategory->get($category->slug, collect());
