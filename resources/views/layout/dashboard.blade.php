@@ -63,6 +63,8 @@
         </style>
     @endif
 
+    @include('layout.theme-vars')
+
     <style>
         /* Sidebar link */
         .sidebar-link {
@@ -79,7 +81,7 @@
         }
         .sidebar-link svg { width: 1rem; height: 1rem; flex-shrink: 0; }
         .sidebar-link:hover { background: #f3f4f6; color: #374151; }
-        .sidebar-link.active { background: var(--light-sage); color: var(--dark-gray); font-weight: 600; }
+        .sidebar-link.active { background: var(--light-sage); color: var(--sidebar-active-text); font-weight: 600; }
     </style>
 </head>
 <body class="bg-cream text-dark">

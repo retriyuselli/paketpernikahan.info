@@ -22,11 +22,11 @@
 
 @layer base {
     :root {
-        --soft-pink: #F9D5E5;
-        --sage-green: #9CAF88;
-        --light-sage: #C8D5B9;
-        --cream: #FAF3E7;
-        --dark-gray: #444444;
+        --soft-pink: #F5ECD7;
+        --sage-green: #C9A84C;
+        --light-sage: #E8D5A3;
+        --cream: #FFFFF0;
+        --dark-gray: #3B2F2F;
     }
 
     body {
@@ -69,7 +69,7 @@
     }
 
     .bg-cream-25 {
-        background-color: rgba(250, 243, 231, 0.25);
+        background-color: rgba(255, 255, 240, 0.25);
     }
 
     .bg-dark {
@@ -93,7 +93,7 @@
     }
 
     .border-light-sage-20 {
-        border-color: rgba(200, 213, 185, 0.2);
+        border-color: rgba(232, 213, 163, 0.2);
     }
 
     .from-accent {
@@ -105,11 +105,11 @@
     }
 
     .to-accent-dark {
-        --tw-gradient-to: #7d9469;
+        --tw-gradient-to: #A8872A;
     }
 
     .bg-accent-dark {
-        background-color: #7A9068;
+        background-color: #A8872A;
     }
 
     .from-soft-pink {
@@ -125,13 +125,13 @@
     }
 
     .focus\:ring-accent:focus {
-        --tw-ring-color: rgba(156, 175, 136, 0.4);
-        box-shadow: 0 0 0 3px rgba(156, 175, 136, 0.4);
+        --tw-ring-color: rgba(201, 168, 76, 0.4);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.4);
     }
 
     .focus-within\:ring-accent:focus-within {
-        --tw-ring-color: rgba(156, 175, 136, 0.4);
-        box-shadow: 0 0 0 3px rgba(156, 175, 136, 0.4);
+        --tw-ring-color: rgba(201, 168, 76, 0.4);
+        box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.4);
     }
 
     .accent-accent {
@@ -143,7 +143,7 @@
     }
 
     .bg-sponsor-gradient {
-        background: linear-gradient(to right, rgba(249, 213, 229, 0.75), rgba(156, 175, 136, 0.75));
+        background: linear-gradient(to right, rgba(245, 236, 215, 0.75), rgba(201, 168, 76, 0.75));
     }
 
     .ar-16x10 {
@@ -221,8 +221,8 @@
 
     .hero-grid-bg {
         background-image:
-            linear-gradient(rgba(156, 175, 136, 0.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(156, 175, 136, 0.08) 1px, transparent 1px);
+            linear-gradient(rgba(201, 168, 76, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(201, 168, 76, 0.08) 1px, transparent 1px);
         background-size: 40px 40px;
     }
 
@@ -362,7 +362,7 @@
         margin: 1.5rem 0;
         padding: 1rem 1.25rem;
         border-left: 4px solid var(--sage-green);
-        background: rgba(200, 213, 185, 0.2);
+        background: rgba(232, 213, 163, 0.2);
         border-radius: 0 12px 12px 0;
         font-style: italic;
         color: #555;
@@ -396,7 +396,7 @@
     }
 
     .blog-content code {
-        background: rgba(200, 213, 185, 0.3);
+        background: rgba(232, 213, 163, 0.3);
         padding: 0.15em 0.4em;
         border-radius: 4px;
         font-size: 0.85em;

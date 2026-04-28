@@ -62,9 +62,58 @@
 
                     <!-- Content -->
                     @if($realWedding->content)
-                        <div class="mt-5 bg-white rounded-2xl border border-gray-100 p-6">
-                            <div class="prose prose-sm max-w-none text-dark leading-relaxed">
-                                {!! $realWedding->content !!}
+                        @php
+                            $wordCount = str_word_count(strip_tags($realWedding->content));
+                            $readMinutes = max(1, (int) ceil($wordCount / 200));
+                        @endphp
+                        <div class="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden">
+
+                            {{-- Content Header Bar --}}
+                            <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-light-sage/20">
+                                <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
+                                <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Cerita Pernikahan</span>
+                                <span class="ml-auto text-[11px] text-gray-400 flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    {{ $readMinutes }} menit baca
+                                </span>
+                            </div>
+
+                            {{-- Highlight Strip (tanggal & venue) --}}
+                            @if($realWedding->wedding_date || $realWedding->venue_name)
+                            <div class="flex flex-wrap gap-4 px-6 py-4 border-b border-dashed border-gray-100 bg-cream/60">
+                                @if($realWedding->wedding_date)
+                                <div class="flex items-center gap-2 text-xs text-gray-500">
+                                    <svg class="w-4 h-4 text-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span class="font-semibold text-dark">{{ $realWedding->wedding_date->translatedFormat('d F Y') }}</span>
+                                </div>
+                                @endif
+                                @if($realWedding->venue_name)
+                                <div class="flex items-center gap-2 text-xs text-gray-500">
+                                    <svg class="w-4 h-4 text-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    <span class="font-semibold text-dark">{{ $realWedding->venue_name }}</span>
+                                </div>
+                                @endif
+                            </div>
+                            @endif
+
+                            {{-- Article Body --}}
+                            <div class="px-6 py-6">
+                                <div class="blog-content">
+                                    {!! $realWedding->content !!}
+                                </div>
+                            </div>
+
+                            {{-- Footer strip --}}
+                            <div class="px-6 py-4 border-t border-gray-100 bg-cream/40 flex items-center justify-between gap-4">
+                                <p class="text-xs text-gray-400 italic">"{{ $realWedding->couple_names }}"</p>
+                                <span class="text-[11px] text-gray-400">{{ $realWedding->views_count }} views</span>
                             </div>
                         </div>
                     @endif

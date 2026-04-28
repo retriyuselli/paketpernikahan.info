@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\VendorApplicationController;
 use App\Http\Controllers\VendorApplicationAdminController;
 use App\Http\Controllers\VendorReviewModerationController;
@@ -997,6 +998,10 @@ Route::post('/dashboard/vendor-applications/{application}/approve', [VendorAppli
 Route::post('/dashboard/vendor-applications/{application}/reject', [VendorApplicationAdminController::class, 'reject'])
     ->name('dashboard.vendor.applications.reject')
     ->middleware(['auth', 'verified']);
+
+Route::post('/dashboard/theme', [ThemeController::class, 'update'])
+    ->name('dashboard.theme.update')
+    ->middleware(['auth', 'verified', 'role:super_admin']);
 
 Route::get('/dashboard/vendor/bookings', function () {
     $user = \App\Models\User::findOrFail(Auth::id());

@@ -118,6 +118,8 @@
             </style>
         @endif
 
+        @include('layout.theme-vars')
+
         @yield('extra-head')
     </head>
     

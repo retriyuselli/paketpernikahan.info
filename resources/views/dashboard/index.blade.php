@@ -6,11 +6,25 @@
 @section('content')
 
     {{-- Welcome --}}
-    <div class="mb-8">
-        <h1 class="text-2xl font-bold text-dark">
-            Selamat datang, {{ explode(' ', $user->name)[0] }} 👋
-        </h1>
-        <p class="text-sm text-gray-400 mt-1">Kelola aktivitas dan ulasan pernikahanmu di sini.</p>
+    <div class="mb-8 flex items-start justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-dark">
+                Selamat datang, {{ explode(' ', $user->name)[0] }} 👋
+            </h1>
+            <p class="text-sm text-gray-400 mt-1">Kelola aktivitas dan ulasan pernikahanmu di sini.</p>
+        </div>
+
+        @if($user->hasRole('super_admin'))
+        <button type="button"
+                data-open-theme-modal
+                class="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-white text-xs font-semibold shadow-sm hover:opacity-90 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+            </svg>
+            Ganti Tema
+        </button>
+        @endif
     </div>
 
     {{-- Stats --}}
@@ -231,5 +245,97 @@
             </svg>
         </a>
     </div>
+
+    @if($user->hasRole('super_admin'))
+    {{-- ── Theme Picker Modal ───────────────────────────────── --}}
+    @php
+        $themes = \App\Http\Controllers\ThemeController::$themes;
+        $activeThemeName = \App\Http\Controllers\ThemeController::active()['name'];
+
+        $themeSwatches = [
+            'gold-ivory'      => ['from' => '#C9A84C', 'to' => '#E8D5A3'],
+            'sage-green'      => ['from' => '#9CAF88', 'to' => '#C8D5B9'],
+            'dusty-rose'      => ['from' => '#C4846B', 'to' => '#D4A5A5'],
+            'navy-gold'       => ['from' => '#1B3A6B', 'to' => '#4A7FAA'],
+            'blush-burgundy'  => ['from' => '#7B2D42', 'to' => '#C8909A'],
+        ];
+    @endphp
+
+    <div id="theme-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-base font-bold text-dark">Ganti Tema Warna</h2>
+                <button type="button" data-close-theme-modal class="p-1.5 rounded-lg hover:bg-gray-100 transition">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <form method="POST" action="{{ route('dashboard.theme.update') }}">
+                @csrf
+                <div class="space-y-2 mb-5">
+                    @foreach($themes as $key => $theme)
+                    <label class="flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition
+                        {{ $activeThemeName === $key ? 'border-accent bg-cream' : 'border-gray-100 hover:border-gray-200' }}">
+                        <input type="radio" name="theme" value="{{ $key }}"
+                               class="sr-only peer"
+                               {{ $activeThemeName === $key ? 'checked' : '' }}>
+                        <span class="w-8 h-8 rounded-full flex-shrink-0 shadow-sm border border-white/60"
+                              style="background: linear-gradient(135deg, {{ $themeSwatches[$key]['from'] }}, {{ $themeSwatches[$key]['to'] }})"></span>
+                        <span class="flex-1 text-sm font-medium text-dark">{{ $theme['label'] }}</span>
+                        @if($activeThemeName === $key)
+                        <span class="text-[10px] font-semibold text-accent uppercase tracking-wide">Aktif</span>
+                        @endif
+                    </label>
+                    @endforeach
+                </div>
+
+                <button type="submit"
+                        class="w-full py-2.5 rounded-xl bg-accent text-white text-sm font-semibold hover:opacity-90 transition">
+                    Terapkan Tema
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const openBtn  = document.querySelector('[data-open-theme-modal]');
+            const closeBtn = document.querySelector('[data-close-theme-modal]');
+            const modal    = document.getElementById('theme-modal');
+
+            if (openBtn)  openBtn.addEventListener('click',  () => modal.classList.remove('hidden'));
+            if (closeBtn) closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+            modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+
+            // Auto-highlight selected radio on click
+            document.querySelectorAll('input[name="theme"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    document.querySelectorAll('input[name="theme"]').forEach(r => {
+                        r.closest('label').classList.remove('border-accent', 'bg-cream');
+                        r.closest('label').classList.add('border-gray-100');
+                    });
+                    radio.closest('label').classList.add('border-accent', 'bg-cream');
+                    radio.closest('label').classList.remove('border-gray-100');
+                });
+            });
+        })();
+    </script>
+    @endif
+
+    @if(session('theme_updated'))
+    <div id="theme-toast"
+         class="fixed bottom-6 right-6 z-[99999] flex items-center gap-3 bg-white border border-gray-100 shadow-lg rounded-2xl px-4 py-3 text-sm font-medium text-dark">
+        <span class="w-2 h-2 rounded-full bg-accent flex-shrink-0"></span>
+        {{ session('theme_updated') }}
+    </div>
+    <script>
+        setTimeout(() => {
+            const t = document.getElementById('theme-toast');
+            if (t) t.style.transition = 'opacity .4s', t.style.opacity = 0, setTimeout(() => t.remove(), 400);
+        }, 3500);
+    </script>
+    @endif
 
 @endsection
