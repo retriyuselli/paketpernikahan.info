@@ -31,41 +31,78 @@
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-8">
-                    <div class="bg-white rounded-2xl border border-gray-100 p-5">
-                        <div class="flex items-start justify-between gap-4">
-                            <div class="min-w-0">
-                                <h1 class="text-lg sm:text-xl font-extrabold leading-tight text-dark">{{ $package->name }}</h1>
-                                <p class="text-xs text-gray-400 mt-1">
-                                    <a href="{{ route('vendor.detail', $vendor->slug) }}" class="font-semibold hover:opacity-80 transition text-accent">{{ $vendor->name }}</a>
-                                    <span class="text-gray-300">—</span>
-                                    <span>{{ $categoryName }}</span>
-                                </p>
+                    {{-- ── Header Card ───────────────────────────────────── --}}
+                    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                        {{-- Top accent bar --}}
+                        <div class="h-1 w-full bg-accent"></div>
+                        <div class="p-5">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="min-w-0 flex-1">
+                                    {{-- Category badge --}}
+                                    @if($categoryName)
+                                        <span class="inline-block text-[10px] font-bold uppercase tracking-widest border border-accent/40 rounded-full px-3 py-0.5 mb-2 text-accent">
+                                            {{ $categoryName }}
+                                        </span>
+                                    @endif
+                                    <h1 class="text-lg sm:text-xl font-extrabold leading-tight text-dark">{{ $package->name }}</h1>
+                                    {{-- Vendor row --}}
+                                    <div class="flex items-center gap-2 mt-2">
+                                        <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
+                                        </svg>
+                                        <a href="{{ route('vendor.detail', $vendor->slug) }}" class="text-xs font-semibold hover:opacity-80 transition text-accent">{{ $vendor->name }}</a>
+                                        @if($vendor->city)
+                                            <span class="text-gray-300">·</span>
+                                            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            <span class="text-xs text-gray-500">{{ $vendor->city }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <a href="{{ route('store') }}" class="flex-shrink-0 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                    ← Kembali
+                                </a>
                             </div>
-                            <a href="{{ route('store') }}" class="text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
-                                Kembali
-                            </a>
-                        </div>
 
-                        <div class="mt-4 flex flex-wrap items-center gap-2">
-                            @if($package->max_guests)
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-light-sage text-dark">
-                                    {{ $package->max_guests }}
-                                </span>
-                            @endif
-                            @if($vendor->city)
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-50 text-gray-700 border border-gray-100">
-                                    {{ $vendor->city }}
-                                </span>
-                            @endif
-                            @if($vendor->location)
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-gray-50 text-gray-700 border border-gray-100">
-                                    {{ $vendor->location }}
-                                </span>
-                            @endif
+                            {{-- Tags / Badges --}}
+                            <div class="mt-4 flex flex-wrap items-center gap-2">
+                                @if($package->max_guests)
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-accent/10 text-accent border border-accent/20">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        {{ $package->max_guests }}
+                                    </span>
+                                @endif
+                                @if($vendor->location)
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-gray-50 text-gray-600 border border-gray-100">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                        </svg>
+                                        {{ $vendor->location }}
+                                    </span>
+                                @endif
+                                @if($discount > 0)
+                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-extrabold bg-red-50 text-red-500 border border-red-100">
+                                        🔥 Hemat Rp {{ number_format($discount, 0, ',', '.') }}
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mt-5 bg-white rounded-2xl border border-gray-100 p-5">
+                    {{-- ── Gallery ─────────────────────────────────────── --}}
+                    <div class="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                        <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 bg-light-sage/20">
+                            <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Galeri Foto</span>
+                            @if(!$images->isEmpty())
+                                <span class="ml-auto text-[11px] text-gray-400">{{ $images->count() }} foto</span>
+                            @endif
+                        </div>
+                        <div class="p-5">
                         <div class="relative">
                             <button type="button"
                                     data-scroll-target="store-detail-images-scroll" data-scroll-by="-500"
@@ -111,19 +148,28 @@
                                 </svg>
                             </button>
                         </div>
+                        </div>{{-- /p-5 --}}
                     </div>
 
-                    <div class="mt-5 bg-white rounded-2xl border border-gray-100 p-5">
-                        <p class="text-sm font-bold mb-3 text-dark">Detail</p>
+                    {{-- ── Items / Detail Paket ────────────────────────── --}}
+                    <div class="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                        <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 bg-light-sage/20">
+                            <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Yang Sudah Termasuk</span>
+                            @if(is_array($package->items) && count($package->items))
+                                <span class="ml-auto text-[11px] text-gray-400">{{ count($package->items) }} item</span>
+                            @endif
+                        </div>
+                        <div class="p-5">
                         @if(is_array($package->items) && count($package->items))
                             @php $itemsCount = count($package->items); @endphp
                             <div class="relative">
                                 <div id="store-detail-items" class="{{ $itemsCount > 10 ? 'max-h-64 overflow-hidden' : '' }} transition-[max-height]">
-                                    <ul class="space-y-1.5 text-sm text-gray-700">
+                                    <ul class="{{ $itemsCount > 5 ? 'grid grid-cols-1 sm:grid-cols-2 gap-x-6' : '' }} space-y-2">
                                         @foreach($package->items as $it)
-                                            <li class="flex items-start gap-2">
-                                                <span class="mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-accent"></span>
-                                                <span>{{ $it }}</span>
+                                            <li class="flex items-start gap-2.5">
+                                                <span class="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-accent"></span>
+                                                <span class="text-sm text-gray-700 leading-snug">{{ $it }}</span>
                                             </li>
                                         @endforeach
                                     </ul>
@@ -134,40 +180,52 @@
                                     <div class="pt-3 flex justify-center">
                                         <button type="button"
                                                 id="store-detail-items-toggle"
-                                                class="text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
-                                            Lihat semua ({{ $itemsCount }})
+                                                class="text-xs font-bold px-4 py-2 rounded-xl border border-accent/30 bg-accent/5 hover:bg-accent/10 transition text-accent">
+                                            Lihat semua {{ $itemsCount }} item ↓
                                         </button>
                                     </div>
                                 @endif
                             </div>
                         @else
-                            <p class="text-sm text-gray-500">Detail paket belum tersedia.</p>
+                            <p class="text-sm text-gray-400 italic">Detail paket belum tersedia.</p>
                         @endif
+                        </div>
                     </div>
 
                     @if($package->type || $package->capacity || (is_array($package->facilities) && count($package->facilities)))
-                        <div class="mt-5 bg-white rounded-2xl border border-gray-100 p-5">
-                            <p class="text-sm font-bold mb-3 text-dark">Detail Venue</p>
-                            <ul class="space-y-2 text-sm text-gray-700">
+                        {{-- ── Venue Detail ─────────────────────────────── --}}
+                        <div class="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                            <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 bg-light-sage/20">
+                                <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
+                                <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Informasi Venue</span>
+                            </div>
+                            <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 @if($package->type)
-                                    <li class="flex items-start gap-2">
-                                        <svg class="w-4 h-4 flex-shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                        <span><strong>Tipe:</strong> {{ $package->type }}</span>
-                                    </li>
+                                    <div class="flex flex-col gap-1.5 p-4 bg-cream/60 rounded-xl border border-gray-100">
+                                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                        <p class="text-[10px] uppercase tracking-widest text-gray-400">Tipe Venue</p>
+                                        <p class="text-sm font-bold text-dark">{{ $package->type }}</p>
+                                    </div>
                                 @endif
                                 @if($package->capacity)
-                                    <li class="flex items-start gap-2">
-                                        <svg class="w-4 h-4 flex-shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                        <span><strong>Kapasitas:</strong> {{ number_format((int) $package->capacity, 0, ',', '.') }} Orang</span>
-                                    </li>
+                                    <div class="flex flex-col gap-1.5 p-4 bg-cream/60 rounded-xl border border-gray-100">
+                                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        <p class="text-[10px] uppercase tracking-widest text-gray-400">Kapasitas</p>
+                                        <p class="text-sm font-bold text-dark">{{ number_format((int) $package->capacity, 0, ',', '.') }} Orang</p>
+                                    </div>
                                 @endif
                                 @if(is_array($package->facilities) && count($package->facilities))
-                                    <li class="flex items-start gap-2">
-                                        <svg class="w-4 h-4 flex-shrink-0 text-accent mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                        <span><strong>Fasilitas:</strong> {{ implode(', ', $package->facilities) }}</span>
-                                    </li>
+                                    <div class="flex flex-col gap-1.5 p-4 bg-cream/60 rounded-xl border border-gray-100 sm:col-span-{{ ($package->type && $package->capacity) ? '1' : '2' }}">
+                                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        <p class="text-[10px] uppercase tracking-widest text-gray-400">Fasilitas</p>
+                                        <div class="flex flex-wrap gap-1 mt-1">
+                                            @foreach($package->facilities as $fac)
+                                                <span class="text-[11px] px-2 py-0.5 bg-light-sage/50 rounded-full font-medium text-dark">{{ $fac }}</span>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 @endif
-                            </ul>
+                            </div>
                         </div>
                     @endif
 
@@ -271,102 +329,119 @@
 
                 
                 <div class="lg:col-span-4">
-                    <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm lg:sticky lg:top-24">
-                        <div class="pb-4 mb-4 border-b border-gray-100">
-                            <div class="flex items-center justify-between gap-4">
+                    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm lg:sticky lg:top-24">
+
+                        {{-- Accent top bar --}}
+                        <div class="h-1 w-full bg-accent"></div>
+
+                        {{-- Vendor Info --}}
+                        <div class="px-5 pt-5 pb-4 border-b border-gray-100">
+                            <div class="flex items-center justify-between gap-3">
                                 <div class="min-w-0">
+                                    <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Vendor</p>
                                     <p class="text-sm font-bold truncate text-dark">{{ $vendor->name }}</p>
+                                    @if($vendor->city)
+                                        <p class="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                            {{ $vendor->city }}
+                                        </p>
+                                    @endif
                                 </div>
                                 <a href="{{ route('vendor.detail', $vendor->slug) }}"
-                                   class="px-4 py-2 rounded-xl text-xs font-bold border border-gray-200 bg-white hover:border-gray-300 transition flex-shrink-0 text-dark">
+                                   class="flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-bold border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
                                     Profil Vendor
                                 </a>
                             </div>
-                            @if($vendor->city)
-                                <p class="mt-3 text-xs text-gray-500">Lokasi: {{ $vendor->city }}</p>
-                            @endif
                         </div>
 
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Total</p>
-                                @if($discount > 0)
-                                    <p id="store-price-original"
-                                       data-unit="{{ $price }}"
-                                       class="text-sm line-through text-gray-400 mb-0">Rp {{ number_format($price, 0, ',', '.') }}</p>
-                                    <p id="store-price-final"
-                                       data-unit="{{ $final }}"
-                                       class="text-2xl font-extrabold leading-tight text-accent">{{ number_format($final, 0, ',', '.') }}</p>
-                                @else
-                                    <p id="store-price-final"
-                                       data-unit="{{ $price }}"
-                                       class="text-2xl font-extrabold leading-tight text-accent">{{ number_format($price, 0, ',', '.') }}</p>
-                                @endif
-                                <p class="mt-1 text-[11px] text-gray-500">
-                                    Harga satuan:
+                        {{-- Price --}}
+                        <div class="px-5 pt-4 pb-4 border-b border-gray-100">
+                            <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-2">Harga Paket</p>
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
                                     @if($discount > 0)
-                                        <span class="line-through">Rp {{ number_format($price, 0, ',', '.') }}</span>
-                                        <span class="ml-1 font-semibold">→ Rp {{ number_format($final, 0, ',', '.') }}</span>
+                                        <p id="store-price-original"
+                                           data-unit="{{ $price }}"
+                                           class="text-sm line-through text-gray-400">Rp {{ number_format($price, 0, ',', '.') }}</p>
+                                        <p id="store-price-final"
+                                           data-unit="{{ $final }}"
+                                           class="text-2xl font-extrabold leading-tight text-accent">Rp {{ number_format($final, 0, ',', '.') }}</p>
                                     @else
-                                        <span class="font-semibold">Rp {{ number_format($price, 0, ',', '.') }}</span>
+                                        <p id="store-price-final"
+                                           data-unit="{{ $price }}"
+                                           class="text-2xl font-extrabold leading-tight text-accent">Rp {{ number_format($price, 0, ',', '.') }}</p>
                                     @endif
-                                    <span class="opacity-70">/ paket</span>
-                                </p>
+                                    <p class="mt-0.5 text-[11px] text-gray-400">/ paket</p>
+                                </div>
+                                @if($discount > 0)
+                                    <span id="store-price-save"
+                                          data-unit="{{ $discount }}"
+                                          class="flex-shrink-0 text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-red-500 text-white">
+                                        Hemat Rp {{ number_format($discount, 0, ',', '.') }}
+                                    </span>
+                                @endif
                             </div>
-                            @if($discount > 0)
-                                <span id="store-price-save"
-                                      data-unit="{{ $discount }}"
-                                      class="text-[10px] font-extrabold px-2 py-1 rounded-full bg-red-500 text-white">
-                                    Hemat {{ number_format($discount, 0, ',', '.') }}
-                                </span>
-                            @endif
                         </div>
 
-                        @if((int) ($package->dp_paket ?? 0) > 0)
-                            <div class="mt-4 border-t border-gray-100 pt-4">
-                                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">DP Paket</p>
-                                <p class="text-sm font-bold text-dark">Rp {{ number_format((int) $package->dp_paket, 0, ',', '.') }}</p>
-                            </div>
+                        {{-- DP & Capacity info --}}
+                        @if((int) ($package->dp_paket ?? 0) > 0 || $package->max_guests)
+                        <div class="px-5 py-3 border-b border-gray-100 flex flex-wrap gap-4">
+                            @if((int) ($package->dp_paket ?? 0) > 0)
+                                <div>
+                                    <p class="text-[10px] uppercase tracking-widest text-gray-400">DP Paket</p>
+                                    <p class="text-sm font-bold text-dark">Rp {{ number_format((int) $package->dp_paket, 0, ',', '.') }}</p>
+                                </div>
+                            @endif
+                            @if($package->max_guests)
+                                <div>
+                                    <p class="text-[10px] uppercase tracking-widest text-gray-400">Kapasitas</p>
+                                    <p class="text-sm font-bold text-dark">{{ $package->max_guests }}</p>
+                                </div>
+                            @endif
+                        </div>
                         @endif
 
-                        @if($package->max_guests)
-                            <div class="mt-4 border-t border-gray-100 pt-4">
-                                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Kapasitas</p>
-                                <p class="text-sm font-bold text-dark">{{ $package->max_guests }}</p>
-                            </div>
-                        @endif
-
-                        <div class="mt-4 border-t border-gray-100 pt-4">
+                        {{-- Quantity --}}
+                        <div class="px-5 py-4 border-b border-gray-100">
                             <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-2">Jumlah</p>
                             <div class="flex items-center gap-2">
-                                <button type="button" data-store-qty="-1" class="w-9 h-9 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">-</button>
+                                <button type="button" data-store-qty="-1"
+                                        class="w-10 h-10 rounded-xl border border-gray-200 bg-white hover:border-accent hover:text-accent transition text-dark text-lg font-bold flex items-center justify-center">−</button>
                                 <input id="store-qty" type="text" value="1" inputmode="numeric" autocomplete="off"
-                                       class="w-14 h-9 rounded-xl border border-gray-200 text-center text-sm font-bold focus:outline-none focus:border-gray-400 transition text-dark">
-                                <button type="button" data-store-qty="1" class="w-9 h-9 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">+</button>
+                                       class="w-16 h-10 rounded-xl border border-gray-200 text-center text-sm font-bold focus:outline-none focus:border-accent transition text-dark">
+                                <button type="button" data-store-qty="1"
+                                        class="w-10 h-10 rounded-xl border border-gray-200 bg-white hover:border-accent hover:text-accent transition text-dark text-lg font-bold flex items-center justify-center">+</button>
                             </div>
                         </div>
 
-                        <div class="mt-5 grid grid-cols-2 gap-2">
-                            @if($waUrl)
-                                <a href="{{ $waUrl }}" target="_blank"
-                                   class="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition hover:opacity-90 btn-wa">
-                                    Chat
-                                </a>
-                            @else
-                                <button type="button" disabled
-                                        class="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed">
-                                    Chat
-                                </button>
-                            @endif
+                        {{-- CTA Buttons --}}
+                        <div class="px-5 py-5 space-y-2.5">
                             <a id="store-booking-link"
                                data-base-href="{{ route('booking.package', $package) }}"
                                href="{{ route('booking.package', $package) }}"
-                               class="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition hover:opacity-90 bg-dark text-cream">
+                               class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 bg-accent text-white shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
                                 Booking Sekarang
                             </a>
+                            @if($waUrl)
+                                <a href="{{ $waUrl }}" target="_blank"
+                                   class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 btn-wa">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                                        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.535 5.857L.057 23.43l5.752-1.507A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.81 9.81 0 01-5.007-1.373l-.36-.214-3.715.974.99-3.618-.234-.372A9.818 9.818 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+                                    </svg>
+                                    Chat via WhatsApp
+                                </a>
+                            @else
+                                <button type="button" disabled
+                                        class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed">
+                                    Chat via WhatsApp
+                                </button>
+                            @endif
+                            <p class="text-center text-[10px] text-gray-400">Chat untuk info lebih lanjut & kustomisasi paket.</p>
                         </div>
-
-                        <p class="text-[10px] text-gray-400 mt-3">Chat untuk info lebih lanjut & kustomisasi paket.</p>
                     </div>
                 </div>
             </div>
