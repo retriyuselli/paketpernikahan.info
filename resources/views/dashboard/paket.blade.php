@@ -109,7 +109,7 @@
                         <th class="text-left px-4 py-3 font-semibold">Vendor</th>
                         @endif
                         <th class="text-left px-4 py-3 font-semibold">Kategori</th>
-                        <th class="text-left px-4 py-3 font-semibold">Harga</th>
+                        <th class="text-left px-4 py-3 font-semibold">Harga (Rp)</th>
                         <th class="text-left px-4 py-3 font-semibold">Diskon</th>
                         <th class="text-left px-4 py-3 font-semibold">Status</th>
                         <th class="text-left px-4 py-3 font-semibold"></th>
@@ -150,18 +150,18 @@
                             </td>
                             <td class="px-4 py-3 align-top">
                                 <div class="text-xs font-semibold text-dark">
-                                    Rp {{ number_format($pkg->price, 0, ',', '.') }}
+                                     {{ number_format($pkg->price, 0, ',', '.') }}
                                 </div>
                                 @if(($pkg->discount ?? 0) > 0)
                                     <div class="text-[10px] text-accent">
-                                        Final: Rp {{ number_format($finalPrice, 0, ',', '.') }}
+                                        Final:  {{ number_format($finalPrice, 0, ',', '.') }}
                                     </div>
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-xs text-gray-600 align-top">
                                 @if(($pkg->discount ?? 0) > 0)
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-50 text-pink-600">
-                                        Rp {{ number_format($pkg->discount, 0, ',', '.') }}
+                                         {{ number_format($pkg->discount, 0, ',', '.') }}
                                     </span>
                                 @else
                                     <span class="text-gray-300">—</span>

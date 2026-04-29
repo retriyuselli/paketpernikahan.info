@@ -137,8 +137,8 @@
                                         $price = (int) ($pkg->price ?? 0);
                                         $discount = (int) ($pkg->discount ?? 0);
                                         $final = max($price - $discount, 0);
-                                        $cover = null;
-                                        if ($vendor) {
+                                        $cover = $pkg->image_url;
+                                        if (!$cover && $vendor) {
                                             $cover = $vendor->cover_image_url ?: null;
                                             if (!$cover && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
                                                 $cover = $vendor->cover_image[0];
@@ -222,10 +222,12 @@
                                     $price = (int) ($pkg->price ?? 0);
                                     $discount = (int) ($pkg->discount ?? 0);
                                     $final = max($price - $discount, 0);
-                                    $cover = null;
-                                    $cover = $vendor->cover_image_url ?: null;
-                                    if (!$cover && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
-                                        $cover = $vendor->cover_image[0];
+                                    $cover = $pkg->image_url;
+                                    if (!$cover) {
+                                        $cover = $vendor->cover_image_url ?: null;
+                                        if (!$cover && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
+                                            $cover = $vendor->cover_image[0];
+                                        }
                                     }
                                     $cover = $cover ?: ('data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs><rect width="640" height="480" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="20">No Image</text></svg>'));
                                 @endphp

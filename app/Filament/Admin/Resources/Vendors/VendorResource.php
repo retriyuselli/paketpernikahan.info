@@ -22,7 +22,7 @@ class VendorResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Data Vendor';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
     public static function form(Schema $schema): Schema
     {
