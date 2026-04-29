@@ -18,6 +18,8 @@
     #modal-items strong { font-weight: 700; }
 </style>
 @endsection
+
+@section('content')
     @include('layout.header')
 
     @php
