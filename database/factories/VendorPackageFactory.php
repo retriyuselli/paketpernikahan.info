@@ -28,8 +28,7 @@ class VendorPackageFactory extends Factory
         return [
             'vendor_id'       => \App\Models\Vendor::factory(),
             'name'            => $tier['name'],
-            'price'           => 'Rp ' . number_format($priceRaw, 0, ',', '.'),
-            'price_raw'       => $priceRaw,
+            'price'           => $priceRaw,
             'max_guests'      => 'Maks. ' . $this->faker->randomElement([200, 300, 500, 800, 1000]) . ' tamu',
             'card_color'      => $tier['color'],
             'card_text_color' => $tier['text'],

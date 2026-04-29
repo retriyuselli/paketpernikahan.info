@@ -40,7 +40,7 @@
             @method('PUT')
 
             @php
-                $defaultAgreed = $booking->vendorPackage?->price_raw ?? 0;
+                $defaultAgreed = $booking->vendorPackage?->price ?? 0;
                 $agreedValue = old('agreed_total', $booking->agreed_total ?? $defaultAgreed);
                 $dpValue = old('dp_required_amount', $booking->dp_required_amount ?? 0);
             @endphp

@@ -549,8 +549,7 @@ class VendorSeeder extends Seeder
                 VendorPackage::create([
                     'vendor_id'       => $vendor->id,
                     'name'            => $tpl['name'],
-                    'price'           => 'Rp ' . number_format($priceRaw, 0, ',', '.'),
-                    'price_raw'       => $priceRaw,
+                    'price'           => $priceRaw,
                     'dp_paket'        => $dpPaket,
                     'max_guests'      => $tpl['cap'] ? 'Maks. ' . $tpl['cap'] . ' tamu' : 'Tanpa batas',
                     'type'            => $data['category'] === 'gedung' ? 'Indoor' : null,
@@ -806,8 +805,7 @@ class VendorSeeder extends Seeder
                 VendorPackage::create([
                     'vendor_id'       => $pv->id,
                     'name'            => $tpl['name'],
-                    'price'           => 'Rp ' . number_format($priceRaw, 0, ',', '.'),
-                    'price_raw'       => $priceRaw,
+                    'price'           => $priceRaw,
                     'dp_paket'        => $dpPaket,
                     'max_guests'      => $tpl['cap'],
                     'type'            => $pd['category'] === 'gedung' ? 'Indoor' : null,

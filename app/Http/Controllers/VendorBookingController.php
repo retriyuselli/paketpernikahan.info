@@ -47,7 +47,7 @@ class VendorBookingController extends Controller
         $qty = max(1, min(99, (int) ($data['qty'] ?? 1)));
         $package = isset($data['vendor_package_id'])
             ? $vendor->packages()
-                ->select(['id', 'price_raw', 'discount', 'dp_paket'])
+                ->select(['id', 'price', 'discount', 'dp_paket'])
                 ->whereKey((int) $data['vendor_package_id'])
                 ->first()
             : null;
@@ -55,7 +55,7 @@ class VendorBookingController extends Controller
         $agreedTotal = null;
         $dpRequiredAmount = null;
         if ($package) {
-            $priceRaw = (int) ($package->price_raw ?? 0);
+            $priceRaw = (int) ($package->price ?? 0);
             $discount = (int) ($package->discount ?? 0);
             $unitFinal = max($priceRaw - $discount, 0);
             $agreedTotal = $unitFinal * $qty;

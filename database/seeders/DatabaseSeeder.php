@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(RoleSeeder::class);
         $this->call(CategoryVendorSeeder::class);
         $this->call(VendorSeeder::class);
+        $this->call(VendorPackageSeeder::class);
         $this->call(HeroCircleSeeder::class);
     }
 }

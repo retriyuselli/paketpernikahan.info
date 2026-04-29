@@ -53,23 +53,19 @@ class VendorPackageForm
                                     ->required()
                                     ->maxLength(100),
                                 TextInput::make('price')
-                                    ->label('Harga (tampil)')
+                                    ->label('Harga')
                                     ->required()
-                                    ->placeholder('Rp 45.000.000')
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        $set('price_raw', (int) preg_replace('/[^\d]/', '', (string) $state));
-                                    }),
-                                TextInput::make('price_raw')
-                                    ->hidden()
-                                    ->dehydrated()
+                                    ->prefix('Rp. ')
+                                    ->mask(RawJs::make('$money($input)'))
+                                    ->stripCharacters(',')
+                                    ->placeholder('45.000.000')
                                     ->numeric()
-                                    ->default(0),
+                                    ->dehydrateStateUsing(fn ($state) => (int) preg_replace('/[^\d]/', '', (string) $state)),
                                 TextInput::make('discount')
                                     ->label('Potongan Harga')
                                     ->prefix('Rp. ')
                                     ->mask(RawJs::make('$money($input)'))
                                     ->stripCharacters(',')
-                                    ->dehydrateStateUsing(fn ($state) => (int) preg_replace('/[^\d]/', '', (string) $state))
                                     ->placeholder('0')
                                     ->helperText('Isi jika ada potongan harga khusus'),
                                 TextInput::make('dp_paket')
@@ -77,7 +73,6 @@ class VendorPackageForm
                                     ->prefix('Rp. ')
                                     ->mask(RawJs::make('$money($input)'))
                                     ->stripCharacters(',')
-                                    ->dehydrateStateUsing(fn ($state) => (int) preg_replace('/[^\d]/', '', (string) $state))
                                     ->placeholder('0')
                                     ->default(0),
                                 TextInput::make('max_guests')

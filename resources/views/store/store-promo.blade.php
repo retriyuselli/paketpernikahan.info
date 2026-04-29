@@ -62,7 +62,7 @@
                     @foreach($packages as $pkg)
                         @php
                             $vendor = $pkg->vendor;
-                            $price = (int) ($pkg->price_raw ?? 0);
+                            $price = (int) ($pkg->price ?? 0);
                             $discount = (int) ($pkg->discount ?? 0);
                             $final = max($price - $discount, 0);
                             $cover = null;

@@ -61,8 +61,7 @@ class VendorPackageImporter extends Importer
             ImportColumn::make('price')
                 ->label('Harga')
                 ->fillRecordUsing(function (VendorPackage $record, string $state): void {
-                    $record->price = $state;
-                    $record->price_raw = (int) preg_replace('/[^\d]/', '', $state);
+                    $record->price = (int) preg_replace('/[^\d]/', '', $state);
                 }),
 
             ImportColumn::make('dp_paket')
@@ -94,9 +93,6 @@ class VendorPackageImporter extends Importer
     {
         if (empty($this->record->max_guests)) {
             $this->record->max_guests = '-';
-        }
-        if (empty($this->record->price_raw)) {
-            $this->record->price_raw = (int) preg_replace('/[^\d]/', '', (string) $this->record->price);
         }
     }
 

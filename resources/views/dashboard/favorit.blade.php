@@ -69,7 +69,7 @@
                                 @if ($cheapPkg->discount > 0)
                                     <p class="text-[8px] sm:text-[10px] line-through text-gray-400 leading-none mb-0.5">{{ $cheapPkg->price }}</p>
                                     <p class="text-[11px] sm:text-sm font-bold leading-none text-accent">
-                                        Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}
+                                        Rp {{ number_format($cheapPkg->price - $cheapPkg->discount, 0, ',', '.') }}
                                     </p>
                                 @else
                                     <p class="text-[11px] sm:text-sm font-bold text-accent">{{ $cheapPkg->price }}</p>

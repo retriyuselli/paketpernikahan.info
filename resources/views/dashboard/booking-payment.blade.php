@@ -19,7 +19,7 @@
             Tanggal acara: <span class="font-semibold">{{ $booking->event_date?->format('d M Y') }}</span>
         </div>
         @php
-            $unitRawForQty = (int) ($booking->vendorPackage?->price_raw ?? 0);
+            $unitRawForQty = (int) ($booking->vendorPackage?->price ?? 0);
             $unitDiscountForQty = (int) ($booking->vendorPackage?->discount ?? 0);
             $unitFinalForQty = max($unitRawForQty - $unitDiscountForQty, 0);
             $agreedTotalForQty = (int) ($booking->agreed_total ?? 0);

@@ -29,10 +29,13 @@ class VendorPackageController extends Controller
         $this->authorizeRole($vendor);
         abort_if($package->vendor_id !== $vendor->id, 404);
 
+        $itemsRaw = (string) ($package->item ?? '');
+
         return view('vendor.packages.edit', [
             'vendor' => $vendor,
             'package' => $package,
             'categoryVendors' => CategoryVendor::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get(),
+            'itemsRaw' => $itemsRaw,
         ]);
     }
 
@@ -44,7 +47,7 @@ class VendorPackageController extends Controller
 
         $validated = $request->validate([
             'name'            => 'required|string|max:255',
-            'price_raw'       => 'required|integer|min:0',
+            'price'           => 'required|integer|min:0',
             'discount'        => 'nullable|integer|min:0',
             'dp_paket'        => 'nullable|integer|min:0',
             'category_vendor_id' => 'nullable|integer|exists:category_vendors,id',
@@ -61,13 +64,12 @@ class VendorPackageController extends Controller
 
         $package = $vendor->packages()->create([
             'name'            => $validated['name'],
-            'price'           => 'Rp ' . number_format((int)$validated['price_raw'], 0, ',', '.'),
-            'price_raw'       => (int)$validated['price_raw'],
+            'price'           => (int)$validated['price'],
             'discount'        => (int)($validated['discount'] ?? 0),
             'dp_paket'        => (int)($validated['dp_paket'] ?? 0),
             'category_vendor_id' => $validated['category_vendor_id'] ?? null,
             'max_guests'      => $validated['max_guests'] ?? '',
-            'items'           => $this->parseItems($validated['items'] ?? ''),
+            'item'            => $validated['items'] ?? '',
             'type'            => $validated['type'] ?? null,
             'capacity'        => isset($validated['capacity']) ? (int)$validated['capacity'] : null,
             'facilities'      => isset($validated['facilities']) ? array_map('trim', explode(',', $validated['facilities'])) : null,
@@ -112,7 +114,7 @@ class VendorPackageController extends Controller
 
         $validated = $request->validate([
             'name'            => 'required|string|max:255',
-            'price_raw'       => 'required|integer|min:0',
+            'price'           => 'required|integer|min:0',
             'discount'        => 'nullable|integer|min:0',
             'dp_paket'        => 'nullable|integer|min:0',
             'category_vendor_id' => 'nullable|integer|exists:category_vendors,id',
@@ -129,13 +131,12 @@ class VendorPackageController extends Controller
 
         $package->update([
             'name'            => $validated['name'],
-            'price'           => 'Rp ' . number_format((int)$validated['price_raw'], 0, ',', '.'),
-            'price_raw'       => (int)$validated['price_raw'],
+            'price'           => (int)$validated['price'],
             'discount'        => (int)($validated['discount'] ?? 0),
             'dp_paket'        => (int)($validated['dp_paket'] ?? 0),
             'category_vendor_id' => $validated['category_vendor_id'] ?? null,
             'max_guests'      => $validated['max_guests'] ?? '',
-            'items'           => $this->parseItems($validated['items'] ?? ''),
+            'item'            => $validated['items'] ?? '',
             'type'            => $validated['type'] ?? null,
             'capacity'        => isset($validated['capacity']) ? (int)$validated['capacity'] : null,
             'facilities'      => isset($validated['facilities']) ? array_map('trim', explode(',', $validated['facilities'])) : null,
@@ -207,5 +208,17 @@ class VendorPackageController extends Controller
                 array_map('trim', explode("\n", str_replace("\r", '', $raw)))
             )
         );
+    }
+
+    private function buildItemHtml(array $items): string
+    {
+        if (empty($items)) {
+            return '';
+        }
+        $lis = implode('', array_map(
+            fn (string $line) => '<li>' . e($line) . '</li>',
+            $items
+        ));
+        return '<ul>' . $lis . '</ul>';
     }
 }

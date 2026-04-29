@@ -126,7 +126,7 @@ class Vendor extends Model
     {
         return $this->hasOne(VendorPackage::class)
                     ->where('is_active', true)
-                    ->orderBy('price_raw');
+                    ->orderBy('price');
     }
 
     public function reviews()
@@ -223,9 +223,9 @@ class Vendor extends Model
     public function computePriceStartFromPackages(): ?int
     {
         $pkg = $this->packages()
-            ->orderBy('price_raw')
+            ->orderBy('price')
             ->first();
         if (!$pkg) return null;
-        return max(0, (int) $pkg->price_raw - (int) ($pkg->discount ?? 0));
+        return max(0, (int) $pkg->price - (int) ($pkg->discount ?? 0));
     }
 }

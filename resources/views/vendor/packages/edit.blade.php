@@ -5,70 +5,13 @@
 @section('body-class', 'bg-cream text-dark')
 
 @section('extra-head')
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <style>
-        .items-row {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        .items-handle {
-            width: 26px;
-            height: 26px;
-            border-radius: 10px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: rgb(107 114 128);
-            background: rgb(249 250 251);
-            border: 1px solid rgb(229 231 235);
-            flex: 0 0 auto;
-        }
-        .items-input {
-            flex: 1 1 auto;
-            height: 40px;
-            border-radius: 14px;
-            border: 1px solid rgb(229 231 235);
-            padding: 0 14px;
-            font-size: 14px;
-            color: var(--dark-gray);
-        }
-        .items-input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgb(167 243 208);
-            border-color: rgb(110 231 183);
-        }
-        .items-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 12px;
-            border: 1px solid rgb(229 231 235);
-            background: #fff;
-            color: var(--dark-gray);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex: 0 0 auto;
-        }
-        .items-btn-danger {
-            border-color: rgb(254 205 211);
-            background: rgb(255 241 242);
-            color: rgb(248 113 113);
-        }
-        .items-btn:hover { background: rgb(249 250 251); }
-        .items-btn[disabled] { opacity: 0.45; cursor: not-allowed; }
-        .items-add-btn {
-            border: 1px solid rgb(229 231 235);
-            background: #fff;
-            color: var(--dark-gray);
-            height: 38px;
-            padding: 0 12px;
-            border-radius: 14px;
-            font-size: 12px;
-            font-weight: 800;
-        }
-        .items-add-btn:hover { background: rgb(249 250 251); }
+        .ql-container { font-size: 14px; border-radius: 0 0 12px 12px; min-height: 160px; }
+        .ql-toolbar { border-radius: 12px 12px 0 0; background: rgb(249 250 251); }
+        .ql-editor { min-height: 140px; line-height: 1.65; }
+        #rte-quill-wrap { border: 1px solid rgb(229 231 235); border-radius: 14px; overflow: hidden; }
     </style>
 @endsection
 
@@ -78,7 +21,7 @@
     @php
         $itemsRaw = old('items');
         if ($itemsRaw === null) {
-            $itemsRaw = implode("\n", $package->items ?? []);
+            $itemsRaw = (string) ($package->item ?? '');
         }
     @endphp
 
@@ -155,13 +98,12 @@
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-2">Harga (angka)</label>
                             @php
-                                $priceRawValue = old('price_raw', $package->price_raw);
-                                $priceRawDigits = preg_replace('/\D+/', '', (string) $priceRawValue);
-                                $priceRawDigits = $priceRawDigits === '' ? '0' : $priceRawDigits;
-                                $priceRawFormatted = number_format((int) $priceRawDigits, 0, ',', '.');
+                                $priceDigits = preg_replace('/\D+/', '', (string) old('price', $package->price));
+                                $priceDigits = $priceDigits === '' ? '0' : $priceDigits;
+                                $priceFormatted = number_format((int) $priceDigits, 0, ',', '.');
                             @endphp
-                            <input type="hidden" name="price_raw" id="price_raw" value="{{ $priceRawDigits }}">
-                            <input type="text" id="price_raw_display" value="{{ $priceRawFormatted }}"
+                            <input type="hidden" name="price" id="price_hidden" value="{{ $priceDigits }}">
+                            <input type="text" id="price_display" value="{{ $priceFormatted }}"
                                    inputmode="numeric" autocomplete="off"
                                    class="w-full h-11 rounded-xl border border-gray-200 px-4 text-sm focus:outline-none"
                                    required>
@@ -181,9 +123,15 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-2">Down Payment (dp_paket)</label>
-                            <input type="number" name="dp_paket" value="{{ old('dp_paket', $package->dp_paket ?? 0) }}"
-                                   class="w-full h-11 rounded-xl border border-gray-200 px-4 text-sm focus:outline-none"
-                                   min="0">
+                            @php
+                                $dpDigits = preg_replace('/\D+/', '', (string) old('dp_paket', $package->dp_paket ?? 0));
+                                $dpDigits = $dpDigits === '' ? '0' : $dpDigits;
+                                $dpFormatted = number_format((int) $dpDigits, 0, ',', '.');
+                            @endphp
+                            <input type="hidden" name="dp_paket" id="dp_paket_hidden" value="{{ $dpDigits }}">
+                            <input type="text" id="dp_paket_display" value="{{ $dpFormatted }}"
+                                   inputmode="numeric" autocomplete="off"
+                                   class="w-full h-11 rounded-xl border border-gray-200 px-4 text-sm focus:outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-2">Max Guests</label>
@@ -237,87 +185,11 @@
                         </div>
                     </div>
 
-                    <div>
-                        <div class="flex items-center justify-between gap-3 mb-2 mt-4 pt-4 border-t border-gray-100">
-                            <label class="block text-xs font-semibold text-gray-500">Item Paket</label>
-                            <div class="text-xs text-gray-400">Satu item per baris</div>
-                        </div>
-                        @php
-                            $itemsLines = array_values(array_filter(array_map('trim', explode("\n", str_replace("\r", '', (string) $itemsRaw)))));
-                        @endphp
-                        <div id="pkg-items-editor" class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-4">
-                            <input type="hidden" name="items" id="pkg-items-raw" value="{{ $itemsRaw }}">
-
-                            <div id="pkg-items-rows" class="space-y-2.5">
-                                @forelse($itemsLines as $line)
-                                    <div class="items-row" data-row>
-                                        <div class="items-handle" data-handle>1</div>
-                                        <input type="text" class="items-input" data-input value="{{ $line }}">
-                                        <button type="button" class="items-btn" data-action="up">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                                            </svg>
-                                        </button>
-                                        <button type="button" class="items-btn" data-action="down">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                            </svg>
-                                        </button>
-                                        <button type="button" class="items-btn items-btn-danger" data-action="delete">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                @empty
-                                    <div class="items-row" data-row>
-                                        <div class="items-handle" data-handle>1</div>
-                                        <input type="text" class="items-input" data-input value="">
-                                        <button type="button" class="items-btn" data-action="up">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                                            </svg>
-                                        </button>
-                                        <button type="button" class="items-btn" data-action="down">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                            </svg>
-                                        </button>
-                                        <button type="button" class="items-btn items-btn-danger" data-action="delete">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                @endforelse
-                            </div>
-
-                            <template id="pkg-items-row-template">
-                                <div class="items-row" data-row>
-                                    <div class="items-handle" data-handle>1</div>
-                                    <input type="text" class="items-input" data-input value="">
-                                    <button type="button" class="items-btn" data-action="up">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                                        </svg>
-                                    </button>
-                                    <button type="button" class="items-btn" data-action="down">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                        </svg>
-                                    </button>
-                                    <button type="button" class="items-btn items-btn-danger" data-action="delete">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </template>
-
-                            <div class="flex items-center justify-between gap-3 mt-3">
-                                <button type="button" class="items-add-btn" id="pkg-items-add">Tambah item</button>
-                                <button type="button" class="items-add-btn" id="pkg-items-remove-empty">Hapus kosong</button>
-                            </div>
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <label class="block text-xs font-semibold text-gray-500 mb-2">Item Paket</label>
+                        <input type="hidden" name="items" id="rte-hidden" value="{{ old('items', $itemsRaw) }}">
+                        <div id="rte-quill-wrap">
+                            <div id="rte-quill-editor"></div>
                         </div>
                     </div>
                 </div>
@@ -397,16 +269,22 @@
                 sync();
             }
 
-            var priceRawDisplay = document.getElementById('price_raw_display');
-            var priceRawHidden = document.getElementById('price_raw');
-            if (priceRawDisplay && priceRawHidden) {
-                attachThousandsFormatter(priceRawDisplay, priceRawHidden);
+            var priceDisplay = document.getElementById('price_display');
+            var priceHidden = document.getElementById('price_hidden');
+            if (priceDisplay && priceHidden) {
+                attachThousandsFormatter(priceDisplay, priceHidden);
             }
 
             var discountDisplay = document.getElementById('discount_display');
             var discountHidden = document.getElementById('discount');
             if (discountDisplay && discountHidden) {
                 attachThousandsFormatter(discountDisplay, discountHidden);
+            }
+
+            var dpDisplay = document.getElementById('dp_paket_display');
+            var dpHidden = document.getElementById('dp_paket_hidden');
+            if (dpDisplay && dpHidden) {
+                attachThousandsFormatter(dpDisplay, dpHidden);
             }
 
             var venueSection = document.getElementById('pkg-venue-detail');
@@ -436,202 +314,44 @@
                 refreshVenueSection();
             }
 
-            var editor = document.getElementById('pkg-items-editor');
-            if (!editor) return;
-            var rows = document.getElementById('pkg-items-rows');
-            var tpl = document.getElementById('pkg-items-row-template');
-            var hidden = document.getElementById('pkg-items-raw');
-            var addBtn = document.getElementById('pkg-items-add');
-            var removeEmptyBtn = document.getElementById('pkg-items-remove-empty');
-            if (!rows || !tpl || !hidden || !addBtn || !removeEmptyBtn) return;
+            /* ── Quill Rich Text Editor ── */
+            var rteHidden = document.getElementById('rte-hidden');
+            var quillEl   = document.getElementById('rte-quill-editor');
 
-            function normalizeLine(s) {
-                return String(s || '').replace(/\r/g, '').trim();
-            }
-
-            function allRowEls() {
-                return Array.from(rows.querySelectorAll('[data-row]'));
-            }
-
-            function allInputs() {
-                return Array.from(rows.querySelectorAll('input[data-input]'));
-            }
-
-            function syncHidden() {
-                var lines = allInputs()
-                    .map(function (inp) { return normalizeLine(inp.value); })
-                    .filter(function (l) { return l.length > 0; });
-                hidden.value = lines.join('\n');
-            }
-
-            function refreshUi() {
-                var rowEls = allRowEls();
-                rowEls.forEach(function (row, idx) {
-                    var h = row.querySelector('[data-handle]');
-                    if (h) h.textContent = String(idx + 1);
-                    var up = row.querySelector('[data-action="up"]');
-                    var down = row.querySelector('[data-action="down"]');
-                    if (up) up.disabled = idx === 0;
-                    if (down) down.disabled = idx === rowEls.length - 1;
-                });
-                syncHidden();
-            }
-
-            function addRowAfter(afterRowEl, initialValue) {
-                var frag = tpl.content.cloneNode(true);
-                var newRow = frag.querySelector('[data-row]');
-                var input = frag.querySelector('input[data-input]');
-                if (input) input.value = initialValue || '';
-                if (!afterRowEl) {
-                    rows.appendChild(frag);
-                } else {
-                    afterRowEl.insertAdjacentElement('afterend', newRow);
-                }
-                refreshUi();
-                var inputs = allInputs();
-                var idx = Math.min(inputs.length - 1, afterRowEl ? allRowEls().indexOf(afterRowEl) + 1 : inputs.length - 1);
-                var target = inputs[idx];
-                if (target) target.focus();
-            }
-
-            function ensureOneRow() {
-                if (allRowEls().length) return;
-                addRowAfter(null, '');
-            }
-
-            addBtn.addEventListener('click', function () {
-                var last = allRowEls().slice(-1)[0] || null;
-                addRowAfter(last, '');
-            });
-
-            removeEmptyBtn.addEventListener('click', function () {
-                allRowEls().forEach(function (row) {
-                    var inp = row.querySelector('input[data-input]');
-                    if (!inp) return;
-                    if (!normalizeLine(inp.value).length && allRowEls().length > 1) row.remove();
-                });
-                ensureOneRow();
-                refreshUi();
-            });
-
-            rows.addEventListener('click', function (e) {
-                var btn = e.target.closest && e.target.closest('[data-action]');
-                if (!btn) return;
-                var action = btn.getAttribute('data-action');
-                var row = btn.closest('[data-row]');
-                if (!row) return;
-
-                if (action === 'delete') {
-                    if (allRowEls().length === 1) {
-                        var inp = row.querySelector('input[data-input]');
-                        if (inp) inp.value = '';
-                    } else {
-                        var prev = row.previousElementSibling;
-                        var next = row.nextElementSibling;
-                        row.remove();
-                        var target = (prev && prev.querySelector('input[data-input]')) || (next && next.querySelector('input[data-input]'));
-                        if (target) target.focus();
+            if (quillEl && rteHidden) {
+                var quill = new Quill(quillEl, {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ list: 'ordered' }, { list: 'bullet' }],
+                            [{ indent: '-1' }, { indent: '+1' }],
+                            ['clean']
+                        ]
                     }
-                    refreshUi();
-                    return;
-                }
-
-                if (action === 'up') {
-                    var prevRow = row.previousElementSibling;
-                    if (!prevRow) return;
-                    prevRow.insertAdjacentElement('beforebegin', row);
-                    var inpUp = row.querySelector('input[data-input]');
-                    if (inpUp) inpUp.focus();
-                    refreshUi();
-                    return;
-                }
-
-                if (action === 'down') {
-                    var nextRow = row.nextElementSibling;
-                    if (!nextRow) return;
-                    nextRow.insertAdjacentElement('afterend', row);
-                    var inpDown = row.querySelector('input[data-input]');
-                    if (inpDown) inpDown.focus();
-                    refreshUi();
-                }
-            });
-
-            rows.addEventListener('input', function (e) {
-                if (!e.target || e.target.getAttribute('data-input') === null) return;
-                syncHidden();
-            });
-
-            rows.addEventListener('keydown', function (e) {
-                var target = e.target;
-                if (!target || target.getAttribute('data-input') === null) return;
-                var row = target.closest('[data-row]');
-                if (!row) return;
-
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addRowAfter(row, '');
-                    return;
-                }
-
-                if (e.key === 'Backspace' && !normalizeLine(target.value).length && allRowEls().length > 1) {
-                    e.preventDefault();
-                    var prevRow = row.previousElementSibling;
-                    var nextRow = row.nextElementSibling;
-                    row.remove();
-                    var focusEl = (prevRow && prevRow.querySelector('input[data-input]')) || (nextRow && nextRow.querySelector('input[data-input]'));
-                    if (focusEl) focusEl.focus();
-                    refreshUi();
-                }
-            });
-
-            rows.addEventListener('paste', function (e) {
-                var target = e.target;
-                if (!target || target.getAttribute('data-input') === null) return;
-                var text = (e.clipboardData || window.clipboardData)?.getData?.('text') || '';
-                if (!text || text.indexOf('\n') === -1) return;
-                e.preventDefault();
-
-                var lines = String(text)
-                    .replace(/\r/g, '')
-                    .split('\n')
-                    .map(function (l) { return normalizeLine(l); })
-                    .filter(function (l) { return l.length > 0; });
-                if (!lines.length) return;
-
-                var row = target.closest('[data-row]');
-                if (!row) return;
-
-                var current = normalizeLine(target.value);
-                if (!current.length) {
-                    target.value = lines.shift() || '';
-                } else {
-                    target.value = (current + ' ' + (lines.shift() || '')).trim();
-                }
-
-                var cursor = row;
-                lines.forEach(function (l) {
-                    var frag = tpl.content.cloneNode(true);
-                    var newRow = frag.querySelector('[data-row]');
-                    var inp = frag.querySelector('input[data-input]');
-                    if (inp) inp.value = l;
-                    cursor.insertAdjacentElement('afterend', newRow);
-                    cursor = newRow;
                 });
 
-                refreshUi();
-                var lastInput = cursor.querySelector('input[data-input]');
-                if (lastInput) lastInput.focus();
-            });
+                // Load existing HTML
+                var initialHtml = rteHidden.value || '';
+                if (initialHtml) {
+                    quill.clipboard.dangerouslyPasteHTML(initialHtml);
+                }
 
-            var form = editor.closest('form');
-            if (form) {
-                form.addEventListener('submit', function () {
-                    refreshUi();
+                // Sync to hidden on every change
+                quill.on('text-change', function () {
+                    rteHidden.value = quill.root.innerHTML;
                 });
+
+                // Sync on submit
+                var form = quillEl.closest('form');
+                if (form) {
+                    form.addEventListener('submit', function () {
+                        rteHidden.value = quill.root.innerHTML;
+                    });
+                }
             }
 
-            ensureOneRow();
-            refreshUi();
+
         });
     </script>
 @endsection

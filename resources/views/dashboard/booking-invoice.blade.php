@@ -128,7 +128,7 @@
                             </td>
                             <td class="px-5 py-3 text-right">
                                 @php
-                                    $amount = (int) ($booking->agreed_total ?: ($package->price_raw ?? 0));
+                                    $amount = (int) ($booking->agreed_total ?: ($package->price ?? 0));
                                 @endphp
                                 <div class="text-xs font-bold text-dark">{{ number_format($amount, 0, ',', '.') }}</div>
                             </td>

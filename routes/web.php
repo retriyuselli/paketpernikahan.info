@@ -24,7 +24,7 @@ Route::get('/', function () {
             'vendor' => fn ($q) => $q->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'cover_image'),
         ])
         ->orderBy('sort_order')
-        ->orderBy('price_raw')
+        ->orderBy('price')
         ->get();
 
     $activeCategorySlugs = $homeCategories->pluck('slug')->filter()->all();
@@ -122,7 +122,7 @@ Route::get('/store', function () {
             'vendor' => fn ($q) => $q->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'price_start', 'discount', 'cover_image'),
         ])
         ->orderBy('sort_order')
-        ->orderBy('price_raw');
+        ->orderBy('price');
 
     if ($search !== '') {
         $query->where(function ($q) use ($search) {
@@ -212,10 +212,10 @@ Route::get('/store/kategori/{category:slug}', function (\App\Models\CategoryVend
     }
 
     $packagesQuery = match ($sort) {
-        'termurah' => $packagesQuery->orderBy('price_raw')->orderBy('sort_order'),
-        'termahal' => $packagesQuery->orderByDesc('price_raw')->orderBy('sort_order'),
+        'termurah' => $packagesQuery->orderBy('price')->orderBy('sort_order'),
+        'termahal' => $packagesQuery->orderByDesc('price')->orderBy('sort_order'),
         'terbaru' => $packagesQuery->orderByDesc('created_at')->orderBy('sort_order'),
-        default => $packagesQuery->orderBy('sort_order')->orderBy('price_raw'),
+        default => $packagesQuery->orderBy('sort_order')->orderBy('price'),
     };
 
     $packages = $packagesQuery->paginate(24)->withQueryString();
@@ -255,10 +255,10 @@ Route::get('/store/kota/{city}', function (string $city) {
     }
 
     $packagesQuery = match ($sort) {
-        'termurah' => $packagesQuery->orderBy('price_raw')->orderBy('sort_order'),
-        'termahal' => $packagesQuery->orderByDesc('price_raw')->orderBy('sort_order'),
+        'termurah' => $packagesQuery->orderBy('price')->orderBy('sort_order'),
+        'termahal' => $packagesQuery->orderByDesc('price')->orderBy('sort_order'),
         'terbaru' => $packagesQuery->orderByDesc('created_at')->orderBy('sort_order'),
-        default => $packagesQuery->orderBy('sort_order')->orderBy('price_raw'),
+        default => $packagesQuery->orderBy('sort_order')->orderBy('price'),
     };
 
     $packages = $packagesQuery->paginate(24)->withQueryString();
@@ -298,8 +298,8 @@ Route::get('/store/promo', function () {
     }
 
     $packagesQuery = match ($sort) {
-        'termurah' => $packagesQuery->orderBy('price_raw')->orderBy('sort_order'),
-        'termahal' => $packagesQuery->orderByDesc('price_raw')->orderBy('sort_order'),
+        'termurah' => $packagesQuery->orderBy('price')->orderBy('sort_order'),
+        'termahal' => $packagesQuery->orderByDesc('price')->orderBy('sort_order'),
         'terbaru' => $packagesQuery->orderByDesc('created_at')->orderBy('sort_order'),
         default => $packagesQuery->orderByDesc('discount')->orderBy('sort_order'),
     };
@@ -473,7 +473,7 @@ Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $packag
         ->where('is_active', true)
         ->whereKeyNot($package->id)
         ->orderBy('sort_order')
-        ->orderBy('price_raw')
+        ->orderBy('price')
         ->get();
 
     $videos = $package->galleries()
@@ -672,7 +672,7 @@ Route::get('/booking/vendor/{vendor:slug}', function (\App\Models\Vendor $vendor
     $vendorBookingDisabled = !$vendor->is_profile_complete && !$isPrivileged;
     $vendorBookingBackUrl = $isVendorOwner || $isPrivileged ? route('vendor.edit', $vendor) : route('vendor.detail', $vendor);
 
-    $packagesQuery = $vendor->packages()->orderBy('sort_order')->orderBy('price_raw');
+    $packagesQuery = $vendor->packages()->orderBy('sort_order')->orderBy('price');
     if (!($isPrivileged || $isVendorOwner)) {
         $packagesQuery->where('is_active', true);
     }
@@ -703,7 +703,7 @@ Route::get('/booking/paket/{package}', function (\App\Models\VendorPackage $pack
     $vendorBookingDisabled = !$vendor->is_profile_complete && !$isPrivileged;
     $vendorBookingBackUrl = $isVendorOwner || $isPrivileged ? route('vendor.edit', $vendor) : route('store.package.show', $package);
 
-    $packagesQuery = $vendor->packages()->orderBy('sort_order')->orderBy('price_raw');
+    $packagesQuery = $vendor->packages()->orderBy('sort_order')->orderBy('price');
     if (!($isPrivileged || $isVendorOwner)) {
         $packagesQuery->where('is_active', true);
     }
@@ -1062,7 +1062,7 @@ Route::put('/dashboard/vendor/bookings/{booking}', function (\Illuminate\Http\Re
         'dp_required_amount' => ['nullable', 'integer', 'min:0'],
     ]);
 
-    $agreedTotal = $booking->vendorPackage ? (int) ($booking->vendorPackage->price_raw ?? 0) : null;
+    $agreedTotal = $booking->vendorPackage ? (int) ($booking->vendorPackage->price ?? 0) : null;
 
     $booking->update([
         'status' => $data['status'],
@@ -1132,6 +1132,55 @@ Route::get('/dashboard/vendor/vendors', function () {
 
     return view('dashboard.vendor-vendors', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount', 'bookingUserCount', 'vendors'));
 })->name('dashboard.vendor.vendors')->middleware(['auth', 'verified']);
+
+Route::get('/dashboard/paket', function () {
+    $user = \App\Models\User::findOrFail(Auth::id());
+
+    $isAdmin = $user->hasRole(['super_admin', 'admin']);
+    $vendors = \App\Models\Vendor::where('owner_user_id', $user->id)->get(['id', 'name', 'slug']);
+    $vendorIds = $vendors->pluck('id');
+    $isPemilikPaket = $vendorIds->isNotEmpty();
+
+    abort_unless($isAdmin || $isPemilikPaket, 403);
+
+    $reviewCount = \App\Models\VendorReview::where('user_id', $user->id)->count();
+    $favoriteCount = $user->likedVendors()->count();
+    $bookingCount = $user->vendorBookings()->count();
+    $bookingUserCount = $isAdmin ? \App\Models\VendorBooking::where('status', 'pending')->count() : 0;
+
+    $q = trim((string) request('q', ''));
+    $statusFilter = request('status', '');
+
+    $query = \App\Models\VendorPackage::query()
+        ->with(['vendor:id,name,slug,owner_user_id', 'categoryVendor:id,name'])
+        ->orderBy('vendor_id')
+        ->orderBy('sort_order')
+        ->orderBy('price');
+
+    if (!$isAdmin) {
+        $query->whereIn('vendor_id', $vendorIds);
+    }
+
+    if ($q !== '') {
+        $query->where(function ($sub) use ($q) {
+            $sub->where('name', 'like', "%{$q}%")
+                ->orWhereHas('vendor', fn ($vq) => $vq->where('name', 'like', "%{$q}%"));
+        });
+    }
+
+    if ($statusFilter === 'aktif') {
+        $query->where('is_active', true);
+    } elseif ($statusFilter === 'nonaktif') {
+        $query->where('is_active', false);
+    }
+
+    $packages = $query->paginate(30)->withQueryString();
+
+    return view('dashboard.paket', compact(
+        'user', 'reviewCount', 'favoriteCount', 'bookingCount', 'bookingUserCount',
+        'packages', 'q', 'statusFilter', 'isAdmin', 'vendors'
+    ));
+})->name('dashboard.paket')->middleware(['auth', 'verified']);
 
 Route::get('/dashboard/admin/vendors', function () {
     $user = \App\Models\User::findOrFail(Auth::id());

@@ -379,7 +379,7 @@
                         'detail_url'     => route('vendor.detail', $v->slug),
                         'wa_url'         => 'https://wa.me/'.preg_replace('/[^0-9]/', '', $v->phone ?? ''),
                         'pkg_price'      => optional($v->cheapestPackage)->price,
-                        'pkg_price_raw'  => optional($v->cheapestPackage)->price_raw,
+                        'pkg_price'  => optional($v->cheapestPackage)->price,
                         'pkg_discount'   => optional($v->cheapestPackage)->discount ?? 0,
                         'pkg_name'       => optional($v->cheapestPackage)->name,
                         'price_start'    => is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : ($v->price_start ?: '—'),
@@ -428,10 +428,10 @@
                         <div class="flex items-center gap-1.5 mt-1 mb-2">
                             <span class="text-[9px] text-gray-400">Mulai</span>
                             @if ($pkg->discount > 0)
-                            <span class="text-[10px] line-through text-gray-400">Rp {{ number_format($pkg->price_raw, 0, ',', '.') }}</span>
-                            <span class="text-[11px] font-bold text-dark">Rp {{ number_format($pkg->price_raw - $pkg->discount, 0, ',', '.') }}</span>
+                            <span class="text-[10px] line-through text-gray-400">Rp {{ number_format($pkg->price, 0, ',', '.') }}</span>
+                            <span class="text-[11px] font-bold text-dark">Rp {{ number_format($pkg->price - $pkg->discount, 0, ',', '.') }}</span>
                             @else
-                            <span class="text-[11px] font-semibold text-dark">Rp {{ number_format($pkg->price_raw, 0, ',', '.') }}</span>
+                            <span class="text-[11px] font-semibold text-dark">Rp {{ number_format($pkg->price, 0, ',', '.') }}</span>
                             @endif
                         </div>
                         @else
@@ -571,13 +571,13 @@
 
         const priceEl = document.getElementById('vp-price');
         const fmtRp = (raw) => raw > 0 ? 'Rp ' + parseInt(raw).toLocaleString('id-ID') : '—';
-        if (v.pkg_price_raw) {
+        if (v.pkg_price) {
             if (v.pkg_discount > 0) {
-                const discounted = Number(v.pkg_price_raw) - Number(v.pkg_discount);
-                priceEl.innerHTML = '<span class="line-through text-gray-400 text-xs">' + fmtRp(v.pkg_price_raw) + '</span><br>' +
+                const discounted = Number(v.pkg_price) - Number(v.pkg_discount);
+                priceEl.innerHTML = '<span class="line-through text-gray-400 text-xs">' + fmtRp(v.pkg_price) + '</span><br>' +
                     'Rp ' + discounted.toLocaleString('id-ID');
             } else {
-                priceEl.textContent = fmtRp(v.pkg_price_raw);
+                priceEl.textContent = fmtRp(v.pkg_price);
             }
         } else {
             priceEl.textContent = v.price_start || '—';

@@ -88,6 +88,16 @@
 
 @include('layout.header')
 
+@php
+    $isPemilikPaket = $user->hasRole(['super_admin', 'admin'])
+        || \App\Models\Vendor::where('owner_user_id', $user->id)->whereHas('packages')->exists();
+    $menuPaketCount = $isPemilikPaket
+        ? ($user->hasRole(['super_admin', 'admin'])
+            ? \App\Models\VendorPackage::count()
+            : \App\Models\VendorPackage::whereHas('vendor', fn($q) => $q->where('owner_user_id', $user->id))->count())
+        : 0;
+@endphp
+
 <div class="flex min-h-[calc(100vh-130px)]">
 
     {{-- ─── Sidebar ────────────────────────────────────────────── --}}
@@ -197,7 +207,7 @@
                 Pengaturan Akun
             </a>
 
-            @if($user->hasRole(['super_admin', 'admin', 'vendor']))
+            @if($user->hasRole(['super_admin', 'admin', 'vendor']) || $isPemilikPaket)
             <div class="pt-3">
                 <p class="text-[10px] uppercase tracking-widest text-gray-400 px-2 mb-2">Vendor</p>
             </div>
@@ -211,6 +221,17 @@
                     <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorCount }}</span>
                     @endif
                 </a>
+            @endif
+            @if($isPemilikPaket)
+            <a href="{{ route('dashboard.paket') }}" class="sidebar-link {{ request()->routeIs('dashboard.paket') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+                </svg>
+                Paket
+                @if($menuPaketCount > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuPaketCount }}</span>
+                @endif
+            </a>
             @endif
             <a href="{{ route('dashboard.vendor.bookings') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.bookings*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -404,7 +425,7 @@
                         Pengaturan Akun
                     </a>
 
-            @if($user->hasRole(['super_admin', 'admin', 'vendor']))
+            @if($user->hasRole(['super_admin', 'admin', 'vendor']) || $isPemilikPaket)
             <div class="pt-3">
                 <p class="text-[10px] uppercase tracking-widest text-gray-400 px-2 mb-2">Vendor</p>
             </div>
@@ -416,6 +437,17 @@
                 Vendor Saya
                 @if(($menuVendorCount ?? 0) > 0)
                 <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorCount }}</span>
+                @endif
+            </a>
+            @endif
+            @if($isPemilikPaket)
+            <a href="{{ route('dashboard.paket') }}" class="sidebar-link {{ request()->routeIs('dashboard.paket') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+                </svg>
+                Paket
+                @if($menuPaketCount > 0)
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuPaketCount }}</span>
                 @endif
             </a>
             @endif

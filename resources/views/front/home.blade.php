@@ -209,7 +209,7 @@
                                 @foreach($group->take(8) as $pkg)
                                     @php
                                         $vendor = $pkg->vendor;
-                                        $price = (int) ($pkg->price_raw ?? 0);
+                                        $price = (int) ($pkg->price ?? 0);
                                         $discount = (int) ($pkg->discount ?? 0);
                                         $final = max($price - $discount, 0);
                                         $cover = $pkg->image_url;
@@ -307,7 +307,7 @@
                             @foreach($cityPackages->take(8) as $pkg)
                                 @php
                                     $vendor = $pkg->vendor;
-                                    $price = (int) ($pkg->price_raw ?? 0);
+                                    $price = (int) ($pkg->price ?? 0);
                                     $discount = (int) ($pkg->discount ?? 0);
                                     $final = max($price - $discount, 0);
                                     $cover = $pkg->image_url;
@@ -506,7 +506,7 @@
                         @foreach($homePromoPackages as $pkg)
                             @php
                                 $vendor = $pkg->vendor;
-                                $price = (int) ($pkg->price_raw ?? 0);
+                                $price = (int) ($pkg->price ?? 0);
                                 $discount = (int) ($pkg->discount ?? 0);
                                 $final = max($price - $discount, 0);
                                 $logo = $vendor->logo_vendor

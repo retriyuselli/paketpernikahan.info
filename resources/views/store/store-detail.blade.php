@@ -4,11 +4,22 @@
 
 @section('body-class', 'bg-cream text-dark')
 
+@section('extra-head')
+<style>
+    .prose { font-size: 12px; }
+    .prose ul { list-style: disc; padding-left: 1.4rem; margin: 4px 0; }
+    .prose ol { list-style: decimal; padding-left: 1.4rem; margin: 4px 0; }
+    .prose li { margin: 2px 0; }
+    .prose strong { font-weight: 700; }
+    .prose em { font-style: italic; }
+</style>
+@endsection
+
 @section('content')
     @include('layout.header')
 
     @php
-        $price = (int) ($package->price_raw ?? 0);
+        $price = (int) ($package->price ?? 0);
         $discount = (int) ($package->discount ?? 0);
         $final = max($price - $discount, 0);
         $wa = preg_replace('/[^0-9]/', '', (string) ($vendor->phone ?? ''));
@@ -156,35 +167,11 @@
                         <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 bg-light-sage/20">
                             <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
                             <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Yang Sudah Termasuk</span>
-                            @if(is_array($package->items) && count($package->items))
-                                <span class="ml-auto text-[11px] text-gray-400">{{ count($package->items) }} item</span>
-                            @endif
                         </div>
                         <div class="p-5">
-                        @if(is_array($package->items) && count($package->items))
-                            @php $itemsCount = count($package->items); @endphp
-                            <div class="relative">
-                                <div id="store-detail-items" class="{{ $itemsCount > 10 ? 'max-h-64 overflow-hidden' : '' }} transition-[max-height]">
-                                    <ul class="{{ $itemsCount > 5 ? 'grid grid-cols-1 sm:grid-cols-2 gap-x-6' : '' }} space-y-2">
-                                        @foreach($package->items as $it)
-                                            <li class="flex items-start gap-2.5">
-                                                <span class="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-accent"></span>
-                                                <span class="text-sm text-gray-700 leading-snug">{{ $it }}</span>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-
-                                @if($itemsCount > 10)
-                                    <div id="store-detail-items-fade" class="pointer-events-none absolute left-0 right-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent"></div>
-                                    <div class="pt-3 flex justify-center">
-                                        <button type="button"
-                                                id="store-detail-items-toggle"
-                                                class="text-xs font-bold px-4 py-2 rounded-xl border border-accent/30 bg-accent/5 hover:bg-accent/10 transition text-accent">
-                                            Lihat semua {{ $itemsCount }} item ↓
-                                        </button>
-                                    </div>
-                                @endif
+                        @if($package->item)
+                            <div class="prose prose-sm max-w-none text-gray-700">
+                                {!! $package->item !!}
                             </div>
                         @else
                             <p class="text-sm text-gray-400 italic">Detail paket belum tersedia.</p>
@@ -293,7 +280,7 @@
                             <div class="flex gap-3 overflow-x-auto scroll-smooth pb-2 scrollbar-hide">
                                 @foreach($otherPackages->take(12) as $op)
                                     @php
-                                        $opPrice = (int) ($op->price_raw ?? 0);
+                                        $opPrice = (int) ($op->price ?? 0);
                                         $opDiscount = (int) ($op->discount ?? 0);
                                         $opFinal = max($opPrice - $opDiscount, 0);
                                         $opCover = $vendor->cover_image_url ?: null;

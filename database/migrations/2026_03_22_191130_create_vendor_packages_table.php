@@ -16,8 +16,7 @@ return new class extends Migration
             $table->foreignId('vendor_id')->constrained()->cascadeOnDelete();
             $table->foreignId('category_vendor_id')->nullable()->constrained('category_vendors')->nullOnDelete();
             $table->string('name');                         // Paket Silver, Gold, Platinum
-            $table->string('price');                        // Rp 35.000.000 (display)
-            $table->unsignedBigInteger('price_raw');        // 35000000 (for sorting/calc)
+            $table->unsignedBigInteger('price');            // 35000000 (integer, for sorting/calc/display)
             $table->unsignedBigInteger('discount')->default(0); // potongan harga (nominal)
             $table->unsignedBigInteger('dp_paket')->default(0); // DP Paket (nominal)
             $table->string('max_guests');                   // Maks. 300 tamu

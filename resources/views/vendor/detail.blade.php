@@ -4,7 +4,20 @@
 
 @section('body-class', 'bg-cream text-dark')
 
-@section('content')
+@section('extra-head')
+<style>
+    .prose ul { list-style: disc; padding-left: 1.4rem; margin: 4px 0; }
+    .prose ol { list-style: decimal; padding-left: 1.4rem; margin: 4px 0; }
+    .prose li { margin: 2px 0; }
+    .prose strong { font-weight: 700; }
+    .prose em { font-style: italic; }
+    #modal-items ul, #modal-items ol { padding-left: 1.4rem; margin: 4px 0; }
+    #modal-items ul { list-style: disc; }
+    #modal-items ol { list-style: decimal; }
+    #modal-items li { margin: 2px 0; }
+    #modal-items strong { font-weight: 700; }
+</style>
+@endsection
     @include('layout.header')
 
     @php
@@ -236,10 +249,10 @@
                             <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Harga Mulai</p>
                             @if ($cheapPkg)
                             @if ($cheapPkg->discount > 0)
-                            <p class="text-[10px] line-through text-gray-400 leading-none mb-0.5">Rp {{ number_format($cheapPkg->price_raw, 0, ',', '.') }}</p>
-                            <p class="text-sm font-semibold text-accent">Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}</p>
+                            <p class="text-[10px] line-through text-gray-400 leading-none mb-0.5">Rp {{ number_format($cheapPkg->price, 0, ',', '.') }}</p>
+                            <p class="text-sm font-semibold text-accent">Rp {{ number_format($cheapPkg->price - $cheapPkg->discount, 0, ',', '.') }}</p>
                             @else
-                            <p class="text-sm font-semibold text-accent">Rp {{ number_format($cheapPkg->price_raw, 0, ',', '.') }}</p>
+                            <p class="text-sm font-semibold text-accent">Rp {{ number_format($cheapPkg->price, 0, ',', '.') }}</p>
                             @endif
                             @else
                             @php
@@ -264,14 +277,17 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         @foreach ($vendor->packages as $pkg)
                         @php
-                            $pkgData = $pkg->only(['id', 'name', 'price', 'price_raw', 'discount', 'dp_paket', 'max_guests', 'card_color', 'card_text_color', 'items', 'type', 'capacity', 'facilities']);
+                            $pkgData = array_merge(
+                                $pkg->only(['id', 'name', 'price', 'discount', 'dp_paket', 'max_guests', 'card_color', 'card_text_color', 'items', 'type', 'capacity', 'facilities']),
+                                ['item_html' => (string) ($pkg->item ?? '')]
+                            );
                         @endphp
                         <div class="rounded-2xl p-5 flex flex-col cursor-pointer group ring-2 ring-transparent hover:ring-white/50 transition"
                              style="background-color: {{ $pkg->card_color }}; color: {{ $pkg->card_text_color }}"
                              data-action="open-package"
                              data-package='@json($pkgData)'>
                             <p class="text-xs font-bold uppercase tracking-widest mb-1 opacity-70">{{ $pkg->name }}</p>
-                            <p class="text-sm font-bold leading-tight mb-1">Rp {{ number_format($pkg->price_raw, 0, ',', '.') }}</p>
+                            <p class="text-sm font-bold leading-tight mb-1">Rp {{ number_format($pkg->price, 0, ',', '.') }}</p>
                             <p class="text-xs mb-4 opacity-70">{{ $pkg->max_guests ?: '0' }} Pax</p>
                             @php $maxShow = 5; $total = count($pkg->items); $more = $total - $maxShow; @endphp
                             <ul class="space-y-1.5 flex-1 mb-4">
@@ -561,14 +577,14 @@
                         @if ($cheapPkg)
                         @if ($cheapPkg->discount > 0)
                         <p id="sidebar-price-original"
-                           class="text-sm line-through text-gray-400 mb-0">Rp {{ number_format($cheapPkg->price_raw, 0, ',', '.') }}</p>
+                           class="text-sm line-through text-gray-400 mb-0">Rp {{ number_format($cheapPkg->price, 0, ',', '.') }}</p>
                         <p class="text-2xl font-bold mb-0.5 text-accent"
                            id="sidebar-price"
-                           >Rp {{ number_format($cheapPkg->price_raw - $cheapPkg->discount, 0, ',', '.') }}</p>
+                           >Rp {{ number_format($cheapPkg->price - $cheapPkg->discount, 0, ',', '.') }}</p>
                         @else
                         <p class="text-2xl font-bold mb-0.5 text-accent"
                            id="sidebar-price"
-                           >Rp {{ number_format($cheapPkg->price_raw, 0, ',', '.') }}</p>
+                           >Rp {{ number_format($cheapPkg->price, 0, ',', '.') }}</p>
                         @endif
                         <div id="sidebar-dp-wrap" class="mt-1">
                             <p class="text-xs text-gray-400 mb-0">DP: <span id="sidebar-dp" class="font-semibold text-gray-600">{{ ($cheapPkg->dp_paket ?? 0) > 0 ? ('Rp ' . number_format((int) $cheapPkg->dp_paket, 0, ',', '.')) : '—' }}</span></p>
@@ -839,7 +855,7 @@
                 <!-- Items List -->
                 <div>
                     <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Yang Sudah Termasuk</p>
-                    <ul id="modal-items"></ul>
+                    <div id="modal-items" class="prose prose-sm max-w-none text-gray-700 text-sm"></div>
                 </div>
 
                 <hr class="border-gray-100">
@@ -926,7 +942,7 @@
                         @endphp
                         <input type="hidden" name="vendor_package_id" id="booking-vendor-package-id" value="{{ $oldBookingPkg?->id }}">
                         <input type="text" id="booking-vendor-package-label"
-                               value="{{ $oldBookingPkg ? ($oldBookingPkg->name . ' — Rp ' . number_format($oldBookingPkg->price_raw, 0, ',', '.')) : 'Tanpa paket' }}"
+                               value="{{ $oldBookingPkg ? ($oldBookingPkg->name . ' — Rp ' . number_format($oldBookingPkg->price, 0, ',', '.')) : 'Tanpa paket' }}"
                                readonly
                                class="w-full h-11 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-gray-50 text-gray-700">
                     </div>
@@ -1150,7 +1166,7 @@
 
         if (selectedPackage?.id) {
             idEl.value = selectedPackage.id;
-            const fmtPkgPrice = (pkg) => pkg.price_raw > 0 ? ('Rp ' + parseInt(pkg.price_raw).toLocaleString('id-ID')) : (pkg.price || '—');
+            const fmtPkgPrice = (pkg) => pkg.price > 0 ? ('Rp ' + parseInt(pkg.price).toLocaleString('id-ID')) : (pkg.price || '—');
             labelEl.value = `${selectedPackage.name} — ${fmtPkgPrice(selectedPackage)}`;
             return;
         }
@@ -1173,11 +1189,11 @@
 
         // Fill data
         document.getElementById('modal-pkg-name').textContent    = pkg.name;
-        const fmtPrice = (raw, fallback) => raw > 0 ? ('Rp ' + parseInt(raw).toLocaleString('id-ID')) : (fallback || '—');
-        document.getElementById('modal-price').textContent        = fmtPrice(pkg.price_raw, pkg.price);
+        const fmtPrice = (price) => price > 0 ? ('Rp ' + parseInt(price).toLocaleString('id-ID')) : '—';
+        document.getElementById('modal-price').textContent        = fmtPrice(pkg.price);
         document.getElementById('modal-guests').textContent       = pkg.max_guests || '—';
         document.getElementById('modal-summary-name').textContent  = pkg.name;
-        document.getElementById('modal-summary-price').textContent = fmtPrice(pkg.price_raw, pkg.price);
+        document.getElementById('modal-summary-price').textContent = fmtPrice(pkg.price);
 
         // Venue Info
         const venueInfo = document.getElementById('modal-venue-info');
@@ -1217,26 +1233,17 @@
         }
 
         // Items list
-        const ul = document.getElementById('modal-items');
-        ul.innerHTML = '';
-        const count = pkg.items.length;
-        const cols3 = count > 15;
-        const cols2 = !cols3 && count > 5;
-        ul.className = cols3
-            ? 'grid grid-cols-3 gap-x-3 gap-y-1.5'
-            : cols2
-                ? 'grid grid-cols-2 gap-x-4 gap-y-2'
-                : 'space-y-2';
-        pkg.items.forEach(item => {
-            const textSize = cols3 ? 'text-[11px]' : cols2 ? 'text-xs' : 'text-sm';
-            ul.innerHTML += `
-                <li class="flex items-start gap-1.5 ${textSize} text-gray-700">
-                    <svg class="w-3 h-3 mt-0.5 flex-shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    <span>${item}</span>
-                </li>`;
-        });
+        const itemsDiv = document.getElementById('modal-items');
+        itemsDiv.innerHTML = pkg.item_html || '';
+        if (!pkg.item_html) {
+            // fallback to plain array if no html
+            const count = (pkg.items || []).length;
+            const cols2 = count > 5;
+            let html = cols2 ? '<ul style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;padding-left:1.25rem;list-style:disc">' : '<ul style="padding-left:1.25rem;list-style:disc">';
+            (pkg.items || []).forEach(item => { html += `<li>${item}</li>`; });
+            html += '</ul>';
+            itemsDiv.innerHTML = html;
+        }
 
         // Detail link
         const detailLink = document.getElementById('modal-detail-link');
@@ -1265,7 +1272,7 @@
 
         // Update sidebar
         const sidebarPriceEl = document.getElementById('sidebar-price');
-        const unitRaw = parseInt(currentPackage.price_raw || 0, 10) || 0;
+        const unitRaw = parseInt(currentPackage.price || 0, 10) || 0;
         const discount = parseInt(currentPackage.discount || 0, 10) || 0;
         const unitFinal = Math.max(unitRaw - discount, 0);
         if (sidebarPriceEl) sidebarPriceEl.textContent = unitFinal > 0 ? ('Rp ' + unitFinal.toLocaleString('id-ID')) : (currentPackage.price || '—');

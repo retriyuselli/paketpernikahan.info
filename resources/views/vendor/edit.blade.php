@@ -920,7 +920,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold mb-1.5 text-dark">Harga (Rp) <span class="text-red-400">*</span></label>
-                        <input type="text" id="pkg-price-raw" placeholder="35.000.000"
+                        <input type="text" id="pkg-price" placeholder="35.000.000"
                                class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition pkg-price-fmt text-dark">
                     </div>
                     <div>
@@ -1180,7 +1180,7 @@
     function openPkgModal(id, name, priceRaw, discount, dpPaket, maxGuests, items, cardColor, textColor, sortOrder, isActive, categoryVendorId, type, capacity, facilities) {
         document.getElementById('pkg-id').value          = id ?? '';
         document.getElementById('pkg-name').value        = name ?? '';
-        document.getElementById('pkg-price-raw').value   = priceRaw ? parseInt(priceRaw).toLocaleString('id-ID') : '';
+        document.getElementById('pkg-price').value   = priceRaw ? parseInt(priceRaw).toLocaleString('id-ID') : '';
         document.getElementById('pkg-discount').value    = discount ? parseInt(discount).toLocaleString('id-ID') : '';
         document.getElementById('pkg-dp').value          = dpPaket ? parseInt(dpPaket).toLocaleString('id-ID') : '';
         document.getElementById('pkg-max-guests').value  = maxGuests ?? '';
@@ -1259,7 +1259,7 @@
     async function savePkg() {
         const id       = document.getElementById('pkg-id').value;
         const name     = document.getElementById('pkg-name').value.trim();
-        const priceRaw = parsePkgPrice(document.getElementById('pkg-price-raw').value);
+        const priceRaw = parsePkgPrice(document.getElementById('pkg-price').value);
         const discount = parsePkgPrice(document.getElementById('pkg-discount').value);
         const dpPaket  = parsePkgPrice(document.getElementById('pkg-dp').value);
         const errEl    = document.getElementById('pkg-error');
@@ -1282,7 +1282,7 @@
 
         const payload = {
             name:             name,
-            price_raw:        priceRaw,
+            price:            priceRaw,
             discount:         discount,
             dp_paket:         dpPaket,
             category_vendor_id: (function () {

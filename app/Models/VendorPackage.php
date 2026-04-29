@@ -12,18 +12,6 @@ class VendorPackage extends Model
     protected static function boot(): void
     {
         parent::boot();
-
-        static::creating(function (self $package) {
-            if (empty($package->price_raw) && !empty($package->price)) {
-                $package->price_raw = (int) preg_replace('/[^\d]/', '', (string) $package->price);
-            }
-        });
-
-        static::updating(function (self $package) {
-            if (empty($package->price_raw) && !empty($package->price)) {
-                $package->price_raw = (int) preg_replace('/[^\d]/', '', (string) $package->price);
-            }
-        });
     }
 
     protected $fillable = [
@@ -31,7 +19,6 @@ class VendorPackage extends Model
         'category_vendor_id',
         'name', 
         'price', 
-        'price_raw', 
         'discount', 
         'dp_paket',
         'max_guests',
@@ -50,7 +37,7 @@ class VendorPackage extends Model
         'image_path' => 'array',
         'facilities' => 'array',
         'is_active'  => 'boolean',
-        'price_raw'  => 'integer',
+        'price'      => 'integer',
         'discount'   => 'integer',
         'dp_paket'   => 'integer',
         'category_vendor_id' => 'integer',
@@ -99,11 +86,39 @@ class VendorPackage extends Model
             LIBXML_NOERROR | LIBXML_NOWARNING
         );
 
+        // Try <li> first
         $items = [];
         foreach ($dom->getElementsByTagName('li') as $li) {
             $text = trim($li->textContent);
             if ($text !== '') {
                 $items[] = $text;
+            }
+        }
+
+        // Fallback: try <p> tags
+        if (empty($items)) {
+            foreach ($dom->getElementsByTagName('p') as $p) {
+                $text = trim($p->textContent);
+                if ($text !== '') {
+                    $items[] = $text;
+                }
+            }
+        }
+
+        // Fallback: split by <br>
+        if (empty($items)) {
+            $html = preg_replace('/<br\s*\/?>/i', "\n", $this->item);
+            $lines = array_values(array_filter(array_map('trim', explode("\n", strip_tags($html)))));
+            if (!empty($lines)) {
+                $items = $lines;
+            }
+        }
+
+        // Last resort: whole text as one item
+        if (empty($items)) {
+            $plain = trim(strip_tags($this->item));
+            if ($plain !== '') {
+                $items[] = $plain;
             }
         }
 

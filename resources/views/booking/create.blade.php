@@ -103,7 +103,7 @@
                                                         data-name="{{ $pkg->name }}"
                                                         data-price="{{ $pkg->price }}"
                                                         data-guests="{{ $pkg->max_guests }}"
-                                                        data-price-raw="{{ (int) ($pkg->price_raw ?? 0) }}"
+                                                        data-price-raw="{{ (int) ($pkg->price ?? 0) }}"
                                                         data-discount="{{ (int) ($pkg->discount ?? 0) }}"
                                                         data-dp="{{ (int) ($pkg->dp_paket ?? 0) }}"
                                                         {{ (int) $selectedId === (int) $pkg->id ? 'selected' : '' }}>

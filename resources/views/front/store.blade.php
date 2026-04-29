@@ -5,6 +5,7 @@
 @section('body-class', 'bg-cream text-dark')
 
 @section('content')
+    @php $isNavyGold = \App\Http\Controllers\ThemeController::active()['name'] === 'navy-gold'; @endphp
     @include('layout.header')
 
     <section class="py-10 bg-cream">
@@ -133,7 +134,7 @@
                                 @foreach($group->take(12) as $pkg)
                                     @php
                                         $vendor = $pkg->vendor;
-                                        $price = (int) ($pkg->price_raw ?? 0);
+                                        $price = (int) ($pkg->price ?? 0);
                                         $discount = (int) ($pkg->discount ?? 0);
                                         $final = max($price - $discount, 0);
                                         $cover = null;
@@ -172,7 +173,7 @@
                                                     @endif
                                                     <p class="text-[10px] text-gray-400 truncate">{{ $vendor->name }}</p>
                                                 </div>
-                                                <span class="text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0 bg-light-sage text-dark">
+                                                <span class="text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0 bg-light-sage {{ $isNavyGold ? 'text-white' : 'text-dark' }}">
                                                     {{ $vendor->city }}
                                                 </span>
                                             </div>
@@ -218,7 +219,7 @@
                                     if (!$vendor) {
                                         continue;
                                     }
-                                    $price = (int) ($pkg->price_raw ?? 0);
+                                    $price = (int) ($pkg->price ?? 0);
                                     $discount = (int) ($pkg->discount ?? 0);
                                     $final = max($price - $discount, 0);
                                     $cover = null;
