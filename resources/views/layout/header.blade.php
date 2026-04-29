@@ -84,8 +84,8 @@
                    class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsStore ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
                     Store
                 </a>
-                <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Promo</a>
-                <a href="#" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Blog Makna</a>
+                <a href="{{ route('store.promo') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Promo</a>
+                <a href="{{ route('blog.index') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Blog Makna</a>
                 <div class="relative group">
                     <button type="button" data-toggle-header-dropdown="lain"
                             class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase"
