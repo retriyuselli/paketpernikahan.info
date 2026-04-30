@@ -58,24 +58,6 @@
                    class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsHome ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
                     Home
                 </a>
-                <!-- <div class="relative group">
-                    <button type="button" data-toggle-header-dropdown="wedding"
-                            class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase"
-                            aria-expanded="false" aria-controls="dropdown-wedding">
-                        Wedding Package
-                        <svg class="w-3 h-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div id="dropdown-wedding" class="hidden absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
-                        <a href="{{ route('vendor') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-50 transition">
-                            Semua Vendor
-                        </a>
-                        <a href="{{ route('vendor') }}?q=paket" class="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-50 transition">
-                            Cari Paket
-                        </a>
-                    </div>
-                </div> -->
                 <a href="{{ route('vendor') }}"
                    class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsVendor ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
                     Vendor
@@ -131,13 +113,13 @@
             <div class="flex items-center justify-end gap-2 relative z-10" id="header-actions">
 
                 <!-- Theme Toggle (iPhone style) -->
-                <button id="theme-toggle" type="button" data-toggle-theme
+                <!-- <button id="theme-toggle" type="button" data-toggle-theme
                         class="hidden lg:inline-flex relative items-center w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none bg-accent"
                         aria-label="Toggle dark mode">
                     <span id="theme-knob"
                           class="inline-block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-1">
                     </span>
-                </button>
+                </button> -->
 
                 <!-- Profile Dropdown -->
                 <div class="relative" id="main-profile-wrapper">
