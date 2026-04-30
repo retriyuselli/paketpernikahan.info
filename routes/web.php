@@ -348,6 +348,50 @@ Route::get('/blog', function () {
     return view('blog.index', compact('blogs', 'categories', 'popularBlogs', 'q', 'sort', 'category'));
 })->name('blog.index');
 
+Route::get('/search', function () {
+    $q = trim(request('q', ''));
+
+    $vendors = collect();
+    $packages = collect();
+
+    if ($q !== '') {
+        $vendors = \App\Models\Vendor::where('is_active', true)
+            ->where('is_profile_complete', true)
+            ->where(fn ($w) =>
+                $w->where('name', 'like', "%{$q}%")
+                  ->orWhere('location', 'like', "%{$q}%")
+                  ->orWhere('city', 'like', "%{$q}%")
+            )
+            ->withCount('galleries')
+            ->withCount(['approvedReviews as comments_count', 'likedByUsers as likes'])
+            ->withAvg('approvedReviews as rating', 'rating')
+            ->with(['galleries' => fn ($gq) => $gq->where('is_cover', true), 'cheapestPackage'])
+            ->orderByDesc('rating')
+            ->limit(20)
+            ->get();
+
+        $packages = \App\Models\VendorPackage::query()
+            ->where('is_active', true)
+            ->whereHas('vendor', fn ($vq) => $vq->where('is_active', true)->where('is_profile_complete', true))
+            ->where(fn ($w) =>
+                $w->where('name', 'like', "%{$q}%")
+                  ->orWhereHas('vendor', fn ($vq) =>
+                      $vq->where('name', 'like', "%{$q}%")
+                         ->orWhere('city', 'like', "%{$q}%")
+                         ->orWhere('location', 'like', "%{$q}%")
+                  )
+            )
+            ->with([
+                'vendor' => fn ($vq) => $vq->select('id', 'name', 'slug', 'city', 'location', 'cover_image'),
+            ])
+            ->orderBy('price')
+            ->limit(20)
+            ->get();
+    }
+
+    return view('front.search', compact('q', 'vendors', 'packages'));
+})->name('search');
+
 Route::get('/tentang', function () {
     return view('front.tentang');
 })->name('tentang');
@@ -535,8 +579,12 @@ Route::get('/vendor', function () {
     if ($q) {
         $query->where(fn ($w) =>
             $w->where('name', 'like', "%{$q}%")
-              ->orWhere('type', 'like', "%{$q}%")
               ->orWhere('location', 'like', "%{$q}%")
+              ->orWhere('city', 'like', "%{$q}%")
+              ->orWhereHas('packages', fn ($p) =>
+                  $p->where('is_active', true)
+                    ->where('name', 'like', "%{$q}%")
+              )
         );
     }
 

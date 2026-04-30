@@ -3,7 +3,7 @@
     <x-ui.container>
         <div class="hidden md:flex items-center justify-between py-3 text-xs">
             <div class="flex items-center gap-6 text-gray-600">
-                <span>office@makruwedding.idn</span>
+                <span>maknawedding@gmail.com</span>
                 <span>+62 822-9796-2600</span>
                 <div class="flex gap-3">
                     <a href="https://wa.me/6282297962600" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition" title="WhatsApp">
@@ -129,7 +129,7 @@
                     </svg>
                     </button>
                     <div id="header-search-panel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 p-3 z-50">
-                        <form method="GET" action="{{ route('vendor') }}" class="flex items-center gap-2">
+                        <form method="GET" action="{{ route('search') }}" class="flex items-center gap-2">
                             <input type="text" name="q" placeholder="Cari vendor atau paket..."
                                    class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition">
                             <x-ui.button type="submit" size="sm" class="font-bold">
@@ -287,7 +287,7 @@
         </div>
 
         <div class="p-4 border-b border-gray-100">
-            <form method="GET" action="{{ route('vendor') }}" class="flex items-center gap-2">
+            <form method="GET" action="{{ route('search') }}" class="flex items-center gap-2">
                 <input type="text" name="q" placeholder="Cari vendor atau paket..."
                        class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition">
                 <x-ui.button type="submit" size="sm" class="font-bold">
