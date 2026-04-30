@@ -63,7 +63,7 @@
                     <p class="text-sm text-gray-500">Belum ada paket untuk kategori ini.</p>
                 </div>
             @else
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
                     @foreach($packages as $pkg)
                         @php
                             $vendor = $pkg->vendor;
