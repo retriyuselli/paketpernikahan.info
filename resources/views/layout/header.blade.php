@@ -36,7 +36,7 @@
 <!-- Sticky Header Wrapper (main nav only, no collapsible) -->
 <div class="sticky top-0 z-40 bg-white border-b border-gray-200">
     <x-ui.container>
-        <div class="flex items-center justify-between py-3 lg:grid lg:grid-cols-3 lg:items-center">
+        <div class="flex items-center justify-between py-3 lg:gap-8">
 
             <!-- Logo (left) -->
             <div class="flex items-center gap-2 flex-shrink-0 h-10">
@@ -48,7 +48,7 @@
             </div>
 
             <!-- Main Navigation (center) -->
-            <nav class="hidden lg:flex items-center justify-center gap-6 whitespace-nowrap relative z-20">
+            <nav class="hidden lg:flex items-center justify-start gap-6 whitespace-nowrap relative z-20">
                 @php
                     $navIsHome = request()->routeIs('home');
                     $navIsVendor = request()->routeIs('vendor') || request()->is('vendor*');
@@ -117,31 +117,22 @@
                 @endauth
             </nav>
 
+            <!-- Search Bar -->
+            <form method="GET" action="{{ route('search') }}"
+                  class="hidden lg:flex flex-1 items-center gap-1.5 bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 mx-4 hover:border-gray-300 focus-within:border-accent focus-within:bg-white transition">
+                <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari vendor atau paket..."
+                       class="flex-1 bg-transparent text-xs text-dark placeholder-gray-400 focus:outline-none min-w-0">
+            </form>
+
             <!-- Right Actions -->
             <div class="flex items-center justify-end gap-2 relative z-10" id="header-actions">
-                <!-- Search Icon -->
-                <div class="relative" id="header-search-wrapper">
-                    <button type="button" data-toggle-header-search
-                            class="p-2 text-gray-600 hover:text-accent transition rounded-full hover:bg-gray-100"
-                            aria-label="Cari" aria-expanded="false" aria-controls="header-search-panel">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    </button>
-                    <div id="header-search-panel" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-gray-100 p-3 z-50">
-                        <form method="GET" action="{{ route('search') }}" class="flex items-center gap-2">
-                            <input type="text" name="q" placeholder="Cari vendor atau paket..."
-                                   class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-gray-400 transition">
-                            <x-ui.button type="submit" size="sm" class="font-bold">
-                                Cari
-                            </x-ui.button>
-                        </form>
-                    </div>
-                </div>
 
                 <!-- Theme Toggle (iPhone style) -->
                 <button id="theme-toggle" type="button" data-toggle-theme
-                        class="relative inline-flex items-center w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none bg-accent"
+                        class="hidden lg:inline-flex relative items-center w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none bg-accent"
                         aria-label="Toggle dark mode">
                     <span id="theme-knob"
                           class="inline-block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-1">
