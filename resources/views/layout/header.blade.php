@@ -96,10 +96,10 @@
                         </svg>
                     </button>
                     <div id="dropdown-lain" class="hidden absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
-                        <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-50 transition">
+                        <a href="{{ route('tentang') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-50 transition">
                             Tentang Makna
                         </a>
-                        <a href="#" class="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-50 transition">
+                        <a href="{{ route('kontak') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-xs text-gray-600 hover:bg-gray-50 transition">
                             Kontak
                         </a>
                     </div>
@@ -391,10 +391,10 @@
                     </svg>
                 </summary>
                 <div class="px-3 pb-3 space-y-1">
-                    <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
+                    <a href="{{ route('tentang') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
                         Tentang Makna
                     </a>
-                    <a href="#" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
+                    <a href="{{ route('kontak') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
                         Kontak
                     </a>
                 </div>

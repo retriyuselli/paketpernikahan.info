@@ -348,6 +348,35 @@ Route::get('/blog', function () {
     return view('blog.index', compact('blogs', 'categories', 'popularBlogs', 'q', 'sort', 'category'));
 })->name('blog.index');
 
+Route::get('/tentang', function () {
+    return view('front.tentang');
+})->name('tentang');
+
+Route::get('/kontak', function () {
+    return view('front.kontak');
+})->name('kontak');
+
+Route::post('/kontak', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'nama'   => ['required', 'string', 'max:100'],
+        'email'  => ['required', 'email', 'max:150'],
+        'subjek' => ['required', 'string', 'max:150'],
+        'pesan'  => ['required', 'string', 'max:2000'],
+    ]);
+
+    \Illuminate\Support\Facades\Mail::send(
+        'emails.kontak',
+        ['nama' => $request->nama, 'email' => $request->email, 'subjek' => $request->subjek, 'pesan' => $request->pesan],
+        function ($m) use ($request) {
+            $m->to(config('mail.from.address', 'office@makruwedding.idn'))
+              ->replyTo($request->email, $request->nama)
+              ->subject('[Kontak] ' . $request->subjek);
+        }
+    );
+
+    return redirect()->route('kontak')->with('kontak_success', 'Pesan Anda berhasil dikirim. Kami akan segera menghubungi Anda.');
+})->name('kontak.send');
+
 Route::get('/blog/{blog:slug}', function (\App\Models\Blog $blog) {
     abort_unless($blog->is_published, 404);
 
