@@ -206,7 +206,7 @@
                             </div>
 
                             <div class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
-                                @foreach($group->take(8) as $pkg)
+                                @foreach($group->take(7) as $pkg)
                                     @php
                                         $vendor = $pkg->vendor;
                                         $price = (int) ($pkg->price ?? 0);
@@ -223,7 +223,7 @@
                                         $extraTags = max(0, count($items) - $maxTags);
                                     @endphp
                                     <a href="{{ route('store.package.show', $pkg) }}"
-                                       class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
+                                       class="flex-none w-[44vw] lg:w-40 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
                                         <div class="relative">
                                             <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-48 object-cover">
                                             @if($discount > 0)
@@ -304,7 +304,7 @@
                         </div>
 
                         <div class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
-                            @foreach($cityPackages->take(8) as $pkg)
+                            @foreach($cityPackages->take(7) as $pkg)
                                 @php
                                     $vendor = $pkg->vendor;
                                     $price = (int) ($pkg->price ?? 0);
@@ -321,7 +321,7 @@
                                     $extraTags = max(0, count($items) - $maxTags);
                                 @endphp
                                 <a href="{{ route('store.package.show', $pkg) }}"
-                                   class="flex-none w-64 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
+                                   class="flex-none w-[44vw] lg:w-40 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
                                     <div class="relative">
                                         <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-48 object-cover">
                                         @if($discount > 0)
