@@ -48,7 +48,7 @@
                             @if($hlIdx === 0 && $homeAd && !$adInserted)
                                 @php $adInserted = true; @endphp
                                 {{-- HomeAd Card --}}
-                                <a href="{{ $homeAd->link_url ?: '#' }}" class="flex-none w-72 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition bg-accent-pink ar-4x3">
+                                <a href="{{ $homeAd->link_url ?: '#' }}" class="flex-none w-52 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition bg-accent-pink ar-4x3">
                                     @if($homeAd->image_url)
                                         <img src="{{ $homeAd->image_url }}" alt="{{ $homeAd->title }}" class="w-full h-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105">
                                     @endif
@@ -66,7 +66,7 @@
                         @endforeach
 
                         @if(!$adInserted && $homeAd)
-                            <a href="{{ $homeAd->link_url ?: '#' }}" class="flex-none w-72 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition bg-accent-pink ar-4x3">
+                            <a href="{{ $homeAd->link_url ?: '#' }}" class="flex-none w-52 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition bg-accent-pink ar-4x3">
                                 @if($homeAd->image_url)
                                     <img src="{{ $homeAd->image_url }}" alt="{{ $homeAd->title }}" class="w-full h-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105">
                                 @endif
@@ -838,13 +838,13 @@
             $adDelay = (int) ($homeAd->delay_seconds ?? 5) * 1000;
             $adKey   = 'home_ad_dismissed_v' . $homeAd->id;
         @endphp
-        <div id="home-ad-modal" class="fixed inset-0 z-[9998] hidden items-center justify-center p-4 bg-backdrop-45">
-            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden" style="max-width:min(90vw,600px);max-height:90vh;">
+        <div id="home-ad-modal" class="fixed inset-0 z-[9998] hidden items-center justify-center p-4" style="background:rgba(35, 34, 34, 0.92)">
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden" style="max-width:min(90vw,400px);max-height:90vh;">
                 <div class="relative">
                     @if($homeAd->link_url)
                         <a href="{{ $homeAd->link_url }}" class="block">
                     @endif
-                    <img src="{{ $adImage }}" alt="{{ $homeAd->title ?: 'Iklan' }}" class="block w-auto h-auto" style="max-width:min(90vw,600px);max-height:85vh;display:block;">
+                    <img src="{{ $adImage }}" alt="{{ $homeAd->title ?: 'Iklan' }}" class="block w-auto h-auto" style="max-width:min(90vw,400px);max-height:85vh;display:block;">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"></div>
                     @if($homeAd->link_url)
                         </a>
