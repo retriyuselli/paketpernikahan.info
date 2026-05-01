@@ -167,7 +167,7 @@
                     <div class="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden">
                         <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 bg-light-sage/20">
                             <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
-                            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Yang Sudah Termasuk</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Fasilitas</span>
                         </div>
                         <div class="p-5">
                         @if($package->item)
