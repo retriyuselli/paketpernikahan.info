@@ -38,6 +38,7 @@ class VendorPackageForm
                                     ->label('Kategori Vendor')
                                     ->options(CategoryVendor::where('is_active', true)->orderBy('sort_order')->orderBy('name')->pluck('name', 'id'))
                                     ->searchable()
+                                    ->multiple()
                                     ->live()
                                     ->placeholder('Ikuti kategori vendor'),
                                 FileUpload::make('image_path')

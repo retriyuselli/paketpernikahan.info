@@ -36,13 +36,8 @@ class VendorPackage extends Model
     protected $casts = [
         'image_path' => 'array',
         'facilities' => 'array',
+        'category_vendor_id' => 'array',
         'is_active'  => 'boolean',
-        'price'      => 'integer',
-        'discount'   => 'integer',
-        'dp_paket'   => 'integer',
-        'category_vendor_id' => 'integer',
-        'sort_order' => 'integer',
-        'capacity'   => 'integer',
     ];
 
     public function vendor()
