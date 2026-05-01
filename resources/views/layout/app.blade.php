@@ -6,6 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>@yield('title', 'Makna Wedding - Wedding Organizer & Paket Pernikahan')</title>
+        <link rel="icon" href="{{ config('app.favicon_url') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
