@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\InvalidStateException;
 use Spatie\Permission\Models\Role;
 
 class SocialAuthController extends Controller
@@ -22,7 +23,13 @@ class SocialAuthController extends Controller
 
     public function handleGoogleCallback()
     {
-        $googleUser = Socialite::driver('google')->user();
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (InvalidStateException $e) {
+            return redirect()
+                ->route('auth.google')
+                ->with('login_error', 'Sesi login Google tidak valid / sudah kedaluwarsa. Silakan coba lagi.');
+        }
 
         $user = User::firstOrCreate(
             ['email' => $googleUser->getEmail()],
