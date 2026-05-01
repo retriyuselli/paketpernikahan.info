@@ -31,6 +31,7 @@
                 <tr>
                     <th class="text-left px-4 py-3 font-semibold">Nama</th>
                     <th class="text-left px-4 py-3 font-semibold">Status</th>
+                    <th class="text-left px-4 py-3 font-semibold">Dibalas oleh</th>
                     <th class="text-left px-4 py-3 font-semibold">Terakhir aktif</th>
                     <th class="text-left px-4 py-3 font-semibold"></th>
                 </tr>
@@ -52,6 +53,10 @@
                                 Ditutup
                             </span>
                         @endif
+                    </td>
+                    <td class="px-4 py-3 text-gray-400 text-xs">
+                        @php($adminName = $adminUsers[$s->last_admin_user_id]->name ?? null)
+                        {{ $adminName ?: '—' }}
                     </td>
                     <td class="px-4 py-3 text-gray-400 text-xs">
                         {{ $s->updated_at->diffForHumans() }}

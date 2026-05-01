@@ -7,6 +7,7 @@ use App\Models\ChatMessage;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class ChatController extends Controller
@@ -102,10 +103,25 @@ class ChatController extends Controller
                 'messages as unread_count' => fn($q) => $q->where('sender', 'guest')
                     ->where('created_at', '>=', now()->subHours(24)),
             ])
+            ->select('chat_sessions.*')
+            ->selectSub(
+                DB::table('chat_messages')
+                    ->select('admin_user_id')
+                    ->whereColumn('chat_messages.chat_session_id', 'chat_sessions.id')
+                    ->where('sender', 'admin')
+                    ->whereNotNull('admin_user_id')
+                    ->orderByDesc('id')
+                    ->limit(1),
+                'last_admin_user_id'
+            )
             ->orderByDesc('updated_at')
             ->paginate(30);
 
-        return view('dashboard.chat.index', array_merge($this->dashboardContext(), compact('sessions')));
+        $adminUsers = User::whereIn('id', $sessions->pluck('last_admin_user_id')->filter()->unique())
+            ->get(['id', 'name'])
+            ->keyBy('id');
+
+        return view('dashboard.chat.index', array_merge($this->dashboardContext(), compact('sessions', 'adminUsers')));
     }
 
     public function adminNotify(Request $request)
