@@ -140,14 +140,14 @@
                         <div class="inline-flex items-center justify-center rounded-2xl px-3 py-2 sm:px-5 sm:py-3 min-w-max">
                             <img src="{{ $l['src'] }}"
                                  alt="{{ $l['alt'] }}"
-                                 class="h-10 sm:h-22 w-auto object-contain">
+                                 class="h-16 sm:h-22 w-auto object-contain">
                         </div>
                     @endforeach
                     @foreach($logos as $l)
                         <div class="inline-flex items-center justify-center rounded-2xl px-3 py-2 sm:px-5 sm:py-3 min-w-max">
                             <img src="{{ $l['src'] }}"
                                  alt="{{ $l['alt'] }}"
-                                 class="h-10 sm:h-22 w-auto object-contain">
+                                 class="h-16 sm:h-22 w-auto object-contain">
                         </div>
                     @endforeach
                 </div>
