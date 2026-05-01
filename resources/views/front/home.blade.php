@@ -114,92 +114,42 @@
         </section>
 
 
-        <!-- Partner/Vendor Marquee -->
-        <section class="py-8 overflow-hidden bg-accent">
+        <section class="py-5 sm:py-8 overflow-hidden">
+            @php
+                $logos = \App\Models\PartnerLogo::query()
+                    ->where('is_active', true)
+                    ->orderBy('sort_order')
+                    ->orderByDesc('id')
+                    ->limit(12)
+                    ->get(['name', 'logo'])
+                    ->map(function ($p) {
+                        $src = $p->logo;
+                        $src = str_starts_with($src, 'http') ? $src : \Illuminate\Support\Facades\Storage::url($src);
+                        return ['src' => $src, 'alt' => $p->name ?: 'Partner'];
+                    });
+
+                if ($logos->isEmpty()) {
+                    $logos = collect([
+                        ['src' => asset('images/Makna Kreatif Indonesia.png'), 'alt' => 'Makna Kreatif Indonesia'],
+                    ]);
+                }
+            @endphp
             <div class="relative flex">
-                <div class="flex gap-4 animate-marquee whitespace-nowrap">
-                    <!-- Set 1 -->
-                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
-                        <span class="text-xl sm:text-2xl">📸</span>
-                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Fotografer</p><p class="text-[10px] sm:text-xs text-gray-500">Abadikan Momen</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
-                        <span class="text-xl sm:text-2xl">🎂</span>
-                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Wedding Cake</p><p class="text-[10px] sm:text-xs text-gray-500">Catering & Kue</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
-                        <span class="text-xl sm:text-2xl">💐</span>
-                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Dekorasi Bunga</p><p class="text-[10px] sm:text-xs text-gray-500">Floral Arrangement</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
-                        <span class="text-xl sm:text-2xl">🎵</span>
-                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Live Music</p><p class="text-[10px] sm:text-xs text-gray-500">Hiburan Pernikahan</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
-                        <span class="text-xl sm:text-2xl">💄</span>
-                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">MUA</p><p class="text-[10px] sm:text-xs text-gray-500">Make Up Artist</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
-                        <span class="text-xl sm:text-2xl">🏨</span>
-                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Hotel</p><p class="text-[10px] sm:text-xs text-gray-500">Venue Mewah</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
-                        <span class="text-xl sm:text-2xl">🎬</span>
-                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Videografer</p><p class="text-[10px] sm:text-xs text-gray-500">Cinematic Wedding</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
-                        <span class="text-xl sm:text-2xl">💍</span>
-                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Cincin Nikah</p><p class="text-[10px] sm:text-xs text-gray-500">Jewelry Partner</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
-                        <span class="text-xl sm:text-2xl">🍽️</span>
-                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Catering</p><p class="text-[10px] sm:text-xs text-gray-500">Sajian Terbaik</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-2 bg-white rounded-2xl px-3 py-2 sm:px-5 sm:py-3 shadow-md min-w-max">
-                        <span class="text-xl sm:text-2xl">🚗</span>
-                        <div><p class="font-bold text-gray-900 text-xs sm:text-sm">Wedding Car</p><p class="text-[10px] sm:text-xs text-gray-500">Transportasi Pengantin</p></div>
-                    </div>
-                    <!-- Set 2 (duplikat untuk seamless loop) -->
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">📸</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Fotografer</p><p class="text-xs text-gray-500">Abadikan Momen</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🎂</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Wedding Cake</p><p class="text-xs text-gray-500">Catering & Kue</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">💐</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Dekorasi Bunga</p><p class="text-xs text-gray-500">Floral Arrangement</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🎵</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Live Music</p><p class="text-xs text-gray-500">Hiburan Pernikahan</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">💄</span>
-                        <div><p class="font-bold text-gray-900 text-sm">MUA</p><p class="text-xs text-gray-500">Make Up Artist</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🏨</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Hotel</p><p class="text-xs text-gray-500">Venue Mewah</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🎬</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Videografer</p><p class="text-xs text-gray-500">Cinematic Wedding</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">💍</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Cincin Nikah</p><p class="text-xs text-gray-500">Jewelry Partner</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🍽️</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Catering</p><p class="text-xs text-gray-500">Sajian Terbaik</p></div>
-                    </div>
-                    <div class="inline-flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-md min-w-max">
-                        <span class="text-2xl">🚗</span>
-                        <div><p class="font-bold text-gray-900 text-sm">Wedding Car</p><p class="text-xs text-gray-500">Transportasi Pengantin</p></div>
-                    </div>
+                <div class="flex gap-3 sm:gap-4 animate-marquee whitespace-nowrap">
+                    @foreach($logos as $l)
+                        <div class="inline-flex items-center justify-center rounded-2xl px-3 py-2 sm:px-5 sm:py-3 min-w-max">
+                            <img src="{{ $l['src'] }}"
+                                 alt="{{ $l['alt'] }}"
+                                 class="h-10 sm:h-22 w-auto object-contain">
+                        </div>
+                    @endforeach
+                    @foreach($logos as $l)
+                        <div class="inline-flex items-center justify-center rounded-2xl px-3 py-2 sm:px-5 sm:py-3 min-w-max">
+                            <img src="{{ $l['src'] }}"
+                                 alt="{{ $l['alt'] }}"
+                                 class="h-10 sm:h-22 w-auto object-contain">
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </section>
@@ -838,7 +788,11 @@
             $adDelay = (int) ($homeAd->delay_seconds ?? 5) * 1000;
             $adKey   = 'home_ad_dismissed_v' . $homeAd->id;
         @endphp
-        <div id="home-ad-modal" class="fixed inset-0 z-[9998] hidden items-center justify-center p-4" style="background:rgba(35, 34, 34, 0.92)">
+        <div id="home-ad-modal"
+             data-ad-key="{{ $adKey ?? 'home_ad_dismissed_v1' }}"
+             data-ad-delay="{{ (int) ($adDelay ?? 5000) }}"
+             class="fixed inset-0 z-[9998] hidden items-center justify-center p-4"
+             style="background:rgba(35, 34, 34, 0.92)">
             <div class="bg-white rounded-2xl shadow-2xl overflow-hidden" style="max-width:min(90vw,400px);max-height:90vh;">
                 <div class="relative">
                     @if($homeAd->link_url)
@@ -876,9 +830,9 @@
 
         <script>
             (function () {
-                var key = '{{ $adKey ?? "home_ad_dismissed_v1" }}';
-                var delay = {{ $adDelay ?? 5000 }};
                 var modal = document.getElementById('home-ad-modal');
+                var key = (modal && modal.dataset && modal.dataset.adKey) ? modal.dataset.adKey : 'home_ad_dismissed_v1';
+                var delay = (modal && modal.dataset && modal.dataset.adDelay) ? parseInt(modal.dataset.adDelay || '5000', 10) : 5000;
 
                 document.addEventListener('click', function (e) {
                     var btn = e.target.closest('[data-scroll-target][data-scroll-by]');
