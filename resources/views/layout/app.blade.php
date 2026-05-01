@@ -278,9 +278,11 @@
                 var wrap = document.createElement('div');
                 wrap.className = 'flex ' + (isAdmin ? 'justify-start' : 'justify-end');
                 wrap.dataset.msgId = msg.id;
+                var nameHtml = (isAdmin && msg.admin_name) ? '<span class="block text-[10px] mb-1 text-gray-400">' + esc(msg.admin_name) + '</span>' : '';
                 wrap.innerHTML = '<div class="max-w-[88%] break-words px-3 py-2 rounded-2xl text-sm leading-snug '
                     + (isAdmin ? 'bg-white text-dark shadow-sm rounded-tl-none' : 'bg-dark text-cream rounded-tr-none')
                     + '">'
+                    + nameHtml
                     + esc(msg.message)
                     + '<span class="block text-[10px] mt-1 '
                     + (isAdmin ? 'text-gray-400' : 'text-cream/60 text-right') + '">' + fmtTime(msg.created_at) + '</span>'

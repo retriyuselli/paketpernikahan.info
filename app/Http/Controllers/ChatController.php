@@ -78,8 +78,16 @@ class ChatController extends Controller
 
         $messages = ChatMessage::where('chat_session_id', $session->id)
             ->where('id', '>', $afterId)
+            ->with('adminUser:id,name')
             ->orderBy('id')
-            ->get(['id', 'sender', 'message', 'created_at']);
+            ->get(['id', 'sender', 'message', 'created_at', 'admin_user_id'])
+            ->map(fn ($m) => [
+                'id' => $m->id,
+                'sender' => $m->sender,
+                'message' => $m->message,
+                'created_at' => $m->created_at,
+                'admin_name' => $m->adminUser?->name,
+            ]);
 
         return response()->json([
             'status'   => $session->status,
@@ -126,7 +134,7 @@ class ChatController extends Controller
     public function adminDetail(string $token)
     {
         $session = ChatSession::where('session_token', $token)
-            ->with('messages')
+            ->with('messages.adminUser:id,name')
             ->firstOrFail();
 
         return view('dashboard.chat.detail', array_merge($this->dashboardContext(), compact('session')));
@@ -139,16 +147,23 @@ class ChatController extends Controller
 
         $session = ChatSession::where('session_token', $token)->firstOrFail();
 
+        $user = User::findOrFail(Auth::id());
+
         $msg = ChatMessage::create([
             'chat_session_id' => $session->id,
             'sender'          => 'admin',
             'message'         => strip_tags(trim($request->message)),
+            'admin_user_id'   => $user->id,
         ]);
 
         $session->touch();
 
         if ($request->expectsJson()) {
-            return response()->json(['id' => $msg->id, 'created_at' => $msg->created_at]);
+            return response()->json([
+                'id' => $msg->id,
+                'created_at' => $msg->created_at,
+                'admin_name' => $user->name,
+            ]);
         }
 
         return back();
@@ -163,8 +178,16 @@ class ChatController extends Controller
 
         $messages = ChatMessage::where('chat_session_id', $session->id)
             ->where('id', '>', $afterId)
+            ->with('adminUser:id,name')
             ->orderBy('id')
-            ->get(['id', 'sender', 'message', 'created_at']);
+            ->get(['id', 'sender', 'message', 'created_at', 'admin_user_id'])
+            ->map(fn ($m) => [
+                'id' => $m->id,
+                'sender' => $m->sender,
+                'message' => $m->message,
+                'created_at' => $m->created_at,
+                'admin_name' => $m->adminUser?->name,
+            ]);
 
         return response()->json([
             'status'   => $session->status,

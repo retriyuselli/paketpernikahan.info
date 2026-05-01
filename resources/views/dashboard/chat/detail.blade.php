@@ -53,6 +53,9 @@
                 {{ $msg->sender === 'admin'
                     ? 'bg-accent text-white rounded-br-sm'
                     : 'bg-gray-100 text-dark rounded-bl-sm' }}">
+                @if($msg->sender === 'admin' && $msg->adminUser)
+                    <span class="block text-[10px] mb-1 text-white/70">{{ $msg->adminUser->name }}</span>
+                @endif
                 {{ $msg->message }}
                 <span class="block text-[10px] mt-1 {{ $msg->sender === 'admin' ? 'text-white/60 text-right' : 'text-gray-400' }}">
                     {{ $msg->created_at->format('H:i') }}
@@ -106,9 +109,11 @@
         wrap.dataset.msgId = msg.id;
         var t = new Date(msg.created_at);
         var hhmm = t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0');
+        var nameHtml = (isAdmin && msg.admin_name) ? '<span class="block text-[10px] mb-1 text-white/70">' + escHtml(msg.admin_name) + '</span>' : '';
         wrap.innerHTML = '<div class="max-w-[85%] break-words px-4 py-2.5 rounded-2xl text-sm leading-snug '
             + (isAdmin ? 'bg-accent text-white rounded-br-sm' : 'bg-gray-100 text-dark rounded-bl-sm')
             + '">'
+            + nameHtml
             + escHtml(msg.message)
             + '<span class="block text-[10px] mt-1 '
             + (isAdmin ? 'text-white/60 text-right' : 'text-gray-400') + '">' + hhmm + '</span>'
@@ -154,7 +159,7 @@
         })
         .then(function (r) { return r.json(); })
         .then(function (data) {
-            appendMessage({id: data.id, sender: 'admin', message: msg, created_at: data.created_at});
+            appendMessage({id: data.id, sender: 'admin', message: msg, created_at: data.created_at, admin_name: data.admin_name});
             lastId = Math.max(lastId, data.id);
             scrollBottom();
         });
