@@ -47,12 +47,23 @@
          data-session-status="{{ $session->status }}"
          data-last-id="{{ $session->messages->max('id') ?? 0 }}">
         @foreach($session->messages as $msg)
-        <div class="flex {{ $msg->sender === 'admin' ? 'justify-end' : 'justify-start' }}"
+        <div class="flex group {{ $msg->sender === 'admin' ? 'justify-end' : 'justify-start' }}"
              data-msg-id="{{ $msg->id }}">
-            <div class="max-w-[85%] break-words px-4 py-2.5 rounded-2xl text-sm leading-snug
+            <div class="relative max-w-[85%] break-words px-4 py-2.5 rounded-2xl text-sm leading-snug
                 {{ $msg->sender === 'admin'
                     ? 'bg-accent text-white rounded-br-sm'
                     : 'bg-gray-100 text-dark rounded-bl-sm' }}">
+                <form method="POST"
+                      action="{{ route('chat.admin.message.delete', [$session->session_token, $msg]) }}"
+                      class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            onclick="return confirm('Hapus pesan ini?')"
+                            class="w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 transition flex items-center justify-center text-xs font-bold">
+                        ×
+                    </button>
+                </form>
                 @if($msg->sender === 'admin' && $msg->adminUser)
                     <span class="block text-[10px] mb-1 text-white/70">{{ $msg->adminUser->name }}</span>
                 @endif
@@ -105,14 +116,17 @@
     function appendMessage(msg) {
         var isAdmin = msg.sender === 'admin';
         var wrap = document.createElement('div');
-        wrap.className = 'flex ' + (isAdmin ? 'justify-end' : 'justify-start');
+        wrap.className = 'flex group ' + (isAdmin ? 'justify-end' : 'justify-start');
         wrap.dataset.msgId = msg.id;
         var t = new Date(msg.created_at);
         var hhmm = t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0');
         var nameHtml = (isAdmin && msg.admin_name) ? '<span class="block text-[10px] mb-1 text-white/70">' + escHtml(msg.admin_name) + '</span>' : '';
-        wrap.innerHTML = '<div class="max-w-[85%] break-words px-4 py-2.5 rounded-2xl text-sm leading-snug '
+        var delUrl = '/dashboard/chat/' + token + '/messages/' + msg.id;
+        var delHtml = '<button type="button" data-delete-msg="' + msg.id + '" data-delete-url="' + delUrl + '" class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 flex items-center justify-center text-xs font-bold">×</button>';
+        wrap.innerHTML = '<div class="relative max-w-[85%] break-words px-4 py-2.5 rounded-2xl text-sm leading-snug '
             + (isAdmin ? 'bg-accent text-white rounded-br-sm' : 'bg-gray-100 text-dark rounded-bl-sm')
             + '">'
+            + delHtml
             + nameHtml
             + escHtml(msg.message)
             + '<span class="block text-[10px] mt-1 '
@@ -123,6 +137,28 @@
 
     function escHtml(s) {
         return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function deleteMessage(btn) {
+        if (!btn) return;
+        var url = btn.getAttribute('data-delete-url') || '';
+        var id = parseInt(btn.getAttribute('data-delete-msg') || '0', 10);
+        if (!url || !id) return;
+        if (!confirm('Hapus pesan ini?')) return;
+
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        })
+        .then(function (r) { return r.json(); })
+        .then(function () {
+            var row = msgBox.querySelector('[data-msg-id="' + id + '"]');
+            if (row) row.remove();
+        })
+        .catch(function () {});
     }
 
     // Poll for new messages
@@ -166,6 +202,13 @@
     }
 
     if (btn) btn.addEventListener('click', sendReply);
+    if (msgBox) {
+        msgBox.addEventListener('click', function (e) {
+            var delBtn = e.target.closest('[data-delete-msg][data-delete-url]');
+            if (!delBtn) return;
+            deleteMessage(delBtn);
+        });
+    }
     if (input) {
         input.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' && !e.shiftKey) {

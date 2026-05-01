@@ -62,13 +62,24 @@
                         {{ $s->updated_at->diffForHumans() }}
                     </td>
                     <td class="px-4 py-3 text-right">
-                        <a href="{{ route('chat.admin.detail', $s->session_token) }}"
-                           class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-accent/10 text-accent hover:bg-accent hover:text-white transition">
-                            Buka
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </a>
+                        <div class="inline-flex items-center gap-2">
+                            <a href="{{ route('chat.admin.detail', $s->session_token) }}"
+                               class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-accent/10 text-accent hover:bg-accent hover:text-white transition">
+                                Buka
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </a>
+                            <form method="POST" action="{{ route('chat.admin.delete', $s->session_token) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        onclick="return confirm('Hapus sesi chat ini beserta semua pesannya?')"
+                                        class="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @endforeach

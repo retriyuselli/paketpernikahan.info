@@ -211,6 +211,38 @@ class ChatController extends Controller
         ]);
     }
 
+    public function adminDeleteMessage(Request $request, string $token, ChatMessage $message)
+    {
+        $user = User::findOrFail(Auth::id());
+        abort_unless($user->hasRole(['super_admin', 'admin']), 403);
+
+        $session = ChatSession::where('session_token', $token)->firstOrFail();
+        abort_unless((int) $message->chat_session_id === (int) $session->id, 404);
+
+        $message->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(['deleted' => true]);
+        }
+
+        return back()->with('success', 'Pesan berhasil dihapus.');
+    }
+
+    public function adminDeleteSession(Request $request, string $token)
+    {
+        $user = User::findOrFail(Auth::id());
+        abort_unless($user->hasRole(['super_admin', 'admin']), 403);
+
+        $session = ChatSession::where('session_token', $token)->firstOrFail();
+        $session->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(['deleted' => true]);
+        }
+
+        return redirect()->route('chat.admin')->with('success', 'Sesi chat berhasil dihapus.');
+    }
+
     // ── Admin: tutup sesi ────────────────────────────────────────────
     public function adminClose(string $token)
     {

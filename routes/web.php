@@ -1452,6 +1452,8 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard/chat')->name('chat.')
     Route::get('/{token}', [ChatController::class, 'adminDetail'])->name('admin.detail');
     Route::post('/{token}/reply', [ChatController::class, 'adminReply'])->name('admin.reply');
     Route::get('/{token}/poll', [ChatController::class, 'adminPoll'])->name('admin.poll');
+    Route::delete('/{token}/messages/{message}', [ChatController::class, 'adminDeleteMessage'])->name('admin.message.delete');
+    Route::delete('/{token}', [ChatController::class, 'adminDeleteSession'])->name('admin.delete');
     Route::post('/{token}/close', [ChatController::class, 'adminClose'])->name('admin.close');
     Route::post('/{token}/open', [ChatController::class, 'adminOpen'])->name('admin.open');
 });
