@@ -123,7 +123,7 @@
                                 <strong>"{{ $search }}"</strong>
                             @endif
                             @if(!empty($kategori))
-                                <span class="ml-1 inline-block bg-accent/10 text-accent text-xs font-semibold px-2 py-0.5 rounded-full">{{ ucfirst($kategori) }}</span>
+                                <span class="ml-1 inline-block bg-accent/10 text-accent text-xs font-semibold px-2 py-0.5 rounded-full">{{ $kategoriCat?->name ?? ucfirst($kategori) }}</span>
                             @endif
                         </p>
                     </div>

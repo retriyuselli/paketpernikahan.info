@@ -141,12 +141,16 @@ Route::post('/join-vendor', [VendorApplicationController::class, 'store'])
     ->middleware(['auth', 'verified']);
 
 Route::get('/store', function () {
-    $search = trim(request('q', ''));
+    $search  = trim(request('q', ''));
     $kategori = trim(request('kategori', ''));
 
     $categories = \App\Models\CategoryVendor::where('is_active', true)
         ->orderBy('sort_order')
         ->get();
+
+    $activeCategoryIdToSlug = $categories->pluck('slug', 'id');
+    $activeCategorySlugs    = $categories->pluck('slug')->filter()->all();
+    $kategoriCat = $kategori !== '' ? $categories->firstWhere('slug', $kategori) : null;
 
     $query = \App\Models\VendorPackage::query()
         ->where('is_active', true)
@@ -166,46 +170,79 @@ Route::get('/store', function () {
         });
     }
 
-    if ($kategori !== '') {
-        $query->whereHas('vendor', fn ($vq) => $vq->where('category', $kategori)
-            ->orWhereJsonContains('categories', $kategori));
+    if ($kategoriCat) {
+        $catId = $kategoriCat->id;
+        $query->where(function ($q) use ($kategori, $catId) {
+            // package-level explicit category
+            $q->whereJsonContains('category_vendor_id', (string) $catId)
+              ->orWhereJsonContains('category_vendor_id', (int) $catId)
+              // fallback: vendor-level category
+              ->orWhereHas('vendor', fn ($vq) => $vq->where('category', $kategori)
+                  ->orWhereJsonContains('categories', $kategori));
+        });
     }
 
     $packages = $query->get();
 
-    $activeCategorySlugs = $categories->pluck('slug')->filter()->all();
-    $packagesByCategory = collect();
+    // Two-bucket grouping: explicit package category first, then vendor category fallback
+    $explicitBucket  = collect();
+    $fallbackBucket  = collect();
+
     foreach ($packages as $p) {
-        if (!$p->vendor) {
-            continue;
-        }
-        $vendorCats = is_array($p->vendor->categories) && count($p->vendor->categories)
-            ? $p->vendor->categories
-            : ($p->vendor->category ? [$p->vendor->category] : []);
-        foreach ($vendorCats as $slug) {
-            if (!$slug || !in_array($slug, $activeCategorySlugs, true)) {
-                continue;
+        if (!$p->vendor) continue;
+        $pkgCatIds = is_array($p->category_vendor_id) ? $p->category_vendor_id : [];
+        $explicitSlugs = collect($pkgCatIds)
+            ->map(fn ($id) => $activeCategoryIdToSlug->get((int) $id))
+            ->filter()->values()->all();
+
+        $addedTo = [];
+        if (!empty($explicitSlugs)) {
+            foreach ($explicitSlugs as $slug) {
+                if (!$slug || !in_array($slug, $activeCategorySlugs, true)) continue;
+                if (in_array($slug, $addedTo, true)) continue;
+                $explicitBucket[$slug] = ($explicitBucket[$slug] ?? collect())->push($p);
+                $addedTo[] = $slug;
             }
-            $packagesByCategory[$slug] = ($packagesByCategory[$slug] ?? collect())->push($p);
+        } else {
+            $vendorSlugs = is_array($p->vendor->categories) && count($p->vendor->categories)
+                ? $p->vendor->categories
+                : ($p->vendor->category ? [$p->vendor->category] : []);
+            foreach ($vendorSlugs as $slug) {
+                if (!$slug || !in_array($slug, $activeCategorySlugs, true)) continue;
+                if (in_array($slug, $addedTo, true)) continue;
+                $fallbackBucket[$slug] = ($fallbackBucket[$slug] ?? collect())->push($p);
+                $addedTo[] = $slug;
+            }
         }
     }
 
-    $uncategorizedPackages = $packages->filter(function ($p) use ($activeCategorySlugs) {
-        if (!$p->vendor) {
-            return true;
+    $packagesByCategory = collect();
+    foreach ($activeCategorySlugs as $slug) {
+        $explicit = $explicitBucket[$slug] ?? collect();
+        $fallback = $fallbackBucket[$slug] ?? collect();
+        $merged   = $explicit->merge($fallback->reject(fn ($p) => $explicit->contains('id', $p->id)));
+        if ($merged->isNotEmpty()) {
+            $packagesByCategory[$slug] = $merged;
         }
-        $vendorCats = is_array($p->vendor->categories) && count($p->vendor->categories)
+    }
+
+    $uncategorizedPackages = $packages->filter(function ($p) use ($activeCategorySlugs, $activeCategoryIdToSlug) {
+        if (!$p->vendor) return true;
+        $pkgCatIds = is_array($p->category_vendor_id) ? $p->category_vendor_id : [];
+        foreach ($pkgCatIds as $id) {
+            $slug = $activeCategoryIdToSlug->get((int) $id);
+            if ($slug && in_array($slug, $activeCategorySlugs, true)) return false;
+        }
+        $vendorSlugs = is_array($p->vendor->categories) && count($p->vendor->categories)
             ? $p->vendor->categories
             : ($p->vendor->category ? [$p->vendor->category] : []);
-        foreach ($vendorCats as $slug) {
-            if ($slug && in_array($slug, $activeCategorySlugs, true)) {
-                return false;
-            }
+        foreach ($vendorSlugs as $slug) {
+            if ($slug && in_array($slug, $activeCategorySlugs, true)) return false;
         }
         return true;
     });
 
-    return view('front.store', compact('categories', 'packagesByCategory', 'uncategorizedPackages', 'search', 'kategori'));
+    return view('front.store', compact('categories', 'packagesByCategory', 'uncategorizedPackages', 'search', 'kategori', 'kategoriCat'));
 })->name('store');
 
 Route::get('/store/kategori/{category:slug}', function (\App\Models\CategoryVendor $category) {
