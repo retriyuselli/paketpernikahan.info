@@ -53,7 +53,6 @@ Route::get('/', function () {
         ->whereHas('vendor', fn ($q) => $q->where('is_active', true)->where('is_profile_complete', true))
         ->with([
             'vendor' => fn ($q) => $q->select('id', 'name', 'slug', 'city', 'cover_image', 'logo_vendor'),
-            'categoryVendor' => fn ($q) => $q->select('id', 'name'),
         ])
         ->orderByDesc('discount')
         ->limit(12)

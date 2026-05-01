@@ -551,7 +551,13 @@
                                         @endif
                                     </div>
                                     <p class="font-bold text-sm text-center text-gray-900 leading-snug mb-1">{{ $pkg->name }}</p>
-                                    <p class="text-xs text-gray-500 text-center mb-2">{{ $vendor->name }}{{ $pkg->categoryVendor ? ' — ' . $pkg->categoryVendor->name : '' }}</p>
+                                    @php
+                                        $catNames = collect($pkg->category_vendor_id ?? [])
+                                            ->map(fn($cid) => $homeCategories->firstWhere('id', (int)$cid)?->name)
+                                            ->filter()
+                                            ->implode(', ');
+                                    @endphp
+                                    <p class="text-xs text-gray-500 text-center mb-2">{{ $vendor->name }}{{ $catNames ? ' — ' . $catNames : '' }}</p>
                                     <p class="text-[11px] text-gray-400 line-through">IDR {{ number_format($price, 0, ',', '.') }}</p>
                                     <p class="text-sm font-bold text-accent">IDR {{ number_format($final, 0, ',', '.') }}</p>
                                     @if($vendor->city)
