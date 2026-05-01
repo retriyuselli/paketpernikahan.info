@@ -5,6 +5,8 @@
 @section('body-class', 'bg-cream text-dark')
 
 @section('extra-head')
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
     <style>
         .vendor-form-scope input[type="text"],
         .vendor-form-scope input[type="email"],
@@ -23,6 +25,12 @@
             height: 44px;
             box-sizing: border-box;
         }
+
+        /* Quill inside pkg-modal */
+        #pkg-quill-wrap .ql-container { font-size: 14px; border-radius: 0 0 12px 12px; min-height: 140px; }
+        #pkg-quill-wrap .ql-toolbar  { border-radius: 12px 12px 0 0; background: rgb(249 250 251); }
+        #pkg-quill-wrap .ql-editor   { min-height: 120px; line-height: 1.65; }
+        #pkg-quill-wrap              { border: 1px solid rgb(229 231 235); border-radius: 14px; overflow: hidden; background: white; }
     </style>
 @endsection
 
@@ -976,9 +984,9 @@
                 <details class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
                     <summary class="cursor-pointer select-none text-xs font-bold text-dark">Item Paket</summary>
                     <div class="mt-2">
-                        <p class="text-[11px] text-gray-400 mb-1.5">Satu item per baris</p>
-                        <textarea id="pkg-items" rows="13" placeholder="Gedung 6 jam&#10;Katering 300 tamu&#10;Dekorasi pelaminan"
-                                  class="w-full px-3.5 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none transition resize-none text-dark"></textarea>
+                        <div id="pkg-quill-wrap">
+                            <div id="pkg-quill-editor"></div>
+                        </div>
                     </div>
                 </details>
 
@@ -1133,6 +1141,23 @@
     });
 
     // ── Package Modal ──────────────────────────────────────────────
+    let pkgQuill = null;
+    document.addEventListener('DOMContentLoaded', function () {
+        var quillEl = document.getElementById('pkg-quill-editor');
+        if (quillEl && typeof Quill !== 'undefined') {
+            pkgQuill = new Quill(quillEl, {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline'],
+                        [{ list: 'ordered' }, { list: 'bullet' }],
+                        ['clean']
+                    ]
+                }
+            });
+        }
+    });
+
     const PKG_STORE_URL  = '{{ route('vendor.packages.store', $vendor) }}';
     const PKG_UPDATE_URL = '{{ route('vendor.packages.update', ['vendor' => $vendor->slug, 'package' => '__ID__']) }}';
     const PKG_DELETE_URL = '{{ route('vendor.packages.destroy', ['vendor' => $vendor->slug, 'package' => '__ID__']) }}';
@@ -1184,7 +1209,7 @@
         document.getElementById('pkg-discount').value    = discount ? parseInt(discount).toLocaleString('id-ID') : '';
         document.getElementById('pkg-dp').value          = dpPaket ? parseInt(dpPaket).toLocaleString('id-ID') : '';
         document.getElementById('pkg-max-guests').value  = maxGuests ?? '';
-        document.getElementById('pkg-items').value       = items ?? '';
+        if (pkgQuill) { pkgQuill.clipboard.dangerouslyPasteHTML(items ?? ''); } 
         document.getElementById('pkg-card-color').value  = cardColor ?? '#C8D5B9';
         document.getElementById('pkg-card-color-text').value = cardColor ?? '#C8D5B9';
         document.getElementById('pkg-text-color').value  = textColor ?? '#444444';
@@ -1219,6 +1244,7 @@
         modal.classList.add('hidden');
         modal.classList.remove('flex');
         document.body.style.overflow = '';
+        if (pkgQuill) pkgQuill.setText('');
     }
 
     function togglePkgActive() {
@@ -1291,7 +1317,7 @@
                 return Number.isFinite(idNum) && idNum > 0 ? idNum : null;
             })(),
             max_guests:       document.getElementById('pkg-max-guests').value.trim(),
-            items:            document.getElementById('pkg-items').value,
+            items:            pkgQuill ? pkgQuill.root.innerHTML : '',
             type:             (document.getElementById('pkg-type')?.value || '').trim() || null,
             capacity:         (function () {
                 const v = (document.getElementById('pkg-capacity')?.value || '').trim();
