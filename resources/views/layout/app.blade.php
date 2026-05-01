@@ -158,12 +158,12 @@
         <script>document.addEventListener('contextmenu', function(e){ e.preventDefault(); });</script>
 
         {{-- ── Live Chat Widget ── --}}
-        <div id="lc-widget" class="fixed bottom-5 right-5 z-[9990] flex flex-col items-end gap-3">
+        <div id="lc-widget" class="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-[9990] flex flex-col items-end gap-3">
 
             {{-- Chat Panel --}}
             <div id="lc-panel"
-                 style="display:none; width:320px;"
-                 class="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+                 style="display:none;"
+                 class="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col w-[calc(100vw-24px)] sm:w-[420px] max-w-[calc(100vw-24px)] h-[70vh] sm:h-[520px]"
                  aria-label="Live Chat">
 
                 {{-- Header --}}
@@ -202,17 +202,17 @@
                 </div>
 
                 {{-- Chat area (hidden until started) --}}
-                <div id="lc-chat" style="display:none;" class="flex flex-col" style="height:380px;">
-                    <div id="lc-messages" class="flex-1 overflow-y-auto px-4 py-3 space-y-2 bg-gray-50" style="height:280px;"></div>
+                <div id="lc-chat" style="display:none;" class="flex flex-1 min-h-0 flex-col">
+                    <div id="lc-messages" class="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-2 bg-gray-50"></div>
                     <div id="lc-closed-notice" style="display:none;"
                          class="px-4 py-2 text-center text-xs text-gray-400 bg-gray-50 border-t border-gray-100">
                         Sesi ini telah ditutup oleh admin.
                     </div>
-                    <div id="lc-input-area" class="border-t border-gray-100 px-3 py-2.5 flex items-end gap-2 bg-white">
+                    <div id="lc-input-area" class="border-t border-gray-100 px-3 py-2.5 flex items-end gap-2 bg-white min-w-0">
                         <textarea id="lc-msg-input"
                                   placeholder="Ketik pesan..."
                                   rows="1"
-                                  class="flex-1 resize-none bg-gray-100 rounded-xl px-3 py-2 text-sm outline-none focus:bg-gray-200 transition"
+                                  class="flex-1 min-w-0 resize-none bg-gray-100 rounded-xl px-3 py-2 text-sm outline-none focus:bg-gray-200 transition"
                                   style="max-height:90px;"></textarea>
                         <button type="button" id="lc-send-btn"
                                 class="w-9 h-9 rounded-xl bg-dark text-cream flex items-center justify-center hover:opacity-90 transition flex-shrink-0">
@@ -278,7 +278,7 @@
                 var wrap = document.createElement('div');
                 wrap.className = 'flex ' + (isAdmin ? 'justify-start' : 'justify-end');
                 wrap.dataset.msgId = msg.id;
-                wrap.innerHTML = '<div class="max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-snug '
+                wrap.innerHTML = '<div class="max-w-[88%] break-words px-3 py-2 rounded-2xl text-sm leading-snug '
                     + (isAdmin ? 'bg-white text-dark shadow-sm rounded-tl-none' : 'bg-dark text-cream rounded-tr-none')
                     + '">'
                     + esc(msg.message)

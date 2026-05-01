@@ -49,7 +49,7 @@
         @foreach($session->messages as $msg)
         <div class="flex {{ $msg->sender === 'admin' ? 'justify-end' : 'justify-start' }}"
              data-msg-id="{{ $msg->id }}">
-            <div class="max-w-[70%] px-4 py-2.5 rounded-2xl text-sm leading-snug
+            <div class="max-w-[85%] break-words px-4 py-2.5 rounded-2xl text-sm leading-snug
                 {{ $msg->sender === 'admin'
                     ? 'bg-accent text-white rounded-br-sm'
                     : 'bg-gray-100 text-dark rounded-bl-sm' }}">
@@ -106,7 +106,7 @@
         wrap.dataset.msgId = msg.id;
         var t = new Date(msg.created_at);
         var hhmm = t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0');
-        wrap.innerHTML = '<div class="max-w-[70%] px-4 py-2.5 rounded-2xl text-sm leading-snug '
+        wrap.innerHTML = '<div class="max-w-[85%] break-words px-4 py-2.5 rounded-2xl text-sm leading-snug '
             + (isAdmin ? 'bg-accent text-white rounded-br-sm' : 'bg-gray-100 text-dark rounded-bl-sm')
             + '">'
             + escHtml(msg.message)

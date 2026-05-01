@@ -671,9 +671,6 @@ document.addEventListener('DOMContentLoaded', function () {
             enabled = true;
             localStorage.setItem('mw_chat_notif_enabled', '1');
             ensureAudio();
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission().catch(function () {});
-            }
         }
 
         if (!enabled) {
@@ -686,6 +683,15 @@ document.addEventListener('DOMContentLoaded', function () {
             document.addEventListener('keydown', enableOnce, { once: true });
         } else {
             ensureAudio();
+            if ('Notification' in window && Notification.permission === 'default') {
+                var askPermOnce = function () {
+                    Notification.requestPermission().catch(function () {});
+                    document.removeEventListener('click', askPermOnce);
+                    document.removeEventListener('keydown', askPermOnce);
+                };
+                document.addEventListener('click', askPermOnce, { once: true });
+                document.addEventListener('keydown', askPermOnce, { once: true });
+            }
         }
 
         function pollNotify() {
