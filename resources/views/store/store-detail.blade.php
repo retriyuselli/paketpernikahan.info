@@ -97,7 +97,7 @@
                                 @endif
                                 @if($discount > 0)
                                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-extrabold bg-red-50 text-red-500 border border-red-100">
-                                        🔥 Hemat Rp {{ number_format($discount, 0, ',', '.') }}
+                                        🔥 Hemat IDR {{ number_format($discount, 0, ',', '.') }}
                                     </span>
                                 @endif
                             </div>
@@ -134,10 +134,11 @@
                                     @if($imgUrl)
                                         <button type="button"
                                                 data-store-image-open data-store-image-src="{{ $imgUrl }}"
-                                                class="group flex-none w-72 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 relative ar-16x10">
-                                            <img src="{{ $imgUrl }}" alt="Paket {{ $package->name }}" class="w-full h-full object-cover">
-                                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition"></div>
-                                            <div class="absolute bottom-2 right-2 px-2 py-1 rounded-full text-[10px] font-bold bg-white/90 border border-gray-200 opacity-0 group-hover:opacity-100 transition text-dark">
+                                                class="group flex-none w-48 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 relative aspect-[4/5]">
+                                            <img src="{{ $imgUrl }}" alt="Paket {{ $package->name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition"></div>
+                                            <div class="absolute bottom-2 right-2 px-2 py-1 rounded-full text-[10px] font-bold bg-white/90 border border-gray-200 opacity-0 group-hover:opacity-100 transition text-dark flex items-center gap-1">
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
                                                 Perbesar
                                             </div>
                                         </button>
@@ -145,7 +146,7 @@
                                 @endforeach
 
                                 @if($images->isEmpty())
-                                    <div class="flex-none w-72 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-gray-400 ar-16x10">
+                                    <div class="flex-none w-48 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-gray-400 aspect-[4/5]">
                                         Tidak ada foto
                                     </div>
                                 @endif
@@ -186,28 +187,43 @@
                                 <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
                                 <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Informasi Venue</span>
                             </div>
-                            <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div class="p-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
                                 @if($package->type)
-                                    <div class="flex flex-col gap-1.5 p-4 bg-cream/60 rounded-xl border border-gray-100">
-                                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                        <p class="text-[10px] uppercase tracking-widest text-gray-400">Tipe Venue</p>
-                                        <p class="text-sm font-bold text-dark">{{ $package->type }}</p>
+                                    <div class="flex items-center gap-3 p-4 bg-cream/60 rounded-xl border border-gray-100">
+                                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-[10px] uppercase tracking-widest text-gray-400">Tipe</p>
+                                            <p class="text-sm font-bold text-dark truncate">{{ $package->type }}</p>
+                                        </div>
                                     </div>
                                 @endif
                                 @if($package->capacity)
-                                    <div class="flex flex-col gap-1.5 p-4 bg-cream/60 rounded-xl border border-gray-100">
-                                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                        <p class="text-[10px] uppercase tracking-widest text-gray-400">Kapasitas</p>
-                                        <p class="text-sm font-bold text-dark">{{ number_format((int) $package->capacity, 0, ',', '.') }} Orang</p>
+                                    <div class="flex items-center gap-3 p-4 bg-cream/60 rounded-xl border border-gray-100">
+                                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center">
+                                            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-[10px] uppercase tracking-widest text-gray-400">Kapasitas</p>
+                                            <p class="text-sm font-bold text-dark">{{ number_format((int) $package->capacity, 0, ',', '.') }} <span class="text-xs font-normal text-gray-500">orang</span></p>
+                                        </div>
                                     </div>
                                 @endif
                                 @if(is_array($package->facilities) && count($package->facilities))
-                                    <div class="flex flex-col gap-1.5 p-4 bg-cream/60 rounded-xl border border-gray-100 sm:col-span-{{ ($package->type && $package->capacity) ? '1' : '2' }}">
-                                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                        <p class="text-[10px] uppercase tracking-widest text-gray-400">Fasilitas</p>
-                                        <div class="flex flex-wrap gap-1 mt-1">
+                                    <div class="col-span-2 sm:col-span-{{ ($package->type && $package->capacity) ? '1' : '3' }} p-4 bg-cream/60 rounded-xl border border-gray-100">
+                                        <div class="flex items-center gap-2 mb-2.5">
+                                            <div class="flex-shrink-0 w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                            </div>
+                                            <p class="text-[10px] uppercase tracking-widest text-gray-400">Fasilitas</p>
+                                        </div>
+                                        <div class="flex flex-wrap gap-1.5">
                                             @foreach($package->facilities as $fac)
-                                                <span class="text-[11px] px-2 py-0.5 bg-light-sage/50 rounded-full font-medium text-dark">{{ $fac }}</span>
+                                                <span class="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 bg-white border border-gray-100 rounded-full font-medium text-dark shadow-sm">
+                                                    <span class="w-1 h-1 rounded-full bg-accent flex-shrink-0"></span>
+                                                    {{ $fac }}
+                                                </span>
                                             @endforeach
                                         </div>
                                     </div>
@@ -290,22 +306,28 @@
                                         $opCover = $opCover ?: ('data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs><rect width="640" height="480" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="20">No Image</text></svg>'));
                                     @endphp
                                     <a href="{{ route('store.package.show', $op) }}"
-                                       class="flex-none w-64 bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition">
-                                        <div class="relative ar-4x3">
+                                       class="flex-none w-40 bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition">
+                                        <div class="relative aspect-[4/5]">
                                             <img src="{{ $opCover }}" alt="{{ $op->name }}" class="w-full h-full object-cover">
                                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+                                            @if($opDiscount > 0)
+                                                <span class="absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-full bg-white/90 border border-gray-200 text-dark">
+                                                    Diskon
+                                                </span>
+                                            @endif
                                             <div class="absolute bottom-0 left-0 right-0 p-3">
                                                 <p class="text-white text-xs font-bold leading-snug">{{ $op->name }}</p>
+                                                <p class="text-white/80 text-[10px] mt-1">{{ $vendor->name }}</p>
+                                                <p class="text-white/60 text-[10px] truncate">{{ $vendor->city }} · {{ $vendor->location }}</p>
                                             </div>
                                         </div>
                                         <div class="p-4">
                                             @if($opDiscount > 0)
-                                                <p class="text-[11px] text-gray-400 line-through">{{ number_format($opPrice, 0, ',', '.') }}</p>
-                                                <p class="text-sm font-extrabold leading-tight text-accent">{{ number_format($opFinal, 0, ',', '.') }}</p>
+                                                <p class="text-[11px] text-gray-400 line-through">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
+                                                <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($opFinal, 0, ',', '.') }}</p>
                                             @else
-                                                <p class="text-sm font-extrabold leading-tight text-accent">{{ number_format($opPrice, 0, ',', '.') }}</p>
+                                                <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
                                             @endif
-                                            <p class="text-[10px] text-gray-400 truncate">{{ $vendor->name }}</p>
                                         </div>
                                     </a>
                                 @endforeach
@@ -349,14 +371,14 @@
                                     @if($discount > 0)
                                         <p id="store-price-original"
                                            data-unit="{{ $price }}"
-                                           class="text-sm line-through text-gray-400">Rp {{ number_format($price, 0, ',', '.') }}</p>
+                                           class="text-sm line-through text-gray-400">IDR {{ number_format($price, 0, ',', '.') }}</p>
                                         <p id="store-price-final"
                                            data-unit="{{ $final }}"
-                                           class="text-2xl font-extrabold leading-tight text-accent">Rp {{ number_format($final, 0, ',', '.') }}</p>
+                                           class="text-2xl font-extrabold leading-tight text-accent">IDR {{ number_format($final, 0, ',', '.') }}</p>
                                     @else
                                         <p id="store-price-final"
                                            data-unit="{{ $price }}"
-                                           class="text-2xl font-extrabold leading-tight text-accent">Rp {{ number_format($price, 0, ',', '.') }}</p>
+                                           class="text-2xl font-extrabold leading-tight text-accent">IDR {{ number_format($price, 0, ',', '.') }}</p>
                                     @endif
                                     <p class="mt-0.5 text-[11px] text-gray-400">/ paket</p>
                                 </div>
@@ -364,7 +386,7 @@
                                     <span id="store-price-save"
                                           data-unit="{{ $discount }}"
                                           class="flex-shrink-0 text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-red-500 text-white">
-                                        Hemat Rp {{ number_format($discount, 0, ',', '.') }}
+                                        Hemat IDR {{ number_format($discount, 0, ',', '.') }}
                                     </span>
                                 @endif
                             </div>
@@ -376,7 +398,7 @@
                             @if((int) ($package->dp_paket ?? 0) > 0)
                                 <div>
                                     <p class="text-[10px] uppercase tracking-widest text-gray-400">DP Paket</p>
-                                    <p class="text-sm font-bold text-dark">Rp {{ number_format((int) $package->dp_paket, 0, ',', '.') }}</p>
+                                    <p class="text-sm font-bold text-dark">IDR {{ number_format((int) $package->dp_paket, 0, ',', '.') }}</p>
                                 </div>
                             @endif
                             @if($package->max_guests)

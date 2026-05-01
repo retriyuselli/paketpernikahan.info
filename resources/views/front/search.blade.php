@@ -71,23 +71,8 @@
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                         @foreach ($vendors as $v)
                         @php
-                            $pkg = $v->cheapestPackage;
+                            $pkg   = $v->cheapestPackage;
                             $cover = $v->cover_image_url ?: (optional($v->galleries->first())->image_url ?? null);
-                            $vData = [
-                                'name'           => $v->name,
-                                'city'           => $v->city,
-                                'location'       => $v->location,
-                                'rating'         => $v->rating,
-                                'likes'          => $v->likes,
-                                'comments_count' => $v->comments_count,
-                                'cover'          => $cover,
-                                'detail_url'     => route('vendor.detail', $v->slug),
-                                'wa_url'         => 'https://wa.me/' . preg_replace('/[^0-9]/', '', $v->phone ?? ''),
-                                'pkg_price'      => optional($pkg)->price,
-                                'pkg_discount'   => optional($pkg)->discount ?? 0,
-                                'pkg_name'       => optional($pkg)->name,
-                                'price_start'    => is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : ($v->price_start ?: '—'),
-                            ];
                         @endphp
                         <a href="{{ route('vendor.detail', $v->slug) }}"
                            class="group border border-gray-200 rounded-2xl p-2 hover:border-gray-300 transition bg-white block">
@@ -102,6 +87,11 @@
                                         </svg>
                                     </div>
                                 @endif
+                                @if($pkg && $pkg->discount > 0)
+                                <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent text-white z-10">
+                                    Hemat IDR {{ number_format((int)$pkg->discount, 0, ',', '.') }}
+                                </span>
+                                @endif
                                 @if($v->city)
                                 <div class="absolute bottom-2 left-0 right-0 flex justify-center z-10">
                                     <span class="flex items-center gap-1 text-[10px] font-semibold text-white px-2.5 py-0.5 rounded-full bg-black/40 backdrop-blur-[2px]">
@@ -112,22 +102,22 @@
                                 @endif
                             </div>
 
-                            <p class="font-bold text-sm leading-snug group-hover:underline text-dark">{{ $v->name }}</p>
+                            <p class="font-bold text-sm leading-snug line-clamp-1 group-hover:underline text-dark">{{ $v->name }}</p>
 
                             @if($pkg)
-                            <div class="flex items-center gap-1.5 mt-1 mb-1">
-                                <span class="text-[9px] text-gray-400">Mulai</span>
+                            <div class="mt-1 mb-1">
+                                <p class="text-[9px] text-gray-400">Mulai dari</p>
                                 @if($pkg->discount > 0)
-                                    <span class="text-[10px] line-through text-gray-400">Rp {{ number_format($pkg->price, 0, ',', '.') }}</span>
-                                    <span class="text-[11px] font-bold text-dark">Rp {{ number_format($pkg->price - $pkg->discount, 0, ',', '.') }}</span>
+                                    <p class="text-[10px] line-through text-gray-400">IDR {{ number_format((int)$pkg->price, 0, ',', '.') }}</p>
+                                    <p class="text-[11px] font-bold text-accent">IDR {{ number_format((int)$pkg->price - (int)$pkg->discount, 0, ',', '.') }}</p>
                                 @else
-                                    <span class="text-[11px] font-semibold text-dark">Rp {{ number_format($pkg->price, 0, ',', '.') }}</span>
+                                    <p class="text-[11px] font-semibold text-dark">IDR {{ number_format((int)$pkg->price, 0, ',', '.') }}</p>
                                 @endif
                             </div>
                             @elseif($v->price_start)
-                            <div class="flex items-center gap-1.5 mt-1 mb-1">
-                                <span class="text-[9px] text-gray-400">Mulai</span>
-                                <span class="text-[11px] font-semibold text-dark">{{ is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : $v->price_start }}</span>
+                            <div class="mt-1 mb-1">
+                                <p class="text-[9px] text-gray-400">Mulai dari</p>
+                                <p class="text-[11px] font-semibold text-dark">{{ is_numeric($v->price_start) ? 'IDR ' . number_format((int) $v->price_start, 0, ',', '.') : $v->price_start }}</p>
                             </div>
                             @endif
 
@@ -176,9 +166,9 @@
                         @php
                             $vendor = $pkg->vendor;
                             if (!$vendor) continue;
-                            $price    = (int) ($pkg->price ?? 0);
-                            $discount = (int) ($pkg->discount ?? 0);
-                            $final    = max($price - $discount, 0);
+                            $price       = (int) ($pkg->price ?? 0);
+                            $discount    = (int) ($pkg->discount ?? 0);
+                            $final       = max($price - $discount, 0);
                             $cover    = $pkg->image_url ?? null;
                             if (!$cover) {
                                 $cover = $vendor->cover_image_url ?: null;
@@ -189,7 +179,7 @@
                         @endphp
                         <a href="{{ route('store.package.show', $pkg) }}"
                            class="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition block">
-                            <div class="relative ar-4x3">
+                            <div class="relative aspect-[4/5] overflow-hidden">
                                 @if($cover)
                                     <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                                 @else
@@ -201,22 +191,23 @@
                                 @endif
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                                 @if($discount > 0)
-                                <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 border border-gray-200 text-dark">
-                                    Diskon
+                                <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent text-white">
+                                    Hemat IDR {{ number_format($discount, 0, ',', '.') }}
                                 </span>
                                 @endif
                                 <div class="absolute bottom-0 left-0 right-0 p-3">
-                                    <p class="text-white text-xs font-bold leading-snug">{{ $pkg->name }}</p>
-                                    <p class="text-white/80 text-[10px] mt-0.5">{{ $vendor->name }}</p>
+                                    <p class="text-white text-xs font-bold leading-snug line-clamp-2">{{ $pkg->name }}</p>
+                                    <p class="text-white/80 text-[10px] mt-0.5 truncate">{{ $vendor->name }}</p>
+                                    <p class="text-white/60 text-[10px] truncate">{{ $vendor->city }}{{ $vendor->location ? ' · ' . $vendor->location : '' }}</p>
                                 </div>
                             </div>
                             <div class="p-3">
-                                <p class="text-[10px] text-gray-400 truncate mb-1">{{ $vendor->city }}{{ $vendor->location ? ' · ' . $vendor->location : '' }}</p>
+                                <p class="text-[9px] text-gray-400 mb-0.5">Mulai dari</p>
                                 @if($discount > 0)
-                                    <p class="text-[11px] text-gray-400 line-through">Rp {{ number_format($price, 0, ',', '.') }}</p>
-                                    <p class="text-sm font-extrabold leading-tight text-accent">Rp {{ number_format($final, 0, ',', '.') }}</p>
+                                    <p class="text-[11px] text-gray-400 line-through">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                                    <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($final, 0, ',', '.') }}</p>
                                 @else
-                                    <p class="text-sm font-extrabold leading-tight text-accent">Rp {{ number_format($price, 0, ',', '.') }}</p>
+                                    <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($price, 0, ',', '.') }}</p>
                                 @endif
                             </div>
                         </a>
