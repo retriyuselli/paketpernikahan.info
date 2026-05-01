@@ -25,8 +25,14 @@
         $wa = preg_replace('/[^0-9]/', '', (string) ($vendor->phone ?? ''));
         $waText = rawurlencode('Halo ' . $vendor->name . ', saya tertarik dengan paket "' . $package->name . '". Mohon info lengkap ya.');
         $waUrl = $wa ? "https://wa.me/{$wa}?text={$waText}" : null;
-        $categorySlug = $package->categoryVendor?->slug ?? $vendor->category;
-        $categoryName = $package->categoryVendor?->name ?? ($vendor->categoryVendor?->name ?? $vendor->category);
+
+        // Resolve kategori dari array category_vendor_id
+        $pkgCatIds = is_array($package->category_vendor_id) ? $package->category_vendor_id : [];
+        $firstCat = !empty($pkgCatIds)
+            ? \App\Models\CategoryVendor::find((int) $pkgCatIds[0])
+            : null;
+        $categorySlug = $firstCat?->slug ?? $vendor->category;
+        $categoryName = $firstCat?->name ?? $vendor->category;
         $breadcrumbItems = [
             ['label' => 'Home', 'url' => route('home')],
             ['label' => 'Store', 'url' => route('store')],

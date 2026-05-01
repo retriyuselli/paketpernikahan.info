@@ -146,7 +146,13 @@
                             </td>
                             @endif
                             <td class="px-4 py-3 text-xs text-gray-600 align-top">
-                                {{ $pkg->categoryVendor?->name ?? '—' }}
+                                @php
+                                    $pkgCatIds = is_array($pkg->category_vendor_id) ? $pkg->category_vendor_id : [];
+                                    $pkgCatName = !empty($pkgCatIds)
+                                        ? \App\Models\CategoryVendor::find((int) $pkgCatIds[0])?->name
+                                        : null;
+                                @endphp
+                                {{ $pkgCatName ?? '—' }}
                             </td>
                             <td class="px-4 py-3 align-top">
                                 <div class="text-xs font-semibold text-dark">

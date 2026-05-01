@@ -1358,7 +1358,7 @@
         fd.append('price',             priceRaw);
         fd.append('discount',          discount);
         fd.append('dp_paket',          dpPaket);
-        if (Number.isFinite(catId) && catId > 0) fd.append('category_vendor_id', catId);
+        if (Number.isFinite(catId) && catId > 0) fd.append('category_vendor_id[]', catId);
         fd.append('max_guests',        document.getElementById('pkg-max-guests').value.trim());
         fd.append('items',             pkgQuill ? pkgQuill.root.innerHTML : '');
         fd.append('type',              (document.getElementById('pkg-type')?.value || '').trim());

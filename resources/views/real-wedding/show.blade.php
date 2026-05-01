@@ -173,7 +173,13 @@
                                         @endif
                                         <div>
                                             <p class="text-[10px] font-extrabold uppercase tracking-widest text-accent">
-                                                {{ $pkg->vendor?->categoryVendor?->name ?? 'Paket' }}
+                                                @php
+                                                    $rwPkgCatIds = is_array($pkg->category_vendor_id) ? $pkg->category_vendor_id : [];
+                                                    $rwPkgCatName = !empty($rwPkgCatIds)
+                                                        ? \App\Models\CategoryVendor::find((int) $rwPkgCatIds[0])?->name
+                                                        : ($pkg->vendor?->category ?? null);
+                                                @endphp
+                                                {{ $rwPkgCatName ?? 'Paket' }}
                                             </p>
                                             <p class="text-sm font-bold text-dark">{{ $pkg->name }}</p>
                                             @if($pkg->vendor)

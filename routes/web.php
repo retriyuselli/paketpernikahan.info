@@ -28,15 +28,49 @@ Route::get('/', function () {
         ->get();
 
     $activeCategorySlugs = $homeCategories->pluck('slug')->filter()->all();
-    $homePackagesByCategory = collect();
+    $activeCategoryIdToSlug = $homeCategories->pluck('slug', 'id'); // id => slug map
+
+    // Two buckets per slug: explicit (package chose category) vs fallback (inherited from vendor)
+    $homePackagesByCategoryExplicit = collect();
+    $homePackagesByCategoryFallback = collect();
+
     foreach ($homePackages as $p) {
         if (!$p->vendor) continue;
-        $vendorCats = is_array($p->vendor->categories) && count($p->vendor->categories)
-            ? $p->vendor->categories
-            : ($p->vendor->category ? [$p->vendor->category] : []);
-        foreach ($vendorCats as $slug) {
-            if (!$slug || !in_array($slug, $activeCategorySlugs, true)) continue;
-            $homePackagesByCategory[$slug] = ($homePackagesByCategory[$slug] ?? collect())->push($p);
+        $catIds = is_array($p->category_vendor_id) ? $p->category_vendor_id : [];
+
+        $explicitSlugs = collect($catIds)
+            ->map(fn ($id) => $activeCategoryIdToSlug->get((int) $id))
+            ->filter()->values()->all();
+
+        $addedTo = [];
+        if (!empty($explicitSlugs)) {
+            foreach ($explicitSlugs as $slug) {
+                if (!$slug || !in_array($slug, $activeCategorySlugs, true)) continue;
+                if (in_array($slug, $addedTo, true)) continue;
+                $homePackagesByCategoryExplicit[$slug] = ($homePackagesByCategoryExplicit[$slug] ?? collect())->push($p);
+                $addedTo[] = $slug;
+            }
+        } else {
+            $vendorSlugs = is_array($p->vendor->categories) && count($p->vendor->categories)
+                ? $p->vendor->categories
+                : ($p->vendor->category ? [$p->vendor->category] : []);
+            foreach ($vendorSlugs as $slug) {
+                if (!$slug || !in_array($slug, $activeCategorySlugs, true)) continue;
+                if (in_array($slug, $addedTo, true)) continue;
+                $homePackagesByCategoryFallback[$slug] = ($homePackagesByCategoryFallback[$slug] ?? collect())->push($p);
+                $addedTo[] = $slug;
+            }
+        }
+    }
+
+    // Merge: explicit first, then fallback (deduped by package id)
+    $homePackagesByCategory = collect();
+    foreach ($activeCategorySlugs as $slug) {
+        $explicit = $homePackagesByCategoryExplicit[$slug] ?? collect();
+        $fallback = $homePackagesByCategoryFallback[$slug] ?? collect();
+        $merged = $explicit->merge($fallback->reject(fn ($p) => $explicit->contains('id', $p->id)));
+        if ($merged->isNotEmpty()) {
+            $homePackagesByCategory[$slug] = $merged;
         }
     }
 
@@ -240,7 +274,6 @@ Route::get('/store/kota/{city}', function (string $city) {
         )
         ->with([
             'vendor' => fn ($vq) => $vq->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'cover_image'),
-            'categoryVendor',
         ]);
 
     if ($q !== '') {
@@ -283,7 +316,6 @@ Route::get('/store/promo', function () {
         )
         ->with([
             'vendor' => fn ($vq) => $vq->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'cover_image', 'logo_vendor'),
-            'categoryVendor',
         ]);
 
     if ($q !== '') {
@@ -485,10 +517,8 @@ Route::get('/real-wedding/{realWedding:slug}', function (\App\Models\RealWedding
 Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $package) {
     abort_unless($package->is_active, 404);
     $package->load([
-        'categoryVendor' => fn ($q) => $q->select('id', 'slug', 'name', 'sort_order', 'is_active', 'color', 'icon', 'description'),
         'vendor' => fn ($q) => $q->with([
             'galleries' => fn ($g) => $g->orderBy('sort_order'),
-            'categoryVendor' => fn ($c) => $c->select('id', 'slug', 'name', 'sort_order', 'is_active', 'color', 'icon', 'description'),
         ]),
     ]);
 
@@ -1228,7 +1258,7 @@ Route::get('/dashboard/paket', function () {
     $statusFilter = request('status', '');
 
     $query = \App\Models\VendorPackage::query()
-        ->with(['vendor:id,name,slug,owner_user_id', 'categoryVendor:id,name'])
+        ->with(['vendor:id,name,slug,owner_user_id'])
         ->orderBy('vendor_id')
         ->orderBy('sort_order')
         ->orderBy('price');

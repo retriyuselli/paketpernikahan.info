@@ -88,12 +88,19 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-2">Kategori Vendor</label>
-                            <select id="category_vendor_id" name="category_vendor_id" data-vendor-category="{{ $vendor->category ?? '' }}" class="w-full h-11 rounded-xl border border-gray-200 px-4 text-sm focus:outline-none">
-                                <option value="" data-slug="">Ikuti kategori vendor</option>
+                            @php
+                                $selectedCatIds = old('category_vendor_id', is_array($package->category_vendor_id) ? $package->category_vendor_id : []);
+                                $selectedCatIds = is_array($selectedCatIds) ? array_map('intval', $selectedCatIds) : [];
+                            @endphp
+                            <select id="category_vendor_id" name="category_vendor_id[]" multiple data-vendor-category="{{ $vendor->category ?? '' }}"
+                                    class="w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none"
+                                    size="{{ min(count($categoryVendors ?? []) + 1, 6) }}">
+                                <option value="" data-slug="" @selected(empty($selectedCatIds))>Ikuti kategori vendor</option>
                                 @foreach(($categoryVendors ?? []) as $cat)
-                                    <option value="{{ $cat->id }}" data-slug="{{ $cat->slug }}" @selected((string) old('category_vendor_id', $package->category_vendor_id) === (string) $cat->id)>{{ $cat->name }}</option>
+                                    <option value="{{ $cat->id }}" data-slug="{{ $cat->slug }}" @selected(in_array((int) $cat->id, $selectedCatIds, true))>{{ $cat->name }}</option>
                                 @endforeach
                             </select>
+                            <p class="text-[10px] text-gray-400 mt-1">Tahan Ctrl/Cmd untuk memilih lebih dari satu.</p>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-2">Harga (angka)</label>
@@ -143,10 +150,12 @@
 
                     @php
                         $allowedVenueCategorySlugs = ['rumah', 'hotel', 'venue', 'gedung'];
-                        $selectedCatId = old('category_vendor_id', $package->category_vendor_id);
+                        $selIds = old('category_vendor_id', is_array($package->category_vendor_id) ? $package->category_vendor_id : []);
+                        $selIds = is_array($selIds) ? array_map('intval', $selIds) : [];
+                        $selectedCatId = $selIds[0] ?? null;
                         $selectedCatSlug = null;
                         if ($selectedCatId) {
-                            $selectedCat = collect($categoryVendors ?? [])->firstWhere('id', (int) $selectedCatId);
+                            $selectedCat = collect($categoryVendors ?? [])->firstWhere('id', $selectedCatId);
                             $selectedCatSlug = $selectedCat ? (string) $selectedCat->slug : null;
                         }
                         $effectiveCatSlug = $selectedCatSlug ?: (string) ($vendor->category ?? '');
@@ -345,15 +354,15 @@
             }
             function refreshVenueSection() {
                 if (!venueSection || !categorySelect) return;
-                var slug = '';
-                if (categorySelect.value) {
-                    var opt = categorySelect.options[categorySelect.selectedIndex];
-                    slug = opt ? (opt.getAttribute('data-slug') || '') : '';
+                var selectedOpts = Array.from(categorySelect.selectedOptions || []);
+                var anyVenue = selectedOpts.some(function(opt) {
+                    return isVenueCategory(opt.getAttribute('data-slug') || '');
+                });
+                if (!anyVenue && selectedOpts.length === 1 && selectedOpts[0].value === '') {
+                    // fallback to vendor category
+                    anyVenue = isVenueCategory(categorySelect.getAttribute('data-vendor-category') || '');
                 }
-                if (!slug) {
-                    slug = categorySelect.getAttribute('data-vendor-category') || '';
-                }
-                if (isVenueCategory(slug)) {
+                if (anyVenue) {
                     venueSection.classList.remove('hidden');
                 } else {
                     venueSection.classList.add('hidden');
