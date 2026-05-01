@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'logo_url'    => env('APP_LOGO_URL', '/storage/Makna Kreatif Indonesia.png'),
+    'favicon_url' => env('APP_FAVICON_URL', '/storage/favicon.png'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

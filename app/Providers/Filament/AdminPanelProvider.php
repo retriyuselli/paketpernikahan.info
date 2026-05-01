@@ -32,6 +32,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandLogo(config('app.logo_url'))
+            ->favicon(config('app.favicon_url'))
             ->font('Noto Sans')
             ->colors([
                 'primary' => Color::Amber,
