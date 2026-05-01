@@ -22,9 +22,10 @@ class VendorPackagesTable
             ->columns([
                 ImageColumn::make('image_path')
                     ->label('Foto')
-                    ->getStateUsing(fn ($record) => $record->image_url)
+                    ->getStateUsing(fn ($record) => $record->image_url ? url($record->image_url) : null)
                     ->circular()
-                    ->size(48),
+                    ->size(48)
+                    ->defaultImageUrl(null),
                 TextColumn::make('vendor.name')
                     ->label('Vendor')
                     ->searchable()
