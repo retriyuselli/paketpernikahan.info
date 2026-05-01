@@ -20,7 +20,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['mertua', 'silaturahmi', 'relationship'],
                 'is_published' => true,
                 'published_at' => '2026-03-17 08:00:00',
-                'views_count'  => 35,
+                'views_count'  => 0,
                 'sort_order'   => 1,
             ],
             [
@@ -32,7 +32,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['thr', 'budget', 'vendor', 'lebaran'],
                 'is_published' => true,
                 'published_at' => '2026-03-16 09:00:00',
-                'views_count'  => 30,
+                'views_count'  => 0,
                 'sort_order'   => 2,
             ],
             [
@@ -44,7 +44,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['lamaran', 'acara', 'susunan acara'],
                 'is_published' => true,
                 'published_at' => '2026-02-20 08:00:00',
-                'views_count'  => 577271,
+                'views_count'  => 0,
                 'sort_order'   => 3,
             ],
             [
@@ -56,7 +56,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['lamaran', 'romantis', 'proposal', 'ide'],
                 'is_published' => true,
                 'published_at' => '2026-02-10 09:00:00',
-                'views_count'  => 560122,
+                'views_count'  => 0,
                 'sort_order'   => 4,
             ],
             [
@@ -68,7 +68,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['adat jawa', 'prosesi', 'pernikahan tradisional'],
                 'is_published' => true,
                 'published_at' => '2026-01-15 10:00:00',
-                'views_count'  => 443946,
+                'views_count'  => 0,
                 'sort_order'   => 5,
             ],
             [
@@ -80,7 +80,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['fotografer', 'tips', 'pernikahan'],
                 'is_published' => true,
                 'published_at' => '2026-01-05 08:00:00',
-                'views_count'  => 12500,
+                'views_count'  => 0,
                 'sort_order'   => 6,
             ],
             [
@@ -92,7 +92,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['checklist', 'pernikahan', 'planning'],
                 'is_published' => true,
                 'published_at' => '2026-03-20 08:00:00',
-                'views_count'  => 18200,
+                'views_count'  => 0,
                 'sort_order'   => 7,
             ],
             [
@@ -104,7 +104,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['venue', 'gedung', 'outdoor', 'budget'],
                 'is_published' => true,
                 'published_at' => '2026-03-25 09:00:00',
-                'views_count'  => 9800,
+                'views_count'  => 0,
                 'sort_order'   => 8,
             ],
             [
@@ -116,7 +116,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['dekorasi', 'minimalis', 'inspirasi', 'wedding ideas'],
                 'is_published' => true,
                 'published_at' => '2026-04-01 08:00:00',
-                'views_count'  => 22400,
+                'views_count'  => 0,
                 'sort_order'   => 9,
             ],
             [
@@ -128,7 +128,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['catering', 'makanan', 'pernikahan', 'tips'],
                 'is_published' => true,
                 'published_at' => '2026-04-05 09:00:00',
-                'views_count'  => 15600,
+                'views_count'  => 0,
                 'sort_order'   => 10,
             ],
             [
@@ -140,7 +140,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['kesalahan', 'planning', 'pernikahan', 'tips'],
                 'is_published' => true,
                 'published_at' => '2026-04-08 08:00:00',
-                'views_count'  => 31000,
+                'views_count'  => 0,
                 'sort_order'   => 11,
             ],
             [
@@ -152,7 +152,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['gaun pengantin', 'fashion', 'tren 2026'],
                 'is_published' => true,
                 'published_at' => '2026-04-10 10:00:00',
-                'views_count'  => 19700,
+                'views_count'  => 0,
                 'sort_order'   => 12,
             ],
             [
@@ -164,7 +164,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['honeymoon', 'bulan madu', 'destinasi', 'liburan'],
                 'is_published' => true,
                 'published_at' => '2026-04-12 09:00:00',
-                'views_count'  => 28900,
+                'views_count'  => 0,
                 'sort_order'   => 13,
             ],
             [
@@ -176,7 +176,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['undangan', 'digital', 'cetak', 'pernikahan'],
                 'is_published' => true,
                 'published_at' => '2026-04-15 08:00:00',
-                'views_count'  => 11300,
+                'views_count'  => 0,
                 'sort_order'   => 14,
             ],
             [
@@ -188,7 +188,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['akad nikah', 'makna', 'prosesi', 'pernikahan'],
                 'is_published' => true,
                 'published_at' => '2026-04-18 10:00:00',
-                'views_count'  => 34500,
+                'views_count'  => 0,
                 'sort_order'   => 15,
             ],
             [
@@ -200,7 +200,7 @@ class BlogSeeder extends Seeder
                 'tags'         => ['mental health', 'stres', 'persiapan pernikahan', 'tips'],
                 'is_published' => true,
                 'published_at' => '2026-04-20 09:00:00',
-                'views_count'  => 26800,
+                'views_count'  => 0,
                 'sort_order'   => 16,
             ],
         ];

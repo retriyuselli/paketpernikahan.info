@@ -20,5 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(VendorSeeder::class);
         $this->call(VendorPackageSeeder::class);
         $this->call(HeroCircleSeeder::class);
+        $this->call(VenueReviewVideoSeeder::class);
+        $this->call(RealWeddingSeeder::class);
     }
 }

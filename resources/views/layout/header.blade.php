@@ -67,7 +67,8 @@
                     Store
                 </a>
                 <a href="{{ route('store.promo') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Promo</a>
-                <a href="{{ route('blog.index') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Blog Makna</a>
+                <a href="{{ route('real-wedding.index') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Real Wedding</a>
+                <a href="{{ route('blog.index') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Blog</a>
                 <div class="relative group">
                     <button type="button" data-toggle-header-dropdown="lain"
                             class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase"
@@ -277,26 +278,6 @@
                 Home
             </a>
 
-            <details class="rounded-xl hover:bg-gray-50 transition">
-                <summary class="list-none flex items-center gap-3 px-3 py-3 text-sm font-semibold text-gray-700 cursor-pointer">
-                    <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/>
-                    </svg>
-                    Wedding Package
-                    <svg class="ml-auto w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </summary>
-                <div class="px-3 pb-3 space-y-1">
-                    <a href="{{ route('vendor') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
-                        Semua Vendor
-                    </a>
-                    <a href="{{ route('vendor') }}?q=paket" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
-                        Cari Paket
-                    </a>
-                </div>
-            </details>
-
             <a href="{{ route('vendor') }}" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
                 <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -312,6 +293,49 @@
                 </svg>
                 Store
             </a>
+
+            <a href="{{ route('store.promo') }}" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
+                </svg>
+                Promo
+            </a>
+
+            <a href="{{ route('real-wedding.index') }}" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+                Real Wedding
+            </a>
+
+            <a href="{{ route('blog.index') }}" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 013 3L8 18l-4 1 1-4 11.5-11.5z"/>
+                </svg>
+                Blog
+            </a>
+
+            <details class="rounded-xl hover:bg-gray-50 transition">
+                <summary class="list-none flex items-center gap-3 px-3 py-3 text-sm font-semibold text-gray-700 cursor-pointer">
+                    <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                    </svg>
+                    Lain lain
+                    <svg class="ml-auto w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </summary>
+                <div class="px-3 pb-3 space-y-1">
+                    <a href="{{ route('tentang') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
+                        Tentang Makna
+                    </a>
+                    <a href="{{ route('kontak') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
+                        Kontak
+                    </a>
+                </div>
+            </details>
 
             @auth
                 @if(($headerShowJoinVendorForAuth ?? false))
@@ -336,42 +360,6 @@
                     <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-light-sage text-dark">Daftar</span>
                 </a>
             @endauth
-
-            <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
-                <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 1.343-3 3v2h6v-2c0-1.657-1.343-3-3-3z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 11a7 7 0 0114 0v7a1 1 0 01-1 1H6a1 1 0 01-1-1v-7z"/>
-                </svg>
-                Promo
-            </a>
-
-            <a href="#" class="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 transition">
-                <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 013 3L8 18l-4 1 1-4 11.5-11.5z"/>
-                </svg>
-                Blog Makna
-            </a>
-
-            <details class="rounded-xl hover:bg-gray-50 transition">
-                <summary class="list-none flex items-center gap-3 px-3 py-3 text-sm font-semibold text-gray-700 cursor-pointer">
-                    <svg class="w-5 h-5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
-                    </svg>
-                    Lain lain
-                    <svg class="ml-auto w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </summary>
-                <div class="px-3 pb-3 space-y-1">
-                    <a href="{{ route('tentang') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
-                        Tentang Makna
-                    </a>
-                    <a href="{{ route('kontak') }}" class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-gray-600 hover:bg-white transition border border-gray-100">
-                        Kontak
-                    </a>
-                </div>
-            </details>
 
             <div class="my-2 border-t border-gray-100"></div>
 
