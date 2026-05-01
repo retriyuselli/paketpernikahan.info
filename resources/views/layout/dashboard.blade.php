@@ -84,7 +84,9 @@
         .sidebar-link.active { background: var(--light-sage); color: var(--sidebar-active-text); font-weight: 600; }
     </style>
 </head>
-<body class="bg-cream text-dark">
+<body class="bg-cream text-dark"
+      data-chat-can-notify="{{ $user->hasRole(['super_admin', 'admin']) ? '1' : '0' }}"
+      data-chat-notify-url="{{ route('chat.admin.notify') }}">
 
 @include('layout.header')
 
@@ -283,6 +285,13 @@
                 @if(($menuPaymentUserPendingCount ?? 0) > 0)
                 <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuPaymentUserPendingCount }}</span>
                 @endif
+            </a>
+            <a href="{{ route('chat.admin') }}" class="sidebar-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                Live Chat
+                <span id="menu-chat-badge" class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark hidden">0</span>
             </a>
             <a href="/admin" class="sidebar-link {{ request()->is('admin*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -502,6 +511,13 @@
                         <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuPaymentUserPendingCount }}</span>
                         @endif
                     </a>
+                    <a href="{{ route('chat.admin') }}" class="sidebar-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        Live Chat
+                        <span id="menu-chat-badge-mobile" class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark hidden">0</span>
+                    </a>
                     <a href="/admin" class="sidebar-link {{ request()->is('admin*') ? 'active' : '' }}">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>
@@ -590,6 +606,119 @@ document.addEventListener('DOMContentLoaded', function () {
             closeDashboardMobileMenu();
         });
     });
+    var canChatNotify = (document.body && document.body.dataset)
+        ? document.body.dataset.chatCanNotify === '1'
+        : false;
+    if (canChatNotify) {
+        var notifyUrl = (document.body && document.body.dataset)
+            ? (document.body.dataset.chatNotifyUrl || '')
+            : '';
+        var badge = document.getElementById('menu-chat-badge');
+        var badgeMobile = document.getElementById('menu-chat-badge-mobile');
+        var audioCtx = null;
+        var enabled = localStorage.getItem('mw_chat_notif_enabled') === '1';
+        var lastId = parseInt(localStorage.getItem('mw_last_guest_msg_id') || '0', 10);
+
+        function setBadgeCount(n) {
+            var show = n > 0;
+            if (badge) {
+                badge.textContent = String(n);
+                badge.classList.toggle('hidden', !show);
+            }
+            if (badgeMobile) {
+                badgeMobile.textContent = String(n);
+                badgeMobile.classList.toggle('hidden', !show);
+            }
+        }
+
+        function ensureAudio() {
+            if (!enabled) return;
+            if (!window.AudioContext && !window.webkitAudioContext) return;
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx && audioCtx.state === 'suspended' && audioCtx.resume) audioCtx.resume();
+        }
+
+        function beep() {
+            if (!enabled) return;
+            ensureAudio();
+            if (!audioCtx) return;
+            var osc = audioCtx.createOscillator();
+            var gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = 880;
+            gain.gain.value = 0.0001;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.25);
+            osc.stop(audioCtx.currentTime + 0.26);
+        }
+
+        function notify(title, body, token) {
+            if (!enabled) return;
+            if (!('Notification' in window)) return;
+            if (Notification.permission !== 'granted') return;
+            var n = new Notification(title, { body: body });
+            n.onclick = function () {
+                try { window.focus(); } catch (e) {}
+                if (token) window.location.href = '/dashboard/chat/' + token;
+                n.close();
+            };
+        }
+
+        function enableNotifications() {
+            enabled = true;
+            localStorage.setItem('mw_chat_notif_enabled', '1');
+            ensureAudio();
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().catch(function () {});
+            }
+        }
+
+        if (!enabled) {
+            var enableOnce = function () {
+                enableNotifications();
+                document.removeEventListener('click', enableOnce);
+                document.removeEventListener('keydown', enableOnce);
+            };
+            document.addEventListener('click', enableOnce, { once: true });
+            document.addEventListener('keydown', enableOnce, { once: true });
+        } else {
+            ensureAudio();
+        }
+
+        function pollNotify() {
+            if (!notifyUrl) return;
+            fetch(notifyUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    var count = parseInt(data.open_guest_sessions_count || 0, 10);
+                    setBadgeCount(count);
+
+                    var latest = parseInt(data.latest_guest_message_id || 0, 10);
+                    if (!latest) return;
+
+                    if (!lastId) {
+                        lastId = latest;
+                        localStorage.setItem('mw_last_guest_msg_id', String(lastId));
+                        return;
+                    }
+
+                    if (latest > lastId) {
+                        lastId = latest;
+                        localStorage.setItem('mw_last_guest_msg_id', String(lastId));
+                        beep();
+                        var name = data.latest_guest_name || 'Pengunjung';
+                        notify('Chat masuk', 'Dari ' + name, data.latest_session_token || null);
+                    }
+                })
+                .catch(function () {});
+        }
+
+        pollNotify();
+        setInterval(pollNotify, 7000);
+    }
 });
 </script>
 

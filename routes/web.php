@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialAuthController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\VendorApplicationController;
 use App\Http\Controllers\VendorApplicationAdminController;
@@ -1434,4 +1435,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('dashboard.avatar.update');
     Route::post('/dashboard/profile/whatsapp', [\App\Http\Controllers\ProfileController::class, 'updateWhatsapp'])
         ->name('dashboard.whatsapp.update');
+});
+
+// ── Chat (public) ──────────────────────────────────────────────────────────
+Route::post('/chat/start', [ChatController::class, 'start'])->name('chat.start')
+    ->middleware('throttle:20,1');
+Route::post('/chat/{token}/send', [ChatController::class, 'send'])->name('chat.send')
+    ->middleware('throttle:60,1');
+Route::get('/chat/{token}/messages', [ChatController::class, 'poll'])->name('chat.poll')
+    ->middleware('throttle:120,1');
+
+// ── Chat (admin) ───────────────────────────────────────────────────────────
+Route::middleware(['auth', 'verified'])->prefix('dashboard/chat')->name('chat.')->group(function () {
+    Route::get('/', [ChatController::class, 'adminIndex'])->name('admin');
+    Route::get('/notify', [ChatController::class, 'adminNotify'])->name('admin.notify');
+    Route::get('/{token}', [ChatController::class, 'adminDetail'])->name('admin.detail');
+    Route::post('/{token}/reply', [ChatController::class, 'adminReply'])->name('admin.reply');
+    Route::get('/{token}/poll', [ChatController::class, 'adminPoll'])->name('admin.poll');
+    Route::post('/{token}/close', [ChatController::class, 'adminClose'])->name('admin.close');
+    Route::post('/{token}/open', [ChatController::class, 'adminOpen'])->name('admin.open');
 });

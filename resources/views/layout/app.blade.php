@@ -157,6 +157,297 @@
 
         <script>document.addEventListener('contextmenu', function(e){ e.preventDefault(); });</script>
 
+        {{-- ── Live Chat Widget ── --}}
+        <div id="lc-widget" class="fixed bottom-5 right-5 z-[9990] flex flex-col items-end gap-3">
+
+            {{-- Chat Panel --}}
+            <div id="lc-panel"
+                 style="display:none; width:320px;"
+                 class="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+                 aria-label="Live Chat">
+
+                {{-- Header --}}
+                <div class="flex items-center gap-3 px-4 py-3 bg-dark">
+                    <div class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-cream" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-cream font-semibold text-sm leading-tight">Makna Wedding</p>
+                        <p class="text-cream/60 text-xs flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>
+                            Online
+                        </p>
+                    </div>
+                    <button type="button" id="lc-close" class="text-cream/60 hover:text-cream transition" aria-label="Tutup chat">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Intro (form nama) --}}
+                <div id="lc-intro" class="px-4 py-5 flex flex-col gap-3">
+                    <p class="text-sm text-gray-600 leading-snug">Halo! 👋 Sebelum mulai, boleh kami tahu nama kamu?</p>
+                    <input type="text" id="lc-name-input"
+                           placeholder="Nama kamu..."
+                           maxlength="100"
+                           class="border border-gray-200 rounded-xl px-3 py-2 text-sm outline-none focus:border-dark transition"/>
+                    <button type="button" id="lc-start-btn"
+                            class="bg-dark text-cream text-sm font-semibold py-2 rounded-xl hover:opacity-90 transition">
+                        Mulai Chat
+                    </button>
+                    <p id="lc-intro-err" class="text-xs text-red-500 hidden">Nama tidak boleh kosong.</p>
+                </div>
+
+                {{-- Chat area (hidden until started) --}}
+                <div id="lc-chat" style="display:none;" class="flex flex-col" style="height:380px;">
+                    <div id="lc-messages" class="flex-1 overflow-y-auto px-4 py-3 space-y-2 bg-gray-50" style="height:280px;"></div>
+                    <div id="lc-closed-notice" style="display:none;"
+                         class="px-4 py-2 text-center text-xs text-gray-400 bg-gray-50 border-t border-gray-100">
+                        Sesi ini telah ditutup oleh admin.
+                    </div>
+                    <div id="lc-input-area" class="border-t border-gray-100 px-3 py-2.5 flex items-end gap-2 bg-white">
+                        <textarea id="lc-msg-input"
+                                  placeholder="Ketik pesan..."
+                                  rows="1"
+                                  class="flex-1 resize-none bg-gray-100 rounded-xl px-3 py-2 text-sm outline-none focus:bg-gray-200 transition"
+                                  style="max-height:90px;"></textarea>
+                        <button type="button" id="lc-send-btn"
+                                class="w-9 h-9 rounded-xl bg-dark text-cream flex items-center justify-center hover:opacity-90 transition flex-shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- Floating Button --}}
+            <button type="button" id="lc-btn"
+                    class="w-14 h-14 rounded-full shadow-xl flex items-center justify-center bg-dark text-cream transition hover:scale-105 active:scale-95 relative"
+                    aria-label="Buka Live Chat">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span id="lc-notif-dot"
+                      style="display:none;"
+                      class="absolute top-0.5 right-0.5 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+        </div>
+
+        <script>
+        (function () {
+            var CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
+            var btn       = document.getElementById('lc-btn');
+            var panel     = document.getElementById('lc-panel');
+            var closeBtn  = document.getElementById('lc-close');
+            var intro     = document.getElementById('lc-intro');
+            var nameInput = document.getElementById('lc-name-input');
+            var startBtn  = document.getElementById('lc-start-btn');
+            var introErr  = document.getElementById('lc-intro-err');
+            var chatArea  = document.getElementById('lc-chat');
+            var messages  = document.getElementById('lc-messages');
+            var msgInput  = document.getElementById('lc-msg-input');
+            var sendBtn   = document.getElementById('lc-send-btn');
+            var inputArea = document.getElementById('lc-input-area');
+            var closedNotice = document.getElementById('lc-closed-notice');
+            var notifDot  = document.getElementById('lc-notif-dot');
+
+            var token    = sessionStorage.getItem('lc_token') ?? null;
+            var lastId   = parseInt(sessionStorage.getItem('lc_last_id') ?? '0', 10);
+            var panelOpen = false;
+            var pollTimer = null;
+
+            // ── helpers ──────────────────────────────────────────────
+            function esc(s) {
+                return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            }
+            function fmtTime(iso) {
+                var d = new Date(iso);
+                return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+            }
+            function scrollBottom() {
+                if (messages) messages.scrollTop = messages.scrollHeight;
+            }
+            function appendMsg(msg) {
+                var isAdmin = msg.sender === 'admin';
+                var wrap = document.createElement('div');
+                wrap.className = 'flex ' + (isAdmin ? 'justify-start' : 'justify-end');
+                wrap.dataset.msgId = msg.id;
+                wrap.innerHTML = '<div class="max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-snug '
+                    + (isAdmin ? 'bg-white text-dark shadow-sm rounded-tl-none' : 'bg-dark text-cream rounded-tr-none')
+                    + '">'
+                    + esc(msg.message)
+                    + '<span class="block text-[10px] mt-1 '
+                    + (isAdmin ? 'text-gray-400' : 'text-cream/60 text-right') + '">' + fmtTime(msg.created_at) + '</span>'
+                    + '</div>';
+                messages.appendChild(wrap);
+            }
+            function setNewMsgDot(show) {
+                if (notifDot) notifDot.style.display = show ? '' : 'none';
+            }
+
+            // ── restore session ───────────────────────────────────────
+            function restoreSession() {
+                if (!token) return;
+                // fetch all messages from beginning
+                fetch('/chat/' + token + '/messages?after=0', {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        showChat();
+                        data.messages.forEach(function (m) { appendMsg(m); lastId = Math.max(lastId, m.id); });
+                        sessionStorage.setItem('lc_last_id', lastId);
+                        scrollBottom();
+                        if (data.status === 'closed') showClosed();
+                        else startPolling();
+                    })
+                    .catch(function () {
+                        // token stale, reset
+                        token = null;
+                        sessionStorage.removeItem('lc_token');
+                        sessionStorage.removeItem('lc_last_id');
+                    });
+            }
+
+            function showChat() {
+                intro.style.display = 'none';
+                chatArea.style.display = 'flex';
+                chatArea.style.flexDirection = 'column';
+            }
+            function showClosed() {
+                if (closedNotice) closedNotice.style.display = '';
+                if (inputArea) inputArea.style.display = 'none';
+                stopPolling();
+            }
+
+            // ── polling ───────────────────────────────────────────────
+            function startPolling() {
+                stopPolling();
+                pollTimer = setInterval(poll, 3000);
+            }
+            function stopPolling() {
+                if (pollTimer) clearInterval(pollTimer);
+                pollTimer = null;
+            }
+            function poll() {
+                if (!token) return;
+                fetch('/chat/' + token + '/messages?after=' + lastId, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        var hasNew = false;
+                        data.messages.forEach(function (m) {
+                            appendMsg(m);
+                            lastId = Math.max(lastId, m.id);
+                            if (m.sender === 'admin') hasNew = true;
+                        });
+                        sessionStorage.setItem('lc_last_id', lastId);
+                        if (data.messages.length > 0) scrollBottom();
+                        if (hasNew && !panelOpen) setNewMsgDot(true);
+                        if (data.status === 'closed') showClosed();
+                    });
+            }
+
+            // ── open / close panel ────────────────────────────────────
+            function openPanel() {
+                panelOpen = true;
+                panel.style.display = 'flex';
+                panel.style.flexDirection = 'column';
+                setNewMsgDot(false);
+                if (token) restoreSession();
+                setTimeout(function () { if (nameInput && !token) nameInput.focus(); }, 100);
+            }
+            function closePanel() {
+                panelOpen = false;
+                panel.style.display = 'none';
+            }
+
+            btn.addEventListener('click', function () { panelOpen ? closePanel() : openPanel(); });
+            closeBtn.addEventListener('click', closePanel);
+
+            // ── start session ─────────────────────────────────────────
+            startBtn.addEventListener('click', function () {
+                var name = nameInput.value.trim();
+                if (!name) { introErr.classList.remove('hidden'); return; }
+                introErr.classList.add('hidden');
+                startBtn.disabled = true;
+                startBtn.textContent = 'Memulai...';
+
+                fetch('/chat/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({guest_name: name}),
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    token = data.token;
+                    sessionStorage.setItem('lc_token', token);
+                    sessionStorage.setItem('lc_last_id', '0');
+                    lastId = 0;
+                    showChat();
+                    // Load welcome message
+                    poll();
+                    startPolling();
+                })
+                .catch(function () {
+                    startBtn.disabled = false;
+                    startBtn.textContent = 'Mulai Chat';
+                });
+            });
+            nameInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') startBtn.click();
+            });
+
+            // ── send message ──────────────────────────────────────────
+            function sendMessage() {
+                if (!token || !msgInput) return;
+                var msg = msgInput.value.trim();
+                if (!msg) return;
+                msgInput.value = '';
+                msgInput.style.height = '';
+
+                fetch('/chat/' + token + '/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({message: msg}),
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    appendMsg({id: data.id, sender: 'guest', message: msg, created_at: data.created_at});
+                    lastId = Math.max(lastId, data.id);
+                    sessionStorage.setItem('lc_last_id', lastId);
+                    scrollBottom();
+                });
+            }
+
+            if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+            if (msgInput) {
+                msgInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+                });
+                msgInput.addEventListener('input', function () {
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 90) + 'px';
+                });
+            }
+
+            // ── notification dot after 8s if no session ───────────────
+            if (!token) {
+                setTimeout(function () { if (!panelOpen) setNewMsgDot(true); }, 8000);
+            }
+        })();
+        </script>
+
     </body>
-</html>
 </html>
