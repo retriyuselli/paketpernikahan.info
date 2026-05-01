@@ -463,9 +463,9 @@
                                     <div class="flex items-start justify-between gap-2">
                                         <div>
                                             <p class="font-bold text-sm leading-tight text-dark">{{ $pkg->name }}</p>
-                                            <p class="text-base font-bold mt-0.5 text-accent">{{ $pkg->price }}</p>
+                                            <p class="text-base font-bold mt-0.5 text-accent">IDR {{ number_format($pkg->price, 0, ',', '.') }}</p>
                                             @if($pkg->discount > 0)
-                                            <p class="text-xs text-gray-400">Diskon Rp {{ number_format($pkg->discount, 0, ',', '.') }}</p>
+                                            <p class="text-xs text-gray-400">Diskon IDR {{ number_format($pkg->discount, 0, ',', '.') }}</p>
                                             @endif
                                         </div>
                                         @if(!$pkg->is_active)

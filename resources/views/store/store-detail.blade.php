@@ -75,6 +75,24 @@
                                 <a href="{{ route('store') }}" class="flex-shrink-0 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
                                     ← Kembali
                                 </a>
+                                @auth
+                                    @php
+                                        $authUser = auth()->user();
+                                        $canEdit = $authUser && (
+                                            $authUser->hasRole(['super_admin', 'admin']) ||
+                                            (int) $vendor->owner_user_id === (int) $authUser->id
+                                        );
+                                    @endphp
+                                    @if($canEdit)
+                                        <a href="{{ route('vendor.packages.edit', ['vendor' => $vendor->slug, 'package' => $package->id]) }}"
+                                           class="flex-shrink-0 inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-accent/30 bg-accent/10 text-accent hover:bg-accent/20 transition">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                            Edit
+                                        </a>
+                                    @endif
+                                @endauth
                             </div>
 
                             {{-- Tags / Badges --}}
