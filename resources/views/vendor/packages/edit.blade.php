@@ -86,21 +86,47 @@
                                    class="w-full h-11 rounded-xl border border-gray-200 px-4 text-sm focus:outline-none"
                                    required>
                         </div>
-                        <div>
+                        <div class="sm:col-span-2">
                             <label class="block text-xs font-semibold text-gray-500 mb-2">Kategori Vendor</label>
                             @php
                                 $selectedCatIds = old('category_vendor_id', is_array($package->category_vendor_id) ? $package->category_vendor_id : []);
                                 $selectedCatIds = is_array($selectedCatIds) ? array_map('intval', $selectedCatIds) : [];
                             @endphp
-                            <select id="category_vendor_id" name="category_vendor_id[]" multiple data-vendor-category="{{ $vendor->category ?? '' }}"
-                                    class="w-full rounded-xl border border-gray-200 px-4 py-2 text-sm focus:outline-none"
-                                    size="{{ min(count($categoryVendors ?? []) + 1, 6) }}">
-                                <option value="" data-slug="" @selected(empty($selectedCatIds))>Ikuti kategori vendor</option>
-                                @foreach(($categoryVendors ?? []) as $cat)
-                                    <option value="{{ $cat->id }}" data-slug="{{ $cat->slug }}" @selected(in_array((int) $cat->id, $selectedCatIds, true))>{{ $cat->name }}</option>
-                                @endforeach
-                            </select>
-                            <p class="text-[10px] text-gray-400 mt-1">Tahan Ctrl/Cmd untuk memilih lebih dari satu.</p>
+                            <div id="pkg-cat-pills" data-vendor-category="{{ $vendor->category ?? '' }}" class="relative">
+                                {{-- Trigger button --}}
+                                <button type="button" id="pkg-cat-trigger"
+                                        class="w-full h-11 px-4 rounded-xl border border-gray-200 bg-white text-sm text-left flex items-center justify-between gap-2 focus:outline-none focus:border-accent transition">
+                                    <span id="pkg-cat-label" class="truncate text-gray-400 italic">Ikuti kategori vendor</span>
+                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </button>
+
+                                {{-- Dropdown panel --}}
+                                <div id="pkg-cat-dropdown"
+                                     class="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-2xl shadow-lg z-20 hidden overflow-hidden">
+                                    <div class="p-3 grid grid-cols-2 gap-1 max-h-60 overflow-y-auto">
+                                        @foreach(($categoryVendors ?? []) as $cat)
+                                            <label class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-50 cursor-pointer transition">
+                                                <input type="checkbox"
+                                                       name="category_vendor_id[]"
+                                                       value="{{ $cat->id }}"
+                                                       data-slug="{{ $cat->slug }}"
+                                                       data-name="{{ $cat->name }}"
+                                                       class="pkg-cat-check h-4 w-4 rounded border-gray-300 accent-accent"
+                                                       {{ in_array((int) $cat->id, $selectedCatIds, true) ? 'checked' : '' }}>
+                                                <span class="text-sm text-dark">{{ $cat->name }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                    <div class="border-t border-gray-100 px-3 py-2 flex justify-between items-center">
+                                        <button type="button" id="pkg-cat-clear"
+                                                class="text-xs text-gray-400 hover:text-accent transition">Reset</button>
+                                        <button type="button" id="pkg-cat-done"
+                                                class="text-xs font-bold px-3 py-1.5 rounded-lg bg-accent text-white hover:opacity-90 transition">Selesai</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-2">Harga (angka)</label>
@@ -347,31 +373,69 @@
             }
 
             var venueSection = document.getElementById('pkg-venue-detail');
-            var categorySelect = document.getElementById('category_vendor_id');
+            var catContainer = document.getElementById('pkg-cat-pills');
+            var catChecks    = catContainer ? Array.from(catContainer.querySelectorAll('.pkg-cat-check')) : [];
+            var catTrigger   = document.getElementById('pkg-cat-trigger');
+            var catDropdown  = document.getElementById('pkg-cat-dropdown');
+            var catLabel     = document.getElementById('pkg-cat-label');
+            var catDoneBtn   = document.getElementById('pkg-cat-done');
+            var catClearBtn  = document.getElementById('pkg-cat-clear');
+
             function isVenueCategory(slug) {
                 slug = String(slug || '').toLowerCase();
                 return ['rumah', 'hotel', 'venue', 'gedung'].indexOf(slug) !== -1;
             }
-            function refreshVenueSection() {
-                if (!venueSection || !categorySelect) return;
-                var selectedOpts = Array.from(categorySelect.selectedOptions || []);
-                var anyVenue = selectedOpts.some(function(opt) {
-                    return isVenueCategory(opt.getAttribute('data-slug') || '');
-                });
-                if (!anyVenue && selectedOpts.length === 1 && selectedOpts[0].value === '') {
-                    // fallback to vendor category
-                    anyVenue = isVenueCategory(categorySelect.getAttribute('data-vendor-category') || '');
-                }
-                if (anyVenue) {
-                    venueSection.classList.remove('hidden');
+            function updateCatLabel() {
+                var names = catChecks.filter(function(cb) { return cb.checked; })
+                                     .map(function(cb) { return cb.getAttribute('data-name') || ''; });
+                if (names.length) {
+                    catLabel.textContent = names.join(', ');
+                    catLabel.classList.remove('text-gray-400', 'italic');
+                    catLabel.classList.add('text-dark');
                 } else {
-                    venueSection.classList.add('hidden');
+                    catLabel.textContent = 'Ikuti kategori vendor';
+                    catLabel.classList.add('text-gray-400', 'italic');
+                    catLabel.classList.remove('text-dark');
                 }
             }
-            if (categorySelect && venueSection) {
-                categorySelect.addEventListener('change', refreshVenueSection);
-                refreshVenueSection();
+            function refreshVenueSection() {
+                if (!venueSection) return;
+                var anyVenue = catChecks.some(function(cb) {
+                    return cb.checked && isVenueCategory(cb.getAttribute('data-slug') || '');
+                });
+                if (!anyVenue && !catChecks.some(function(cb) { return cb.checked; })) {
+                    anyVenue = isVenueCategory((catContainer && catContainer.getAttribute('data-vendor-category')) || '');
+                }
+                venueSection.classList.toggle('hidden', !anyVenue);
             }
+            function closeCatDropdown() {
+                if (catDropdown) catDropdown.classList.add('hidden');
+            }
+            if (catTrigger && catDropdown) {
+                catTrigger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    catDropdown.classList.toggle('hidden');
+                });
+                document.addEventListener('click', function(e) {
+                    if (catContainer && !catContainer.contains(e.target)) closeCatDropdown();
+                });
+            }
+            if (catDoneBtn) catDoneBtn.addEventListener('click', closeCatDropdown);
+            if (catClearBtn) {
+                catClearBtn.addEventListener('click', function() {
+                    catChecks.forEach(function(cb) { cb.checked = false; });
+                    updateCatLabel();
+                    refreshVenueSection();
+                });
+            }
+            catChecks.forEach(function(cb) {
+                cb.addEventListener('change', function() {
+                    updateCatLabel();
+                    refreshVenueSection();
+                });
+            });
+            updateCatLabel();
+            refreshVenueSection();
 
             /* ── Quill Rich Text Editor ── */
             var rteHidden = document.getElementById('rte-hidden');
