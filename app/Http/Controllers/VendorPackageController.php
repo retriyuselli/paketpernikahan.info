@@ -53,6 +53,7 @@ class VendorPackageController extends Controller
             'category_vendor_id' => 'nullable|integer|exists:category_vendors,id',
             'max_guests'      => 'nullable|string|max:100',
             'items'           => 'nullable|string',
+            'image'           => 'nullable|image|max:5120',
             'type'            => 'nullable|string|max:255',
             'capacity'        => 'nullable|integer|min:0',
             'facilities'      => 'nullable|string',
@@ -62,6 +63,11 @@ class VendorPackageController extends Controller
             'is_active'       => 'nullable|boolean',
         ]);
 
+        $imagePath = [];
+        if ($request->hasFile('image')) {
+            $imagePath = [$request->file('image')->store('packages', 'public')];
+        }
+
         $package = $vendor->packages()->create([
             'name'            => $validated['name'],
             'price'           => (int)$validated['price'],
@@ -70,6 +76,7 @@ class VendorPackageController extends Controller
             'category_vendor_id' => $validated['category_vendor_id'] ?? null,
             'max_guests'      => $validated['max_guests'] ?? '',
             'item'            => $validated['items'] ?? '',
+            'image_path'      => $imagePath,
             'type'            => $validated['type'] ?? null,
             'capacity'        => isset($validated['capacity']) ? (int)$validated['capacity'] : null,
             'facilities'      => isset($validated['facilities']) ? array_map('trim', explode(',', $validated['facilities'])) : null,
@@ -120,6 +127,7 @@ class VendorPackageController extends Controller
             'category_vendor_id' => 'nullable|integer|exists:category_vendors,id',
             'max_guests'      => 'nullable|string|max:100',
             'items'           => 'nullable|string',
+            'image'           => 'nullable|image|max:5120',
             'type'            => 'nullable|string|max:255',
             'capacity'        => 'nullable|integer|min:0',
             'facilities'      => 'nullable|string',
@@ -129,7 +137,7 @@ class VendorPackageController extends Controller
             'is_active'       => 'nullable|boolean',
         ]);
 
-        $package->update([
+        $updateData = [
             'name'            => $validated['name'],
             'price'           => (int)$validated['price'],
             'discount'        => (int)($validated['discount'] ?? 0),
@@ -144,7 +152,18 @@ class VendorPackageController extends Controller
             'card_text_color' => $validated['card_text_color'] ?? '#444444',
             'sort_order'      => (int)($validated['sort_order'] ?? 0),
             'is_active'       => (bool)($validated['is_active'] ?? true),
-        ]);
+        ];
+
+        if ($request->hasFile('image')) {
+            if (!empty($package->image_path)) {
+                foreach ($package->image_path as $oldPath) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                }
+            }
+            $updateData['image_path'] = [$request->file('image')->store('packages', 'public')];
+        }
+
+        $package->update($updateData);
 
         $vendor->refresh();
         $isComplete = $vendor->computeProfileComplete();

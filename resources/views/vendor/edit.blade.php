@@ -982,11 +982,27 @@
                 </details>
 
                 <details class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
-                    <summary class="cursor-pointer select-none text-xs font-bold text-dark">Item Paket</summary>
+                    <summary class="cursor-pointer select-none text-xs font-bold text-dark">Item Paket1</summary>
                     <div class="mt-2">
                         <div id="pkg-quill-wrap">
                             <div id="pkg-quill-editor"></div>
                         </div>
+                    </div>
+                </details>
+
+                <details class="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3">
+                    <summary class="cursor-pointer select-none text-xs font-bold text-dark">Foto Paket</summary>
+                    <div class="mt-3">
+                        <div id="pkg-image-preview-wrap" class="hidden mb-2">
+                            <img id="pkg-image-preview" src="" alt="Preview" class="w-full max-h-40 object-cover rounded-xl border border-gray-200">
+                        </div>
+                        <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-accent/50 transition bg-white">
+                            <svg class="w-6 h-6 text-gray-300 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span id="pkg-image-label" class="text-xs text-gray-400">Klik untuk pilih foto</span>
+                            <input type="file" id="pkg-image" accept="image/*" class="hidden">
+                        </label>
                     </div>
                 </details>
 
@@ -1189,6 +1205,26 @@
         });
     });
 
+    // Image preview for pkg-modal
+    document.getElementById('pkg-image').addEventListener('change', function () {
+        const file = this.files[0];
+        const previewWrap = document.getElementById('pkg-image-preview-wrap');
+        const preview = document.getElementById('pkg-image-preview');
+        const label = document.getElementById('pkg-image-label');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                previewWrap.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+            label.textContent = file.name;
+        } else {
+            previewWrap.classList.add('hidden');
+            label.textContent = 'Klik untuk pilih foto';
+        }
+    });
+
     function syncPkgActiveUI() {
         const check = document.getElementById('pkg-is-active');
         if (!check) return;
@@ -1245,6 +1281,12 @@
         modal.classList.remove('flex');
         document.body.style.overflow = '';
         if (pkgQuill) pkgQuill.setText('');
+        const imgInput = document.getElementById('pkg-image');
+        if (imgInput) imgInput.value = '';
+        const previewWrap = document.getElementById('pkg-image-preview-wrap');
+        if (previewWrap) previewWrap.classList.add('hidden');
+        const imgLabel = document.getElementById('pkg-image-label');
+        if (imgLabel) imgLabel.textContent = 'Klik untuk pilih foto';
     }
 
     function togglePkgActive() {
@@ -1306,36 +1348,34 @@
         btn.disabled = true;
         btn.textContent = 'Menyimpan…';
 
-        const payload = {
-            name:             name,
-            price:            priceRaw,
-            discount:         discount,
-            dp_paket:         dpPaket,
-            category_vendor_id: (function () {
-                const v = document.getElementById('pkg-category-vendor')?.value || '';
-                const idNum = parseInt(v, 10);
-                return Number.isFinite(idNum) && idNum > 0 ? idNum : null;
-            })(),
-            max_guests:       document.getElementById('pkg-max-guests').value.trim(),
-            items:            pkgQuill ? pkgQuill.root.innerHTML : '',
-            type:             (document.getElementById('pkg-type')?.value || '').trim() || null,
-            capacity:         (function () {
-                const v = (document.getElementById('pkg-capacity')?.value || '').trim();
-                if (v === '') return null;
-                const n = parseInt(v, 10);
-                return Number.isFinite(n) && n >= 0 ? n : null;
-            })(),
-            facilities:       (document.getElementById('pkg-facilities')?.value || '').trim() || null,
-            card_color:       document.getElementById('pkg-card-color').value,
-            card_text_color:  document.getElementById('pkg-text-color').value,
-            sort_order:       parseInt(document.getElementById('pkg-sort-order').value || '0', 10),
-            is_active:        document.getElementById('pkg-is-active').checked ? 1 : 0,
-        };
+        const catVal  = document.getElementById('pkg-category-vendor')?.value || '';
+        const catId  = parseInt(catVal, 10);
+        const capVal = (document.getElementById('pkg-capacity')?.value || '').trim();
+        const capNum = capVal !== '' ? parseInt(capVal, 10) : null;
+
+        const fd = new FormData();
+        fd.append('name',              name);
+        fd.append('price',             priceRaw);
+        fd.append('discount',          discount);
+        fd.append('dp_paket',          dpPaket);
+        if (Number.isFinite(catId) && catId > 0) fd.append('category_vendor_id', catId);
+        fd.append('max_guests',        document.getElementById('pkg-max-guests').value.trim());
+        fd.append('items',             pkgQuill ? pkgQuill.root.innerHTML : '');
+        fd.append('type',              (document.getElementById('pkg-type')?.value || '').trim());
+        if (Number.isFinite(capNum) && capNum >= 0) fd.append('capacity', capNum);
+        fd.append('facilities',        (document.getElementById('pkg-facilities')?.value || '').trim());
+        fd.append('card_color',        document.getElementById('pkg-card-color').value);
+        fd.append('card_text_color',   document.getElementById('pkg-text-color').value);
+        fd.append('sort_order',        parseInt(document.getElementById('pkg-sort-order').value || '0', 10));
+        fd.append('is_active',         document.getElementById('pkg-is-active').checked ? 1 : 0);
+        const imgFile = document.getElementById('pkg-image')?.files?.[0];
+        if (imgFile) fd.append('image', imgFile);
 
         let url, method;
         if (id) {
             url    = PKG_UPDATE_URL.replace('__ID__', id);
-            method = 'PUT';
+            method = 'POST';
+            fd.append('_method', 'PUT');
         } else {
             url    = PKG_STORE_URL;
             method = 'POST';
@@ -1344,8 +1384,8 @@
         try {
             const res = await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
-                body: JSON.stringify(payload),
+                headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
+                body: fd,
             });
             const data = await res.json();
             if (!res.ok) {

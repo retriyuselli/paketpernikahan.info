@@ -70,7 +70,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('vendor.packages.update', ['vendor' => $vendor->slug, 'package' => $package->id]) }}" class="space-y-4">
+        <form method="POST" action="{{ route('vendor.packages.update', ['vendor' => $vendor->slug, 'package' => $package->id]) }}" class="space-y-4" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -195,6 +195,36 @@
                 </div>
             </div>
 
+            {{-- Foto Paket --}}
+            <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div class="px-5 py-3 border-b border-gray-100 bg-cream">
+                    <h2 class="text-sm font-bold text-dark">Foto Paket</h2>
+                </div>
+                <div class="p-5">
+                    @php
+                        $currentImage = $package->image_url;
+                    @endphp
+                    @if($currentImage)
+                        <div class="mb-3">
+                            <p class="text-xs font-semibold text-gray-500 mb-2">Foto saat ini</p>
+                            <img src="{{ $currentImage }}" alt="Foto Paket"
+                                 class="w-full max-h-52 object-cover rounded-xl border border-gray-200">
+                            <p class="text-xs text-gray-400 mt-1.5">Upload foto baru untuk mengganti.</p>
+                        </div>
+                    @endif
+                    <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-accent/50 transition bg-gray-50">
+                        <svg class="w-7 h-7 text-gray-300 mb-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span id="pkg-img-label" class="text-xs text-gray-400">Klik untuk pilih foto (maks. 5 MB)</span>
+                        <input type="file" name="image" id="pkg-img-input" accept="image/*" class="hidden">
+                    </label>
+                    <div id="pkg-img-preview-wrap" class="hidden mt-2">
+                        <img id="pkg-img-preview" src="" alt="Preview" class="w-full max-h-52 object-cover rounded-xl border border-gray-200">
+                    </div>
+                </div>
+            </div>
+
             <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                 <div class="px-5 py-3 border-b border-gray-100 bg-cream">
                     <h2 class="text-sm font-bold text-dark">Tampilan Kartu</h2>
@@ -246,6 +276,26 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             sessionStorage.setItem('editVendorTab', 'tab-paket');
+
+            // Image preview
+            document.getElementById('pkg-img-input').addEventListener('change', function () {
+                const file = this.files[0];
+                const previewWrap = document.getElementById('pkg-img-preview-wrap');
+                const preview = document.getElementById('pkg-img-preview');
+                const label = document.getElementById('pkg-img-label');
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                        previewWrap.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                    label.textContent = file.name;
+                } else {
+                    previewWrap.classList.add('hidden');
+                    label.textContent = 'Klik untuk pilih foto (maks. 5 MB)';
+                }
+            });
 
             function digitsOnly(s) {
                 return String(s || '').replace(/\D+/g, '');
