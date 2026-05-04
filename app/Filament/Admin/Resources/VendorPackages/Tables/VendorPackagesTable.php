@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\VendorPackages\Tables;
 
+use App\Models\CategoryVendor;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DeleteAction;
@@ -13,6 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class VendorPackagesTable
 {
@@ -30,7 +32,22 @@ class VendorPackagesTable
                     ->label('Vendor')
                     ->searchable()
                     ->sortable()
-                    ->description(fn ($record) => $record->categoryVendor?->name),
+                    ->description(function ($record): ?string {
+                        static $categoryMap = null;
+                        $categoryMap ??= CategoryVendor::pluck('name', 'id')->toArray();
+
+                        $ids = is_array($record->category_vendor_id) ? $record->category_vendor_id : [];
+                        if (empty($ids)) {
+                            return null;
+                        }
+
+                        $names = array_values(array_filter(array_map(
+                            fn ($id) => $categoryMap[(int) $id] ?? null,
+                            $ids
+                        )));
+
+                        return empty($names) ? null : implode(', ', $names);
+                    }),
                 TextColumn::make('name')
                     ->label('Nama Paket')
                     ->searchable()
@@ -83,9 +100,19 @@ class VendorPackagesTable
                     ->preload(),
                 SelectFilter::make('category_vendor_id')
                     ->label('Kategori')
-                    ->relationship('categoryVendor', 'name')
+                    ->options(fn () => CategoryVendor::orderBy('sort_order')->orderBy('name')->pluck('name', 'id')->toArray())
                     ->searchable()
-                    ->preload(),
+                    ->query(function (Builder $query, array $data): Builder {
+                        $value = $data['value'] ?? null;
+                        if (!filled($value)) {
+                            return $query;
+                        }
+
+                        return $query->where(function (Builder $q) use ($value): void {
+                            $q->whereJsonContains('category_vendor_id', (int) $value)
+                                ->orWhereJsonContains('category_vendor_id', (string) $value);
+                        });
+                    }),
                 SelectFilter::make('type')
                     ->label('Tipe')
                     ->options(fn () => \App\Models\VendorPackage::query()

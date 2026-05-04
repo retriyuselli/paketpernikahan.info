@@ -105,7 +105,7 @@ class VendorPackageSeeder extends Seeder
 
             $batch[] = [
                 'vendor_id'          => $vendorId,
-                'category_vendor_id' => $categoryId,
+                'category_vendor_id' => $categoryId !== null ? json_encode([(int) $categoryId]) : null,
                 'name'               => $name,
                 'price'              => $priceRaw,
                 'discount'           => 0,

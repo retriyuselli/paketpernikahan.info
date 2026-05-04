@@ -236,6 +236,21 @@
             </div>
 
             {{-- Floating Button --}}
+            <div id="lc-welcome"
+                 style="display:none;"
+                 class="mb-1 max-w-[260px] sm:max-w-xs bg-white border border-gray-200 shadow-lg rounded-2xl px-3 py-2 text-xs text-gray-700">
+                <div class="flex items-start gap-2">
+                    <div class="flex-1 leading-snug">
+                        <p class="font-semibold text-dark">Selamat datang di Paket Pernikahan</p>
+                        <p class="text-gray-500">Ada yang bisa kami bantu?</p>
+                    </div>
+                    <button type="button" id="lc-welcome-close" class="mt-0.5 text-gray-400 hover:text-gray-600 transition" aria-label="Tutup">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
             <button type="button" id="lc-btn"
                     class="w-14 h-14 rounded-full shadow-xl flex items-center justify-center bg-dark text-cream transition hover:scale-105 active:scale-95 relative"
                     aria-label="Buka Live Chat">
@@ -266,11 +281,15 @@
             var inputArea = document.getElementById('lc-input-area');
             var closedNotice = document.getElementById('lc-closed-notice');
             var notifDot  = document.getElementById('lc-notif-dot');
+            var welcome   = document.getElementById('lc-welcome');
+            var welcomeClose = document.getElementById('lc-welcome-close');
 
+            var WELCOME_VERSION = '1';
             var token    = sessionStorage.getItem('lc_token') ?? null;
             var lastId   = parseInt(sessionStorage.getItem('lc_last_id') ?? '0', 10);
             var panelOpen = false;
             var pollTimer = null;
+            var welcomeTimer = null;
 
             // ── helpers ──────────────────────────────────────────────
             function esc(s) {
@@ -301,6 +320,36 @@
             }
             function setNewMsgDot(show) {
                 if (notifDot) notifDot.style.display = show ? '' : 'none';
+            }
+            function getWelcomeTs() {
+                try {
+                    var v = localStorage.getItem('lc_welcome_v') ?? '';
+                    if (v !== WELCOME_VERSION) {
+                        return 0;
+                    }
+                    return parseInt(localStorage.getItem('lc_welcome_ts') ?? '0', 10) || 0;
+                } catch (e) {
+                    return 0;
+                }
+            }
+            function setWelcomeTs() {
+                try {
+                    localStorage.setItem('lc_welcome_v', WELCOME_VERSION);
+                    localStorage.setItem('lc_welcome_ts', String(Date.now()));
+                } catch (e) {}
+            }
+            function hideWelcome(persist) {
+                if (welcome) welcome.style.display = 'none';
+                if (welcomeTimer) clearTimeout(welcomeTimer);
+                welcomeTimer = null;
+                if (persist) setWelcomeTs();
+            }
+            function maybeShowWelcome() {
+                if (!welcome || panelOpen) return;
+                var lastSeen = getWelcomeTs();
+                if (lastSeen && (Date.now() - lastSeen) < 24 * 60 * 60 * 1000) return;
+                welcome.style.display = '';
+                welcomeTimer = null;
             }
 
             // ── restore session ───────────────────────────────────────
@@ -379,6 +428,7 @@
 
             btn.addEventListener('click', function () { panelOpen ? closePanel() : openPanel(); });
             closeBtn.addEventListener('click', closePanel);
+            if (welcomeClose) welcomeClose.addEventListener('click', function () { hideWelcome(true); });
 
             // ── start session ─────────────────────────────────────────
             startBtn.addEventListener('click', function () {
@@ -458,6 +508,7 @@
             if (!token) {
                 setTimeout(function () { if (!panelOpen) setNewMsgDot(true); }, 8000);
             }
+            welcomeTimer = setTimeout(maybeShowWelcome, 1200);
         })();
         </script>
 

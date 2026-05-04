@@ -45,7 +45,7 @@ class VendorPackageImporter extends Importer
                         ['name' => $name],
                         ['slug' => Str::slug($name) ?: Str::uuid()->toString()]
                     );
-                    $record->category_vendor_id = $category->id;
+                    $record->category_vendor_id = [$category->id];
                 }),
 
             ImportColumn::make('name')
