@@ -69,7 +69,7 @@
                 @endif
                 {{ $msg->message }}
                 <span class="block text-[10px] mt-1 {{ $msg->sender === 'admin' ? 'text-white/60 text-right' : 'text-gray-400' }}">
-                    {{ $msg->created_at->format('H:i') }}
+                    {{ $msg->created_at->timezone('Asia/Jakarta')->format('H:i') }}
                 </span>
             </div>
         </div>
@@ -107,6 +107,13 @@
     var token = msgBox?.dataset?.sessionToken || '';
     var status = msgBox?.dataset?.sessionStatus || '';
     var lastId = parseInt(msgBox?.dataset?.lastId || '0', 10);
+    var APP_TZ = 'Asia/Jakarta';
+    var timeFormatter = null;
+    try {
+        timeFormatter = new Intl.DateTimeFormat('id-ID', { timeZone: APP_TZ, hour: '2-digit', minute: '2-digit', hour12: false });
+    } catch (e) {
+        timeFormatter = null;
+    }
 
     function scrollBottom() {
         if (msgBox) msgBox.scrollTop = msgBox.scrollHeight;
@@ -119,7 +126,7 @@
         wrap.className = 'flex group ' + (isAdmin ? 'justify-end' : 'justify-start');
         wrap.dataset.msgId = msg.id;
         var t = new Date(msg.created_at);
-        var hhmm = t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0');
+        var hhmm = timeFormatter ? timeFormatter.format(t) : (t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0'));
         var nameHtml = (isAdmin && msg.admin_name) ? '<span class="block text-[10px] mb-1 text-white/70">' + escHtml(msg.admin_name) + '</span>' : '';
         var delUrl = '/dashboard/chat/' + token + '/messages/' + msg.id;
         var delHtml = '<button type="button" data-delete-msg="' + msg.id + '" data-delete-url="' + delUrl + '" class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 flex items-center justify-center text-xs font-bold">×</button>';

@@ -290,6 +290,13 @@
             var panelOpen = false;
             var pollTimer = null;
             var welcomeTimer = null;
+            var APP_TZ = 'Asia/Jakarta';
+            var timeFormatter = null;
+            try {
+                timeFormatter = new Intl.DateTimeFormat('id-ID', { timeZone: APP_TZ, hour: '2-digit', minute: '2-digit', hour12: false });
+            } catch (e) {
+                timeFormatter = null;
+            }
 
             // ── helpers ──────────────────────────────────────────────
             function esc(s) {
@@ -297,6 +304,7 @@
             }
             function fmtTime(iso) {
                 var d = new Date(iso);
+                if (timeFormatter) return timeFormatter.format(d);
                 return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
             }
             function scrollBottom() {
