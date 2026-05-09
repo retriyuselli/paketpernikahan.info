@@ -392,18 +392,19 @@
 
                 <!-- Video Popup Modal -->
                 <div id="venue-video-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-black/80">
-                    <div class="relative w-full max-w-3xl">
+                    <div id="venue-video-wrapper" class="relative w-full max-w-3xl">
                         <button type="button" id="venue-video-close"
                                 class="absolute -top-10 right-0 text-white hover:text-gray-300 transition flex items-center gap-1 text-sm">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             Tutup
                         </button>
-                        <div class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden">
+                        <div id="venue-video-container" class="relative w-full aspect-video bg-black rounded-2xl overflow-hidden">
                             <iframe id="venue-video-iframe"
                                     src=""
                                     class="w-full h-full"
                                     frameborder="0"
-                                    allow="autoplay; encrypted-media; picture-in-picture"
+                                    referrerpolicy="strict-origin-when-cross-origin"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowfullscreen>
                             </iframe>
                         </div>
@@ -412,16 +413,29 @@
 
                 <script>
                 (function () {
+                    var playerOrigin = encodeURIComponent(window.location.origin);
+
                     function toEmbedUrl(url) {
                         if (!url) return '';
+                        function buildEmbedUrl(videoId) {
+                            return 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&playsinline=1&rel=0&origin=' + playerOrigin;
+                        }
+
+                        // youtube.com/shorts/ID
+                        var m = url.match(/youtube\.com\/shorts\/([^?&/]+)/);
+                        if (m) return buildEmbedUrl(m[1]);
                         // youtu.be/ID
-                        var m = url.match(/youtu\.be\/([^?&]+)/);
-                        if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1';
+                        m = url.match(/youtu\.be\/([^?&]+)/);
+                        if (m) return buildEmbedUrl(m[1]);
                         // youtube.com/watch?v=ID
                         m = url.match(/[?&]v=([^&]+)/);
-                        if (m) return 'https://www.youtube.com/embed/' + m[1] + '?autoplay=1';
+                        if (m) return buildEmbedUrl(m[1]);
                         // youtube.com/embed/...
-                        if (url.includes('/embed/')) return url + (url.includes('?') ? '&' : '?') + 'autoplay=1';
+                        if (url.includes('/embed/')) {
+                            return url
+                                + (url.includes('?') ? '&' : '?')
+                                + 'autoplay=1&playsinline=1&rel=0&origin=' + playerOrigin;
+                        }
                         return url;
                     }
 
@@ -430,6 +444,11 @@
                     var closeBtn = document.getElementById('venue-video-close');
 
                     function openModal(url) {
+                        var isShorts = /youtube\.com\/shorts\//.test(url);
+                        var wrapper = document.getElementById('venue-video-wrapper');
+                        var container = document.getElementById('venue-video-container');
+                        wrapper.style.maxWidth = isShorts ? '24rem' : '';
+                        container.style.aspectRatio = isShorts ? '9 / 16' : '';
                         iframe.src = toEmbedUrl(url);
                         modal.classList.remove('hidden');
                         modal.classList.add('flex');
@@ -437,6 +456,10 @@
                     }
 
                     function closeModal() {
+                        var wrapper = document.getElementById('venue-video-wrapper');
+                        var container = document.getElementById('venue-video-container');
+                        wrapper.style.maxWidth = '';
+                        container.style.aspectRatio = '';
                         iframe.src = '';
                         modal.classList.add('hidden');
                         modal.classList.remove('flex');
@@ -445,7 +468,12 @@
 
                     document.querySelectorAll('[data-video-popup]').forEach(function (el) {
                         el.addEventListener('click', function () {
-                            openModal(el.getAttribute('data-video-popup'));
+                            var url = el.getAttribute('data-video-popup');
+                            if (/youtube\.com\/shorts\//.test(url)) {
+                                window.open(url, '_blank');
+                            } else {
+                                openModal(url);
+                            }
                         });
                     });
 
