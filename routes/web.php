@@ -466,6 +466,22 @@ Route::get('/search', function () {
     return view('front.search', compact('q', 'vendors', 'packages'));
 })->name('search');
 
+Route::get('/review-videos', function () {
+    $videos = \App\Models\VenueReviewVideo::where('is_active', true)
+        ->orderBy('sort_order')
+        ->get();
+
+    $packages = \App\Models\VendorPackage::query()
+        ->where('is_active', true)
+        ->whereHas('vendor', fn ($q) => $q->where('is_active', true)->where('is_profile_complete', true))
+        ->with(['vendor' => fn ($q) => $q->select('id', 'name', 'slug', 'category', 'city', 'location', 'cover_image')])
+        ->inRandomOrder()
+        ->limit(6)
+        ->get();
+
+    return view('front.review-videos', compact('videos', 'packages'));
+})->name('review-videos');
+
 Route::get('/tentang', function () {
     return view('front.tentang');
 })->name('tentang');

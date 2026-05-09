@@ -359,7 +359,7 @@
 
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-dark">Review Videos</h2>
-                    <a href="#" class="text-sm font-medium hover:underline text-accent">Lihat</a>
+                    <a href="{{ route('review-videos') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
 
                 <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
