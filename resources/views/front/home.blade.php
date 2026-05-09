@@ -173,7 +173,7 @@
                                 <div class="flex items-center gap-2">
                                     <p class="text-base font-bold text-dark">{{ $category->name }}</p>
                                 </div>
-                                <a href="{{ route('store.category', $category) }}" class="text-xs font-medium hover:underline text-accent">Lihat Semua</a>
+                                <a href="{{ route('store.category', $category) }}" class="text-xs font-medium hover:underline text-accent">Lihat</a>
                             </div>
 
                             <div class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
@@ -271,7 +271,7 @@
                     <div class="mb-10 venue-city-block" @if($cityIndex > 3) style="display:none" @endif>
                         <div class="flex items-center justify-between mb-3">
                             <p class="text-base font-bold text-dark">{{ $city }}</p>
-                            <a href="{{ route('store.city', $city) }}" class="text-xs text-accent font-medium hover:underline">Lihat semua</a>
+                            <a href="{{ route('store.city', $city) }}" class="text-xs text-accent font-medium hover:underline">Lihat</a>
                         </div>
 
                         <div class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
@@ -359,7 +359,7 @@
 
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-dark">Review Videos</h2>
-                    <a href="#" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
+                    <a href="#" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
 
                 <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
@@ -495,7 +495,7 @@
 
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-dark">Vendor Event dan Promo</h2>
-                    <a href="{{ route('store.promo') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
+                    <a href="{{ route('store.promo') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
 
                 @if($homePromoPackages->isNotEmpty())
@@ -582,7 +582,7 @@
 
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-dark">Real Wedding</h2>
-                    <a href="{{ route('real-wedding.index') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
+                    <a href="{{ route('real-wedding.index') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
 
                 <div class="relative">
@@ -747,7 +747,7 @@
 
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-2xl font-bold text-dark">Jangan Lewatkan Blog Post Ini</h2>
-                    <a href="{{ route('blog.index') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a>
+                    <a href="{{ route('blog.index') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

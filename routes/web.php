@@ -262,9 +262,14 @@ Route::get('/store/kategori/{category:slug}', function (\App\Models\CategoryVend
         ->whereHas('vendor', fn ($q) => $q
             ->where('is_active', true)
             ->where('is_profile_complete', true)
-            ->where(fn ($w) => $w
-                ->where('category', $category->slug)
-                ->orWhereJsonContains('categories', $category->slug)
+        )
+        ->where(fn ($q) => $q
+            ->whereJsonContains('category_vendor_id', (string) $category->id)
+            ->orWhereHas('vendor', fn ($vq) => $vq
+                ->where(fn ($w) => $w
+                    ->where('category', $category->slug)
+                    ->orWhereJsonContains('categories', $category->slug)
+                )
             )
         )
         ->with([
