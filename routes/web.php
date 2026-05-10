@@ -809,7 +809,8 @@ Route::get('/vendor/{vendor:slug}', function (\App\Models\Vendor $vendor) {
             ->latest()
             ->first()
         : null;
-    return view('vendor.detail', compact('vendor', 'hasLiked', 'myBooking', 'vendorDetailDisabled', 'vendorDetailBackUrl'));
+    $packages = $vendor->packages->where('is_active', true)->values();
+    return view('vendor.detail', compact('vendor', 'hasLiked', 'myBooking', 'vendorDetailDisabled', 'vendorDetailBackUrl', 'packages'));
 })->name('vendor.detail');
 
 Route::post('/vendor/{vendor:slug}/reviews', [\App\Http\Controllers\VendorReviewController::class, 'store'])
