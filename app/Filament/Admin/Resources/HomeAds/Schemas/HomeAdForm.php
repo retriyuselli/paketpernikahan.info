@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\HomeAds\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -13,10 +14,23 @@ class HomeAdForm
     public static function schema(): array
     {
         return [
+            Section::make('Jenis Iklan')
+                ->schema([
+                    Select::make('type')
+                        ->label('Jenis Iklan')
+                        ->options([
+                            'card'   => 'Highlight Card (halaman Home)',
+                            'banner' => 'Banner Iklan (di bawah breadcrumb)',
+                        ])
+                        ->default('card')
+                        ->required()
+                        ->columnSpanFull(),
+                ]),
+
             Section::make('Konten Iklan')
                 ->schema([
                     TextInput::make('title')
-                        ->label('Judul Iklan')
+                        ->label('Judul / Nama Sponsor')
                         ->maxLength(255),
 
                     FileUpload::make('image')
@@ -25,14 +39,14 @@ class HomeAdForm
                         ->disk('public')
                         ->directory('home-ads')
                         ->required()
-                        ->helperText('Rekomendasi: rasio 1:1 (persegi), min. 800×800px')
+                        ->helperText('Card: 800×800px (square) untuk highlight & popup | Banner: 1456×180px (2x leaderboard, WebP/JPG)')
                         ->columnSpanFull(),
 
                     Textarea::make('caption')
                         ->label('Caption')
                         ->rows(2)
                         ->maxLength(300)
-                        ->helperText('Teks kecil yang tampil di bawah gambar modal')
+                        ->helperText('Card: teks kecil di bawah judul | Banner: tagline/sub-judul sponsor')
                         ->columnSpanFull(),
                 ])->columns(2),
 

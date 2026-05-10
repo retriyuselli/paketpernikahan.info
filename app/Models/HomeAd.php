@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class HomeAd extends Model
 {
     protected $fillable = [
+        'type',
         'title',
         'image',
         'caption',

@@ -239,24 +239,73 @@
         </div>
     </section>
 
-    <!-- Advertising Banner -->
-    <div class="px-4 sm:px-6 lg:px-8 py-4 bg-cream">
-        <div class="max-w-7xl mx-auto">
-            <a href="#" class="block relative rounded-2xl overflow-hidden group w-full max-w-[728px] mx-auto aspect-[728/90]">
-                <img src="https://picsum.photos/seed/adsbanner/728/90"
-                     alt="Banner Iklan"
-                     class="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-90">
-                <div class="absolute inset-0 flex items-center justify-between px-8 bg-sponsor-gradient">
-                    <div>
-                        <p class="text-xs font-bold uppercase tracking-widest mb-0.5 text-dark">Sponsor</p>
-                        <p class="text-base font-bold leading-snug text-dark">Nama Brand Sponsor — Tagline Promosi di Sini</p>
+    @php
+        $vendorBannerAd = \App\Models\HomeAd::where('is_active', true)
+            ->where('type', 'banner')
+            ->orderBy('sort_order')
+            ->first();
+    @endphp
+
+    @if($vendorBannerAd)
+    <div id="vendor-banner-wrap"
+         data-delay="{{ $vendorBannerAd->delay_seconds ?? 5 }}"
+         style="overflow:hidden; max-height:200px; opacity:0; margin-top:1rem; margin-bottom:0;
+                transition: opacity 0.7s ease, max-height 0.7s ease, margin-top 0.7s ease, margin-bottom 0.7s ease;">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="relative rounded-2xl overflow-hidden w-full max-w-182 mx-auto aspect-728/90">
+                <a href="{{ $vendorBannerAd->link_url ?: '#' }}" class="block w-full h-full">
+                    @if($vendorBannerAd->image_url)
+                    <img src="{{ $vendorBannerAd->image_url }}"
+                         alt="{{ $vendorBannerAd->title }}"
+                         class="w-full h-full object-cover">
+                    @endif
+                    <div class="">
+                        <div>
+                            <p class="text-base font-bold leading-snug text-dark">{{ $vendorBannerAd->title }}</p>
+                            @if($vendorBannerAd->caption)
+                                <p class="text-xs text-dark opacity-70 mt-0.5">{{ $vendorBannerAd->caption }}</p>
+                            @endif
+                        </div>
                     </div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full flex-shrink-0 bg-dark text-cream">Pelajari →</span>
-                </div>
-                <span class="absolute top-1.5 right-2 text-[9px] font-semibold uppercase tracking-widest opacity-50 text-dark">Iklan</span>
-            </a>
+                </a>
+                <button type="button" onclick="dismissVendorBanner()"
+                        class="absolute top-1.5 right-2 w-5 h-5 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center transition"
+                        aria-label="Tutup">
+                    <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+                <span class="absolute bottom-1.5 right-2 text-[9px] font-semibold uppercase tracking-widest opacity-40 text-dark pointer-events-none">Iklan</span>
+            </div>
         </div>
     </div>
+
+    <script>
+    (function () {
+        var wrap = document.getElementById('vendor-banner-wrap');
+        if (!wrap) return;
+
+        var delay = (parseInt(wrap.dataset.delay, 10) || 5) * 1000;
+
+        function dismiss() {
+            wrap.style.opacity = '0';
+            wrap.style.maxHeight = '0';
+            wrap.style.marginTop = '0';
+            wrap.style.marginBottom = '0';
+        }
+
+        window.dismissVendorBanner = dismiss;
+
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                wrap.style.opacity = '1';
+            });
+        });
+
+        setTimeout(dismiss, 700 + delay);
+    })();
+    </script>
+    @endif
 
     <!-- Search Bar -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">

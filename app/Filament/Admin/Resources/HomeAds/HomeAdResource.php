@@ -13,8 +13,8 @@ class HomeAdResource extends Resource
 {
     protected static ?string $model = HomeAd::class;
 
-    protected static ?string $modelLabel = 'Iklan Popup';
-    protected static ?string $pluralModelLabel = 'Iklan Popup';
+    protected static ?string $modelLabel = 'Iklan';
+    protected static ?string $pluralModelLabel = 'Kelola Iklan';
 
     public static function getNavigationIcon(): string
     {

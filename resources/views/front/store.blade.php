@@ -65,18 +65,74 @@
                 </button>
             </div>
 
-            <div class="mb-10 flex justify-center">
-                <a href="{{ route('vendor') }}" class="block w-full max-w-[728px] bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition">
-                    <div class="relative aspect-[728/90]">
-                        <img src="https://picsum.photos/seed/makna-leaderboard/728/90" alt="Iklan" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-r from-black/55 via-black/10 to-transparent"></div>
-                        <div class="absolute inset-y-0 left-0 flex flex-col justify-center p-4">
-                            <p class="text-white text-xs font-extrabold leading-snug">Promo spesial untuk booking vendor pilihanmu</p>
-                            <p class="text-white/80 text-[10px] mt-0.5">Klik untuk lihat daftar vendor dan paket terbaru.</p>
+            @php
+                $storeBannerAd = \App\Models\HomeAd::where('is_active', true)
+                    ->where('type', 'banner')
+                    ->orderBy('sort_order')
+                    ->first();
+            @endphp
+
+            @if($storeBannerAd)
+            <div id="store-banner-wrap"
+                 data-delay="{{ $storeBannerAd->delay_seconds ?? 5 }}"
+                 style="overflow:hidden; max-height:200px; opacity:0; margin-bottom:2.5rem;
+                        transition: opacity 0.7s ease, max-height 0.7s ease, margin-bottom 0.7s ease;">
+                <div class="relative rounded-2xl overflow-hidden w-full max-w-182 mx-auto aspect-728/90">
+                    <a href="{{ $storeBannerAd->link_url ?: '#' }}" class="block w-full h-full">
+                        @if($storeBannerAd->image_url)
+                        <img src="{{ $storeBannerAd->image_url }}"
+                             alt="{{ $storeBannerAd->title }}"
+                             class="w-full h-full object-cover">
+                        @endif
+                        <div class="">
+                            <div>
+                                {{-- <p class="text-xs font-bold uppercase tracking-widest mb-0.5 text-dark">Sponsor</p> --}}
+                                <p class="text-base font-bold leading-snug text-dark">{{ $storeBannerAd->title }}</p>
+                                @if($storeBannerAd->caption)
+                                    <p class="text-xs text-dark opacity-70 mt-0.5">{{ $storeBannerAd->caption }}</p>
+                                @endif
+                            </div>
+                            {{-- <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full shrink-0 bg-dark text-cream">
+                                {{ $storeBannerAd->link_label ?: 'Pelajari →' }}
+                            </span> --}}
                         </div>
-                    </div>
-                </a>
+                    </a>
+                    <button type="button" onclick="dismissStoreBanner()"
+                            class="absolute top-1.5 right-2 w-5 h-5 rounded-full bg-black/20 hover:bg-black/40 flex items-center justify-center transition"
+                            aria-label="Tutup">
+                        <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                    <span class="absolute bottom-1.5 right-2 text-[9px] font-semibold uppercase tracking-widest opacity-40 text-dark pointer-events-none">Iklan</span>
+                </div>
             </div>
+
+            <script>
+            (function () {
+                var wrap = document.getElementById('store-banner-wrap');
+                if (!wrap) return;
+
+                var delay = (parseInt(wrap.dataset.delay, 10) || 5) * 1000;
+
+                function dismiss() {
+                    wrap.style.opacity = '0';
+                    wrap.style.maxHeight = '0';
+                    wrap.style.marginBottom = '0';
+                }
+
+                window.dismissStoreBanner = dismiss;
+
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () {
+                        wrap.style.opacity = '1';
+                    });
+                });
+
+                setTimeout(dismiss, 700 + delay);
+            })();
+            </script>
+            @endif
 
             {{-- ── Search Bar ───────────────────────────────────── --}}
             <form method="GET" action="{{ route('store') }}" class="mb-6">

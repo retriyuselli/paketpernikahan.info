@@ -103,6 +103,7 @@ Route::get('/', function () {
         ->get();
 
     $homeAd = \App\Models\HomeAd::where('is_active', true)
+        ->where('type', 'card')
         ->orderBy('sort_order')
         ->first();
 

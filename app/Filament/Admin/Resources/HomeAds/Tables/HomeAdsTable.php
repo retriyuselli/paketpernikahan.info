@@ -23,8 +23,22 @@ class HomeAdsTable
                     ->square()
                     ->size(56),
 
+                TextColumn::make('type')
+                    ->label('Jenis')
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'card'   => 'Highlight Card',
+                        'banner' => 'Banner',
+                        default  => $state,
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'card'   => 'info',
+                        'banner' => 'success',
+                        default  => 'gray',
+                    }),
+
                 TextColumn::make('title')
-                    ->label('Judul')
+                    ->label('Judul / Sponsor')
                     ->searchable()
                     ->placeholder('—'),
 
