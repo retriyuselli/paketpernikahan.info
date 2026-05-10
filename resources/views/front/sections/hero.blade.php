@@ -72,10 +72,20 @@
                 </form>
             </div>
 
-            <!-- Right: Team Image + Floating Circles -->
+            <!-- Right: Team Image Slideshow + Floating Circles -->
             <div class="hidden lg:flex items-end justify-center relative lg:h-120">
-                <img src="{{ asset('images/business-support.png') }}" alt="Tim Business Support Makna Wedding"
-                     class="h-full w-auto object-contain object-bottom mix-blend-multiply relative z-10">
+                <!-- Image Slideshow -->
+                <div class="relative h-full w-full z-10">
+                    <img src="{{ asset('images/front/7.webp') }}" alt="Tim Business Support"
+                         class="absolute bottom-0 left-1/2 -translate-x-1/2 h-full w-auto object-contain object-bottom hero-img-cycle"
+                         style="animation-delay: 0s;" loading="eager">
+                    <img src="{{ asset('images/front/8.webp') }}" alt="Tim Business Support"
+                         class="absolute bottom-0 left-1/2 -translate-x-1/2 h-full w-auto object-contain object-bottom hero-img-cycle"
+                         style="animation-delay: 5s;" loading="lazy">
+                    <img src="{{ asset('images/front/9.webp') }}" alt="Tim Business Support"
+                         class="absolute bottom-0 left-1/2 -translate-x-1/2 h-full w-auto object-contain object-bottom hero-img-cycle"
+                         style="animation-delay: 10s;" loading="lazy">
+                </div>
                 <!-- Animated floating circles with images -->
                 <div class="absolute inset-0 flex items-center justify-center">
                     @foreach($heroCircles as $circle)
@@ -90,3 +100,17 @@
         </div>
     </div>
 </section>
+
+<style>
+@keyframes heroImageCycle {
+    0%      { opacity: 0; }
+    5%      { opacity: 1; }
+    28%     { opacity: 1; }
+    33.33%  { opacity: 0; }
+    100%    { opacity: 0; }
+}
+.hero-img-cycle {
+    opacity: 0;
+    animation: heroImageCycle 15s infinite both;
+}
+</style>
