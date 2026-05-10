@@ -1,5 +1,46 @@
 <!-- Hero Section -->
-<section class="pb-5 bg-cream hero-grid-bg overflow-hidden">
+<section class="relative pb-5 bg-cream hero-grid-bg overflow-hidden">
+
+    <!-- Decorative: large golden orb top-right -->
+    <div class="absolute -top-40 -right-40 w-150 h-150 rounded-full pointer-events-none"
+         style="background: radial-gradient(circle, rgba(201,168,76,0.13) 0%, rgba(232,213,163,0.07) 45%, transparent 70%);"></div>
+
+    <!-- Decorative: soft orb bottom-left -->
+    <div class="absolute -bottom-24 -left-24 w-80 h-80 rounded-full pointer-events-none"
+         style="background: radial-gradient(circle, rgba(201,168,76,0.09) 0%, transparent 70%);"></div>
+
+    <!-- Decorative: concentric rings near center divider (lg only) -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden lg:block">
+        <div class="w-64 h-64 rounded-full border border-[#C9A84C]/10"></div>
+    </div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none hidden lg:block">
+        <div class="w-44 h-44 rounded-full border border-[#C9A84C]/15"></div>
+    </div>
+
+    <!-- Decorative: dot grid cluster left (lg only) -->
+    <div class="absolute left-8 top-1/2 -translate-y-1/2 pointer-events-none hidden lg:grid grid-cols-4 gap-2.5">
+        @for($i = 0; $i < 16; $i++)
+            <div class="w-1 h-1 rounded-full" style="background: rgba(201,168,76,{{ 0.1 + ($i % 4) * 0.06 }});"></div>
+        @endfor
+    </div>
+
+    <!-- Decorative: small floating rings top-right area (lg only) -->
+    <div class="absolute top-8 right-[47%] w-14 h-14 rounded-full border-2 border-[#C9A84C]/20 pointer-events-none hidden lg:block"></div>
+    <div class="absolute top-14 right-[44%] w-7 h-7 rounded-full border-2 border-[#C9A84C]/25 pointer-events-none hidden lg:block"></div>
+
+    <!-- Decorative: sparkle icons -->
+    <svg class="absolute top-10 left-1/3 w-5 h-5 pointer-events-none hidden lg:block" style="color: rgba(201,168,76,0.35);" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z"/>
+    </svg>
+    <svg class="absolute bottom-12 right-[48%] w-3 h-3 pointer-events-none hidden lg:block" style="color: rgba(201,168,76,0.4);" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z"/>
+    </svg>
+
+    <!-- Decorative: subtle bottom wave -->
+    <svg class="absolute bottom-0 left-0 w-full pointer-events-none" viewBox="0 0 1440 40" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 20 Q360 0 720 20 Q1080 40 1440 20" stroke="rgba(201,168,76,0.2)" stroke-width="1.5" fill="none"/>
+    </svg>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-center">
 
