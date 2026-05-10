@@ -381,7 +381,20 @@ Route::get('/store/promo', function () {
 
     $packages = $packagesQuery->paginate(24)->withQueryString();
 
-    return view('store.store-promo', compact('packages', 'sort', 'q'));
+    $otherPackages = \App\Models\VendorPackage::query()
+        ->where('is_active', true)
+        ->whereHas('vendor', fn ($vq) => $vq
+            ->where('is_active', true)
+            ->where('is_profile_complete', true)
+        )
+        ->with([
+            'vendor' => fn ($vq) => $vq->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'cover_image', 'logo_vendor'),
+        ])
+        ->inRandomOrder()
+        ->limit(6)
+        ->get();
+
+    return view('store.store-promo', compact('packages', 'sort', 'q', 'otherPackages'));
 })->name('store.promo');
 
 Route::get('/blog', function () {
@@ -555,7 +568,20 @@ Route::get('/real-wedding', function () {
 
     $realWeddings = $query->paginate(20)->withQueryString();
 
-    return view('real-wedding.index', compact('realWeddings', 'sort', 'q'));
+    $otherPackages = \App\Models\VendorPackage::query()
+        ->where('is_active', true)
+        ->whereHas('vendor', fn ($vq) => $vq
+            ->where('is_active', true)
+            ->where('is_profile_complete', true)
+        )
+        ->with([
+            'vendor' => fn ($vq) => $vq->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'cover_image', 'logo_vendor'),
+        ])
+        ->inRandomOrder()
+        ->limit(6)
+        ->get();
+
+    return view('real-wedding.index', compact('realWeddings', 'sort', 'q', 'otherPackages'));
 })->name('real-wedding.index');
 
 Route::get('/real-wedding/{realWedding:slug}', function (\App\Models\RealWedding $realWedding) {
@@ -571,7 +597,20 @@ Route::get('/real-wedding/{realWedding:slug}', function (\App\Models\RealWedding
         ->limit(5)
         ->get();
 
-    return view('real-wedding.show', compact('realWedding', 'related'));
+    $otherPackages = \App\Models\VendorPackage::query()
+        ->where('is_active', true)
+        ->whereHas('vendor', fn ($vq) => $vq
+            ->where('is_active', true)
+            ->where('is_profile_complete', true)
+        )
+        ->with([
+            'vendor' => fn ($vq) => $vq->select('id', 'name', 'slug', 'category', 'categories', 'city', 'location', 'cover_image', 'logo_vendor'),
+        ])
+        ->inRandomOrder()
+        ->limit(6)
+        ->get();
+
+    return view('real-wedding.show', compact('realWedding', 'related', 'otherPackages'));
 })->name('real-wedding.show');
 
 Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $package) {

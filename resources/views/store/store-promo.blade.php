@@ -110,5 +110,7 @@
         });
     </script>
 
+    <x-paket-section :packages="$otherPackages" title="Paket Pernikahan Lainnya" :more-url="route('store')" />
+
     @include('layout.footer')
 @endsection

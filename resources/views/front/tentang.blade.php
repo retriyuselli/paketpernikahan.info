@@ -26,8 +26,8 @@
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {{-- Visi Misi --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-14">
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-14 max-w-3xl mx-auto">
+                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm text-center flex flex-col items-center">
                     <div class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
                         <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -40,24 +40,24 @@
                         dengan vendor terpercaya, sehingga setiap pernikahan menjadi momen bermakna dan tak terlupakan.
                     </p>
                 </div>
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm">
+                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm text-center flex flex-col items-center">
                     <div class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
                         <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
                     <h2 class="text-lg font-bold text-dark mb-3">Misi</h2>
-                    <ul class="text-sm text-gray-500 leading-relaxed space-y-2">
-                        <li class="flex items-start gap-2">
-                            <span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0"></span>
+                    <ul class="text-sm text-gray-500 leading-relaxed space-y-2 inline-flex flex-col items-center">
+                        <li class="flex items-start justify-center gap-2">
+                            {{-- <span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span> --}}
                             Menyediakan informasi vendor dan paket pernikahan yang transparan dan terpercaya.
                         </li>
-                        <li class="flex items-start gap-2">
-                            <span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0"></span>
+                        <li class="flex items-start justify-center gap-2">
+                            {{-- <span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span> --}}
                             Membantu calon pengantin merencanakan pernikahan sesuai budget dan kebutuhan.
                         </li>
-                        <li class="flex items-start gap-2">
-                            <span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0"></span>
+                        <li class="flex items-start justify-center gap-2">
+                            {{-- <span class="mt-1 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span> --}}
                             Membangun ekosistem vendor lokal yang profesional dan berkualitas.
                         </li>
                     </ul>
