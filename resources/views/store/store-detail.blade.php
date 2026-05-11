@@ -1,10 +1,82 @@
 @extends('layout.app')
 
 @section('title', ($package->name ?? 'Detail Paket') . ' - Makna Wedding')
+@php
+    $packageMetaImage = $package->image_url ?: $vendor->cover_image_url ?: url(config('app.logo_url'));
+    $packageMetaDescription = \\Illuminate\\Support\\Str::limit(
+        collect([
+            $package->name,
+            'oleh ' . $vendor->name,
+            $vendor->city ? 'di ' . $vendor->city : null,
+            $package->price ? 'mulai Rp' . number_format((int) max(((int) $package->price) - ((int) ($package->discount ?? 0)), 0), 0, ',', '.') : null,
+        ])->filter()->implode(' - '),
+        160,
+        ''
+    );
+
+    $packageServiceSchema = [
+        '@type' => 'Service',
+        '@id' => url()->current() . '#service',
+        'name' => $package->name,
+        'description' => \\Illuminate\\Support\\Str::limit(strip_tags((string) ($package->item ?? $vendor->description ?? $package->name)), 200, ''),
+        'url' => url()->current(),
+        'image' => [$packageMetaImage],
+        'provider' => [
+            '@type' => 'LocalBusiness',
+            'name' => $vendor->name,
+            'url' => route('vendor.detail', $vendor),
+        ],
+        'offers' => [
+            '@type' => 'Offer',
+            'priceCurrency' => 'IDR',
+            'price' => max(((int) $package->price) - ((int) ($package->discount ?? 0)), 0),
+            'url' => url()->current(),
+            'availability' => 'https://schema.org/InStock',
+        ],
+    ];
+
+    if (filled($vendor->city) || filled($vendor->province)) {
+        $packageServiceSchema['areaServed'] = array_values(array_filter([$vendor->city, $vendor->province]));
+    }
+
+    $packageSchema = [
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            $packageServiceSchema,
+            [
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => [
+                    [
+                        '@type' => 'ListItem',
+                        'position' => 1,
+                        'name' => 'Home',
+                        'item' => route('home'),
+                    ],
+                    [
+                        '@type' => 'ListItem',
+                        'position' => 2,
+                        'name' => 'Store',
+                        'item' => route('store'),
+                    ],
+                    [
+                        '@type' => 'ListItem',
+                        'position' => 3,
+                        'name' => $package->name,
+                        'item' => url()->current(),
+                    ],
+                ],
+            ],
+        ],
+    ];
+@endphp
+@section('meta-description', $packageMetaDescription)
+@section('meta-image', $packageMetaImage)
+@section('meta-type', 'product')
 
 @section('body-class', 'bg-cream text-dark')
 
 @section('extra-head')
+<script type="application/ld+json">@json($packageSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
 <style>
     .prose { font-size: 12px; }
     .prose ul { list-style: disc; padding-left: 1.4rem; margin: 4px 0; }

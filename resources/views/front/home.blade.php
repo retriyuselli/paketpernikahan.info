@@ -1,6 +1,62 @@
 @extends('layout.app')
 
-@section('title', 'PT. Makna kreatif Indonesia - Wedding Organizer & Paket Pernikahan')
+@section('title', 'Makna Wedding - Wedding Organizer & Paket Pernikahan')
+@section('meta-description', 'Temukan vendor pernikahan, wedding organizer, paket pernikahan, promo vendor, dan inspirasi real wedding di Indonesia bersama Makna Wedding.')
+@section('meta-image', url(config('app.logo_url')))
+
+@section('extra-head')
+    @php
+        $homeSchema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'Organization',
+                    '@id' => url('/#organization'),
+                    'name' => 'Makna Wedding',
+                    'alternateName' => 'PT Makna Kreatif Indonesia',
+                    'url' => url('/'),
+                    'description' => 'Platform wedding organizer dan vendor pernikahan di Indonesia.',
+                    'logo' => url(config('app.logo_url')),
+                    'image' => url(config('app.logo_url')),
+                    'email' => 'mailto:maknawedding@gmail.com',
+                    'telephone' => '+62 822-9796-2600',
+                    'sameAs' => ['https://www.instagram.com/makna.wedding/'],
+                    'address' => [
+                        '@type' => 'PostalAddress',
+                        'addressRegion' => 'Sumatera Selatan',
+                        'addressCountry' => 'ID',
+                    ],
+                ],
+                [
+                    '@type' => 'WebSite',
+                    '@id' => url('/#website'),
+                    'url' => url('/'),
+                    'name' => 'Makna Wedding',
+                    'alternateName' => 'PT Makna Kreatif Indonesia',
+                    'description' => 'Temukan vendor, paket pernikahan, promo, dan inspirasi wedding di Indonesia.',
+                    'inLanguage' => 'id-ID',
+                    'publisher' => ['@id' => url('/#organization')],
+                    'potentialAction' => [
+                        '@type' => 'SearchAction',
+                        'target' => url('/search?q={search_term_string}'),
+                        'query-input' => 'required name=search_term_string',
+                    ],
+                ],
+                [
+                    '@type' => 'WebPage',
+                    '@id' => url('/#webpage'),
+                    'url' => url('/'),
+                    'name' => 'Makna Wedding - Wedding Organizer & Paket Pernikahan',
+                    'isPartOf' => ['@id' => url('/#website')],
+                    'about' => ['@id' => url('/#organization')],
+                    'description' => 'Temukan vendor pernikahan, wedding organizer, paket pernikahan, promo vendor, dan inspirasi real wedding di Indonesia bersama Makna Wedding.',
+                    'inLanguage' => 'id-ID',
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">@json($homeSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+@endsection
 
 @section('body-class', 'bg-cream text-dark')
 

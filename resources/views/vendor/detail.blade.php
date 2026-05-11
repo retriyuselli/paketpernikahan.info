@@ -1,10 +1,120 @@
 @extends('layout.app')
 
 @section('title', $vendor->name . ' - Makna Wedding')
+@php
+    $vendorInstagramUrl = blank($vendor->instagram)
+        ? null
+        : (str_starts_with($vendor->instagram, 'http')
+            ? $vendor->instagram
+            : 'https://www.instagram.com/' . ltrim($vendor->instagram, '@/'));
+    $vendorLogoUrl = blank($vendor->logo_vendor)
+        ? null
+        : (str_starts_with($vendor->logo_vendor, 'http')
+            ? $vendor->logo_vendor
+            : \\Illuminate\\Support\\Facades\\Storage::url($vendor->logo_vendor));
+    $vendorMetaImage = $vendor->cover_image_url ?: $vendorLogoUrl ?: url(config('app.logo_url'));
+    $vendorMetaDescription = \\Illuminate\\Support\\Str::limit(
+        collect([
+            $vendor->name,
+            $vendor->categoryVendor?->name ?? $vendor->category,
+            $vendor->city ? 'di ' . $vendor->city : null,
+            filled($vendor->description) ? strip_tags((string) $vendor->description) : null,
+        ])->filter()->implode(' - '),
+        160,
+        ''
+    );
+    $vendorReviewCount = $vendor->approvedReviews->count();
+    $vendorRatingValue = $vendorReviewCount > 0 ? round((float) $vendor->approvedReviews->avg('rating'), 1) : null;
+    $vendorPriceStart = $vendor->cheapestPackage?->final_price ?? $vendor->computePriceStartFromPackages();
+
+    $vendorBusinessSchema = [
+        '@type' => 'LocalBusiness',
+        '@id' => route('vendor.detail', $vendor) . '#business',
+        'name' => $vendor->name,
+        'url' => route('vendor.detail', $vendor),
+        'description' => \\Illuminate\\Support\\Str::limit(strip_tags((string) $vendor->description), 200, ''),
+        'image' => array_values(array_filter([$vendorMetaImage, $vendorLogoUrl])),
+    ];
+
+    if (filled($vendor->phone)) {
+        $vendorBusinessSchema['telephone'] = $vendor->phone;
+    }
+
+    if (filled($vendor->email)) {
+        $vendorBusinessSchema['email'] = $vendor->email;
+    }
+
+    if ($vendorInstagramUrl) {
+        $vendorBusinessSchema['sameAs'] = [$vendorInstagramUrl];
+    }
+
+    if ($vendorPriceStart) {
+        $vendorBusinessSchema['priceRange'] = 'Rp' . number_format((int) $vendorPriceStart, 0, ',', '.');
+    }
+
+    $vendorAddress = ['@type' => 'PostalAddress'];
+    if (filled($vendor->location)) {
+        $vendorAddress['streetAddress'] = $vendor->location;
+    }
+    if (filled($vendor->city)) {
+        $vendorAddress['addressLocality'] = $vendor->city;
+    }
+    if (filled($vendor->province)) {
+        $vendorAddress['addressRegion'] = $vendor->province;
+    }
+    $vendorAddress['addressCountry'] = 'ID';
+    if (count($vendorAddress) > 2) {
+        $vendorBusinessSchema['address'] = $vendorAddress;
+    }
+
+    if ($vendorReviewCount > 0 && $vendorRatingValue) {
+        $vendorBusinessSchema['aggregateRating'] = [
+            '@type' => 'AggregateRating',
+            'ratingValue' => $vendorRatingValue,
+            'reviewCount' => $vendorReviewCount,
+            'bestRating' => 5,
+            'worstRating' => 1,
+        ];
+    }
+
+    $vendorSchema = [
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            $vendorBusinessSchema,
+            [
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => [
+                    [
+                        '@type' => 'ListItem',
+                        'position' => 1,
+                        'name' => 'Home',
+                        'item' => route('home'),
+                    ],
+                    [
+                        '@type' => 'ListItem',
+                        'position' => 2,
+                        'name' => 'Vendor',
+                        'item' => route('vendor'),
+                    ],
+                    [
+                        '@type' => 'ListItem',
+                        'position' => 3,
+                        'name' => $vendor->name,
+                        'item' => route('vendor.detail', $vendor),
+                    ],
+                ],
+            ],
+        ],
+    ];
+@endphp
+@section('meta-description', $vendorMetaDescription)
+@section('meta-image', $vendorMetaImage)
+@section('meta-type', 'business.business')
 
 @section('body-class', 'bg-cream text-dark')
 
 @section('extra-head')
+<script type="application/ld+json">@json($vendorSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
 <style>
     .prose ul { list-style: disc; padding-left: 1.4rem; margin: 4px 0; }
     .prose ol { list-style: decimal; padding-left: 1.4rem; margin: 4px 0; }

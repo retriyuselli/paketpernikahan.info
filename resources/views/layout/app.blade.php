@@ -1,12 +1,36 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
+        @php
+            $defaultTitle = 'Makna Wedding - Wedding Organizer & Paket Pernikahan';
+            $pageTitle = trim($__env->yieldContent('title', $defaultTitle)) ?: $defaultTitle;
+            $defaultDescription = 'Makna Wedding membantu calon pengantin menemukan vendor, paket pernikahan, inspirasi, dan layanan wedding organizer di Indonesia.';
+            $metaDescription = trim($__env->yieldContent('meta-description', $defaultDescription)) ?: $defaultDescription;
+            $metaImage = trim($__env->yieldContent('meta-image', url(config('app.logo_url'))));
+            $canonicalUrl = trim($__env->yieldContent('canonical-url', url()->current())) ?: url()->current();
+            $metaType = trim($__env->yieldContent('meta-type', 'website')) ?: 'website';
+        @endphp
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="description" content="{{ $metaDescription }}">
+        <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
 
-        <title>@yield('title', 'Makna Wedding - Wedding Organizer & Paket Pernikahan')</title>
+        <link rel="canonical" href="{{ $canonicalUrl }}">
+
+        <title>{{ $pageTitle }}</title>
         <link rel="icon" href="{{ config('app.favicon_url') }}">
+        <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+        <meta property="og:type" content="{{ $metaType }}">
+        <meta property="og:title" content="{{ $pageTitle }}">
+        <meta property="og:description" content="{{ $metaDescription }}">
+        <meta property="og:url" content="{{ $canonicalUrl }}">
+        <meta property="og:site_name" content="{{ config('app.name', 'Makna Wedding') }}">
+        <meta property="og:image" content="{{ $metaImage }}">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="{{ $pageTitle }}">
+        <meta name="twitter:description" content="{{ $metaDescription }}">
+        <meta name="twitter:image" content="{{ $metaImage }}">
         @if(filled(config('services.ga4.measurement_id')))
             <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.ga4.measurement_id') }}"></script>
             <script>
@@ -164,8 +188,6 @@
             });
         </script>
         @endif
-
-        <script>document.addEventListener('contextmenu', function(e){ e.preventDefault(); });</script>
 
         {{-- ── Live Chat Widget ── --}}
         <div id="lc-widget" class="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-[9990] flex flex-col items-end gap-3">

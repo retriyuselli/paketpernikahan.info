@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Makna Wedding'),
 
     'logo_url'    => env('APP_LOGO_URL', '/images/Makna Kreatif Indonesia.png'),
     'favicon_url' => env('APP_FAVICON_URL', '/images/favicon.png'),

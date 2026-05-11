@@ -11,6 +11,68 @@ use App\Http\Controllers\VendorReviewModerationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/sitemap.xml', function () {
+    $urls = collect([
+        ['loc' => route('home'), 'lastmod' => now()->toDateString(), 'changefreq' => 'daily', 'priority' => '1.0'],
+        ['loc' => route('store'), 'lastmod' => now()->toDateString(), 'changefreq' => 'daily', 'priority' => '0.9'],
+        ['loc' => route('vendor'), 'lastmod' => now()->toDateString(), 'changefreq' => 'daily', 'priority' => '0.9'],
+        ['loc' => route('blog.index'), 'lastmod' => now()->toDateString(), 'changefreq' => 'daily', 'priority' => '0.8'],
+        ['loc' => route('real-wedding.index'), 'lastmod' => now()->toDateString(), 'changefreq' => 'weekly', 'priority' => '0.8'],
+        ['loc' => route('tentang'), 'lastmod' => now()->toDateString(), 'changefreq' => 'monthly', 'priority' => '0.5'],
+        ['loc' => route('kontak'), 'lastmod' => now()->toDateString(), 'changefreq' => 'monthly', 'priority' => '0.5'],
+    ])->merge(
+        \App\Models\Vendor::query()
+            ->where('is_active', true)
+            ->where('is_profile_complete', true)
+            ->select('slug', 'updated_at')
+            ->get()
+            ->map(fn ($vendor) => [
+                'loc' => route('vendor.detail', $vendor->slug),
+                'lastmod' => optional($vendor->updated_at)->toDateString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ])
+    )->merge(
+        \App\Models\VendorPackage::query()
+            ->where('is_active', true)
+            ->with(['vendor:id,is_active,is_profile_complete'])
+            ->select('id', 'vendor_id', 'updated_at')
+            ->get()
+            ->filter(fn ($package) => $package->vendor?->is_active && $package->vendor?->is_profile_complete)
+            ->map(fn ($package) => [
+                'loc' => route('store.package.show', $package->id),
+                'lastmod' => optional($package->updated_at)->toDateString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.7',
+            ])
+    )->merge(
+        \App\Models\Blog::published()
+            ->select('slug', 'updated_at')
+            ->get()
+            ->map(fn ($blog) => [
+                'loc' => route('blog.show', $blog->slug),
+                'lastmod' => optional($blog->updated_at)->toDateString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.7',
+            ])
+    )->merge(
+        \App\Models\RealWedding::query()
+            ->where('is_active', true)
+            ->select('slug', 'updated_at')
+            ->get()
+            ->map(fn ($realWedding) => [
+                'loc' => route('real-wedding.show', $realWedding->slug),
+                'lastmod' => optional($realWedding->updated_at)->toDateString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.7',
+            ])
+    )->values();
+
+    return response()
+        ->view('sitemap.xml', compact('urls'))
+        ->header('Content-Type', 'application/xml');
+})->name('sitemap');
+
 Route::get('/', function () {
     $heroCircles = \App\Models\HeroCircle::active()->get();
 
