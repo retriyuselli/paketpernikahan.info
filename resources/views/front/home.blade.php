@@ -195,7 +195,7 @@
                                     @endphp
                                     <a href="{{ route('store.package.show', $pkg) }}"
                                        class="flex-none w-[44vw] lg:w-60 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                                        <div class="relative aspect-[4/5]">
+                                        <div class="relative aspect-square">
                                             <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover">
                                             @if($discount > 0)
                                                 <span class="absolute top-2 left-2 bg-accent text-white text-xs font-bold px-2.5 py-1 rounded-full leading-tight text-center">
@@ -293,7 +293,7 @@
                                 @endphp
                                 <a href="{{ route('store.package.show', $pkg) }}"
                                    class="flex-none w-[44vw] lg:w-60 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
-                                    <div class="relative aspect-[4/5]">
+                                    <div class="relative aspect-square">
                                         <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover">
                                         @if($discount > 0)
                                             <span class="absolute top-2 left-2 bg-accent text-white text-xs font-bold px-2.5 py-1 rounded-full leading-tight text-center">
