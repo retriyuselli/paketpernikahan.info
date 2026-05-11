@@ -11,9 +11,9 @@
         ? null
         : (str_starts_with($vendor->logo_vendor, 'http')
             ? $vendor->logo_vendor
-            : \\Illuminate\\Support\\Facades\\Storage::url($vendor->logo_vendor));
+                : \Illuminate\Support\Facades\Storage::url($vendor->logo_vendor));
     $vendorMetaImage = $vendor->cover_image_url ?: $vendorLogoUrl ?: url(config('app.logo_url'));
-    $vendorMetaDescription = \\Illuminate\\Support\\Str::limit(
+            $vendorMetaDescription = \Illuminate\Support\Str::limit(
         collect([
             $vendor->name,
             $vendor->categoryVendor?->name ?? $vendor->category,
@@ -32,7 +32,7 @@
         '@id' => route('vendor.detail', $vendor) . '#business',
         'name' => $vendor->name,
         'url' => route('vendor.detail', $vendor),
-        'description' => \\Illuminate\\Support\\Str::limit(strip_tags((string) $vendor->description), 200, ''),
+        'description' => \Illuminate\Support\Str::limit(strip_tags((string) $vendor->description), 200, ''),
         'image' => array_values(array_filter([$vendorMetaImage, $vendorLogoUrl])),
     ];
 

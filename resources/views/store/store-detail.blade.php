@@ -3,7 +3,7 @@
 @section('title', ($package->name ?? 'Detail Paket') . ' - Makna Wedding')
 @php
     $packageMetaImage = $package->image_url ?: $vendor->cover_image_url ?: url(config('app.logo_url'));
-    $packageMetaDescription = \\Illuminate\\Support\\Str::limit(
+    $packageMetaDescription = \Illuminate\Support\Str::limit(
         collect([
             $package->name,
             'oleh ' . $vendor->name,
@@ -18,7 +18,7 @@
         '@type' => 'Service',
         '@id' => url()->current() . '#service',
         'name' => $package->name,
-        'description' => \\Illuminate\\Support\\Str::limit(strip_tags((string) ($package->item ?? $vendor->description ?? $package->name)), 200, ''),
+        'description' => \Illuminate\Support\Str::limit(strip_tags((string) ($package->item ?? $vendor->description ?? $package->name)), 200, ''),
         'url' => url()->current(),
         'image' => [$packageMetaImage],
         'provider' => [
