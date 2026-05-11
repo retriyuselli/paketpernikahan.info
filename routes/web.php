@@ -328,6 +328,7 @@ Route::get('/store/kategori/{category:slug}', function (\App\Models\CategoryVend
         )
         ->where(fn ($q) => $q
             ->whereJsonContains('category_vendor_id', (string) $category->id)
+            ->orWhereJsonContains('category_vendor_id', (int) $category->id)
             ->orWhereHas('vendor', fn ($vq) => $vq
                 ->where(fn ($w) => $w
                     ->where('category', $category->slug)
