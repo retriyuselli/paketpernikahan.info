@@ -243,12 +243,12 @@
             </div>
 
             <!-- Side Photos Grid -->
-            <div class="hidden lg:grid grid-cols-2 gap-2 self-stretch">
+            <div class="hidden lg:grid grid-cols-2 grid-rows-2 gap-2 self-stretch h-full min-h-0">
                 <template x-for="(src, index) in sideSrcs" :key="index">
-                    <div class="rounded-xl overflow-hidden min-h-0 cursor-pointer" @click="swap(index)">
+                    <div class="relative rounded-xl overflow-hidden min-h-0 h-full cursor-pointer bg-gray-100" @click="swap(index)">
                         <img :src="src"
                              :alt="'Foto ' + (index + 1)"
-                             class="w-full h-full object-cover hover:scale-105 hover:brightness-90 transition-all duration-300">
+                             class="absolute inset-0 w-full h-full object-cover hover:scale-105 hover:brightness-90 transition-all duration-300">
                     </div>
                 </template>
             </div>
