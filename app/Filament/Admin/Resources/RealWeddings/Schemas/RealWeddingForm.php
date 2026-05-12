@@ -49,14 +49,22 @@ class RealWeddingForm
                         ->maxLength(255),
                     Select::make('vendors')
                         ->label('Vendor Terlibat')
-                        ->relationship('vendors', 'name')
+                        ->relationship(
+                            name: 'vendors',
+                            titleAttribute: 'name',
+                            modifyQueryUsing: fn ($query) => $query->where('is_active', true),
+                        )
                         ->multiple()
                         ->searchable()
                         ->preload()
                         ->columnSpanFull(),
                     Select::make('vendorPackages')
                         ->label('Paket Vendor')
-                        ->relationship('vendorPackages', 'name')
+                        ->relationship(
+                            name: 'vendorPackages',
+                            titleAttribute: 'name',
+                            modifyQueryUsing: fn ($query) => $query->where('is_active', true),
+                        )
                         ->multiple()
                         ->searchable()
                         ->preload()
