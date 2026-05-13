@@ -103,6 +103,30 @@
             max-width: min(14rem, calc(100vw - 1.5rem));
             margin-bottom: 0;
         }
+
+        .store-detail-page #store-image-modal {
+            padding: 0;
+            background: rgba(0, 0, 0, 0.96);
+        }
+
+        .store-detail-page #store-image-modal-shell {
+            width: 100%;
+            height: 100dvh;
+            max-height: none;
+            border-radius: 0;
+            background: #000;
+        }
+
+        .store-detail-page #store-image-modal-img {
+            width: 100%;
+            max-height: calc(100dvh - 18.5rem);
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .store-detail-page .store-image-mobile-meta {
+            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+        }
     }
 
     @media (min-width: 1024px) {
@@ -254,7 +278,7 @@
                                         @endphp
                                         @if($canEdit)
                                             <a href="{{ route('vendor.packages.edit', ['vendor' => $vendor->slug, 'package' => $package->id]) }}"
-                                               class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                               class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                 </svg>
@@ -716,14 +740,21 @@
 
     <div id="store-image-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50">
         <button type="button" id="store-image-modal-backdrop" class="absolute inset-0" aria-label="Tutup"></button>
-        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col overflow-hidden"
-             style="max-height:90vh; z-index:1;">
+        <div id="store-image-modal-shell"
+             class="relative z-1 flex h-full w-full max-w-4xl flex-col overflow-hidden bg-black lg:h-auto lg:max-h-[90vh] lg:rounded-2xl lg:bg-white lg:shadow-2xl">
 
             {{-- Full-width header: title + close --}}
-            <div class="flex items-center justify-between gap-4 px-5 py-3.5 border-b border-gray-100 shrink-0">
-                <p class="text-sm font-bold text-dark truncate">{{ $package->name }}</p>
+            <div class="flex items-center justify-between gap-4 px-4 py-4 text-white shrink-0 lg:px-5 lg:py-3.5 lg:border-b lg:border-gray-100 lg:text-dark">
+                <button type="button" id="store-image-modal-mobile-back"
+                        class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10 lg:hidden"
+                        aria-label="Kembali">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <p class="min-w-0 flex-1 text-center text-sm font-bold text-white truncate lg:text-left lg:text-dark">{{ $package->name }}</p>
                 <button type="button" id="store-image-modal-close"
-                        class="shrink-0 w-9 h-9 rounded-full border border-gray-200 bg-white flex items-center justify-center hover:bg-gray-50 transition text-dark">
+                        class="shrink-0 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10 lg:h-9 lg:w-9 lg:border-gray-200 lg:bg-white lg:text-dark lg:hover:bg-gray-50">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -731,33 +762,48 @@
             </div>
 
             {{-- Content: image (left) + thumbnails (right) --}}
-            <div class="flex flex-1 min-h-0 overflow-hidden">
+            <div class="flex flex-1 min-h-0 flex-col overflow-hidden lg:flex-row">
 
                 {{-- Left: main image + arrows --}}
-                <div class="flex-1 relative flex items-center justify-center bg-gray-50 py-6" style="min-height:300px;">
+                <div class="relative flex min-h-0 flex-1 items-center justify-center bg-black py-4 lg:bg-gray-50 lg:py-6" style="min-height:300px;">
                     <button type="button" id="store-image-modal-prev"
-                            class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
-                        <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white transition hover:bg-black/70 lg:border-gray-200 lg:bg-white lg:text-dark lg:shadow-md lg:hover:shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                         </svg>
                     </button>
                     <img id="store-image-modal-img" src="" alt="Preview"
-                         class="max-w-full object-contain px-16" style="max-height:56vh;">
+                         class="max-w-full object-contain px-4 lg:px-16" style="max-height:56vh;">
                     <button type="button" id="store-image-modal-next"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
-                        <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white transition hover:bg-black/70 lg:border-gray-200 lg:bg-white lg:text-dark lg:shadow-md lg:hover:shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </button>
+                    <div id="store-image-modal-counter"
+                         class="absolute bottom-4 left-4 rounded-2xl bg-white/10 px-3 py-2 text-sm font-semibold text-white backdrop-blur-sm lg:hidden">
+                        1/1
+                    </div>
                 </div>
 
                 {{-- Right: thumbnail panel --}}
-                <div class="w-64 shrink-0 border-l border-gray-100 flex flex-col">
-                    <div class="px-4 py-3 border-b border-gray-100 shrink-0">
+                <div class="store-image-mobile-meta w-full shrink-0 border-t border-white/10 bg-neutral-950/95 flex flex-col lg:w-64 lg:border-l lg:border-t-0 lg:border-gray-100 lg:bg-white">
+                    <div class="hidden shrink-0 border-b border-gray-100 px-4 py-3 lg:block">
                         <p class="text-sm font-bold text-dark">Gambar Paket</p>
                     </div>
-                    <div class="flex-1 overflow-y-auto p-3">
-                        <div id="store-image-modal-thumbs" class="grid grid-cols-3 gap-2"></div>
+                    <div class="flex-1 overflow-x-auto overflow-y-hidden p-3 lg:overflow-y-auto lg:overflow-x-hidden">
+                        <div id="store-image-modal-thumbs" class="flex gap-3 lg:grid lg:grid-cols-3 lg:gap-2"></div>
+                    </div>
+                    <div class="px-4 pb-4 lg:hidden">
+                        <p class="line-clamp-2 text-sm font-semibold leading-snug text-white">{{ $package->name }}</p>
+                        @if($discount > 0)
+                            <div class="mt-2 flex items-end gap-2">
+                                <p class="text-lg font-extrabold leading-none text-[#ff4d6d]">IDR {{ number_format($final, 0, ',', '.') }}</p>
+                                <p class="text-sm text-white/35 line-through">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                            </div>
+                        @else
+                            <p class="mt-2 text-lg font-extrabold leading-none text-[#ff4d6d]">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -1055,10 +1101,12 @@
             var modal       = document.getElementById('store-image-modal');
             var mainImg     = document.getElementById('store-image-modal-img');
             var closeBtn    = document.getElementById('store-image-modal-close');
+            var mobileBack  = document.getElementById('store-image-modal-mobile-back');
             var backdrop    = document.getElementById('store-image-modal-backdrop');
             var prevBtn     = document.getElementById('store-image-modal-prev');
             var nextBtn     = document.getElementById('store-image-modal-next');
             var thumbsWrap  = document.getElementById('store-image-modal-thumbs');
+            var counterEl   = document.getElementById('store-image-modal-counter');
             if (!modal || !mainImg || !closeBtn) return;
 
             var images = [];
@@ -1086,7 +1134,7 @@
                     var btn = document.createElement('button');
                     btn.type = 'button';
                     btn.setAttribute('data-modal-thumb-idx', String(idx));
-                    btn.className = 'modal-thumb w-full rounded-lg overflow-hidden border-2 transition-all duration-150 ' + (idx === currentIndex ? 'border-accent' : 'border-transparent');
+                    btn.className = 'modal-thumb w-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-150 lg:w-full lg:rounded-lg ' + (idx === currentIndex ? 'border-accent' : 'border-transparent');
                     btn.style.aspectRatio = '1';
                     var img = document.createElement('img');
                     img.src = src;
@@ -1101,6 +1149,7 @@
                 if (!images.length) return;
                 currentIndex = ((idx % images.length) + images.length) % images.length;
                 mainImg.src = images[currentIndex];
+                if (counterEl) counterEl.textContent = (currentIndex + 1) + '/' + images.length;
                 if (thumbsWrap) {
                     thumbsWrap.querySelectorAll('[data-modal-thumb-idx]').forEach(function (b) {
                         var i = parseInt(b.getAttribute('data-modal-thumb-idx'), 10);
@@ -1108,7 +1157,7 @@
                         b.classList.toggle('border-transparent', i !== currentIndex);
                     });
                     var active = thumbsWrap.querySelector('[data-modal-thumb-idx="' + currentIndex + '"]');
-                    if (active) active.scrollIntoView({ block: 'nearest' });
+                    if (active) active.scrollIntoView({ block: 'nearest', inline: 'center' });
                 }
             }
 
@@ -1156,6 +1205,7 @@
             });
 
             closeBtn.addEventListener('click', close);
+            if (mobileBack) mobileBack.addEventListener('click', close);
             if (backdrop) backdrop.addEventListener('click', close);
             document.addEventListener('keydown', function (e) {
                 if (modal.classList.contains('hidden')) return;
