@@ -206,61 +206,6 @@
                         </div>
                     @endif
 
-                    {{-- ── Produk Lainnya oleh Vendor Ini ──────────────── --}}
-                    @if($otherPackages->isNotEmpty())
-                        <div class="mt-10">
-                            <div class="flex items-end justify-between gap-4 mb-3">
-                                <div>
-                                    <p class="text-sm font-bold text-dark">Produk Lainnya</p>
-                                    <p class="text-xs text-gray-400">oleh {{ $vendor->name }} · {{ $otherPackages->count() }} paket</p>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                @foreach($otherPackages->take(12) as $op)
-                                    @php
-                                        $opPrice = (int) ($op->price ?? 0);
-                                        $opDiscount = (int) ($op->discount ?? 0);
-                                        $opFinal = max($opPrice - $opDiscount, 0);
-                                        $opCover = $op->image_url ?: null;
-                                        if (!$opCover && is_array($op->image_path ?? null) && count($op->image_path) > 0) {
-                                            $opCover = $op->image_path[0];
-                                            if ($opCover && !str_starts_with($opCover, 'http')) {
-                                                $opCover = \Illuminate\Support\Facades\Storage::url($opCover);
-                                            }
-                                        }
-                                        if (!$opCover) {
-                                            $opCover = $vendor->cover_image_url ?: null;
-                                        }
-                                        if (!$opCover && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
-                                            $opCover = $vendor->cover_image[0];
-                                        }
-                                        $opCover = $opCover ?: ('data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs><rect width="640" height="480" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="20">No Image</text></svg>'));
-                                    @endphp
-                                    <a href="{{ route('store.package.show', $op) }}"
-                                       class="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition">
-                                        <div class="relative aspect-4/3">
-                                            <img src="{{ $opCover }}" alt="{{ $op->name }}" class="w-full h-full object-cover">
-                                            <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
-                                            @if($opDiscount > 0)
-                                                <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 border border-gray-200 text-dark">Diskon</span>
-                                            @endif
-                                            <div class="absolute bottom-0 left-0 right-0 p-2">
-                                                <p class="text-white text-[11px] font-bold leading-snug line-clamp-2">{{ $op->name }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="p-2.5">
-                                            @if($opDiscount > 0)
-                                                <p class="text-[10px] text-gray-400 line-through">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
-                                                <p class="text-xs font-extrabold leading-tight text-accent">IDR {{ number_format($opFinal, 0, ',', '.') }}</p>
-                                            @else
-                                                <p class="text-xs font-extrabold leading-tight text-accent">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
-                                            @endif
-                                        </div>
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
                 </div>
 
                 {{-- ── Middle: Detail Column ─────────────────────────────── --}}
@@ -668,6 +613,62 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- ── Produk Lainnya oleh Vendor Ini ──────────────── --}}
+                @if($otherPackages->isNotEmpty())
+                    <div class="lg:col-span-9 lg:mt-2">
+                        <div class="flex items-end justify-between gap-4 mb-3">
+                            <div>
+                                <p class="text-sm font-bold text-dark">Produk Lainnya</p>
+                                <p class="text-xs text-gray-400">oleh {{ $vendor->name }} · {{ $otherPackages->count() }} paket</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                            @foreach($otherPackages->take(12) as $op)
+                                @php
+                                    $opPrice = (int) ($op->price ?? 0);
+                                    $opDiscount = (int) ($op->discount ?? 0);
+                                    $opFinal = max($opPrice - $opDiscount, 0);
+                                    $opCover = $op->image_url ?: null;
+                                    if (!$opCover && is_array($op->image_path ?? null) && count($op->image_path) > 0) {
+                                        $opCover = $op->image_path[0];
+                                        if ($opCover && !str_starts_with($opCover, 'http')) {
+                                            $opCover = \Illuminate\Support\Facades\Storage::url($opCover);
+                                        }
+                                    }
+                                    if (!$opCover) {
+                                        $opCover = $vendor->cover_image_url ?: null;
+                                    }
+                                    if (!$opCover && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
+                                        $opCover = $vendor->cover_image[0];
+                                    }
+                                    $opCover = $opCover ?: ('data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs><rect width="640" height="480" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="20">No Image</text></svg>'));
+                                @endphp
+                                <a href="{{ route('store.package.show', $op) }}"
+                                   class="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition">
+                                    <div class="relative aspect-4/3">
+                                        <img src="{{ $opCover }}" alt="{{ $op->name }}" class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
+                                        @if($opDiscount > 0)
+                                            <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 border border-gray-200 text-dark">Diskon</span>
+                                        @endif
+                                        <div class="absolute bottom-0 left-0 right-0 p-2.5">
+                                            <p class="text-white text-xs font-bold leading-snug line-clamp-2">{{ $op->name }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="p-3">
+                                        @if($opDiscount > 0)
+                                            <p class="text-[10px] text-gray-400 line-through">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
+                                            <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($opFinal, 0, ',', '.') }}</p>
+                                        @else
+                                            <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
+                                        @endif
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
         </x-ui.container>
     </section>
