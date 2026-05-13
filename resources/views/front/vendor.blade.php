@@ -64,14 +64,21 @@
         ];
     @endphp
 
-    <x-highlight-section
+    {{-- <x-highlight-section
         scroll-id="vendor-highlights-scroll"
         :items="$vendorHighlightItems"
         title-wrapper-class="px-4 sm:px-6 lg:px-8"
         track-class="flex gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide"
         left-button-class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10"
         right-button-class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10"
-    />
+    /> --}}
+
+    <x-highlight-section
+            :real-weddings="$realWeddings ?? collect()"
+            :featured-blogs="$homeFeaturedBlogs ?? collect()"
+            :popular-blogs="$homePopularBlogs ?? collect()"
+            :home-ad="$homeAd ?? null"
+        />
 
     <div class="px-4 sm:px-6 lg:px-8">
         <x-banner-ad />

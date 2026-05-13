@@ -912,10 +912,34 @@ Route::get('/vendor', function () {
         })
         ->filter(fn ($cat) => $cat->vendors->isNotEmpty());
 
+    $realWeddings = \App\Models\RealWedding::where('is_active', true)
+        ->orderBy('sort_order')
+        ->limit(10)
+        ->get();
+
+    $homeAd = \App\Models\HomeAd::where('is_active', true)
+        ->where('type', 'card')
+        ->orderBy('sort_order')
+        ->first();
+
+    $homeFeaturedBlogs = \App\Models\Blog::published()
+        ->orderBy('published_at', 'desc')
+        ->limit(2)
+        ->get();
+
+    $homePopularBlogs = \App\Models\Blog::published()
+        ->orderBy('views_count', 'desc')
+        ->limit(3)
+        ->get();
+
     return view('front.vendor', [
         'categories'       => $categoriesWithVendors,
         'provinces'        => $provinces,
         'citiesByProvince' => $citiesByProvince,
+        'realWeddings'     => $realWeddings,
+        'homeAd'           => $homeAd,
+        'homeFeaturedBlogs'=> $homeFeaturedBlogs,
+        'homePopularBlogs' => $homePopularBlogs,
     ]);
 })->name('vendor');
 
