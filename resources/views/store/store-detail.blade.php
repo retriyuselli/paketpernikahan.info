@@ -221,7 +221,16 @@
                                         $opPrice = (int) ($op->price ?? 0);
                                         $opDiscount = (int) ($op->discount ?? 0);
                                         $opFinal = max($opPrice - $opDiscount, 0);
-                                        $opCover = $vendor->cover_image_url ?: null;
+                                        $opCover = $op->image_url ?: null;
+                                        if (!$opCover && is_array($op->image_path ?? null) && count($op->image_path) > 0) {
+                                            $opCover = $op->image_path[0];
+                                            if ($opCover && !str_starts_with($opCover, 'http')) {
+                                                $opCover = \Illuminate\Support\Facades\Storage::url($opCover);
+                                            }
+                                        }
+                                        if (!$opCover) {
+                                            $opCover = $vendor->cover_image_url ?: null;
+                                        }
                                         if (!$opCover && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
                                             $opCover = $vendor->cover_image[0];
                                         }
@@ -366,9 +375,19 @@
                         {{-- Tab: Fasilitas --}}
                         <div id="pkg-tab-fasilitas" class="pkg-tab-panel p-5">
                             @if($package->item)
-                                <div class="prose prose-sm max-w-none text-gray-700">
-                                    {!! $package->item !!}
+                                <div class="relative">
+                                    <div data-facilities-content class="prose prose-sm max-w-none max-h-64 overflow-hidden text-gray-700 transition-all duration-300">
+                                        {!! $package->item !!}
+                                    </div>
+                                    <div data-facilities-fade class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-white via-white/95 to-transparent"></div>
                                 </div>
+                                <button type="button"
+                                        data-facilities-toggle
+                                        data-label-more="Lihat Selengkapnya"
+                                        data-label-less="Tampilkan Ringkas"
+                                    class="mt-3 hidden text-left text-sm font-extrabold text-green-600 transition hover:text-green-700 hover:underline">
+                                    <span>Lihat Selengkapnya</span>
+                                </button>
                             @else
                                 <p class="text-sm text-gray-400 italic">Detail paket belum tersedia.</p>
                             @endif
@@ -901,6 +920,44 @@
                 if (diff > 0) setTimeout(tick, 1000);
             }
             tick();
+        })();
+    </script>
+
+    <script>
+        (function () {
+            var facilitiesContent = document.querySelector('[data-facilities-content]');
+            var facilitiesToggle = document.querySelector('[data-facilities-toggle]');
+            var facilitiesFade = document.querySelector('[data-facilities-fade]');
+            if (!facilitiesContent || !facilitiesToggle) return;
+
+            var expanded = false;
+
+            function syncFacilitiesState() {
+                if (expanded) {
+                    facilitiesContent.classList.remove('max-h-64', 'overflow-hidden');
+                    if (facilitiesFade) facilitiesFade.classList.add('hidden');
+                    facilitiesToggle.classList.remove('hidden');
+                    facilitiesToggle.querySelector('span').textContent = facilitiesToggle.getAttribute('data-label-less') || 'Tampilkan Ringkas';
+                    return;
+                }
+
+                facilitiesContent.classList.add('max-h-64', 'overflow-hidden');
+                var hasOverflow = facilitiesContent.scrollHeight > facilitiesContent.clientHeight + 8;
+                facilitiesToggle.classList.toggle('hidden', !hasOverflow);
+                facilitiesToggle.classList.toggle('inline-flex', hasOverflow);
+                if (facilitiesFade) {
+                    facilitiesFade.classList.toggle('hidden', !hasOverflow);
+                }
+                facilitiesToggle.querySelector('span').textContent = facilitiesToggle.getAttribute('data-label-more') || 'Lihat Selengkapnya';
+            }
+
+            facilitiesToggle.addEventListener('click', function () {
+                expanded = !expanded;
+                syncFacilitiesState();
+            });
+
+            window.addEventListener('resize', syncFacilitiesState);
+            syncFacilitiesState();
         })();
     </script>
 
