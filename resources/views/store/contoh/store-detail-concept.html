@@ -1,0 +1,1321 @@
+<!doctype html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Konsep Detail Paket Wedding</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --bg: #f6f0e7;
+                --paper: rgba(255, 252, 247, 0.84);
+                --panel: #fffdf9;
+                --ink: #1b2940;
+                --muted: #6f7b8f;
+                --line: rgba(27, 41, 64, 0.1);
+                --gold: #b88746;
+                --gold-soft: #e7c89c;
+                --sage: #dce8df;
+                --accent: #d86f45;
+                --shadow: 0 24px 80px rgba(40, 31, 16, 0.12);
+                --radius-xl: 32px;
+                --radius-lg: 24px;
+                --radius-md: 18px;
+                --container: 1220px;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                margin: 0;
+                font-family: "Plus Jakarta Sans", sans-serif;
+                color: var(--ink);
+                background:
+                    radial-gradient(
+                        circle at top left,
+                        rgba(216, 111, 69, 0.16),
+                        transparent 24%
+                    ),
+                    radial-gradient(
+                        circle at top right,
+                        rgba(184, 135, 70, 0.2),
+                        transparent 22%
+                    ),
+                    linear-gradient(180deg, #fbf7f2 0%, var(--bg) 100%);
+            }
+
+            img {
+                display: block;
+                width: 100%;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+
+            button,
+            input {
+                font: inherit;
+            }
+
+            .page-shell {
+                width: min(calc(100% - 32px), var(--container));
+                margin: 0 auto;
+                padding: 28px 0 120px;
+            }
+
+            .topbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+
+            .breadcrumbs {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                font-size: 12px;
+                color: var(--muted);
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+
+            .breadcrumbs span:last-child {
+                color: var(--ink);
+                font-weight: 700;
+            }
+
+            .top-actions {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+            }
+
+            .ghost-btn,
+            .icon-btn,
+            .primary-btn,
+            .secondary-btn,
+            .wa-btn {
+                border: 1px solid var(--line);
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.72);
+                -webkit-backdrop-filter: blur(14px);
+                backdrop-filter: blur(14px);
+                color: var(--ink);
+                transition:
+                    transform 160ms ease,
+                    box-shadow 160ms ease,
+                    border-color 160ms ease;
+                cursor: pointer;
+            }
+
+            .ghost-btn:hover,
+            .icon-btn:hover,
+            .primary-btn:hover,
+            .secondary-btn:hover,
+            .wa-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 16px 34px rgba(27, 41, 64, 0.1);
+                border-color: rgba(27, 41, 64, 0.18);
+            }
+
+            .ghost-btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                padding: 16px 22px;
+                font-size: 16px;
+                font-weight: 800;
+            }
+
+            .icon-btn {
+                width: 56px;
+                height: 56px;
+                display: inline-grid;
+                place-items: center;
+            }
+
+            .layout {
+                display: grid;
+                grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+                gap: 24px;
+                align-items: start;
+            }
+
+            .card {
+                background: var(--paper);
+                border: 1px solid rgba(255, 255, 255, 0.45);
+                box-shadow: var(--shadow);
+                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(20px);
+                border-radius: var(--radius-xl);
+            }
+
+            .hero-card {
+                overflow: hidden;
+                position: relative;
+            }
+
+            .hero-card::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    140deg,
+                    rgba(255, 255, 255, 0.34),
+                    transparent 28%,
+                    transparent 72%,
+                    rgba(184, 135, 70, 0.12)
+                );
+                pointer-events: none;
+            }
+
+            .hero-grid {
+                display: grid;
+                grid-template-columns: 1.12fr 0.88fr;
+                gap: 0;
+            }
+
+            .visual-side {
+                padding: 22px;
+                background: linear-gradient(
+                    180deg,
+                    rgba(220, 232, 223, 0.5),
+                    rgba(255, 255, 255, 0.2)
+                );
+            }
+
+            .main-visual {
+                position: relative;
+                min-height: 470px;
+                border-radius: 28px;
+                overflow: hidden;
+                background:
+                    linear-gradient(
+                        180deg,
+                        rgba(12, 19, 31, 0) 0%,
+                        rgba(12, 19, 31, 0.5) 100%
+                    ),
+                    url("https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1200&q=80")
+                        center/cover;
+                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+            }
+
+            .floating-chip {
+                position: absolute;
+                left: 18px;
+                top: 18px;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 14px;
+                border-radius: 999px;
+                background: rgba(255, 253, 249, 0.88);
+                border: 1px solid rgba(255, 255, 255, 0.48);
+                font-size: 12px;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .visual-caption {
+                position: absolute;
+                left: 24px;
+                right: 24px;
+                bottom: 22px;
+                display: flex;
+                justify-content: space-between;
+                gap: 12px;
+                align-items: end;
+                color: #fff9f2;
+            }
+
+            .visual-caption strong {
+                display: block;
+                font-size: 28px;
+                line-height: 1.1;
+                font-weight: 800;
+            }
+
+            .visual-caption span {
+                font-size: 12px;
+                color: rgba(255, 249, 242, 0.8);
+            }
+
+            .thumb-row {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+                margin-top: 14px;
+            }
+
+            .thumb {
+                min-height: 132px;
+                border-radius: 22px;
+                overflow: hidden;
+                background-size: cover;
+                background-position: center;
+                position: relative;
+            }
+
+            .thumb::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    180deg,
+                    rgba(12, 19, 31, 0) 30%,
+                    rgba(12, 19, 31, 0.42) 100%
+                );
+            }
+
+            .thumb.is-1 {
+                background-image: url("https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80");
+            }
+            .thumb.is-2 {
+                background-image: url("https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80");
+            }
+            .thumb.is-3 {
+                background-image: url("https://images.unsplash.com/photo-1507504031003-b417219a0fde?auto=format&fit=crop&w=800&q=80");
+            }
+
+            .content-side {
+                padding: 32px;
+                display: flex;
+                flex-direction: column;
+                gap: 24px;
+            }
+
+            .eyebrow {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                width: fit-content;
+                padding: 8px 14px;
+                border-radius: 999px;
+                background: rgba(184, 135, 70, 0.12);
+                color: var(--gold);
+                font-size: 12px;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .hero-title {
+                margin: 0;
+                font-size: clamp(34px, 4vw, 54px);
+                line-height: 0.95;
+                letter-spacing: -0.04em;
+            }
+
+            .hero-title em {
+                display: block;
+                font-family: "Instrument Serif", serif;
+                font-style: italic;
+                font-weight: 400;
+                color: var(--gold);
+                letter-spacing: 0;
+            }
+
+            .hero-copy {
+                margin: 0;
+                font-size: 15px;
+                line-height: 1.8;
+                color: var(--muted);
+                max-width: 58ch;
+            }
+
+            .stat-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+
+            .stat {
+                padding: 16px 18px;
+                border-radius: 22px;
+                background: rgba(255, 255, 255, 0.7);
+                border: 1px solid rgba(27, 41, 64, 0.06);
+            }
+
+            .stat-label {
+                display: block;
+                font-size: 11px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--muted);
+                margin-bottom: 8px;
+            }
+
+            .stat strong {
+                font-size: 16px;
+                font-weight: 800;
+            }
+
+            .section-grid {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+                gap: 24px;
+                margin-top: 24px;
+            }
+
+            .section-card {
+                padding: 28px;
+            }
+
+            .section-head {
+                display: flex;
+                align-items: end;
+                justify-content: space-between;
+                gap: 16px;
+                margin-bottom: 20px;
+            }
+
+            .section-title {
+                margin: 0;
+                font-size: 24px;
+                line-height: 1.1;
+            }
+
+            .section-title em {
+                font-family: "Instrument Serif", serif;
+                font-style: italic;
+                font-weight: 400;
+                color: var(--gold);
+            }
+
+            .section-copy {
+                margin: 8px 0 0;
+                font-size: 14px;
+                color: var(--muted);
+                line-height: 1.8;
+            }
+
+            .feature-list {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 14px;
+            }
+
+            .feature-item {
+                display: flex;
+                gap: 14px;
+                padding: 18px;
+                border-radius: 22px;
+                background: rgba(255, 255, 255, 0.72);
+                border: 1px solid rgba(27, 41, 64, 0.06);
+            }
+
+            .feature-icon {
+                width: 42px;
+                height: 42px;
+                border-radius: 16px;
+                display: grid;
+                place-items: center;
+                background: rgba(220, 232, 223, 0.9);
+                color: var(--ink);
+                flex: 0 0 auto;
+            }
+
+            .feature-item strong {
+                display: block;
+                margin-bottom: 6px;
+                font-size: 15px;
+            }
+
+            .feature-item p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 13px;
+                line-height: 1.7;
+            }
+
+            .story-panel {
+                display: grid;
+                gap: 16px;
+            }
+
+            .story-strip {
+                padding: 18px 20px;
+                border-radius: 22px;
+                background: linear-gradient(
+                    135deg,
+                    rgba(255, 255, 255, 0.78),
+                    rgba(220, 232, 223, 0.72)
+                );
+                border: 1px solid rgba(27, 41, 64, 0.06);
+            }
+
+            .story-strip span {
+                font-size: 11px;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--muted);
+            }
+
+            .story-strip strong {
+                display: block;
+                margin-top: 8px;
+                font-size: 20px;
+                line-height: 1.3;
+            }
+
+            .booking-card {
+                position: sticky;
+                top: 18px;
+                padding: 26px;
+            }
+
+            .price-stack {
+                display: flex;
+                align-items: start;
+                justify-content: space-between;
+                gap: 16px;
+                margin-bottom: 24px;
+            }
+
+            .price-stack small {
+                display: block;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                color: var(--muted);
+                margin-bottom: 10px;
+            }
+
+            .strike {
+                font-size: 14px;
+                color: #9ea8b8;
+                text-decoration: line-through;
+                margin-bottom: 6px;
+            }
+
+            .price-now {
+                font-size: clamp(32px, 4vw, 46px);
+                line-height: 0.95;
+                letter-spacing: -0.05em;
+                font-weight: 800;
+            }
+
+            .price-now span {
+                display: block;
+                font-size: 14px;
+                letter-spacing: 0;
+                color: var(--muted);
+                margin-top: 8px;
+                font-weight: 500;
+            }
+
+            .discount-pill {
+                padding: 10px 14px;
+                border-radius: 999px;
+                background: rgba(216, 111, 69, 0.12);
+                color: var(--accent);
+                font-size: 12px;
+                font-weight: 800;
+                white-space: nowrap;
+            }
+
+            .vendor-box {
+                padding: 16px 18px;
+                border-radius: 22px;
+                background: rgba(255, 255, 255, 0.72);
+                border: 1px solid rgba(27, 41, 64, 0.06);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                margin-bottom: 18px;
+            }
+
+            .vendor-box small {
+                display: block;
+                color: var(--muted);
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                margin-bottom: 6px;
+            }
+
+            .vendor-box strong {
+                font-size: 16px;
+            }
+
+            .tag-line {
+                font-size: 13px;
+                color: var(--muted);
+            }
+
+            .qty-wrap {
+                display: grid;
+                grid-template-columns: 48px minmax(0, 1fr) 48px;
+                gap: 10px;
+                margin-bottom: 18px;
+            }
+
+            .qty-label {
+                display: block;
+                margin-bottom: 8px;
+            }
+
+            .qty-btn,
+            .qty-input {
+                height: 52px;
+                border-radius: 18px;
+                border: 1px solid var(--line);
+                background: rgba(255, 255, 255, 0.72);
+                text-align: center;
+            }
+
+            .qty-btn {
+                font-size: 24px;
+                font-weight: 700;
+                color: var(--ink);
+                cursor: pointer;
+            }
+
+            .qty-input {
+                padding: 0 14px;
+                font-size: 18px;
+                font-weight: 800;
+                color: var(--ink);
+            }
+
+            .cta-stack {
+                display: grid;
+                gap: 12px;
+                margin-bottom: 18px;
+            }
+
+            .primary-btn,
+            .secondary-btn,
+            .wa-btn {
+                padding: 16px 18px;
+                font-size: 15px;
+                font-weight: 800;
+                text-align: center;
+            }
+
+            .primary-btn {
+                background: linear-gradient(135deg, #1f5e5a, #113a44);
+                color: #fff;
+                border-color: transparent;
+            }
+
+            .wa-btn {
+                background: linear-gradient(135deg, #29b56d, #0b8f55);
+                color: #fff;
+                border-color: transparent;
+            }
+
+            .booking-note {
+                margin: 0;
+                font-size: 12px;
+                color: var(--muted);
+                line-height: 1.7;
+            }
+
+            .timeline {
+                display: grid;
+                gap: 14px;
+            }
+
+            .timeline-item {
+                display: grid;
+                grid-template-columns: 42px minmax(0, 1fr);
+                gap: 14px;
+                align-items: start;
+            }
+
+            .timeline-step {
+                width: 42px;
+                height: 42px;
+                border-radius: 14px;
+                display: grid;
+                place-items: center;
+                background: rgba(184, 135, 70, 0.14);
+                color: var(--gold);
+                font-size: 14px;
+                font-weight: 800;
+            }
+
+            .timeline-item strong {
+                display: block;
+                margin-bottom: 4px;
+            }
+
+            .timeline-item p {
+                margin: 0;
+                font-size: 13px;
+                color: var(--muted);
+                line-height: 1.7;
+            }
+
+            .floating-mobile-bar {
+                display: none;
+            }
+
+            .fade-up {
+                opacity: 0;
+                transform: translateY(18px);
+                animation: fadeUp 700ms ease forwards;
+            }
+
+            .delay-1 {
+                animation-delay: 80ms;
+            }
+            .delay-2 {
+                animation-delay: 160ms;
+            }
+            .delay-3 {
+                animation-delay: 240ms;
+            }
+
+            @keyframes fadeUp {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @media (max-width: 1080px) {
+                .layout,
+                .section-grid,
+                .hero-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .booking-card {
+                    position: static;
+                }
+            }
+
+            @media (max-width: 780px) {
+                .page-shell {
+                    width: min(calc(100% - 20px), var(--container));
+                    padding-top: 20px;
+                }
+
+                .topbar {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+
+                .top-actions {
+                    width: 100%;
+                }
+
+                .ghost-btn {
+                    flex: 1;
+                    justify-content: center;
+                }
+
+                .content-side,
+                .section-card,
+                .booking-card {
+                    padding: 22px;
+                }
+
+                .main-visual {
+                    min-height: 360px;
+                }
+
+                .stat-grid,
+                .feature-list {
+                    grid-template-columns: 1fr;
+                }
+
+                .floating-mobile-bar {
+                    position: fixed;
+                    left: 12px;
+                    right: 12px;
+                    bottom: 12px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 12px;
+                    border-radius: 24px;
+                    background: rgba(255, 253, 249, 0.94);
+                    border: 1px solid rgba(27, 41, 64, 0.08);
+                    box-shadow: 0 18px 40px rgba(27, 41, 64, 0.16);
+                    -webkit-backdrop-filter: blur(18px);
+                    backdrop-filter: blur(18px);
+                }
+
+                .floating-mobile-bar .mobile-price {
+                    min-width: 0;
+                    flex: 1;
+                }
+
+                .floating-mobile-bar small {
+                    display: block;
+                    font-size: 10px;
+                    letter-spacing: 0.08em;
+                    text-transform: uppercase;
+                    color: var(--muted);
+                    margin-bottom: 5px;
+                }
+
+                .floating-mobile-bar strong {
+                    display: block;
+                    font-size: 18px;
+                    line-height: 1;
+                }
+
+                .floating-mobile-bar a,
+                .floating-mobile-bar button {
+                    border-radius: 18px;
+                    padding: 14px 16px;
+                    font-weight: 800;
+                    border: 0;
+                }
+
+                .floating-mobile-bar .share-mobile {
+                    background: #fff;
+                    border: 1px solid rgba(27, 41, 64, 0.08);
+                }
+
+                .floating-mobile-bar .book-mobile {
+                    background: linear-gradient(135deg, #1f5e5a, #113a44);
+                    color: #fff;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <main class="page-shell">
+            <div class="topbar fade-up">
+                <div class="breadcrumbs">
+                    <span>Home</span>
+                    <span>/</span>
+                    <span>Store</span>
+                    <span>/</span>
+                    <span>Venue</span>
+                    <span>/</span>
+                    <span>Royal Garden Intimate</span>
+                </div>
+
+                <div class="top-actions">
+                    <a class="ghost-btn" href="#">
+                        <svg
+                            width="22"
+                            height="22"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M15 6L9 12L15 18"
+                                stroke="currentColor"
+                                stroke-width="2.2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                        Kembali
+                    </a>
+                    <button
+                        class="icon-btn"
+                        id="demo-share"
+                        type="button"
+                        aria-label="Bagikan konsep"
+                    >
+                        <svg
+                            width="22"
+                            height="22"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M12 16V4M12 4L8 8M12 4L16 8M5 12V18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V12"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <section class="layout">
+                <div class="hero-card card fade-up delay-1">
+                    <div class="hero-grid">
+                        <div class="visual-side">
+                            <div class="main-visual">
+                                <div class="floating-chip">Signature Venue</div>
+                                <div class="visual-caption">
+                                    <div>
+                                        <span>Garden reception concept</span>
+                                        <strong
+                                            >Warm sunset,<br />golden
+                                            aisle.</strong
+                                        >
+                                    </div>
+                                    <span>14 gallery shots</span>
+                                </div>
+                            </div>
+
+                            <div class="thumb-row">
+                                <div class="thumb is-1"></div>
+                                <div class="thumb is-2"></div>
+                                <div class="thumb is-3"></div>
+                            </div>
+                        </div>
+
+                        <div class="content-side">
+                            <div>
+                                <span class="eyebrow"
+                                    >Makna Signature Edit</span
+                                >
+                                <h1 class="hero-title">
+                                    Royal Garden
+                                    <em>Intimate Wedding</em>
+                                </h1>
+                                <p class="hero-copy">
+                                    Konsep ini menempatkan pengalaman tamu
+                                    sebagai pusat desain: panggung yang lebih
+                                    bersih, flow tamu yang jelas, dan tampilan
+                                    editorial yang terasa premium tanpa terlihat
+                                    terlalu padat. Cocok untuk pasangan yang
+                                    ingin suasana intimate namun tetap terlihat
+                                    mewah di foto dan video.
+                                </p>
+                            </div>
+
+                            <div class="stat-grid">
+                                <div class="stat">
+                                    <span class="stat-label">Kapasitas</span>
+                                    <strong>250 tamu</strong>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Durasi</span>
+                                    <strong>8 jam acara</strong>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Lokasi</span>
+                                    <strong>Bandung</strong>
+                                </div>
+                            </div>
+
+                            <div class="story-panel">
+                                <div class="story-strip">
+                                    <span>Visual Direction</span>
+                                    <strong
+                                        >Layout lebih lapang, sorot ke pasangan,
+                                        dan setiap sudut terasa siap
+                                        dipotret.</strong
+                                    >
+                                </div>
+                                <div class="story-strip">
+                                    <span>Best For</span>
+                                    <strong
+                                        >Engagement dinner, intimate wedding,
+                                        atau resepsi keluarga dengan taste
+                                        modern-classic.</strong
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="booking-card card fade-up delay-2">
+                    <div class="price-stack">
+                        <div>
+                            <small>Harga konsep</small>
+                            <div class="strike">IDR 42.000.000</div>
+                            <div class="price-now" id="concept-price">
+                                IDR 34.500.000<span
+                                    >per paket dekor + venue styling</span
+                                >
+                            </div>
+                        </div>
+                        <div class="discount-pill">Hemat 7.5 Juta</div>
+                    </div>
+
+                    <div class="vendor-box">
+                        <div>
+                            <small>Vendor utama</small>
+                            <strong>Makna Wedding Atelier</strong>
+                            <div class="tag-line">
+                                Verified vendor, response cepat, dan fleksibel
+                                untuk custom.
+                            </div>
+                        </div>
+                        <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M12 3L14.7812 8.62929L21 9.52786L16.5 13.8876L17.5623 20.0279L12 17.11L6.43769 20.0279L7.5 13.8876L3 9.52786L9.21885 8.62929L12 3Z"
+                                fill="#b88746"
+                            />
+                        </svg>
+                    </div>
+
+                    <label class="tag-line qty-label" for="qty-input"
+                        >Jumlah paket / sesi</label
+                    >
+                    <div class="qty-wrap">
+                        <button
+                            class="qty-btn"
+                            type="button"
+                            data-qty-step="-1"
+                        >
+                            -
+                        </button>
+                        <input
+                            class="qty-input"
+                            id="qty-input"
+                            type="text"
+                            value="1"
+                            inputmode="numeric"
+                        />
+                        <button class="qty-btn" type="button" data-qty-step="1">
+                            +
+                        </button>
+                    </div>
+
+                    <div class="cta-stack">
+                        <a class="primary-btn" href="#">Booking konsep ini</a>
+                        <a class="wa-btn" href="#">Diskusi via WhatsApp</a>
+                        <a class="secondary-btn" href="#"
+                            >Lihat profil vendor</a
+                        >
+                    </div>
+
+                    <p class="booking-note">
+                        Simulasi ini menampilkan pendekatan visual baru untuk
+                        halaman detail paket. Fokusnya pada story, kualitas
+                        presentasi, dan CTA yang lebih tajam di desktop maupun
+                        mobile.
+                    </p>
+                </aside>
+            </section>
+
+            <section class="section-grid">
+                <div class="section-card card fade-up delay-2">
+                    <div class="section-head">
+                        <div>
+                            <h2 class="section-title">
+                                Apa yang bikin konsep ini terasa
+                                <em>lebih premium</em>?
+                            </h2>
+                            <p class="section-copy">
+                                Bukan sekadar daftar fasilitas. Setiap blok
+                                diatur untuk membantu calon klien cepat paham
+                                value, suasana, dan hasil visual yang akan
+                                mereka dapat.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="feature-list">
+                        <article class="feature-item">
+                            <div class="feature-icon">
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M5 12H19M12 5V19"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Stage lebih clean</strong>
+                                <p>
+                                    Komposisi panggung dipangkas agar wajah
+                                    pasangan dan ambience venue tampil dominan
+                                    di kamera.
+                                </p>
+                            </div>
+                        </article>
+
+                        <article class="feature-item">
+                            <div class="feature-icon">
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M4 18L9.5 12.5L13 16L20 8"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Flow tamu lebih rapi</strong>
+                                <p>
+                                    Masuk, duduk, foto, dan catering dibagi
+                                    jelas agar suasana tetap tenang walau venue
+                                    penuh.
+                                </p>
+                            </div>
+                        </article>
+
+                        <article class="feature-item">
+                            <div class="feature-icon">
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M12 3V21M3 12H21"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Photo-first styling</strong>
+                                <p>
+                                    Palet warna dan tekstur dipilih agar tetap
+                                    kuat di siang hari dan elegan saat golden
+                                    hour.
+                                </p>
+                            </div>
+                        </article>
+
+                        <article class="feature-item">
+                            <div class="feature-icon">
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M7 10L12 15L17 10"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <strong>Lebih mudah di-custom</strong>
+                                <p>
+                                    Desain modular membuat klien bisa tambah
+                                    lounge, photobooth, atau keluarga VIP tanpa
+                                    bongkar total layout.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <aside class="section-card card fade-up delay-3">
+                    <div class="section-head">
+                        <div>
+                            <h2 class="section-title">Alur <em>booking</em></h2>
+                            <p class="section-copy">
+                                Disusun sederhana supaya calon klien tidak
+                                bingung di langkah pertama.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-step">01</div>
+                            <div>
+                                <strong>Pilih tanggal dan kebutuhan</strong>
+                                <p>
+                                    Vendor cek slot, tipe acara, dan kebutuhan
+                                    jumlah tamu.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-step">02</div>
+                            <div>
+                                <strong>Preview konsep dan revisi</strong>
+                                <p>
+                                    Klien melihat moodboard, layout, serta
+                                    estimasi penyesuaian tambahan.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-step">03</div>
+                            <div>
+                                <strong>DP dan penguncian jadwal</strong>
+                                <p>
+                                    Setelah approved, jadwal diamankan dan tim
+                                    produksi mulai finalisasi detail.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </section>
+
+            <div class="floating-mobile-bar">
+                <div class="mobile-price">
+                    <small>Mulai dari</small>
+                    <strong id="mobile-price">IDR 34.500.000</strong>
+                </div>
+                <button
+                    class="share-mobile"
+                    id="mobile-share"
+                    type="button"
+                    aria-label="Bagikan konsep"
+                >
+                    <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden="true"
+                    >
+                        <path
+                            d="M12 16V4M12 4L8 8M12 4L16 8M5 12V18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V12"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </button>
+                <a class="book-mobile" href="#">Booking</a>
+            </div>
+        </main>
+
+        <script>
+            (function () {
+                var unitPrice = 34500000;
+                var qtyInput = document.getElementById("qty-input");
+                var priceEl = document.getElementById("concept-price");
+                var mobilePriceEl = document.getElementById("mobile-price");
+                var qtyButtons = document.querySelectorAll("[data-qty-step]");
+
+                function formatRupiah(value) {
+                    return "IDR " + Number(value).toLocaleString("id-ID");
+                }
+
+                function clamp(value) {
+                    var next = parseInt(
+                        String(value || "").replace(/\D+/g, ""),
+                        10,
+                    );
+                    if (!Number.isFinite(next) || next < 1) next = 1;
+                    if (next > 9) next = 9;
+                    return next;
+                }
+
+                function syncPrice() {
+                    var qty = clamp(qtyInput.value);
+                    qtyInput.value = qty;
+                    var total = unitPrice * qty;
+                    priceEl.innerHTML =
+                        formatRupiah(total) +
+                        "<span>per paket dekor + venue styling</span>";
+                    mobilePriceEl.textContent = formatRupiah(total);
+                }
+
+                qtyButtons.forEach(function (button) {
+                    button.addEventListener("click", function () {
+                        var delta = parseInt(
+                            button.getAttribute("data-qty-step") || "0",
+                            10,
+                        );
+                        qtyInput.value = clamp(clamp(qtyInput.value) + delta);
+                        syncPrice();
+                    });
+                });
+
+                qtyInput.addEventListener("input", syncPrice);
+                syncPrice();
+            })();
+
+            (function () {
+                function fallbackShare() {
+                    var demoUrl = window.location.href;
+                    if (
+                        navigator.clipboard &&
+                        typeof navigator.clipboard.writeText === "function"
+                    ) {
+                        navigator.clipboard
+                            .writeText(demoUrl)
+                            .catch(function () {
+                                window.prompt(
+                                    "Salin link konsep ini:",
+                                    demoUrl,
+                                );
+                            });
+                        return;
+                    }
+
+                    window.prompt("Salin link konsep ini:", demoUrl);
+                }
+
+                function runShare() {
+                    if (navigator.share) {
+                        navigator
+                            .share({
+                                title: "Konsep Detail Paket Wedding",
+                                text: "Cek konsep tampilan detail paket wedding ini.",
+                                url: window.location.href,
+                            })
+                            .catch(function (error) {
+                                if (error && error.name === "AbortError")
+                                    return;
+                                fallbackShare();
+                            });
+                        return;
+                    }
+
+                    fallbackShare();
+                }
+
+                var buttons = [
+                    document.getElementById("demo-share"),
+                    document.getElementById("mobile-share"),
+                ];
+                buttons.forEach(function (button) {
+                    if (!button) return;
+                    button.addEventListener("click", runShare);
+                });
+            })();
+        </script>
+    </body>
+</html>

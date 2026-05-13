@@ -73,7 +73,7 @@
 @section('meta-image', $packageMetaImage)
 @section('meta-type', 'product')
 
-@section('body-class', 'bg-cream text-dark')
+@section('body-class', 'bg-cream text-dark store-detail-page')
 
 @section('extra-head')
 <script type="application/ld+json">@json($packageSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
@@ -84,6 +84,36 @@
     .prose li { margin: 2px 0; }
     .prose strong { font-weight: 700; }
     .prose em { font-style: italic; }
+
+    .store-detail-page {
+        --store-mobile-bar-offset: calc(env(safe-area-inset-bottom, 0px) + 5.5rem);
+    }
+
+    @media (max-width: 1023px) {
+        .store-detail-page #lc-widget {
+            right: 0.75rem;
+            bottom: var(--store-mobile-bar-offset);
+        }
+
+        .store-detail-page #lc-panel {
+            max-height: min(70vh, calc(100vh - var(--store-mobile-bar-offset) - 1rem));
+        }
+
+        .store-detail-page #lc-welcome {
+            max-width: min(14rem, calc(100vw - 1.5rem));
+            margin-bottom: 0;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .store-detail-page #lc-widget {
+            right: max(1rem, calc((100vw - 1280px) / 2 + 1rem));
+        }
+
+        .store-detail-page #lc-welcome {
+            display: none !important;
+        }
+    }
 </style>
 @endsection
 
@@ -97,6 +127,9 @@
         $wa = preg_replace('/[^0-9]/', '', (string) ($vendor->phone ?? ''));
         $waText = rawurlencode('Halo ' . $vendor->name . ', saya tertarik dengan paket "' . $package->name . '". Mohon info lengkap ya.');
         $waUrl = $wa ? "https://wa.me/{$wa}?text={$waText}" : null;
+        $shareUrl = url()->current();
+        $shareTitle = $package->name . ' - ' . $vendor->name;
+        $shareText = 'Lihat paket "' . $package->name . '" oleh ' . $vendor->name . ($vendor->city ? ' di ' . $vendor->city : '') . '.';
 
         // Resolve kategori dari array category_vendor_id
         $pkgCatIds = is_array($package->category_vendor_id) ? $package->category_vendor_id : [];
@@ -113,36 +146,139 @@
         ];
     @endphp
 
-    <section class="py-8 bg-cream">
+    <section class="py-8 pb-44 lg:pb-8 bg-cream">
         <x-ui.container>
             <div class="pt-4 pb-4">
                 @include('layout.breadcrumb', ['items' => $breadcrumbItems])
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-8">
+
+                {{-- ── Left: Gallery Column ─────────────────────────────── --}}
+                <div class="lg:col-span-4 lg:self-start">
+                    @php
+                        $galleryImages = [];
+                        foreach ($images as $img) {
+                            $imgUrl = is_array($img) ? ($img[0] ?? null) : $img;
+                            if (is_string($imgUrl) && $imgUrl !== '' && !str_starts_with($imgUrl, 'http') && !str_starts_with($imgUrl, '/storage')) {
+                                $imgUrl = \Illuminate\Support\Facades\Storage::url($imgUrl);
+                            }
+                            if ($imgUrl) $galleryImages[] = $imgUrl;
+                        }
+                    @endphp
+                    @if(!empty($galleryImages))
+                        <div class="relative w-full rounded-2xl overflow-hidden bg-white border border-gray-100 aspect-square cursor-zoom-in" id="gallery-main-wrap">
+                            <img id="gallery-main-img"
+                                 src="{{ $galleryImages[0] }}"
+                                 alt="Paket {{ $package->name }}"
+                                 class="w-full h-full object-cover transition-opacity duration-300"
+                                 data-store-image-open
+                                 data-store-image-src="{{ $galleryImages[0] }}">
+                            <div class="absolute inset-0 pointer-events-none bg-linear-to-t from-black/10 to-transparent"></div>
+                            <span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/90 border border-gray-200 text-dark flex items-center gap-1 pointer-events-none">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
+                                Perbesar
+                            </span>
+                        </div>
+                        <div class="mt-2 relative">
+                            <div id="gallery-thumbs-scroll" class="flex gap-2 overflow-x-auto scroll-smooth scrollbar-hide pb-1">
+                                @foreach($galleryImages as $ti => $tUrl)
+                                    <button type="button"
+                                            data-gallery-thumb="{{ $tUrl }}"
+                                            data-gallery-index="{{ $ti }}"
+                                            class="gallery-thumb shrink-0 w-17.5 h-17.5 rounded-xl overflow-hidden border-2 transition-all duration-200 bg-gray-50 {{ $ti === 0 ? 'border-accent' : 'border-transparent' }}">
+                                        <img src="{{ $tUrl }}" alt="Foto {{ $ti + 1 }}" class="w-full h-full object-cover">
+                                    </button>
+                                @endforeach
+                            </div>
+                            @if(count($galleryImages) > 5)
+                                <button type="button"
+                                        data-scroll-target="gallery-thumbs-scroll" data-scroll-by="200"
+                                        class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
+                                    <svg class="w-4 h-4 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
+                    @else
+                        <div class="w-full rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-gray-400 aspect-square">
+                            Tidak ada foto
+                        </div>
+                    @endif
+
+                    {{-- ── Produk Lainnya oleh Vendor Ini ──────────────── --}}
+                    @if($otherPackages->isNotEmpty())
+                        <div class="mt-10">
+                            <div class="flex items-end justify-between gap-4 mb-3">
+                                <div>
+                                    <p class="text-sm font-bold text-dark">Produk Lainnya</p>
+                                    <p class="text-xs text-gray-400">oleh {{ $vendor->name }} · {{ $otherPackages->count() }} paket</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                @foreach($otherPackages->take(12) as $op)
+                                    @php
+                                        $opPrice = (int) ($op->price ?? 0);
+                                        $opDiscount = (int) ($op->discount ?? 0);
+                                        $opFinal = max($opPrice - $opDiscount, 0);
+                                        $opCover = $vendor->cover_image_url ?: null;
+                                        if (!$opCover && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
+                                            $opCover = $vendor->cover_image[0];
+                                        }
+                                        $opCover = $opCover ?: ('data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs><rect width="640" height="480" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="20">No Image</text></svg>'));
+                                    @endphp
+                                    <a href="{{ route('store.package.show', $op) }}"
+                                       class="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition">
+                                        <div class="relative aspect-4/3">
+                                            <img src="{{ $opCover }}" alt="{{ $op->name }}" class="w-full h-full object-cover">
+                                            <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
+                                            @if($opDiscount > 0)
+                                                <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 border border-gray-200 text-dark">Diskon</span>
+                                            @endif
+                                            <div class="absolute bottom-0 left-0 right-0 p-2">
+                                                <p class="text-white text-[11px] font-bold leading-snug line-clamp-2">{{ $op->name }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="p-2.5">
+                                            @if($opDiscount > 0)
+                                                <p class="text-[10px] text-gray-400 line-through">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
+                                                <p class="text-xs font-extrabold leading-tight text-accent">IDR {{ number_format($opFinal, 0, ',', '.') }}</p>
+                                            @else
+                                                <p class="text-xs font-extrabold leading-tight text-accent">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
+                                            @endif
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- ── Middle: Detail Column ─────────────────────────────── --}}
+                <div class="lg:col-span-5">
                     {{-- ── Header Card ───────────────────────────────────── --}}
                     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                         {{-- Top accent bar --}}
-                        <div class="h-1 w-full bg-accent"></div>
+                        <div class="h-1 w-full"></div>
                         <div class="p-5">
                             <div class="flex items-start justify-between gap-4">
                                 <div class="min-w-0 flex-1">
                                     {{-- Category badge --}}
-                                    @if($categoryName)
+                                    {{-- @if($categoryName)
                                         <span class="inline-block text-[10px] font-bold uppercase tracking-widest border border-accent/40 rounded-full px-3 py-0.5 mb-2 text-accent">
                                             {{ $categoryName }}
                                         </span>
-                                    @endif
+                                    @endif --}}
                                     <h1 class="text-lg sm:text-xl font-extrabold leading-tight text-dark">{{ $package->name }}</h1>
                                     {{-- Vendor row --}}
                                     <div class="flex items-center gap-2 mt-2">
-                                        <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
                                         </svg>
                                         <a href="{{ route('vendor.detail', $vendor->slug) }}" class="text-xs font-semibold hover:opacity-80 transition text-accent">{{ $vendor->name }}</a>
                                         @if($vendor->city)
                                             <span class="text-gray-300">·</span>
-                                            <svg class="w-3.5 h-3.5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                             </svg>
@@ -150,31 +286,33 @@
                                         @endif
                                     </div>
                                 </div>
-                                <a href="{{ route('store') }}" class="flex-shrink-0 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
-                                    ← Kembali
-                                </a>
-                                @auth
-                                    @php
-                                        $authUser = auth()->user();
-                                        $canEdit = $authUser && (
-                                            $authUser->hasRole(['super_admin', 'admin']) ||
-                                            (int) $vendor->owner_user_id === (int) $authUser->id
-                                        );
-                                    @endphp
-                                    @if($canEdit)
-                                        <a href="{{ route('vendor.packages.edit', ['vendor' => $vendor->slug, 'package' => $package->id]) }}"
-                                           class="flex-shrink-0 inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-accent/30 bg-accent/10 text-accent hover:bg-accent/20 transition">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                            </svg>
-                                            Edit
-                                        </a>
-                                    @endif
-                                @endauth
+                                <div class="flex flex-wrap items-center justify-end gap-2">
+                                    <a href="{{ route('store') }}" class="shrink-0 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                        ← Kembali
+                                    </a>
+                                    @auth
+                                        @php
+                                            $authUser = auth()->user();
+                                            $canEdit = $authUser && (
+                                                $authUser->hasRole(['super_admin', 'admin']) ||
+                                                (int) $vendor->owner_user_id === (int) $authUser->id
+                                            );
+                                        @endphp
+                                        @if($canEdit)
+                                            <a href="{{ route('vendor.packages.edit', ['vendor' => $vendor->slug, 'package' => $package->id]) }}"
+                                               class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-accent/30 bg-accent/10 text-accent hover:bg-accent/20 transition">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                                Edit
+                                            </a>
+                                        @endif
+                                    @endauth
+                                </div>
                             </div>
 
                             {{-- Tags / Badges --}}
-                            <div class="mt-4 flex flex-wrap items-center gap-2">
+                            {{-- <div class="mt-4 flex flex-wrap items-center gap-2">
                                 @if($package->max_guests)
                                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-accent/10 text-accent border border-accent/20">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,137 +334,94 @@
                                         🔥 Hemat IDR {{ number_format($discount, 0, ',', '.') }}
                                     </span>
                                 @endif
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
 
-                    {{-- ── Gallery ─────────────────────────────────────── --}}
+                    {{-- ── Fasilitas & Venue Tab ────────────────────── --}}
+                    @php
+                        $hasVenue = $package->type || $package->capacity || (is_array($package->facilities) && count($package->facilities));
+                    @endphp
                     <div class="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                        <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 bg-light-sage/20">
-                            <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
-                            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Galeri Foto</span>
-                            @if(!$images->isEmpty())
-                                <span class="ml-auto text-[11px] text-gray-400">{{ $images->count() }} foto</span>
+                        {{-- Tab Headers --}}
+                        <div class="flex border-b border-gray-100" id="pkg-tabs">
+                            <button type="button"
+                                    data-tab="fasilitas"
+                                    class="pkg-tab-btn flex items-center gap-2 px-5 py-3.5 text-xs font-bold uppercase tracking-widest border-b-2 border-accent text-accent transition-all"
+                                    aria-selected="true">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                Fasilitas
+                            </button>
+                            @if($hasVenue)
+                                <button type="button"
+                                        data-tab="venue"
+                                        class="pkg-tab-btn flex items-center gap-2 px-5 py-3.5 text-xs font-bold uppercase tracking-widest border-b-2 border-transparent text-gray-400 hover:text-dark transition-all"
+                                        aria-selected="false">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                    Informasi Venue
+                                </button>
                             @endif
                         </div>
-                        <div class="p-5">
-                        <div class="relative">
-                            <button type="button"
-                                    data-scroll-target="store-detail-images-scroll" data-scroll-by="-500"
-                                    class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md items-center justify-center hover:shadow-lg transition z-10">
-                                <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                                </svg>
-                            </button>
 
-                            <div id="store-detail-images-scroll" class="flex gap-3 overflow-x-auto scroll-smooth pb-2 scrollbar-hide">
-                                @foreach($images as $img)
-                                    @php
-                                        $imgUrl = is_array($img) ? ($img[0] ?? null) : $img;
-                                        if (is_string($imgUrl) && $imgUrl !== '' && !str_starts_with($imgUrl, 'http') && !str_starts_with($imgUrl, '/storage')) {
-                                            $imgUrl = \Illuminate\Support\Facades\Storage::url($imgUrl);
-                                        }
-                                    @endphp
-                                    @if($imgUrl)
-                                        <button type="button"
-                                                data-store-image-open data-store-image-src="{{ $imgUrl }}"
-                                                class="group flex-none w-48 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 relative aspect-[4/5]">
-                                            <img src="{{ $imgUrl }}" alt="Paket {{ $package->name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition"></div>
-                                            <div class="absolute bottom-2 right-2 px-2 py-1 rounded-full text-[10px] font-bold bg-white/90 border border-gray-200 opacity-0 group-hover:opacity-100 transition text-dark flex items-center gap-1">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
-                                                Perbesar
+                        {{-- Tab: Fasilitas --}}
+                        <div id="pkg-tab-fasilitas" class="pkg-tab-panel p-5">
+                            @if($package->item)
+                                <div class="prose prose-sm max-w-none text-gray-700">
+                                    {!! $package->item !!}
+                                </div>
+                            @else
+                                <p class="text-sm text-gray-400 italic">Detail paket belum tersedia.</p>
+                            @endif
+                        </div>
+
+                        {{-- Tab: Informasi Venue --}}
+                        @if($hasVenue)
+                            <div id="pkg-tab-venue" class="pkg-tab-panel p-5 hidden">
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                    @if($package->type)
+                                        <div class="flex items-center gap-3 p-4 bg-cream/60 rounded-xl border border-gray-100">
+                                            <div class="shrink-0 w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                             </div>
-                                        </button>
+                                            <div class="min-w-0">
+                                                <p class="text-[10px] uppercase tracking-widest text-gray-400">Tipe</p>
+                                                <p class="text-sm font-bold text-dark truncate">{{ $package->type }}</p>
+                                            </div>
+                                        </div>
                                     @endif
-                                @endforeach
-
-                                @if($images->isEmpty())
-                                    <div class="flex-none w-48 rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 flex items-center justify-center text-xs text-gray-400 aspect-[4/5]">
-                                        Tidak ada foto
-                                    </div>
-                                @endif
-                            </div>
-
-                            <button type="button"
-                                    data-scroll-target="store-detail-images-scroll" data-scroll-by="500"
-                                    class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md items-center justify-center hover:shadow-lg transition z-10">
-                                <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </button>
-                        </div>
-                        </div>{{-- /p-5 --}}
-                    </div>
-
-                    {{-- ── Items / Detail Paket ────────────────────────── --}}
-                    <div class="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                        <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 bg-light-sage/20">
-                            <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
-                            <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Fasilitas</span>
-                        </div>
-                        <div class="p-5">
-                        @if($package->item)
-                            <div class="prose prose-sm max-w-none text-gray-700">
-                                {!! $package->item !!}
-                            </div>
-                        @else
-                            <p class="text-sm text-gray-400 italic">Detail paket belum tersedia.</p>
-                        @endif
-                        </div>
-                    </div>
-
-                    @if($package->type || $package->capacity || (is_array($package->facilities) && count($package->facilities)))
-                        {{-- ── Venue Detail ─────────────────────────────── --}}
-                        <div class="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden">
-                            <div class="flex items-center gap-3 px-5 py-3.5 border-b border-gray-100 bg-light-sage/20">
-                                <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
-                                <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Informasi Venue</span>
-                            </div>
-                            <div class="p-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                @if($package->type)
-                                    <div class="flex items-center gap-3 p-4 bg-cream/60 rounded-xl border border-gray-100">
-                                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center">
-                                            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                        </div>
-                                        <div class="min-w-0">
-                                            <p class="text-[10px] uppercase tracking-widest text-gray-400">Tipe</p>
-                                            <p class="text-sm font-bold text-dark truncate">{{ $package->type }}</p>
-                                        </div>
-                                    </div>
-                                @endif
-                                @if($package->capacity)
-                                    <div class="flex items-center gap-3 p-4 bg-cream/60 rounded-xl border border-gray-100">
-                                        <div class="flex-shrink-0 w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center">
-                                            <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                        </div>
-                                        <div class="min-w-0">
-                                            <p class="text-[10px] uppercase tracking-widest text-gray-400">Kapasitas</p>
-                                            <p class="text-sm font-bold text-dark">{{ number_format((int) $package->capacity, 0, ',', '.') }} <span class="text-xs font-normal text-gray-500">orang</span></p>
-                                        </div>
-                                    </div>
-                                @endif
-                                @if(is_array($package->facilities) && count($package->facilities))
-                                    <div class="col-span-2 sm:col-span-{{ ($package->type && $package->capacity) ? '1' : '3' }} p-4 bg-cream/60 rounded-xl border border-gray-100">
-                                        <div class="flex items-center gap-2 mb-2.5">
-                                            <div class="flex-shrink-0 w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center">
-                                                <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    @if($package->capacity)
+                                        <div class="flex items-center gap-3 p-4 bg-cream/60 rounded-xl border border-gray-100">
+                                            <div class="shrink-0 w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center">
+                                                <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                             </div>
-                                            <p class="text-[10px] uppercase tracking-widest text-gray-400">Fasilitas</p>
+                                            <div class="min-w-0">
+                                                <p class="text-[10px] uppercase tracking-widest text-gray-400">Kapasitas</p>
+                                                <p class="text-sm font-bold text-dark">{{ number_format((int) $package->capacity, 0, ',', '.') }} <span class="text-xs font-normal text-gray-500">orang</span></p>
+                                            </div>
                                         </div>
-                                        <div class="flex flex-wrap gap-1.5">
-                                            @foreach($package->facilities as $fac)
-                                                <span class="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 bg-white border border-gray-100 rounded-full font-medium text-dark shadow-sm">
-                                                    <span class="w-1 h-1 rounded-full bg-accent flex-shrink-0"></span>
-                                                    {{ $fac }}
-                                                </span>
-                                            @endforeach
+                                    @endif
+                                    @if(is_array($package->facilities) && count($package->facilities))
+                                        <div class="col-span-2 sm:col-span-{{ ($package->type && $package->capacity) ? '1' : '3' }} p-4 bg-cream/60 rounded-xl border border-gray-100">
+                                            <div class="flex items-center gap-2 mb-2.5">
+                                                <div class="shrink-0 w-9 h-9 rounded-full bg-accent/10 flex items-center justify-center">
+                                                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                </div>
+                                                <p class="text-[10px] uppercase tracking-widest text-gray-400">Fasilitas</p>
+                                            </div>
+                                            <div class="flex flex-wrap gap-1.5">
+                                                @foreach($package->facilities as $fac)
+                                                    <span class="inline-flex items-center gap-1 text-[11px] px-2.5 py-1 bg-white border border-gray-100 rounded-full font-medium text-dark shadow-sm">
+                                                        <span class="w-1 h-1 rounded-full bg-accent shrink-0"></span>
+                                                        {{ $fac }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
                                         </div>
-                                    </div>
-                                @endif
+                                    @endif
+                                </div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
 
                     @if(isset($videos) && $videos->isNotEmpty())
                         <div class="mt-5">
@@ -354,12 +449,12 @@
                                         }
                                         $cover = $cover ?: ('data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#111827"/><stop offset="1" stop-color="#1f2937"/></linearGradient></defs><rect width="640" height="480" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family=\"Arial, sans-serif\" font-size=\"20\">No Video Cover</text></svg>'));
                                     @endphp
-                                    <div class="relative flex-shrink-0 rounded-2xl overflow-hidden cursor-pointer group snap-start w-[180px] h-[280px]"
+                                    <div class="relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group snap-start w-45 h-70"
                                          @if($hasVideo) data-action="open-video" data-video-url="{{ $v->video_url }}" @endif>
                                         <img src="{{ $cover }}"
                                              alt="Review Video {{ $idx + 1 }}"
                                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                                        <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
                                         @if($hasVideo)
                                             <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition">
                                                 <div class="w-12 h-12 rounded-full bg-white/90 group-hover:bg-white flex items-center justify-center shadow-lg transition">
@@ -380,172 +475,177 @@
                         </div>
                     @endif
 
-                    @if($otherPackages->isNotEmpty())
-                        <div class="mt-5">
-                            <div class="flex items-end justify-between gap-4 mb-3">
-                                <div>
-                                    <p class="text-sm font-bold text-dark">Produk Lainnya oleh Vendor Ini</p>
-                                    <p class="text-xs text-gray-400">{{ $otherPackages->count() }} paket</p>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-3 overflow-x-auto scroll-smooth pb-2 scrollbar-hide">
-                                @foreach($otherPackages->take(12) as $op)
-                                    @php
-                                        $opPrice = (int) ($op->price ?? 0);
-                                        $opDiscount = (int) ($op->discount ?? 0);
-                                        $opFinal = max($opPrice - $opDiscount, 0);
-                                        $opCover = $vendor->cover_image_url ?: null;
-                                        if (!$opCover && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
-                                            $opCover = $vendor->cover_image[0];
-                                        }
-                                        $opCover = $opCover ?: ('data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs><rect width="640" height="480" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="20">No Image</text></svg>'));
-                                    @endphp
-                                    <a href="{{ route('store.package.show', $op) }}"
-                                       class="flex-none w-40 bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition">
-                                        <div class="relative aspect-[4/5]">
-                                            <img src="{{ $opCover }}" alt="{{ $op->name }}" class="w-full h-full object-cover">
-                                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                                            @if($opDiscount > 0)
-                                                <span class="absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-full bg-white/90 border border-gray-200 text-dark">
-                                                    Diskon
-                                                </span>
-                                            @endif
-                                            <div class="absolute bottom-0 left-0 right-0 p-3">
-                                                <p class="text-white text-xs font-bold leading-snug">{{ $op->name }}</p>
-                                                <p class="text-white/80 text-[10px] mt-1">{{ $vendor->name }}</p>
-                                                <p class="text-white/60 text-[10px] truncate">{{ $vendor->city }} · {{ $vendor->location }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="p-4">
-                                            @if($opDiscount > 0)
-                                                <p class="text-[11px] text-gray-400 line-through">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
-                                                <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($opFinal, 0, ',', '.') }}</p>
-                                            @else
-                                                <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
-                                            @endif
-                                        </div>
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
                 </div>
 
-                
-                <div class="lg:col-span-4">
+                <div class="lg:col-span-3">
                     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm lg:sticky lg:top-24">
 
-                        {{-- Accent top bar --}}
-                        <div class="h-1 w-full bg-accent"></div>
-
-                        {{-- Vendor Info --}}
-                        <div class="px-5 pt-5 pb-4 border-b border-gray-100">
+                        {{-- ── Spesial Diskon Banner ───────────────────── --}}
+                        @if($discount > 0)
+                        <div class="relative overflow-hidden bg-linear-to-r from-accent to-accent/80 px-5 py-3.5">
                             <div class="flex items-center justify-between gap-3">
-                                <div class="min-w-0">
-                                    <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-0.5">Vendor</p>
-                                    <p class="text-sm font-bold truncate text-dark">{{ $vendor->name }}</p>
-                                    @if($vendor->city)
-                                        <p class="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                            {{ $vendor->city }}
-                                        </p>
-                                    @endif
+                                <div>
+                                    <p class="text-white font-extrabold text-sm leading-tight">Spesial Diskon</p>
+                                    <div class="mt-1.5 h-1 w-24 bg-white/30 rounded-full overflow-hidden">
+                                        <div class="h-full w-3/5 bg-white rounded-full"></div>
+                                    </div>
                                 </div>
-                                <a href="{{ route('vendor.detail', $vendor->slug) }}"
-                                   class="flex-shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-bold border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
-                                    Profil Vendor
-                                </a>
+                                <div class="text-right shrink-0">
+                                    <p class="text-white/80 text-[10px] font-semibold mb-1">Berakhir dalam</p>
+                                    <div class="bg-white rounded-full px-3 py-1">
+                                        <span id="sidebar-countdown" class="text-red-500 font-extrabold text-sm tabular-nums tracking-wide">-- : -- : --</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-
-                        {{-- Price --}}
-                        <div class="px-5 pt-4 pb-4 border-b border-gray-100">
-                            <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-2">Harga Paket</p>
-                            <div class="flex items-start justify-between gap-3">
-                                <div>
-                                    @if($discount > 0)
-                                        <p id="store-price-original"
-                                           data-unit="{{ $price }}"
-                                           class="text-sm line-through text-gray-400">IDR {{ number_format($price, 0, ',', '.') }}</p>
-                                        <p id="store-price-final"
-                                           data-unit="{{ $final }}"
-                                           class="text-2xl font-extrabold leading-tight text-accent">IDR {{ number_format($final, 0, ',', '.') }}</p>
-                                    @else
-                                        <p id="store-price-final"
-                                           data-unit="{{ $price }}"
-                                           class="text-2xl font-extrabold leading-tight text-accent">IDR {{ number_format($price, 0, ',', '.') }}</p>
-                                    @endif
-                                    <p class="mt-0.5 text-[11px] text-gray-400">/ paket</p>
-                                </div>
-                                @if($discount > 0)
-                                    <span id="store-price-save"
-                                          data-unit="{{ $discount }}"
-                                          class="flex-shrink-0 text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-red-500 text-white">
-                                        Hemat IDR {{ number_format($discount, 0, ',', '.') }}
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        {{-- DP & Capacity info --}}
-                        @if((int) ($package->dp_paket ?? 0) > 0 || $package->max_guests)
-                        <div class="px-5 py-3 border-b border-gray-100 flex flex-wrap gap-4">
-                            @if((int) ($package->dp_paket ?? 0) > 0)
-                                <div>
-                                    <p class="text-[10px] uppercase tracking-widest text-gray-400">DP Paket</p>
-                                    <p class="text-sm font-bold text-dark">IDR {{ number_format((int) $package->dp_paket, 0, ',', '.') }}</p>
-                                </div>
-                            @endif
-                            @if($package->max_guests)
-                                <div>
-                                    <p class="text-[10px] uppercase tracking-widest text-gray-400">Kapasitas</p>
-                                    <p class="text-sm font-bold text-dark">{{ $package->max_guests }}</p>
-                                </div>
-                            @endif
                         </div>
                         @endif
 
-                        {{-- Quantity --}}
-                        <div class="px-5 py-4 border-b border-gray-100">
-                            <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-2">Jumlah</p>
-                            <div class="flex items-center gap-2">
-                                <button type="button" data-store-qty="-1"
-                                        class="w-10 h-10 rounded-xl border border-gray-200 bg-white hover:border-accent hover:text-accent transition text-dark text-lg font-bold flex items-center justify-center">−</button>
-                                <input id="store-qty" type="text" value="1" inputmode="numeric" autocomplete="off"
-                                       class="w-16 h-10 rounded-xl border border-gray-200 text-center text-sm font-bold focus:outline-none focus:border-accent transition text-dark">
-                                <button type="button" data-store-qty="1"
-                                        class="w-10 h-10 rounded-xl border border-gray-200 bg-white hover:border-accent hover:text-accent transition text-dark text-lg font-bold flex items-center justify-center">+</button>
+                        {{-- ── Vendor info mini ────────────────────────── --}}
+                        <div class="px-5 pt-4 pb-3 border-b border-gray-100 flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold truncate text-dark">{{ $vendor->name }}</p>
+                                @if($vendor->city)
+                                    <p class="text-[11px] text-gray-400 flex items-center gap-1 mt-0.5">
+                                        <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        {{ $vendor->city }}
+                                    </p>
+                                @endif
                             </div>
+                            <a href="{{ route('vendor.detail', $vendor->slug) }}"
+                               class="shrink-0 px-3 py-1.5 rounded-lg text-[11px] font-bold border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                Profil Vendor
+                            </a>
                         </div>
 
-                        {{-- CTA Buttons --}}
-                        <div class="px-5 py-5 space-y-2.5">
+                        {{-- ── Atur Jumlah & Catatan ───────────────────── --}}
+                        <div class="px-5 pt-4 pb-3">
+                            <p class="text-sm font-bold text-dark mb-3">Atur jumlah dan catatan</p>
+
+                            {{-- Product thumb + name --}}
+                            @php
+                                $sideThumb = null;
+                                if (!empty($galleryImages[0])) {
+                                    $sideThumb = $galleryImages[0];
+                                } elseif ($vendor->cover_image_url) {
+                                    $sideThumb = $vendor->cover_image_url;
+                                }
+                            @endphp
+                            <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 mb-4">
+                                @if($sideThumb)
+                                    <img src="{{ $sideThumb }}" alt="{{ $package->name }}"
+                                         class="w-14 h-14 rounded-lg object-cover shrink-0 border border-gray-200">
+                                @else
+                                    <div class="w-14 h-14 rounded-lg bg-gray-200 shrink-0 flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                @endif
+                                <div class="min-w-0">
+                                    <p class="text-xs font-semibold text-dark truncate">{{ $package->name }}</p>
+                                    @if($categoryName)
+                                        <p class="text-[11px] text-gray-400 mt-0.5">{{ $categoryName }}</p>
+                                    @endif
+                                    @if($package->max_guests)
+                                        <p class="text-[11px] text-gray-400">Maks. {{ $package->max_guests }}</p>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- Quantity + stock --}}
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="flex items-center rounded-xl border border-gray-200 overflow-hidden">
+                                    <button type="button" data-store-qty="-1"
+                                            class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-accent hover:bg-gray-50 transition text-sm">−</button>
+                                    <input id="store-qty" type="text" value="1" inputmode="numeric" autocomplete="off"
+                                           class="w-12 h-10 text-center text-sm font-bold border-x border-gray-200 focus:outline-none focus:border-accent transition text-dark bg-white">
+                                    <button type="button" data-store-qty="1"
+                                            class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-accent hover:bg-gray-50 transition text-sm">+</button>
+                                </div>
+                                @if((int) ($package->dp_paket ?? 0) > 0 || $package->max_guests)
+                                    <p class="text-xs text-gray-500">
+                                        @if($package->max_guests)
+                                            Maks. <span class="font-bold text-dark">{{ $package->max_guests }}</span>
+                                        @endif
+                                        @if((int) ($package->dp_paket ?? 0) > 0)
+                                            · DP <span class="font-bold text-dark">IDR {{ number_format((int) $package->dp_paket, 0, ',', '.') }}</span>
+                                        @endif
+                                    </p>
+                                @endif
+                            </div>
+
+                            {{-- Subtotal --}}
+                            <div class="flex items-end justify-between border-t border-gray-100 pt-3 mb-4">
+                                <p class="text-sm text-gray-500">Subtotal</p>
+                                <div class="text-right">
+                                    @if($discount > 0)
+                                        <p id="store-price-original"
+                                           data-store-price-original
+                                           data-unit="{{ $price }}"
+                                           class="text-xs line-through text-gray-400">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                                    @endif
+                                    <p id="store-price-final"
+                                       data-store-price-final
+                                       data-unit="{{ $final }}"
+                                       class="text-xl font-extrabold leading-tight text-dark">IDR {{ number_format($final, 0, ',', '.') }}</p>
+                                </div>
+                            </div>
+                            @if($discount > 0)
+                                <span id="store-price-save"
+                                      data-store-price-save
+                                      data-unit="{{ $discount }}"
+                                      class="hidden">Hemat IDR {{ number_format($discount, 0, ',', '.') }}</span>
+                            @endif
+                        </div>
+
+                        {{-- ── CTA Buttons ─────────────────────────────── --}}
+                        <div class="px-5 pb-4 space-y-2.5">
                             <a id="store-booking-link"
+                               data-store-booking-link
                                data-base-href="{{ route('booking.package', $package) }}"
                                href="{{ route('booking.package', $package) }}"
                                class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 bg-accent text-white shadow-sm">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                Booking Sekarang
+                                + Booking Sekarang
                             </a>
                             @if($waUrl)
                                 <a href="{{ $waUrl }}" target="_blank"
-                                   class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 btn-wa">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                                        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.535 5.857L.057 23.43l5.752-1.507A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.81 9.81 0 01-5.007-1.373l-.36-.214-3.715.974.99-3.618-.234-.372A9.818 9.818 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
-                                    </svg>
-                                    Chat via WhatsApp
+                                   class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold border-2 border-accent text-accent bg-white hover:bg-accent/5 transition">
+                                    Hubungi Vendor
                                 </a>
                             @else
                                 <button type="button" disabled
-                                        class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed">
-                                    Chat via WhatsApp
+                                        class="flex items-center justify-center w-full py-3 rounded-xl text-sm font-bold border-2 border-gray-200 text-gray-400 cursor-not-allowed">
+                                    Hubungi Vendor
                                 </button>
                             @endif
-                            <p class="text-center text-[10px] text-gray-400">Chat untuk info lebih lanjut & kustomisasi paket.</p>
+                        </div>
+
+                        {{-- ── Bottom actions: Chat | Wishlist | Share ─── --}}
+                        <div class="border-t border-gray-100 flex divide-x divide-gray-100">
+                            @if($waUrl)
+                                <a href="{{ $waUrl }}" target="_blank"
+                                   class="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-gray-500 hover:text-accent hover:bg-gray-50 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                    Chat
+                                </a>
+                            @else
+                                <button type="button" disabled class="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-gray-300 cursor-not-allowed">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                    Chat
+                                </button>
+                            @endif
+                            <button type="button"
+                                    class="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-gray-500 hover:text-accent hover:bg-gray-50 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                Wishlist
+                            </button>
+                            <button type="button"
+                                    id="store-share-button"
+                                    data-share-url="{{ $shareUrl }}"
+                                    data-share-title="{{ $shareTitle }}"
+                                    data-share-text="{{ $shareText }}"
+                                    class="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-gray-500 hover:text-accent hover:bg-gray-50 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
+                                Share
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -553,16 +653,93 @@
         </x-ui.container>
     </section>
 
-    <div id="store-image-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
-        <button type="button" id="store-image-modal-backdrop" class="absolute inset-0 bg-black/60"></button>
-        <div class="relative w-full max-w-5xl">
-            <button type="button"
-                    id="store-image-modal-close"
-                    class="absolute -top-3 -right-3 w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-sm font-bold hover:bg-gray-50 transition text-dark">
-                ×
-            </button>
-            <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-2xl">
-                <img id="store-image-modal-img" src="" alt="Preview" class="w-full h-auto max-h-[85vh] object-contain bg-black">
+    <div class="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur-sm shadow-2xl">
+        <div class="px-4 pt-3.5" style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);">
+            <div class="mx-auto flex flex-wrap items-center gap-2.5">
+                <div class="min-w-0 flex-1 basis-full">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.24em] text-gray-400">Mulai Dari</p>
+                    @if($discount > 0)
+                        <p data-store-price-original
+                           data-unit="{{ $price }}"
+                           class="text-[11px] text-gray-400 line-through">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                        <p data-store-price-final
+                           data-unit="{{ $final }}"
+                           class="text-base font-extrabold leading-tight text-accent">IDR {{ number_format($final, 0, ',', '.') }}</p>
+                    @else
+                        <p data-store-price-final
+                           data-unit="{{ $price }}"
+                           class="text-base font-extrabold leading-tight text-accent">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                    @endif
+                </div>
+
+                @if($waUrl)
+                    <a href="{{ $waUrl }}" target="_blank"
+                       class="btn-wa inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl px-4 text-sm font-bold whitespace-nowrap">
+                        WhatsApp
+                    </a>
+                @else
+                    <button type="button" disabled
+                            class="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl px-4 text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed whitespace-nowrap">
+                        WhatsApp
+                    </button>
+                @endif
+
+                <a data-store-booking-link
+                   data-base-href="{{ route('booking.package', $package) }}"
+                   href="{{ route('booking.package', $package) }}"
+                   class="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl bg-accent px-4 text-sm font-bold text-white shadow-sm whitespace-nowrap">
+                    Booking
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="store-image-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50">
+        <button type="button" id="store-image-modal-backdrop" class="absolute inset-0" aria-label="Tutup"></button>
+        <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col overflow-hidden"
+             style="max-height:90vh; z-index:1;">
+
+            {{-- Full-width header: title + close --}}
+            <div class="flex items-center justify-between gap-4 px-5 py-3.5 border-b border-gray-100 shrink-0">
+                <p class="text-sm font-bold text-dark truncate">{{ $package->name }}</p>
+                <button type="button" id="store-image-modal-close"
+                        class="shrink-0 w-9 h-9 rounded-full border border-gray-200 bg-white flex items-center justify-center hover:bg-gray-50 transition text-dark">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            {{-- Content: image (left) + thumbnails (right) --}}
+            <div class="flex flex-1 min-h-0 overflow-hidden">
+
+                {{-- Left: main image + arrows --}}
+                <div class="flex-1 relative flex items-center justify-center bg-gray-50 py-6" style="min-height:300px;">
+                    <button type="button" id="store-image-modal-prev"
+                            class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
+                        <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <img id="store-image-modal-img" src="" alt="Preview"
+                         class="max-w-full object-contain px-16" style="max-height:56vh;">
+                    <button type="button" id="store-image-modal-next"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white border border-gray-200 shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
+                        <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Right: thumbnail panel --}}
+                <div class="w-64 shrink-0 border-l border-gray-100 flex flex-col">
+                    <div class="px-4 py-3 border-b border-gray-100 shrink-0">
+                        <p class="text-sm font-bold text-dark">Gambar Paket</p>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-3">
+                        <div id="store-image-modal-thumbs" class="grid grid-cols-3 gap-2"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -589,11 +766,75 @@
 
     <script>
         (function () {
+            var shareButton = document.getElementById('store-share-button');
+            if (!shareButton) return;
+
+            function copyText(text) {
+                if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+                    return navigator.clipboard.writeText(text);
+                }
+
+                return new Promise(function (resolve, reject) {
+                    var textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    textarea.setAttribute('readonly', 'readonly');
+                    textarea.className = 'fixed -left-[9999px] top-0 opacity-0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    textarea.setSelectionRange(0, textarea.value.length);
+
+                    try {
+                        if (document.execCommand('copy')) {
+                            resolve();
+                        } else {
+                            reject(new Error('Copy command failed.'));
+                        }
+                    } catch (error) {
+                        reject(error);
+                    } finally {
+                        document.body.removeChild(textarea);
+                    }
+                });
+            }
+
+            shareButton.addEventListener('click', function () {
+                var shareUrl = shareButton.getAttribute('data-share-url') || window.location.href;
+                var shareTitle = shareButton.getAttribute('data-share-title') || document.title;
+                var shareText = shareButton.getAttribute('data-share-text') || shareTitle;
+
+                if (navigator.share) {
+                    navigator.share({
+                        title: shareTitle,
+                        text: shareText,
+                        url: shareUrl,
+                    }).catch(function (error) {
+                        if (error && error.name === 'AbortError') {
+                            return;
+                        }
+
+                        copyText(shareUrl).catch(function () {
+                            window.prompt('Salin link paket ini:', shareUrl);
+                        });
+                    });
+
+                    return;
+                }
+
+                copyText(shareUrl).catch(function () {
+                    window.prompt('Salin link paket ini:', shareUrl);
+                });
+            });
+        })();
+    </script>
+
+    <script>
+        (function () {
             var el = document.getElementById('store-qty');
             if (!el) return;
-            var priceOriginalEl = document.getElementById('store-price-original');
-            var priceFinalEl = document.getElementById('store-price-final');
-            var priceSaveEl = document.getElementById('store-price-save');
+            var priceOriginalEls = Array.prototype.slice.call(document.querySelectorAll('[data-store-price-original]'));
+            var priceFinalEls = Array.prototype.slice.call(document.querySelectorAll('[data-store-price-final]'));
+            var priceSaveEls = Array.prototype.slice.call(document.querySelectorAll('[data-store-price-save]'));
+            var bookingLinks = Array.prototype.slice.call(document.querySelectorAll('[data-store-booking-link]'));
 
             function clamp(v) {
                 v = parseInt(String(v || '').replace(/\\D+/g, ''), 10);
@@ -608,23 +849,22 @@
             }
             function updatePrice() {
                 var qty = clamp(el.value);
-                if (priceFinalEl) {
+                priceFinalEls.forEach(function (priceFinalEl) {
                     var unitFinal = parseInt(priceFinalEl.getAttribute('data-unit') || '0', 10) || 0;
-                    priceFinalEl.textContent = money(unitFinal * qty);
-                }
-                if (priceOriginalEl) {
+                    priceFinalEl.textContent = 'IDR ' + money(unitFinal * qty);
+                });
+                priceOriginalEls.forEach(function (priceOriginalEl) {
                     var unitOriginal = parseInt(priceOriginalEl.getAttribute('data-unit') || '0', 10) || 0;
-                    priceOriginalEl.textContent = money(unitOriginal * qty);
-                }
-                if (priceSaveEl) {
+                    priceOriginalEl.textContent = 'IDR ' + money(unitOriginal * qty);
+                });
+                priceSaveEls.forEach(function (priceSaveEl) {
                     var unitSave = parseInt(priceSaveEl.getAttribute('data-unit') || '0', 10) || 0;
-                    priceSaveEl.textContent = 'Hemat ' + money(unitSave * qty);
-                }
-                var bookingLink = document.getElementById('store-booking-link');
-                if (bookingLink) {
+                    priceSaveEl.textContent = 'Hemat IDR ' + money(unitSave * qty);
+                });
+                bookingLinks.forEach(function (bookingLink) {
                     var base = bookingLink.getAttribute('data-base-href') || bookingLink.getAttribute('href') || '';
                     if (base) bookingLink.setAttribute('href', base + '?qty=' + qty);
-                }
+                });
             }
 
             window.storeQty = function (delta) {
@@ -643,6 +883,67 @@
                 updatePrice();
             });
             updatePrice();
+        })();
+    </script>
+
+    <script>
+        (function () {
+            var el = document.getElementById('sidebar-countdown');
+            if (!el) return;
+            var end = Date.now() + (1 * 3600 + 3 * 60 + 12) * 1000;
+            function pad(n) { return String(n).padStart(2, '0'); }
+            function tick() {
+                var diff = Math.max(0, Math.floor((end - Date.now()) / 1000));
+                var h = Math.floor(diff / 3600);
+                var m = Math.floor((diff % 3600) / 60);
+                var s = diff % 60;
+                el.textContent = pad(h) + ' : ' + pad(m) + ' : ' + pad(s);
+                if (diff > 0) setTimeout(tick, 1000);
+            }
+            tick();
+        })();
+    </script>
+
+    <script>
+        (function () {
+            var tabs = document.querySelectorAll('.pkg-tab-btn');
+            if (!tabs.length) return;
+            tabs.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var target = btn.getAttribute('data-tab');
+                    tabs.forEach(function (b) {
+                        var active = b.getAttribute('data-tab') === target;
+                        b.setAttribute('aria-selected', active ? 'true' : 'false');
+                        b.classList.toggle('border-accent', active);
+                        b.classList.toggle('text-accent', active);
+                        b.classList.toggle('border-transparent', !active);
+                        b.classList.toggle('text-gray-400', !active);
+                    });
+                    document.querySelectorAll('.pkg-tab-panel').forEach(function (panel) {
+                        panel.classList.toggle('hidden', panel.id !== 'pkg-tab-' + target);
+                    });
+                });
+            });
+        })();
+    </script>
+
+    <script>
+        (function () {
+            var mainImg = document.getElementById('gallery-main-img');
+            if (!mainImg) return;
+            document.addEventListener('click', function (e) {
+                var thumb = e.target.closest('[data-gallery-thumb]');
+                if (!thumb) return;
+                var src = thumb.getAttribute('data-gallery-thumb');
+                mainImg.src = src;
+                mainImg.setAttribute('data-store-image-src', src);
+                document.querySelectorAll('.gallery-thumb').forEach(function (t) {
+                    t.classList.remove('border-accent');
+                    t.classList.add('border-transparent');
+                });
+                thumb.classList.remove('border-transparent');
+                thumb.classList.add('border-accent');
+            });
         })();
     </script>
 
@@ -693,14 +994,71 @@
 
     <script>
         (function () {
-            var modal = document.getElementById('store-image-modal');
-            var img = document.getElementById('store-image-modal-img');
-            var closeBtn = document.getElementById('store-image-modal-close');
-            var backdrop = document.getElementById('store-image-modal-backdrop');
-            if (!modal || !img || !closeBtn || !backdrop) return;
+            var modal       = document.getElementById('store-image-modal');
+            var mainImg     = document.getElementById('store-image-modal-img');
+            var closeBtn    = document.getElementById('store-image-modal-close');
+            var backdrop    = document.getElementById('store-image-modal-backdrop');
+            var prevBtn     = document.getElementById('store-image-modal-prev');
+            var nextBtn     = document.getElementById('store-image-modal-next');
+            var thumbsWrap  = document.getElementById('store-image-modal-thumbs');
+            if (!modal || !mainImg || !closeBtn) return;
+
+            var images = [];
+            var currentIndex = 0;
+
+            function buildImages() {
+                var found = [];
+                document.querySelectorAll('[data-gallery-thumb]').forEach(function (t) {
+                    var s = t.getAttribute('data-gallery-thumb');
+                    if (s && found.indexOf(s) < 0) found.push(s);
+                });
+                if (!found.length) {
+                    document.querySelectorAll('[data-store-image-src]').forEach(function (b) {
+                        var s = b.getAttribute('data-store-image-src');
+                        if (s && found.indexOf(s) < 0) found.push(s);
+                    });
+                }
+                images = found;
+            }
+
+            function renderThumbs() {
+                if (!thumbsWrap) return;
+                thumbsWrap.innerHTML = '';
+                images.forEach(function (src, idx) {
+                    var btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.setAttribute('data-modal-thumb-idx', String(idx));
+                    btn.className = 'modal-thumb w-full rounded-lg overflow-hidden border-2 transition-all duration-150 ' + (idx === currentIndex ? 'border-accent' : 'border-transparent');
+                    btn.style.aspectRatio = '1';
+                    var img = document.createElement('img');
+                    img.src = src;
+                    img.alt = 'Foto ' + (idx + 1);
+                    img.className = 'w-full h-full object-cover';
+                    btn.appendChild(img);
+                    thumbsWrap.appendChild(btn);
+                });
+            }
+
+            function showAt(idx) {
+                if (!images.length) return;
+                currentIndex = ((idx % images.length) + images.length) % images.length;
+                mainImg.src = images[currentIndex];
+                if (thumbsWrap) {
+                    thumbsWrap.querySelectorAll('[data-modal-thumb-idx]').forEach(function (b) {
+                        var i = parseInt(b.getAttribute('data-modal-thumb-idx'), 10);
+                        b.classList.toggle('border-accent', i === currentIndex);
+                        b.classList.toggle('border-transparent', i !== currentIndex);
+                    });
+                    var active = thumbsWrap.querySelector('[data-modal-thumb-idx="' + currentIndex + '"]');
+                    if (active) active.scrollIntoView({ block: 'nearest' });
+                }
+            }
 
             function open(src) {
-                img.src = src || '';
+                buildImages();
+                var idx = images.indexOf(src);
+                renderThumbs();
+                showAt(idx < 0 ? 0 : idx);
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
                 document.body.style.overflow = 'hidden';
@@ -709,11 +1067,14 @@
             function close() {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
-                img.src = '';
+                mainImg.src = '';
                 document.body.style.overflow = '';
             }
 
             window.openStoreImageModal = open;
+
+            if (prevBtn) prevBtn.addEventListener('click', function () { showAt(currentIndex - 1); });
+            if (nextBtn) nextBtn.addEventListener('click', function () { showAt(currentIndex + 1); });
 
             document.addEventListener('click', function (e) {
                 var scrollBtn = e.target.closest('[data-scroll-target][data-scroll-by]');
@@ -722,48 +1083,28 @@
                     var by = parseInt(scrollBtn.getAttribute('data-scroll-by') || '0', 10);
                     if (targetId && Number.isFinite(by) && by !== 0) {
                         var track = document.getElementById(targetId);
-                        if (track && typeof track.scrollBy === 'function') {
-                            track.scrollBy({ left: by, behavior: 'smooth' });
-                        }
+                        if (track) track.scrollBy({ left: by, behavior: 'smooth' });
                     }
+                    return;
                 }
-
                 var imgBtn = e.target.closest('[data-store-image-open][data-store-image-src]');
-                if (imgBtn) {
-                    open(imgBtn.getAttribute('data-store-image-src') || '');
+                if (imgBtn) { open(imgBtn.getAttribute('data-store-image-src') || ''); return; }
+
+                var thumbBtn = e.target.closest('[data-modal-thumb-idx]');
+                if (thumbBtn && !modal.classList.contains('hidden')) {
+                    showAt(parseInt(thumbBtn.getAttribute('data-modal-thumb-idx'), 10));
+                    return;
                 }
             });
 
             closeBtn.addEventListener('click', close);
-            backdrop.addEventListener('click', close);
+            if (backdrop) backdrop.addEventListener('click', close);
             document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && !modal.classList.contains('hidden')) close();
+                if (modal.classList.contains('hidden')) return;
+                if (e.key === 'Escape') close();
+                if (e.key === 'ArrowLeft') showAt(currentIndex - 1);
+                if (e.key === 'ArrowRight') showAt(currentIndex + 1);
             });
-        })();
-    </script>
-
-    <script>
-        (function () {
-            var wrap = document.getElementById('store-detail-items');
-            var btn = document.getElementById('store-detail-items-toggle');
-            var fade = document.getElementById('store-detail-items-fade');
-            if (!wrap || !btn) return;
-
-            var expanded = false;
-            btn.addEventListener('click', function () {
-                expanded = !expanded;
-                if (expanded) {
-                    wrap.classList.remove('max-h-64', 'overflow-hidden');
-                    if (fade) fade.classList.add('hidden');
-                    btn.textContent = 'Tutup';
-                } else {
-                    wrap.classList.add('max-h-64', 'overflow-hidden');
-                    if (fade) fade.classList.remove('hidden');
-                    btn.textContent = btn.getAttribute('data-label') || btn.textContent;
-                }
-            });
-
-            btn.setAttribute('data-label', btn.textContent);
         })();
     </script>
 
