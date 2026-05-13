@@ -328,10 +328,10 @@
                                 </div>
                                 <button type="button"
                                         data-facilities-toggle
-                                        data-label-more="Lihat Selengkapnya"
+                                        data-label-more="Lihat Selengkapnya..."
                                         data-label-less="Tampilkan Ringkas"
-                                    class="mt-3 hidden text-left text-sm font-extrabold text-green-600 transition hover:text-green-700 hover:underline">
-                                    <span>Lihat Selengkapnya</span>
+                                    class="mt-1 hidden text-left text-xs font-semibold text-accent transition hover:text-accent/80 hover:underline">
+                                    <span>Lihat Selengkapnya...</span>
                                 </button>
                             @else
                                 <p class="text-sm text-gray-400 italic">Detail paket belum tersedia.</p>
@@ -624,7 +624,7 @@
                             </div>
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-                            @foreach($otherPackages->take(12) as $op)
+                            @foreach($otherPackages as $op)
                                 @php
                                     $opPrice = (int) ($op->price ?? 0);
                                     $opDiscount = (int) ($op->discount ?? 0);

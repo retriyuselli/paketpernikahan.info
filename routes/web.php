@@ -776,8 +776,8 @@ Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $packag
         ->where('vendor_id', $vendor->id)
         ->where('is_active', true)
         ->whereKeyNot($package->id)
-        ->orderBy('sort_order')
-        ->orderBy('price')
+        ->inRandomOrder()
+        ->limit(6)
         ->get();
 
     $videos = $package->galleries()
