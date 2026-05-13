@@ -232,11 +232,11 @@
                                         <a href="{{ route('vendor.detail', $vendor->slug) }}" class="text-xs font-semibold hover:opacity-80 transition text-accent">{{ $vendor->name }}</a>
                                         @if($vendor->city)
                                             <span class="text-gray-300">·</span>
-                                            <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            {{-- <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                             </svg>
-                                            <span class="text-xs text-gray-500">{{ $vendor->city }}</span>
+                                            <span class="text-xs text-gray-500">{{ $vendor->city }}</span> --}}
                                         @endif
                                     </div>
                                 </div>
@@ -254,7 +254,7 @@
                                         @endphp
                                         @if($canEdit)
                                             <a href="{{ route('vendor.packages.edit', ['vendor' => $vendor->slug, 'package' => $package->id]) }}"
-                                               class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-accent/30 bg-accent/10 text-accent hover:bg-accent/20 transition">
+                                               class="shrink-0 inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                 </svg>
@@ -624,7 +624,7 @@
                             </div>
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-                            @foreach($otherPackages as $op)
+                                @foreach($otherPackages->take(8) as $op)
                                 @php
                                     $opPrice = (int) ($op->price ?? 0);
                                     $opDiscount = (int) ($op->discount ?? 0);
@@ -645,7 +645,7 @@
                                     $opCover = $opCover ?: ('data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs><rect width="640" height="480" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="20">No Image</text></svg>'));
                                 @endphp
                                 <a href="{{ route('store.package.show', $op) }}"
-                                   class="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition">
+                                   class="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition {{ $loop->index >= 6 ? 'hidden lg:block' : '' }}">
                                     <div class="relative aspect-4/3">
                                         <img src="{{ $opCover }}" alt="{{ $op->name }}" class="w-full h-full object-cover">
                                         <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
