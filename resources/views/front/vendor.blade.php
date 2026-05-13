@@ -7,78 +7,12 @@
 @section('content')
     @include('layout.header')
 
-    @php
-        $vendorHighlightItems = [
-            [
-                'type' => 'story',
-                'image' => 'https://picsum.photos/seed/vh1/640/480',
-                'title' => 'Rizky & Nadya',
-            ],
-            [
-                'type' => 'promo',
-                'theme' => 'bg-accent-pink',
-                'image' => 'https://picsum.photos/seed/vh-promo/640/480',
-                'title_html' => 'Cari Vendor <span class="text-accent">Terpercaya</span><br>di Palembang',
-                'caption_html' => 'Ratusan vendor pernikahan lokal<br>siap melayani Anda',
-                'actions' => [
-                    ['label' => 'Chat Vendor', 'class' => 'bg-accent text-cream'],
-                    ['label' => 'More Info', 'class' => 'bg-dark text-cream'],
-                ],
-            ],
-            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh3/640/480', 'category' => 'Tips & Tricks', 'title' => '7 Cara Memilih Vendor Pernikahan yang Tepat Agar Hari H Berjalan Lancar.'],
-            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh4/640/480', 'category' => 'Wedding Ideas', 'title' => 'Venue Pernikahan Terbaik di Palembang yang Wajib Kamu Pertimbangkan.'],
-            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh5/640/480', 'title' => 'Hendra & Putri'],
-            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh6/640/480', 'category' => 'Budget Guide', 'title' => 'Tips Mengelola Budget Pernikahan Agar Tetap Hemat dan Berkesan.'],
-            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh7/640/480', 'title' => 'Farhan & Dewi'],
-            [
-                'type' => 'promo',
-                'theme' => 'bg-light-sage',
-                'image' => 'https://picsum.photos/seed/vh8/640/480',
-                'title_html' => 'Dapatkan <span class="text-accent">Harga Spesial</span><br>Vendor Impian',
-                'caption_html' => 'Bandingkan harga & pilih<br>paket terbaik untuk Anda',
-                'actions' => [
-                    ['label' => 'Lihat Promo', 'class' => 'bg-accent text-cream'],
-                ],
-            ],
-            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh9/640/480', 'category' => 'Inspirasi Dekorasi', 'title' => 'Tren Dekorasi Pernikahan 2026 yang Wajib Kamu Coba di Palembang.'],
-            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh10/640/480', 'title' => 'Arif & Sari'],
-            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh11/640/480', 'category' => 'Kuliner Wedding', 'title' => 'Rekomendasi Katering Pernikahan Terlezat di Palembang untuk Hari Spesial.'],
-            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh12/640/480', 'title' => 'Doni & Ratna'],
-            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh13/640/480', 'category' => 'Foto & Video', 'title' => '5 Fotografer Pernikahan Terbaik Palembang yang Harus Kamu Tahu.'],
-            [
-                'type' => 'promo',
-                'theme' => 'bg-accent-pink',
-                'image' => 'https://picsum.photos/seed/vh14/640/480',
-                'title_html' => 'Konsultasi <span class="text-accent">Gratis</span><br>dengan WO Kami',
-                'caption_html' => 'Tim profesional kami siap<br>membantu merencanakan hari H',
-                'actions' => [
-                    ['label' => 'Hubungi Kami', 'class' => 'bg-dark text-cream'],
-                ],
-            ],
-            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh15/640/480', 'title' => 'Bayu & Lestari'],
-            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh16/640/480', 'category' => 'Fashion Bride', 'title' => 'Koleksi Gaun Pengantin Terbaru 2026 yang Bikin Kamu Semakin Memesona.'],
-            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh17/640/480', 'title' => 'Reza & Anisa'],
-            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh18/640/480', 'category' => 'Undangan Digital', 'title' => 'Tren Undangan Pernikahan Digital yang Elegan dan Mudah Dibagikan.'],
-            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh19/640/480', 'title' => 'Aldi & Maya'],
-            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh20/640/480', 'category' => 'Honeymoon', 'title' => '10 Destinasi Honeymoon Romantis Favorit Pasangan Indonesia Tahun Ini.'],
-        ];
-    @endphp
-
-    {{-- <x-highlight-section
-        scroll-id="vendor-highlights-scroll"
-        :items="$vendorHighlightItems"
-        title-wrapper-class="px-4 sm:px-6 lg:px-8"
-        track-class="flex gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide"
-        left-button-class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10"
-        right-button-class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10"
-    /> --}}
-
     <x-highlight-section
-            :real-weddings="$realWeddings ?? collect()"
-            :featured-blogs="$homeFeaturedBlogs ?? collect()"
-            :popular-blogs="$homePopularBlogs ?? collect()"
-            :home-ad="$homeAd ?? null"
-        />
+        :real-weddings="$realWeddings ?? collect()"
+        :featured-blogs="$homeFeaturedBlogs ?? collect()"
+        :popular-blogs="$homePopularBlogs ?? collect()"
+        :home-ad="$homeAd ?? null"
+    />
 
     <div class="px-4 sm:px-6 lg:px-8">
         <x-banner-ad />
@@ -87,35 +21,35 @@
     <!-- Search Bar -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
         <form action="{{ route('vendor') }}" method="GET" class="flex flex-wrap gap-2 items-center">
-            <select name="category" class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
+            <select name="category" class="flex-1 min-w-40 py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
                 <option value="">Semua Kategori</option>
                 @foreach ($categories as $cat)
                 <option value="{{ $cat->slug }}" {{ request('category') === $cat->slug ? 'selected' : '' }}>{{ $cat->name }}</option>
                 @endforeach
             </select>
-            <select name="province" class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
+            <select name="province" class="flex-1 min-w-40 py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
                 <option value="">Semua Provinsi</option>
                 @foreach ($provinces as $prov)
                 <option value="{{ $prov }}" {{ request('province') === $prov ? 'selected' : '' }}>{{ $prov }}</option>
                 @endforeach
             </select>
             <select id="city-select" name="city"
-                    class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed text-dark">
+                    class="flex-1 min-w-40 py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed text-dark">
                 <option value="">Pilih Provinsi Dulu</option>
             </select>
 
-            <select name="price" class="flex-1 min-w-[160px] py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
+            <select name="price" class="flex-1 min-w-40 py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
                 <option value="">Semua Harga</option>
                 <option value="0-5000000" {{ request('price') === '0-5000000' ? 'selected' : '' }}>Di bawah Rp 5 Juta</option>
                 <option value="5000000-15000000" {{ request('price') === '5000000-15000000' ? 'selected' : '' }}>Rp 5 – 15 Juta</option>
                 <option value="15000000-50000000" {{ request('price') === '15000000-50000000' ? 'selected' : '' }}>Rp 15 – 50 Juta</option>
                 <option value="50000000-99999999" {{ request('price') === '50000000-99999999' ? 'selected' : '' }}>Di atas Rp 50 Juta</option>
             </select>
-            <button type="submit" class="px-6 py-3 rounded-2xl text-sm font-semibold transition hover:opacity-90 flex-shrink-0 bg-dark text-cream">
+            <button type="submit" class="px-6 py-3 rounded-2xl text-sm font-semibold transition hover:opacity-90 shrink-0 bg-dark text-cream">
                 Cari Vendor
             </button>
             @if (request()->hasAny(['category', 'province', 'city', 'price', 'q']))
-            <a href="{{ route('vendor') }}" class="px-6 py-3 rounded-2xl text-sm font-semibold border border-dark text-dark transition hover:bg-gray-50 flex-shrink-0">
+            <a href="{{ route('vendor') }}" class="px-6 py-3 rounded-2xl text-sm font-semibold border border-dark text-dark transition hover:bg-gray-50 shrink-0">
                 Reset
             </a>
             @endif
@@ -179,7 +113,7 @@
             <!-- Category Title -->
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-bold text-dark">{{ $cat->name }}</h2>
-                <a href="#" class="text-xs font-semibold hover:underline text-accent">Lihat Semua →</a>
+                <a href="{{ route('vendor', ['category' => $cat->slug]) }}" class="text-xs font-semibold hover:underline text-accent">Lihat Semua →</a>
             </div>
 
             <!-- Scrollable Row -->
@@ -204,7 +138,6 @@
                         'cover'          => $v->cover_image_url ?: (optional($v->galleries->first())->image_url ?? 'https://picsum.photos/seed/'.$v->id.'/800/600'),
                         'detail_url'     => route('vendor.detail', $v->slug),
                         'wa_url'         => 'https://wa.me/'.preg_replace('/[^0-9]/', '', $v->phone ?? ''),
-                        'pkg_price'      => optional($v->cheapestPackage)->price,
                         'pkg_price'  => optional($v->cheapestPackage)->price,
                         'pkg_discount'   => optional($v->cheapestPackage)->discount ?? 0,
                         'pkg_name'       => optional($v->cheapestPackage)->name,
@@ -213,7 +146,7 @@
                     @endphp
                     <div data-vendor-preview-open data-vendor='@json($vData)' class="flex-none w-56 cursor-pointer group border border-gray-200 rounded-2xl p-2 hover:border-gray-300 transition bg-white block">
                         <!-- Photo -->
-                        <div class="relative rounded-xl overflow-hidden mb-2 aspect-[4/5]">
+                        <div class="relative rounded-xl overflow-hidden mb-2 aspect-4/5">
                             <img src="{{ $v->cover_image_url ?: (optional($v->galleries->first())->image_url ?? 'https://picsum.photos/seed/'.$v->id.'/350/260') }}"
                                  alt="{{ $v->name }}"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
@@ -226,7 +159,7 @@
                             @endif
                             @if (!empty($v->badge))
                             <div class="absolute bottom-0 left-0 right-0 px-2 py-1.5 flex items-center gap-1 bg-accent-gradient">
-                                <svg class="w-3 h-3 text-white flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                <svg class="w-3 h-3 text-white shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                 @php $allBadges = (array) $v->badge; $extraBadges = count($allBadges) - 2; @endphp
                                 @foreach (array_slice($allBadges, 0, 2) as $b)
                                 <span class="text-[9px] font-bold text-white uppercase tracking-wide">{{ \App\Enums\VendorBadge::from($b)->label() }}</span>
@@ -234,13 +167,13 @@
                                 @if ($extraBadges > 0)
                                 <span class="text-[9px] font-bold text-white/70 uppercase tracking-wide">+{{ $extraBadges }}</span>
                                 @endif
-                                <svg class="w-3 h-3 text-white ml-auto flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                <svg class="w-3 h-3 text-white ml-auto shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </div>
                             @endif
                             @if ($v->city)
                             <div class="absolute {{ !empty($v->badge) ? 'bottom-8' : 'bottom-2' }} left-0 right-0 flex justify-center z-10">
                                 <span class="flex items-center gap-1 text-[10px] font-semibold text-white px-2.5 py-0.5 rounded-full bg-backdrop-45 backdrop-blur-[2px]">
-                                    <svg class="w-2.5 h-2.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                                    <svg class="w-2.5 h-2.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
                                     {{ $v->city }}
                                 </span>
                             </div>
@@ -323,7 +256,7 @@
 
     <!-- Vendor Quick Preview Modal -->
     <div id="vendor-preview-modal"
-         class="fixed inset-0 z-[9999] hidden items-center justify-center p-4">
+            class="fixed inset-0 z-9999 hidden items-center justify-center p-4">
         <div data-vendor-preview-backdrop class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
         <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden max-h-[92vh] overflow-y-auto">
 
@@ -340,7 +273,7 @@
             <div class="p-5">
                 <h2 id="vp-name" class="text-lg font-bold leading-snug mb-1 text-dark"></h2>
                 <p class="flex items-center gap-1 text-xs text-gray-500 mb-3">
-                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     <span id="vp-location"></span>
                 </p>
 

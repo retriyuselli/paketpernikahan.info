@@ -7,20 +7,18 @@
 @section('content')
     @include('layout.header')
 
-    @php
-        $breadcrumbItems = [
-            ['label' => 'Home', 'url' => route('home')],
-            ['label' => 'Store', 'url' => route('store')],
-            ['label' => 'Promo', 'url' => null],
-        ];
-    @endphp
+    <x-highlight-section
+        :real-weddings="$realWeddings ?? collect()"
+        :featured-blogs="$homeFeaturedBlogs ?? collect()"
+        :popular-blogs="$homePopularBlogs ?? collect()"
+        :home-ad="$homeAd ?? null"
+    />
 
-    <section class="py-8 bg-cream">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="pt-4 pb-4">
-                @include('layout.breadcrumb', ['items' => $breadcrumbItems])
-            </div>
+    <div class="px-4 sm:px-6 lg:px-8">
+        <x-banner-ad />
+    </div>
 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold text-dark">Promo</h1>
@@ -76,7 +74,7 @@
                            class="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition">
                             <div class="relative ar-4x5">
                                 <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                                <div class="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent"></div>
                                 <span class="absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-full bg-white/90 border border-gray-200 text-dark">
                                     Promo
                                 </span>
@@ -89,7 +87,6 @@
                                 <p class="text-[10px] text-gray-400 truncate">{{ $vendor?->city }} · {{ $vendor?->location }}</p>
                                 <p class="text-[11px] text-gray-400 line-through mt-1">Rp {{ number_format($price, 0, ',', '.') }}</p>
                                 <p class="text-sm font-extrabold leading-tight text-accent">Rp {{ number_format($final, 0, ',', '.') }}</p>
-                                <p class="text-[10px] text-gray-400 truncate">{{ $vendor?->name }}</p>
                             </div>
                         </a>
                     @endforeach
@@ -99,8 +96,7 @@
                     {{ $packages->links() }}
                 </div>
             @endif
-        </div>
-    </section>
+    </div>
 
     <script>
         document.addEventListener('change', function (e) {

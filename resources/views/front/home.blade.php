@@ -72,7 +72,6 @@
             :home-ad="$homeAd ?? null"
         />
 
-
         <section class="py-5 sm:py-8 overflow-hidden">
             @php
                 $logos = \App\Models\PartnerLogo::query()

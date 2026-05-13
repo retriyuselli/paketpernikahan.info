@@ -207,35 +207,26 @@ Route::post('/join-vendor', [VendorApplicationController::class, 'store'])
 Route::get('/store', function () {
     $search  = trim(request('q', ''));
     $kategori = trim(request('kategori', ''));
-    $storeHighlightItems = [
-        [
-            'type' => 'feature',
-            'url' => '#store-sections',
-            'image' => 'https://picsum.photos/seed/store-hero-1/1200/675',
-            'alt' => 'Paket Lengkap',
-            'title' => 'Paket Lengkap untuk Hari Spesial',
-            'subtitle' => 'Cari paket terbaik sesuai budget dan lokasi',
-            'cardClass' => 'flex-none w-[22rem] sm:w-[26rem] rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition ar-16x9',
-        ],
-        [
-            'type' => 'feature',
-            'url' => route('vendor') . '?q=promo',
-            'image' => 'https://picsum.photos/seed/store-hero-2/1200/675',
-            'alt' => 'Promo',
-            'title' => 'Promo & Penawaran Terbaru',
-            'subtitle' => 'Diskon dan bonus dari vendor pilihan',
-            'cardClass' => 'flex-none w-[22rem] sm:w-[26rem] rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition ar-16x9',
-        ],
-        [
-            'type' => 'feature',
-            'url' => route('vendor') . '?q=paket',
-            'image' => 'https://picsum.photos/seed/store-hero-3/1200/675',
-            'alt' => 'Semua Paket',
-            'title' => 'Semua Paket Vendor',
-            'subtitle' => 'Bandingkan paket dari berbagai kategori',
-            'cardClass' => 'flex-none w-[22rem] sm:w-[26rem] rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition ar-16x9',
-        ],
-    ];
+
+    $realWeddings = \App\Models\RealWedding::where('is_active', true)
+        ->orderBy('sort_order')
+        ->limit(10)
+        ->get();
+
+    $homeAd = \App\Models\HomeAd::where('is_active', true)
+        ->where('type', 'card')
+        ->orderBy('sort_order')
+        ->first();
+
+    $homeFeaturedBlogs = \App\Models\Blog::published()
+        ->orderBy('published_at', 'desc')
+        ->limit(2)
+        ->get();
+
+    $homePopularBlogs = \App\Models\Blog::published()
+        ->orderBy('views_count', 'desc')
+        ->limit(3)
+        ->get();
 
     $categories = \App\Models\CategoryVendor::where('is_active', true)
         ->orderBy('sort_order')
@@ -335,7 +326,7 @@ Route::get('/store', function () {
         return true;
     });
 
-    return view('front.store', compact('categories', 'packagesByCategory', 'uncategorizedPackages', 'search', 'kategori', 'kategoriCat', 'storeHighlightItems'));
+    return view('front.store', compact('categories', 'packagesByCategory', 'uncategorizedPackages', 'search', 'kategori', 'kategoriCat', 'realWeddings', 'homeAd', 'homeFeaturedBlogs', 'homePopularBlogs'));
 })->name('store');
 
 Route::get('/store/kategori/{category:slug}', function (\App\Models\CategoryVendor $category) {
@@ -443,6 +434,26 @@ Route::get('/store/promo', function () {
 
     $q = trim((string) request()->query('q', ''));
 
+    $realWeddings = \App\Models\RealWedding::where('is_active', true)
+        ->orderBy('sort_order')
+        ->limit(10)
+        ->get();
+
+    $homeAd = \App\Models\HomeAd::where('is_active', true)
+        ->where('type', 'card')
+        ->orderBy('sort_order')
+        ->first();
+
+    $homeFeaturedBlogs = \App\Models\Blog::published()
+        ->orderBy('published_at', 'desc')
+        ->limit(2)
+        ->get();
+
+    $homePopularBlogs = \App\Models\Blog::published()
+        ->orderBy('views_count', 'desc')
+        ->limit(3)
+        ->get();
+
     $packagesQuery = \App\Models\VendorPackage::query()
         ->where('is_active', true)
         ->where('discount', '>', 0)
@@ -486,7 +497,7 @@ Route::get('/store/promo', function () {
         ->limit(6)
         ->get();
 
-    return view('store.store-promo', compact('packages', 'sort', 'q', 'otherPackages'));
+    return view('store.store-promo', compact('packages', 'sort', 'q', 'otherPackages', 'realWeddings', 'homeAd', 'homeFeaturedBlogs', 'homePopularBlogs'));
 })->name('store.promo');
 
 Route::get('/blog', function () {
@@ -779,6 +790,7 @@ Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $packag
 Route::get('/vendor', function () {
     $q        = request('q');
     $catSlug  = request('category');
+    $province = request('province');
     $city     = request('city');
     $price    = request('price');
 
@@ -813,6 +825,10 @@ Route::get('/vendor', function () {
             ->where('category', $catSlug)
             ->orWhereJsonContains('categories', $catSlug)
         );
+    }
+
+    if ($province) {
+        $query->where('province', $province);
     }
 
     if ($city) {
