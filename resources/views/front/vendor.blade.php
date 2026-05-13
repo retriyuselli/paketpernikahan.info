@@ -7,237 +7,71 @@
 @section('content')
     @include('layout.header')
 
-    <!-- Highlight -->
-    <section class="py-10 bg-cream">
-        <div class="px-4 sm:px-6 lg:px-8">
+    @php
+        $vendorHighlightItems = [
+            [
+                'type' => 'story',
+                'image' => 'https://picsum.photos/seed/vh1/640/480',
+                'title' => 'Rizky & Nadya',
+            ],
+            [
+                'type' => 'promo',
+                'theme' => 'bg-accent-pink',
+                'image' => 'https://picsum.photos/seed/vh-promo/640/480',
+                'title_html' => 'Cari Vendor <span class="text-accent">Terpercaya</span><br>di Palembang',
+                'caption_html' => 'Ratusan vendor pernikahan lokal<br>siap melayani Anda',
+                'actions' => [
+                    ['label' => 'Chat Vendor', 'class' => 'bg-accent text-cream'],
+                    ['label' => 'More Info', 'class' => 'bg-dark text-cream'],
+                ],
+            ],
+            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh3/640/480', 'category' => 'Tips & Tricks', 'title' => '7 Cara Memilih Vendor Pernikahan yang Tepat Agar Hari H Berjalan Lancar.'],
+            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh4/640/480', 'category' => 'Wedding Ideas', 'title' => 'Venue Pernikahan Terbaik di Palembang yang Wajib Kamu Pertimbangkan.'],
+            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh5/640/480', 'title' => 'Hendra & Putri'],
+            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh6/640/480', 'category' => 'Budget Guide', 'title' => 'Tips Mengelola Budget Pernikahan Agar Tetap Hemat dan Berkesan.'],
+            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh7/640/480', 'title' => 'Farhan & Dewi'],
+            [
+                'type' => 'promo',
+                'theme' => 'bg-light-sage',
+                'image' => 'https://picsum.photos/seed/vh8/640/480',
+                'title_html' => 'Dapatkan <span class="text-accent">Harga Spesial</span><br>Vendor Impian',
+                'caption_html' => 'Bandingkan harga & pilih<br>paket terbaik untuk Anda',
+                'actions' => [
+                    ['label' => 'Lihat Promo', 'class' => 'bg-accent text-cream'],
+                ],
+            ],
+            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh9/640/480', 'category' => 'Inspirasi Dekorasi', 'title' => 'Tren Dekorasi Pernikahan 2026 yang Wajib Kamu Coba di Palembang.'],
+            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh10/640/480', 'title' => 'Arif & Sari'],
+            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh11/640/480', 'category' => 'Kuliner Wedding', 'title' => 'Rekomendasi Katering Pernikahan Terlezat di Palembang untuk Hari Spesial.'],
+            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh12/640/480', 'title' => 'Doni & Ratna'],
+            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh13/640/480', 'category' => 'Foto & Video', 'title' => '5 Fotografer Pernikahan Terbaik Palembang yang Harus Kamu Tahu.'],
+            [
+                'type' => 'promo',
+                'theme' => 'bg-accent-pink',
+                'image' => 'https://picsum.photos/seed/vh14/640/480',
+                'title_html' => 'Konsultasi <span class="text-accent">Gratis</span><br>dengan WO Kami',
+                'caption_html' => 'Tim profesional kami siap<br>membantu merencanakan hari H',
+                'actions' => [
+                    ['label' => 'Hubungi Kami', 'class' => 'bg-dark text-cream'],
+                ],
+            ],
+            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh15/640/480', 'title' => 'Bayu & Lestari'],
+            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh16/640/480', 'category' => 'Fashion Bride', 'title' => 'Koleksi Gaun Pengantin Terbaru 2026 yang Bikin Kamu Semakin Memesona.'],
+            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh17/640/480', 'title' => 'Reza & Anisa'],
+            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh18/640/480', 'category' => 'Undangan Digital', 'title' => 'Tren Undangan Pernikahan Digital yang Elegan dan Mudah Dibagikan.'],
+            ['type' => 'story', 'image' => 'https://picsum.photos/seed/vh19/640/480', 'title' => 'Aldi & Maya'],
+            ['type' => 'blog', 'image' => 'https://picsum.photos/seed/vh20/640/480', 'category' => 'Honeymoon', 'title' => '10 Destinasi Honeymoon Romantis Favorit Pasangan Indonesia Tahun Ini.'],
+        ];
+    @endphp
 
-            <h2 class="text-xl font-bold mb-5 text-dark">Highlights</h2>
-
-            <div class="relative">
-                <button type="button" data-scroll-target="vendor-highlights-scroll" data-scroll-by="-400"
-                        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
-                    <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                </button>
-
-                <div id="vendor-highlights-scroll" class="flex gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide">
-
-                    <!-- Card 1 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh1/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Rizky &amp; Nadya</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 2 — Promo Banner -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3 bg-accent-pink">
-                        <img src="https://picsum.photos/seed/vh-promo/640/480" alt="Promo" class="w-full h-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
-                            <p class="text-2xl font-bold leading-tight text-dark">Cari Vendor <span class="text-accent">Terpercaya</span><br>di Palembang</p>
-                            <p class="text-xs text-dark">Ratusan vendor pernikahan lokal<br>siap melayani Anda</p>
-                            <div class="flex gap-2 mt-2">
-                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">Chat Vendor</a>
-                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90 bg-dark text-cream">More Info</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 3 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh3/640/480" alt="Tips Vendor" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Tips &amp; Tricks</p>
-                            <p class="text-white text-sm font-bold leading-snug">7 Cara Memilih Vendor Pernikahan yang Tepat Agar Hari H Berjalan Lancar.</p>
-                        </div>
-                    </div>
-
-                    <!-- Card 4 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh4/640/480" alt="Venue Ideas" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Wedding Ideas</p>
-                            <p class="text-white text-sm font-bold leading-snug">Venue Pernikahan Terbaik di Palembang yang Wajib Kamu Pertimbangkan.</p>
-                        </div>
-                    </div>
-
-                    <!-- Card 5 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh5/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Hendra &amp; Putri</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 6 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh6/640/480" alt="Budget Tips" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Budget Guide</p>
-                            <p class="text-white text-sm font-bold leading-snug">Tips Mengelola Budget Pernikahan Agar Tetap Hemat dan Berkesan.</p>
-                        </div>
-                    </div>
-
-                    <!-- Card 7 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh7/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Farhan &amp; Dewi</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 8 — Promo Banner -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3 bg-light-sage">
-                        <img src="https://picsum.photos/seed/vh8/640/480" alt="Promo" class="w-full h-full object-cover opacity-25 transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
-                            <p class="text-2xl font-bold leading-tight text-dark">Dapatkan <span class="text-accent">Harga Spesial</span><br>Vendor Impian</p>
-                            <p class="text-xs text-dark">Bandingkan harga & pilih<br>paket terbaik untuk Anda</p>
-                            <div class="flex gap-2 mt-2">
-                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">Lihat Promo</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 9 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh9/640/480" alt="Dekorasi" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Inspirasi Dekorasi</p>
-                            <p class="text-white text-sm font-bold leading-snug">Tren Dekorasi Pernikahan 2026 yang Wajib Kamu Coba di Palembang.</p>
-                        </div>
-                    </div>
-
-                    <!-- Card 10 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh10/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Arif &amp; Sari</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 11 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh11/640/480" alt="Katering" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Kuliner Wedding</p>
-                            <p class="text-white text-sm font-bold leading-snug">Rekomendasi Katering Pernikahan Terlezat di Palembang untuk Hari Spesial.</p>
-                        </div>
-                    </div>
-
-                    <!-- Card 12 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh12/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Doni &amp; Ratna</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 13 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh13/640/480" alt="Fotografer" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Foto & Video</p>
-                            <p class="text-white text-sm font-bold leading-snug">5 Fotografer Pernikahan Terbaik Palembang yang Harus Kamu Tahu.</p>
-                        </div>
-                    </div>
-
-                    <!-- Card 14 — Promo Banner -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3 bg-accent-pink">
-                        <img src="https://picsum.photos/seed/vh14/640/480" alt="Promo" class="w-full h-full object-cover opacity-20 transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
-                            <p class="text-2xl font-bold leading-tight text-dark">Konsultasi <span class="text-accent">Gratis</span><br>dengan WO Kami</p>
-                            <p class="text-xs text-dark">Tim profesional kami siap<br>membantu merencanakan hari H</p>
-                            <div class="flex gap-2 mt-2">
-                                <a href="#" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition hover:opacity-90 bg-dark text-cream">Hubungi Kami</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Card 15 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh15/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Bayu &amp; Lestari</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 16 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh16/640/480" alt="Gaun Pengantin" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Fashion Bride</p>
-                            <p class="text-white text-sm font-bold leading-snug">Koleksi Gaun Pengantin Terbaru 2026 yang Bikin Kamu Semakin Memesona.</p>
-                        </div>
-                    </div>
-
-                    <!-- Card 17 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh17/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Reza &amp; Anisa</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 18 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh18/640/480" alt="Undangan" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Undangan Digital</p>
-                            <p class="text-white text-sm font-bold leading-snug">Tren Undangan Pernikahan Digital yang Elegan dan Mudah Dibagikan.</p>
-                        </div>
-                    </div>
-
-                    <!-- Card 19 — Wedding Story -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh19/640/480" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">Aldi &amp; Maya</span></p>
-                            <a href="#" class="inline-block text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full transition hover:opacity-90 bg-accent text-cream">More Info</a>
-                        </div>
-                    </div>
-
-                    <!-- Card 20 — Blog Article -->
-                    <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="https://picsum.photos/seed/vh20/640/480" alt="Honeymoon" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">Honeymoon</p>
-                            <p class="text-white text-sm font-bold leading-snug">10 Destinasi Honeymoon Romantis Favorit Pasangan Indonesia Tahun Ini.</p>
-                        </div>
-                    </div>
-
-                </div>
-
-                <button type="button" data-scroll-target="vendor-highlights-scroll" data-scroll-by="400"
-                        class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
-                    <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </button>
-            </div>
-
-        </div>
-    </section>
+    <x-highlight-section
+        scroll-id="vendor-highlights-scroll"
+        :items="$vendorHighlightItems"
+        title-wrapper-class="px-4 sm:px-6 lg:px-8"
+        track-class="flex gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide"
+        left-button-class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10"
+        right-button-class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10"
+    />
 
     <div class="px-4 sm:px-6 lg:px-8">
         <x-banner-ad />

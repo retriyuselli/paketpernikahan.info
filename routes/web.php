@@ -207,6 +207,35 @@ Route::post('/join-vendor', [VendorApplicationController::class, 'store'])
 Route::get('/store', function () {
     $search  = trim(request('q', ''));
     $kategori = trim(request('kategori', ''));
+    $storeHighlightItems = [
+        [
+            'type' => 'feature',
+            'url' => '#store-sections',
+            'image' => 'https://picsum.photos/seed/store-hero-1/1200/675',
+            'alt' => 'Paket Lengkap',
+            'title' => 'Paket Lengkap untuk Hari Spesial',
+            'subtitle' => 'Cari paket terbaik sesuai budget dan lokasi',
+            'cardClass' => 'flex-none w-[22rem] sm:w-[26rem] rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition ar-16x9',
+        ],
+        [
+            'type' => 'feature',
+            'url' => route('vendor') . '?q=promo',
+            'image' => 'https://picsum.photos/seed/store-hero-2/1200/675',
+            'alt' => 'Promo',
+            'title' => 'Promo & Penawaran Terbaru',
+            'subtitle' => 'Diskon dan bonus dari vendor pilihan',
+            'cardClass' => 'flex-none w-[22rem] sm:w-[26rem] rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition ar-16x9',
+        ],
+        [
+            'type' => 'feature',
+            'url' => route('vendor') . '?q=paket',
+            'image' => 'https://picsum.photos/seed/store-hero-3/1200/675',
+            'alt' => 'Semua Paket',
+            'title' => 'Semua Paket Vendor',
+            'subtitle' => 'Bandingkan paket dari berbagai kategori',
+            'cardClass' => 'flex-none w-[22rem] sm:w-[26rem] rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition ar-16x9',
+        ],
+    ];
 
     $categories = \App\Models\CategoryVendor::where('is_active', true)
         ->orderBy('sort_order')
@@ -306,7 +335,7 @@ Route::get('/store', function () {
         return true;
     });
 
-    return view('front.store', compact('categories', 'packagesByCategory', 'uncategorizedPackages', 'search', 'kategori', 'kategoriCat'));
+    return view('front.store', compact('categories', 'packagesByCategory', 'uncategorizedPackages', 'search', 'kategori', 'kategoriCat', 'storeHighlightItems'));
 })->name('store');
 
 Route::get('/store/kategori/{category:slug}', function (\App\Models\CategoryVendor $category) {

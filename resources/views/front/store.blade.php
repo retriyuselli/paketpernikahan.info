@@ -20,50 +20,15 @@
                 </a>
             </div>
 
-            <div class="relative mb-6">
-                <button type="button"
-                        data-scroll-target="store-highlights-scroll" data-scroll-by="-500"
-                        class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md items-center justify-center hover:shadow-lg transition z-10">
-                    <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-
-                <div id="store-highlights-scroll" class="flex gap-3 overflow-x-auto scroll-smooth pb-2 scrollbar-hide">
-                    <a href="#store-sections" class="flex-none w-[22rem] sm:w-[26rem] rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition ar-16x9">
-                        <img src="https://picsum.photos/seed/store-hero-1/1200/675" alt="Paket Lengkap" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-sm font-bold leading-snug">Paket Lengkap untuk Hari Spesial</p>
-                            <p class="text-white/80 text-xs mt-1">Cari paket terbaik sesuai budget dan lokasi</p>
-                        </div>
-                    </a>
-                    <a href="{{ route('vendor') }}?q=promo" class="flex-none w-[22rem] sm:w-[26rem] rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition ar-16x9">
-                        <img src="https://picsum.photos/seed/store-hero-2/1200/675" alt="Promo" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-sm font-bold leading-snug">Promo & Penawaran Terbaru</p>
-                            <p class="text-white/80 text-xs mt-1">Diskon dan bonus dari vendor pilihan</p>
-                        </div>
-                    </a>
-                    <a href="{{ route('vendor') }}?q=paket" class="flex-none w-[22rem] sm:w-[26rem] rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition ar-16x9">
-                        <img src="https://picsum.photos/seed/store-hero-3/1200/675" alt="Semua Paket" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-4">
-                            <p class="text-white text-sm font-bold leading-snug">Semua Paket Vendor</p>
-                            <p class="text-white/80 text-xs mt-1">Bandingkan paket dari berbagai kategori</p>
-                        </div>
-                    </a>
-                </div>
-
-                <button type="button"
-                        data-scroll-target="store-highlights-scroll" data-scroll-by="500"
-                        class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md items-center justify-center hover:shadow-lg transition z-10">
-                    <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
+            <x-highlight-section
+                title=""
+                scroll-id="store-highlights-scroll"
+                :items="$storeHighlightItems"
+                title-wrapper-class="hidden"
+                track-class="flex gap-3 overflow-x-auto scroll-smooth pb-2 scrollbar-hide"
+                left-button-class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md items-center justify-center hover:shadow-lg transition z-10"
+                right-button-class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md items-center justify-center hover:shadow-lg transition z-10"
+            />
 
             <x-banner-ad :mb="'2.5rem'" :mt="'0'" />
 
