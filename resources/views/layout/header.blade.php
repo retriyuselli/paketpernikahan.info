@@ -36,7 +36,7 @@
 <!-- Sticky Header Wrapper (main nav only, no collapsible) -->
 <div class="sticky top-0 z-40 border-b border-gray-200 bg-white lg:backdrop-blur-none">
     <x-ui.container>
-        <div class="flex items-center justify-between gap-2 py-3 lg:gap-8">
+        <div class="flex items-center justify-between gap-2 py-2 lg:gap-8 lg:py-3">
 
             <!-- Logo (left) -->
             <div class="hidden items-center gap-2 h-10 flex-shrink-0 lg:flex">
@@ -48,7 +48,7 @@
             </div>
 
             <form method="GET" action="{{ route('search') }}"
-                  class="mx-3 flex min-w-0 flex-1 items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 transition hover:border-gray-300 focus-within:border-accent focus-within:bg-white lg:hidden">
+                  class="ml-0 mr-3 flex min-w-0 flex-1 items-center gap-2 rounded-none border border-gray-200 bg-gray-50 px-3 py-1.5 transition hover:border-gray-300 focus-within:border-accent focus-within:bg-white lg:hidden">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Temukan paket pernikahan impian Anda"
                        class="min-w-0 flex-1 bg-transparent text-sm text-dark placeholder-gray-400 focus:outline-none">
                 <button type="submit" class="hidden" aria-label="Cari"></button>
