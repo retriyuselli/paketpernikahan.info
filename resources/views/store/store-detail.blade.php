@@ -590,17 +590,17 @@
                                data-store-booking-link
                                data-base-href="{{ route('booking.package', $package) }}"
                                href="{{ route('booking.package', $package) }}"
-                               class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 bg-accent text-white shadow-sm">
+                               class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-bold transition hover:opacity-90 bg-accent text-white shadow-sm">
                                 + Booking Sekarang
                             </a>
                             @if($waUrl)
                                 <a href="{{ $waUrl }}" target="_blank"
-                                   class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold border-2 border-accent text-accent bg-white hover:bg-accent/5 transition">
+                                   class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-bold border-2 border-accent text-accent bg-white hover:bg-accent/5 transition">
                                     Hubungi Vendor
                                 </a>
                             @else
                                 <button type="button" disabled
-                                        class="flex items-center justify-center w-full py-3 rounded-xl text-sm font-bold border-2 border-gray-200 text-gray-400 cursor-not-allowed">
+                                        class="flex items-center justify-center w-full py-2.5 rounded-xl text-xs font-bold border-2 border-gray-200 text-gray-400 cursor-not-allowed">
                                     Hubungi Vendor
                                 </button>
                             @endif
@@ -718,12 +718,12 @@
 
                 @if($waUrl)
                     <a href="{{ $waUrl }}" target="_blank"
-                       class="btn-wa inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl px-4 text-sm font-bold whitespace-nowrap">
+                       class="btn-wa inline-flex h-10 min-w-0 flex-1 items-center justify-center rounded-2xl px-3.5 text-xs font-bold whitespace-nowrap">
                         WhatsApp
                     </a>
                 @else
                     <button type="button" disabled
-                            class="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl px-4 text-sm font-bold bg-gray-100 text-gray-400 cursor-not-allowed whitespace-nowrap">
+                            class="inline-flex h-10 min-w-0 flex-1 items-center justify-center rounded-2xl px-3.5 text-xs font-bold bg-gray-100 text-gray-400 cursor-not-allowed whitespace-nowrap">
                         WhatsApp
                     </button>
                 @endif
@@ -731,7 +731,7 @@
                 <a data-store-booking-link
                    data-base-href="{{ route('booking.package', $package) }}"
                    href="{{ route('booking.package', $package) }}"
-                   class="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl bg-accent px-4 text-sm font-bold text-white shadow-sm whitespace-nowrap">
+                   class="inline-flex h-10 min-w-0 flex-1 items-center justify-center rounded-2xl bg-accent px-3.5 text-xs font-bold text-white shadow-sm whitespace-nowrap">
                     Booking
                 </a>
             </div>
