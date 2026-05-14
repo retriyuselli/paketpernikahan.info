@@ -19,38 +19,7 @@
         <x-banner-ad />
     </div>
 
-    {{-- ── Search Bar ───────────────────────────────────── --}}
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
-        <form method="GET" action="{{ route('store') }}" class="mb-6 flex flex-wrap items-center gap-2">
-                <div class="relative flex-1 min-w-55">
-                    <span class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </span>
-                    <input type="text"
-                            name="q"
-                            value="{{ $search }}"
-                            placeholder="Cari paket, vendor, atau kota…"
-                            class="w-full h-11 pl-10 pr-4 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-accent transition text-dark placeholder-gray-400">
-                </div>
-                @if($categories->isNotEmpty())
-                    <select name="kategori"
-                            class="h-11 flex-1 min-w-40 px-4 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-accent transition text-dark">
-                        <option value="">Semua Kategori</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->slug }}" @selected($kategori === $cat->slug)>{{ $cat->name }}</option>
-                        @endforeach
-                    </select>
-                @endif
-                <button type="submit"
-                        class="h-11 px-5 rounded-xl text-sm font-bold transition hover:opacity-90 bg-accent text-white shrink-0">
-                    Cari
-                </button>
-        </form>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="max-w-7xl mx-auto px-4 pt-4 pb-10 sm:px-6 lg:px-8 lg:py-10">
         <div id="store-sections"></div>
 
         @if(!empty($search) || !empty($kategori))
