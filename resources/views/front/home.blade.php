@@ -72,7 +72,7 @@
             :home-ad="$homeAd ?? null"
         />
 
-        <section class="py-5 sm:py-8 overflow-hidden">
+        <section class="pt-2 pb-3 sm:py-8 overflow-hidden">
             @php
                 $logos = \App\Models\PartnerLogo::query()
                     ->where('is_active', true)
@@ -113,12 +113,11 @@
         </section>
 
         <!-- Package Section -->
-        <section class="py-16 bg-cream" id="packages">
+        <section class="pt-6 pb-8 sm:py-16 bg-cream" id="packages">
             <x-ui.container>
 
-                <div class="mb-6 flex items-end justify-between gap-3">
+                <div class="mb-2 flex items-end justify-between gap-3">
                     <h2 class="text-xl font-bold text-dark sm:text-2xl">Wedding Package</h2>
-                    <!-- <a href="{{ route('store') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a> -->
                 </div>
 
                 @php $catIndex = 0; @endphp
@@ -206,7 +205,7 @@
         </section>
 
         <!-- Venue Section -->
-        <section class="py-16 bg-light-sage" id="venues">
+        <section class="pt-8 pb-12 sm:py-16 bg-light-sage" id="venues">
             <x-ui.container>
 
                 <div class="mb-6 flex items-end justify-between gap-3">
@@ -223,7 +222,7 @@
                             <a href="{{ route('store.city', $city) }}" class="text-xs text-accent font-medium hover:underline">Lihat</a>
                         </div>
 
-                        <div class="flex snap-x snap-mandatory gap-1 sm:gap-1.5 overflow-x-auto pb-4 scrollbar-hide">
+                        <div class="flex snap-x snap-mandatory gap-2 sm:gap-2 overflow-x-auto pb-4 scrollbar-hide">
                             @foreach($cityPackages->take(7) as $pkg)
                                 @php
                                     $vendor = $pkg->vendor;
@@ -252,7 +251,7 @@
                                     :rating="$vendor?->rating"
                                     :benefit-primary="$primaryBenefit"
                                     :benefit-secondary="$secondaryBenefit"
-                                    width-class="w-[calc((100%-0.25rem)/2)] sm:w-[44vw] lg:w-60"
+                                    width-class="w-[calc((100%-0.5rem)/2)] sm:w-[44vw] lg:w-60"
                                 />
                             @endforeach
                         </div>
