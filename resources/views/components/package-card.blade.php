@@ -57,7 +57,7 @@
 
         @if($discountAmount > 0)
             <div class="flex flex-wrap gap-1">
-                <span class="rounded-lg border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
+                <span class="rounded-xs border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
             </div>
         @endif
 

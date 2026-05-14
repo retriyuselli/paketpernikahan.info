@@ -106,6 +106,8 @@
                                 }
                             }
                             $items = $pkg->items;
+                            $vendorLocation = $vendor->city ?: 'Indonesia';
+                            $vendorRating = $vendor->rating ?? null;
                             $primaryBenefit = $discount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
                             $secondaryBenefit = !empty($items[0]) ? \Illuminate\Support\Str::limit($items[0], 16) : 'Gratis Konsultasi';
                         @endphp
@@ -116,8 +118,8 @@
                             :price="$price"
                             :discount="$discount"
                             :vendor-name="$vendor->name"
-                            :location="$vendor->city ?? 'Indonesia'"
-                            :rating="$vendor?->rating"
+                            :location="$vendorLocation"
+                            :rating="$vendorRating"
                             :benefit-primary="$primaryBenefit"
                             :benefit-secondary="$secondaryBenefit"
                             width-class="w-full"

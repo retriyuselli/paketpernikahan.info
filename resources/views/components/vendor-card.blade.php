@@ -15,8 +15,8 @@
     $visibleBadgeLabels = $badgeLabels->take(2);
     $extraBadges = max($badgeLabels->count() - 2, 0);
     $package = $vendor->cheapestPackage;
-    $packagePrice = $package?->price;
-    $packageDiscount = (int) ($package?->discount ?? 0);
+    $packagePrice = $package ? $package->price : null;
+    $packageDiscount = (int) ($package ? ($package->discount ?? 0) : 0);
     $packageFinal = $package ? max(((int) $packagePrice) - $packageDiscount, 0) : null;
     $priceStartText = is_numeric($vendor->price_start) ? number_format((int) $vendor->price_start, 0, ',', '.') : null;
     $commentsCount = (int) ($vendor->comments_count ?? 0);
