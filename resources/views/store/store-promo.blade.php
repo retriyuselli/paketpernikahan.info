@@ -7,6 +7,14 @@
 @section('content')
     @include('layout.header')
 
+    @php
+        $breadcrumbItems = [
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => 'Store', 'url' => route('store')],
+            ['label' => 'Promo', 'url' => null],
+        ];
+    @endphp
+
     <x-highlight-section
         :real-weddings="$realWeddings ?? collect()"
         :featured-blogs="$homeFeaturedBlogs ?? collect()"
@@ -14,15 +22,17 @@
         :home-ad="$homeAd ?? null"
     />
 
-    <div class="px-4 sm:px-6 lg:px-8">
-        <x-banner-ad />
-    </div>
+    <section class="pt-3 lg:py-8 bg-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="pt-1 pb-4 lg:pt-4">
+                @include('layout.breadcrumb', ['items' => $breadcrumbItems])
+            </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
+            <div class="max-w-7xl mx-auto pt-0 pb-1 lg:py-10">
+                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-2">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-extrabold text-dark">Promo</h1>
-                    <p class="text-sm text-gray-500 mt-1">Paket pernikahan dengan harga spesial dan promo terbaik.</p>
+                    <h1 class="text-base font-bold text-dark">Promo</h1>
+                    <p class="text-xs text-gray-500 mt-1">Paket pernikahan dengan harga spesial dan promo terbaik.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <form method="GET" action="{{ route('store.promo') }}" class="flex items-center gap-2">
@@ -51,12 +61,12 @@
                 </div>
             </div>
 
-            @if($packages->isEmpty())
+                @if($packages->isEmpty())
                 <div class="bg-white rounded-2xl border border-gray-100 p-10 text-center">
                     <p class="text-sm text-gray-500">Belum ada paket promo saat ini.</p>
                 </div>
-            @else
-                <div class="grid grid-cols-2 lg:grid-cols-5 gap-2 lg:gap-3">
+                @else
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-1.5 sm:gap-2 lg:gap-3">
                     @foreach($packages as $pkg)
                         @php
                             $vendor = $pkg->vendor;
@@ -68,8 +78,11 @@
                             }
                             $cover = $cover ?: 'https://picsum.photos/seed/store-promo-' . $pkg->id . '/800/600';
                             $items = $pkg->items;
-                            $primaryBenefit = 'Harga Diskon';
-                            $secondaryBenefit = !empty($items[0]) ? \Illuminate\Support\Str::limit($items[0], 16) : 'Promo Terbaik';
+                            $vendorName = $vendor ? $vendor->name : null;
+                            $vendorLocation = $vendor && $vendor->city ? $vendor->city : 'Indonesia';
+                            $vendorRating = $vendor ? ($vendor->rating ?? null) : null;
+                            $primaryBenefit = $discount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
+                            $secondaryBenefit = !empty($items[0]) ? \Illuminate\Support\Str::limit($items[0], 16) : 'Gratis Konsultasi';
                         @endphp
 
                         <x-package-card
@@ -78,9 +91,9 @@
                             :image="$cover"
                             :price="$price"
                             :discount="$discount"
-                            :vendor-name="$vendor?->name"
-                            :location="$vendor?->city ?? 'Indonesia'"
-                            :rating="$vendor?->rating"
+                            :vendor-name="$vendorName"
+                            :location="$vendorLocation"
+                            :rating="$vendorRating"
                             :benefit-primary="$primaryBenefit"
                             :benefit-secondary="$secondaryBenefit"
                             width-class="w-full"
@@ -91,8 +104,10 @@
                 <div class="mt-8">
                     {{ $packages->links() }}
                 </div>
-            @endif
-    </div>
+                @endif
+            </div>
+        </div>
+    </section>
 
     <script>
         document.addEventListener('change', function (e) {
@@ -102,7 +117,7 @@
         });
     </script>
 
-    <x-paket-section :packages="$otherPackages" title="Paket Pernikahan Lainnya" :more-url="route('store')" />
+    <x-paket-section :packages="$otherPackages" title="Paket Pernikahan Lainnya" :more-url="route('store')" section-class="pt-2 pb-10 bg-cream" />
 
     @include('layout.footer')
 @endsection

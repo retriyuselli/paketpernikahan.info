@@ -55,11 +55,11 @@
 
         <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[15px]">{{ number_format($displayPrice, 0, ',', '.') }}</span></p>
 
-        @if($discountAmount > 0)
+        {{-- @if($discountAmount > 0)
             <div class="flex flex-wrap gap-1">
                 <span class="rounded-xs border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
             </div>
-        @endif
+        @endif --}}
 
         @if(filled($vendorName))
             <p class="truncate text-[11px] text-gray-500">{{ $vendorName }}</p>

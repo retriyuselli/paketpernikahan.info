@@ -260,7 +260,7 @@
                 @if($cityIndex > 3)
                     <div class="text-center mt-2" id="venue-more-btn-wrap">
                         <button type="button" id="venue-show-more"
-                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-gray-300 text-sm font-medium text-gray-700 hover:border-accent hover:text-accent transition">
+                            class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-gray-300 text-xs font-medium text-gray-700 hover:border-accent hover:text-accent transition">
                             Lihat Kota Lainnya
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -438,7 +438,7 @@
 
                 @if($homePromoPackages->isNotEmpty())
                 <div class="relative">
-                    <div class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 scrollbar-hide" id="vendor-promo-scroll">
+                    <div class="flex snap-x snap-mandatory gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide" id="vendor-promo-scroll">
 
                         @foreach($homePromoPackages as $pkg)
                             @php
@@ -453,8 +453,8 @@
                                 $logo = $logo ?: $pkg->image_url ?: ($vendor->cover_image_url ?? null);
                                 $rating = $vendor && $vendor->rating ? number_format((float) $vendor->rating, 1) : null;
                             @endphp
-                            <a href="{{ route('store.package.show', $pkg) }}"
-                               class="flex-none snap-start w-[46.5vw] sm:w-56 bg-white border border-gray-200 rounded-[18px] overflow-hidden cursor-pointer hover:shadow-md transition relative">
+                                     <a href="{{ route('store.package.show', $pkg) }}"
+                                         class="flex-none snap-start w-[calc((100%-0.375rem)/2)] sm:w-56 bg-white border border-gray-200 rounded-[18px] overflow-hidden cursor-pointer hover:shadow-md transition relative">
                                 <div class="relative aspect-square bg-gray-50">
                                     @if($logo)
                                         <img src="{{ $logo }}" alt="{{ $vendor->name }}" class="w-full h-full object-cover">
@@ -485,9 +485,9 @@
                                         <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($price, 0, ',', '.') }}</p>
                                     @endif
                                     <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[15px]">{{ number_format($final, 0, ',', '.') }}</span></p>
-                                    <div class="flex flex-wrap gap-1">
+                                    {{-- <div class="flex flex-wrap gap-1">
                                         <span class="rounded-lg border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
-                                    </div>
+                                    </div> --}}
                                     <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
                                         @if($rating)
                                             <span class="flex items-center gap-1 text-accent">
@@ -504,7 +504,7 @@
                         @endforeach
 
                         <!-- View All Card -->
-                        <a href="{{ route('store.promo') }}" class="flex-none snap-start w-[46.5vw] sm:w-56 bg-white border border-gray-200 rounded-[18px] cursor-pointer hover:shadow-md transition flex flex-col items-center justify-center gap-3 py-10">
+                        <a href="{{ route('store.promo') }}" class="flex-none snap-start w-[calc((100%-0.375rem)/2)] sm:w-56 bg-white border border-gray-200 rounded-[18px] cursor-pointer hover:shadow-md transition flex flex-col items-center justify-center gap-3 py-10">
                             <div class="w-14 h-14 rounded-full border-2 border-gray-400 flex items-center justify-center">
                                 <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </div>

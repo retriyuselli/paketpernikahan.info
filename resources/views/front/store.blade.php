@@ -58,7 +58,7 @@
                             <p class="text-sm font-bold text-dark">{{ $category->name }}</p>
                             {{-- <p class="text-xs text-gray-400">{{ $category->description ?: 'Paket pilihan berdasarkan kategori.' }}</p> --}}
                         </div>
-                        <a href="{{ route('store.category', $category) }}" class="text-xs font-bold hover:opacity-80 transition text-dark">
+                        <a href="{{ route('store.category', $category) }}" class="text-xs font-medium hover:underline text-accent">
                             Lihat
                         </a>
                     </div>
