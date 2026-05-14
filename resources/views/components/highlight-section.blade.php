@@ -16,16 +16,100 @@
     $hlRealWeddings = $realWeddings ?? collect();
     $hlBlogs = (($featuredBlogs ?? collect())->merge($popularBlogs ?? collect()))->unique('id');
     $adInserted = false;
+    $mobileHighlights = collect();
+
+    if (collect($items)->isNotEmpty()) {
+        $mobileHighlights = collect($items)
+            ->filter(fn ($item) => filled($item['image'] ?? null))
+            ->take(4)
+            ->map(function ($item) {
+                return [
+                    'url' => $item['url'] ?? '#',
+                    'image' => $item['image'],
+                    'title' => $item['title'] ?? strip_tags($item['title_html'] ?? 'Highlight'),
+                    'subtitle' => $item['subtitle'] ?? strip_tags($item['caption_html'] ?? ''),
+                    'badge' => match ($item['type'] ?? null) {
+                        'promo' => 'Promo',
+                        'story' => 'Story',
+                        'blog' => 'Blog',
+                        default => 'Highlight',
+                    },
+                ];
+            })
+            ->values();
+    } else {
+        if ($homeAd && filled($homeAd->image_url)) {
+            $mobileHighlights->push([
+                'url' => $homeAd->link_url ?: '#',
+                'image' => $homeAd->image_url,
+                'title' => $homeAd->title ?: 'Promo Spesial',
+                'subtitle' => $homeAd->caption ?: 'Penawaran pilihan untuk persiapan pernikahan.',
+                'badge' => 'Promo',
+            ]);
+        }
+
+        foreach ($hlRealWeddings->take(2) as $rw) {
+            $mobileHighlights->push([
+                'url' => route('real-wedding.show', $rw),
+                'image' => $rw->cover_image_url ?: 'https://picsum.photos/seed/rw-' . $rw->id . '/960/320',
+                'title' => $rw->couple_names,
+                'subtitle' => 'Inspirasi real wedding pilihan minggu ini.',
+                'badge' => 'Story',
+            ]);
+        }
+
+        foreach ($hlBlogs->take(2) as $blog) {
+            $mobileHighlights->push([
+                'url' => route('blog.show', $blog),
+                'image' => $blog->cover_image_url ?: 'https://picsum.photos/seed/blog-' . $blog->id . '/960/320',
+                'title' => $blog->title,
+                'subtitle' => $blog->category ?: 'Tips pernikahan terbaru',
+                'badge' => 'Blog',
+            ]);
+        }
+
+        $mobileHighlights = $mobileHighlights->take(4)->values();
+    }
+
 @endphp
 
-<section class="py-10 bg-cream">
+<section class="pt-0 pb-2 sm:py-10 bg-cream">
     @if(filled($title))
         <div class="{{ $titleWrapperClass }}">
-            <h2 class="text-xl font-bold mb-5 text-dark">{{ $title }}</h2>
+            <h2 class="mb-3 hidden text-xl font-bold text-dark sm:mb-5 sm:block">{{ $title }}</h2>
         </div>
     @endif
 
-    <div class="relative">
+    <div class="sm:hidden">
+        @if($mobileHighlights->isNotEmpty())
+            <div id="{{ $scrollId }}-mobile" class="flex snap-x snap-mandatory gap-0 overflow-x-auto scroll-smooth scrollbar-hide">
+                @foreach($mobileHighlights as $mobileHighlight)
+                    <a href="{{ $mobileHighlight['url'] }}"
+                       class="relative flex-none w-screen overflow-hidden bg-white aspect-[34/11]">
+                        <img src="{{ $mobileHighlight['image'] }}" alt="{{ $mobileHighlight['title'] }}" class="h-full w-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent"></div>
+                        <div class="absolute inset-x-0 bottom-0 top-0 flex flex-col justify-between p-4 text-white">
+                            <span class="inline-flex w-fit rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-dark shadow-sm">
+                                {{ $mobileHighlight['badge'] }}
+                            </span>
+                            <div class="max-w-[70%]">
+                                <p class="text-[22px] font-black leading-[1.05] drop-shadow-sm">{{ \Illuminate\Support\Str::limit($mobileHighlight['title'], 28) }}</p>
+                                @if(filled($mobileHighlight['subtitle']))
+                                    <p class="mt-1 text-[11px] font-medium leading-snug text-white/90">
+                                        {{ \Illuminate\Support\Str::limit($mobileHighlight['subtitle'], 52) }}
+                                    </p>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+
+        @endif
+
+    </div>
+
+    <div class="relative hidden sm:block">
         <button type="button" data-scroll-target="{{ $scrollId }}" data-scroll-by="-400"
                 class="{{ $leftButtonClass }}">
             <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>

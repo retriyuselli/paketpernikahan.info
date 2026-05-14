@@ -1,5 +1,5 @@
 <!-- Hero Section -->
-<section class="relative pb-5 bg-cream hero-grid-bg overflow-hidden">
+<section class="relative hidden pb-5 bg-cream hero-grid-bg overflow-hidden sm:block">
 
     <!-- Decorative: large golden orb top-right -->
     <div class="absolute -top-40 -right-40 w-150 h-150 rounded-full pointer-events-none"

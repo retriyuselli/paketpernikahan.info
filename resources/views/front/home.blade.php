@@ -72,7 +72,7 @@
             :home-ad="$homeAd ?? null"
         />
 
-        <section class="pt-2 pb-3 sm:py-8 overflow-hidden">
+        <section class="pt-0 pb-1 sm:py-8 overflow-hidden">
             @php
                 $logos = \App\Models\PartnerLogo::query()
                     ->where('is_active', true)
@@ -113,7 +113,7 @@
         </section>
 
         <!-- Package Section -->
-        <section class="pt-6 pb-8 sm:py-16 bg-cream" id="packages">
+        <section class="pt-3 pb-8 sm:py-16 bg-cream" id="packages">
             <x-ui.container>
 
                 <div class="mb-2 flex items-end justify-between gap-3">
@@ -208,9 +208,8 @@
         <section class="pt-8 pb-12 sm:py-16 bg-light-sage" id="venues">
             <x-ui.container>
 
-                <div class="mb-6 flex items-end justify-between gap-3">
+                <div class="mb-2 flex items-end justify-between gap-3">
                     <h2 class="text-xl font-bold text-dark sm:text-2xl">Paket Pernikahan per Kota</h2>
-                    <!-- <a href="{{ route('store') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a> -->
                 </div>
 
                 @php $cityIndex = 0; @endphp

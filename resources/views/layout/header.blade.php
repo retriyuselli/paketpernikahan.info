@@ -34,18 +34,25 @@
 </div>
 
 <!-- Sticky Header Wrapper (main nav only, no collapsible) -->
-<div class="sticky top-0 z-40 bg-white border-b border-gray-200">
+<div class="sticky top-0 z-40 border-b border-gray-200 bg-white lg:backdrop-blur-none">
     <x-ui.container>
-        <div class="flex items-center justify-between py-3 lg:gap-8">
+        <div class="flex items-center justify-between gap-2 py-3 lg:gap-8">
 
             <!-- Logo (left) -->
-            <div class="flex items-center gap-2 flex-shrink-0 h-10">
+            <div class="hidden items-center gap-2 h-10 flex-shrink-0 lg:flex">
                 <a href="/" class="flex items-center gap-2">
                     <span class="text-2xl lg:text-3xl font-extrabold tracking-tight leading-none">
                         <span class="text-accent">M</span><span class="text-dark">W</span>
                     </span>
                 </a>
             </div>
+
+            <form method="GET" action="{{ route('search') }}"
+                  class="mx-3 flex min-w-0 flex-1 items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 transition hover:border-gray-300 focus-within:border-accent focus-within:bg-white lg:hidden">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Temukan paket pernikahan impian Anda"
+                       class="min-w-0 flex-1 bg-transparent text-sm text-dark placeholder-gray-400 focus:outline-none">
+                <button type="submit" class="hidden" aria-label="Cari"></button>
+            </form>
 
             <!-- Main Navigation (center) -->
             <nav class="hidden lg:flex items-center justify-start gap-6 whitespace-nowrap relative z-20">
@@ -242,6 +249,73 @@
         </div> --}}
 
 </div><!-- end sticky wrapper -->
+
+@php
+    $bottomIsHome = request()->routeIs('home');
+    $bottomIsVendor = request()->routeIs('vendor') || request()->is('vendor*');
+    $bottomIsStore = request()->routeIs('store') || request()->is('store*');
+    $bottomIsPromo = request()->routeIs('store.promo');
+    $bottomIsAccount = request()->routeIs('login') || request()->routeIs('dashboard') || request()->is('dashboard*');
+@endphp
+
+<div class="fixed inset-x-0 bottom-0 z-40 lg:hidden">
+    <div class="border border-b-0 border-gray-200 bg-white shadow-[0_-14px_36px_rgba(68,68,68,0.14)]">
+        <div class="grid grid-cols-5 px-3 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+            <a href="{{ route('home') }}"
+               class="flex flex-col items-center justify-center gap-1 py-1 text-[11px] font-medium transition {{ $bottomIsHome ? 'text-accent' : 'text-gray-700' }}">
+                <svg class="h-6 w-6 {{ $bottomIsHome ? 'text-accent' : 'text-gray-700' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 10.5L12 4l8 6.5V19a1 1 0 01-1 1h-4.5v-5h-5v5H5a1 1 0 01-1-1v-8.5z"/>
+                </svg>
+                <span>Home</span>
+            </a>
+
+            <a href="{{ route('vendor') }}"
+               class="flex flex-col items-center justify-center gap-1 py-1 text-[11px] font-medium transition {{ $bottomIsVendor ? 'text-accent' : 'text-gray-700' }}">
+                <svg class="h-6 w-6 {{ $bottomIsVendor ? 'text-accent' : 'text-gray-700' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 18a8 8 0 100-16 8 8 0 000 16z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6"/>
+                </svg>
+                <span>Vendor</span>
+            </a>
+
+            <a href="{{ route('store') }}"
+               class="flex flex-col items-center justify-center gap-1 py-1 text-[11px] font-medium transition {{ $bottomIsStore ? 'text-accent' : 'text-gray-700' }}">
+                <svg class="h-6 w-6 {{ $bottomIsStore ? 'text-accent' : 'text-gray-700' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 8h14l-1 11a1 1 0 01-1 .91H7a1 1 0 01-1-.91L5 8z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 8V6a3 3 0 016 0v2"/>
+                </svg>
+                <span>Store</span>
+            </a>
+
+            <a href="{{ route('store.promo') }}"
+               class="flex flex-col items-center justify-center gap-1 py-1 text-[11px] font-medium transition {{ $bottomIsPromo ? 'text-accent' : 'text-gray-700' }}">
+                <svg class="h-6 w-6 {{ $bottomIsPromo ? 'text-accent' : 'text-gray-700' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 7h10v10H7z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9.5 9.5h5v5h-5z"/>
+                </svg>
+                <span>Promo</span>
+            </a>
+
+            @auth
+                <a href="{{ url('/dashboard') }}"
+                   class="flex flex-col items-center justify-center gap-1 py-1 text-[11px] font-medium transition {{ $bottomIsAccount ? 'text-accent' : 'text-gray-700' }}">
+                    <svg class="h-6 w-6 {{ $bottomIsAccount ? 'text-accent' : 'text-gray-700' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM5 20a7 7 0 0114 0"/>
+                    </svg>
+                    <span>Akun</span>
+                </a>
+            @else
+                <a href="{{ route('login') }}"
+                   class="flex flex-col items-center justify-center gap-1 py-1 text-[11px] font-medium transition {{ $bottomIsAccount ? 'text-accent' : 'text-gray-700' }}">
+                    <svg class="h-6 w-6 {{ $bottomIsAccount ? 'text-accent' : 'text-gray-700' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM5 20a7 7 0 0114 0"/>
+                    </svg>
+                    <span>Akun</span>
+                </a>
+            @endauth
+        </div>
+    </div>
+</div>
 
 <div id="mobile-menu" class="hidden fixed inset-0 z-50 lg:hidden">
     <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
