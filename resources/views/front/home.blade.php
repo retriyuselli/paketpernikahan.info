@@ -93,19 +93,19 @@
                 }
             @endphp
             <div class="relative flex">
-                <div class="flex gap-3 sm:gap-4 animate-marquee whitespace-nowrap">
+                <div class="flex gap-1.5 sm:gap-4 animate-marquee whitespace-nowrap">
                     @foreach($logos as $l)
-                        <div class="inline-flex items-center justify-center rounded-2xl px-3 py-2 sm:px-5 sm:py-3 min-w-max">
+                        <div class="inline-flex min-w-max items-center justify-center rounded-2xl px-1.5 py-1.5 sm:px-5 sm:py-3">
                             <img src="{{ $l['src'] }}"
                                  alt="{{ $l['alt'] }}"
-                                 class="h-16 sm:h-22 w-auto object-contain">
+                                 class="h-12 sm:h-22 w-auto object-contain">
                         </div>
                     @endforeach
                     @foreach($logos as $l)
-                        <div class="inline-flex items-center justify-center rounded-2xl px-3 py-2 sm:px-5 sm:py-3 min-w-max">
+                        <div class="inline-flex min-w-max items-center justify-center rounded-2xl px-1.5 py-1.5 sm:px-5 sm:py-3">
                             <img src="{{ $l['src'] }}"
                                  alt="{{ $l['alt'] }}"
-                                 class="h-16 sm:h-22 w-auto object-contain">
+                                 class="h-12 sm:h-22 w-auto object-contain">
                         </div>
                     @endforeach
                 </div>

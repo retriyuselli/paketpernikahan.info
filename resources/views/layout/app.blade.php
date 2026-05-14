@@ -157,7 +157,7 @@
         @yield('extra-head')
     </head>
     
-    <body class="@yield('body-class', 'bg-cream text-dark') pb-24 lg:pb-0">
+    <body class="@yield('body-class', 'bg-cream text-dark')">
         @yield('content')
 
         {{-- ── Error Modal (PostTooLarge / upload errors) ── --}}
@@ -190,7 +190,7 @@
         @endif
 
         {{-- ── Live Chat Widget ── --}}
-        <div id="lc-widget" class="fixed bottom-24 right-4 z-[9990] flex flex-col items-end gap-3 sm:bottom-5 sm:right-5">
+        <div id="lc-widget" class="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-[9990] flex flex-col items-end gap-3">
 
             {{-- Chat Panel --}}
             <div id="lc-panel"
