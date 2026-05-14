@@ -778,12 +778,12 @@
              data-ad-delay="{{ (int) ($adDelay ?? 5000) }}"
              class="fixed inset-0 z-[9998] hidden items-center justify-center p-4"
              style="background:rgba(35, 34, 34, 0.92)">
-            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden" style="max-width:min(90vw,400px);max-height:90vh;">
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden" style="max-width:min(84vw,340px);max-height:84vh;">
                 <div class="relative">
                     @if($homeAd->link_url)
                         <a href="{{ $homeAd->link_url }}" class="block">
                     @endif
-                    <img src="{{ $homeAd->image_url }}" alt="{{ $homeAd->title ?: 'Iklan' }}" class="block w-auto h-auto" style="max-width:min(90vw,400px);max-height:85vh;display:block;">
+                    <img src="{{ $homeAd->image_url }}" alt="{{ $homeAd->title ?: 'Iklan' }}" class="block w-auto h-auto" style="max-width:min(84vw,340px);max-height:78vh;display:block;">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"></div>
                     @if($homeAd->link_url)
                         </a>
