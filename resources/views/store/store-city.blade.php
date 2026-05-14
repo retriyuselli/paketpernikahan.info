@@ -63,12 +63,14 @@
                             $vendor = $pkg->vendor;
                             $price = (int) ($pkg->price ?? 0);
                             $discount = (int) ($pkg->discount ?? 0);
-                            $cover = null;
-                            if ($vendor && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
-                                $cover = $vendor->cover_image[0];
+                            $cover = $pkg->image_url;
+                            if (!$cover && $vendor) {
+                                $cover = $vendor->cover_image_url;
                             }
                             $cover = $cover ?: 'https://picsum.photos/seed/store-city-' . $pkg->id . '/800/600';
                             $items = $pkg->items;
+                            $vendorName = $vendor ? $vendor->name : null;
+                            $vendorRating = $vendor ? ($vendor->rating ?? null) : null;
                             $primaryBenefit = $discount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
                             $secondaryBenefit = !empty($items[0]) ? \Illuminate\Support\Str::limit($items[0], 16) : 'Gratis Konsultasi';
                         @endphp
@@ -79,9 +81,9 @@
                             :image="$cover"
                             :price="$price"
                             :discount="$discount"
-                            :vendor-name="$vendor?->name"
-                            :location="$vendor?->city ?? $city"
-                            :rating="$vendor?->rating"
+                            :vendor-name="$vendorName"
+                            :location="$city"
+                            :rating="$vendorRating"
                             :benefit-primary="$primaryBenefit"
                             :benefit-secondary="$secondaryBenefit"
                             width-class="w-full"
