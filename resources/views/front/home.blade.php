@@ -116,8 +116,8 @@
         <section class="py-16 bg-cream" id="packages">
             <x-ui.container>
 
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-dark">Wedding Package</h2>
+                <div class="mb-6 flex items-end justify-between gap-3">
+                    <h2 class="text-xl font-bold text-dark sm:text-2xl">Wedding Package</h2>
                     <!-- <a href="{{ route('store') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a> -->
                 </div>
 
@@ -134,44 +134,60 @@
                                 <a href="{{ route('store.category', $category) }}" class="text-xs font-medium hover:underline text-accent">Lihat</a>
                             </div>
 
-                            <div class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
+                            <div class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 scrollbar-hide">
                                 @foreach($group->take(7) as $pkg)
                                     @php
                                         $vendor = $pkg->vendor;
                                         $price = (int) ($pkg->price ?? 0);
                                         $discount = (int) ($pkg->discount ?? 0);
                                         $final = max($price - $discount, 0);
+                                        $discountPercent = $price > 0 && $discount > 0 ? (int) round(($discount / $price) * 100) : 0;
                                         $cover = $pkg->image_url;
                                         if (!$cover && $vendor) {
                                             $cover = $vendor->cover_image_url ?? null;
                                         }
                                         $cover = $cover ?: 'data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="280" viewBox="0 0 400 280"><rect width="400" height="280" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial" font-size="16">No Image</text></svg>');
                                         $items = $pkg->items;
-                                        $maxTags = 2;
-                                        $shownTags = array_slice($items, 0, $maxTags);
-                                        $extraTags = max(0, count($items) - $maxTags);
+                                        $primaryBenefit = $discount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
+                                        $secondaryBenefit = !empty($items[0]) ? \Illuminate\Support\Str::limit($items[0], 16) : 'Gratis Konsultasi';
+                                        $rating = $vendor && $vendor->rating ? number_format((float) $vendor->rating, 1) : null;
                                     @endphp
                                     <a href="{{ route('store.package.show', $pkg) }}"
-                                       class="flex-none w-[44vw] lg:w-60 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
+                                       class="flex-none snap-start w-[46.5vw] sm:w-[44vw] lg:w-60 bg-white rounded-[18px] shadow-[0_2px_10px_rgba(15,23,42,0.08)] border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition">
                                         <div class="relative aspect-square">
                                             <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover">
-                                            @if($discount > 0)
-                                                <span class="absolute top-2 left-2 bg-accent text-white text-xs font-bold px-2.5 py-1 rounded-full leading-tight text-center">
-                                                    Promo
+                                            @if($discountPercent > 0)
+                                                <span class="absolute right-0 top-0 rounded-bl-2xl bg-accent px-2.5 py-1.5 text-[11px] font-extrabold leading-none text-cream">
+                                                    {{ $discountPercent }}%
                                                 </span>
                                             @endif
-                                            <span class="absolute bottom-2 left-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
-                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                                {{ $vendor->city ?? 'Indonesia' }}
-                                            </span>
+                                            <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5 text-dark" style="background: linear-gradient(90deg, var(--soft-pink), var(--light-sage), var(--sage-green));">
+                                                <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">{{ $primaryBenefit }}</span>
+                                                <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">{{ $secondaryBenefit }}</span>
+                                            </div>
                                         </div>
-                                        <div class="p-4">
-                                            <p class="font-bold text-gray-900 text-sm leading-snug mb-0.5">{{ $pkg->name }}</p>
-                                            <p class="text-[10px] text-gray-500 mb-3">by <span class="font-medium text-gray-700">{{ $vendor->name }}</span> — {{ $category->name }}</p>
+                                        <div class="space-y-1 p-3">
+                                            <p class="text-[13px] font-medium leading-tight text-gray-900 sm:min-h-11">{{ $pkg->name }}</p>
                                             @if($discount > 0)
-                                                <p class="text-xs text-gray-400 line-through mb-0.5">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                                                <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($price, 0, ',', '.') }}</p>
                                             @endif
-                                            <p class="font-bold text-sm text-accent">IDR {{ number_format($final ?: $price, 0, ',', '.') }}</p>
+                                            <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[15px]">{{ number_format($final ?: $price, 0, ',', '.') }}</span></p>
+                                            <div class="flex flex-wrap gap-1">
+                                                @if($discount > 0)
+                                                    <span class="rounded-lg border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
+                                                @endif
+                                            </div>
+                                            <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
+                                                @if($rating)
+                                                    <span class="flex items-center gap-1 text-accent">
+                                                        <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                        <span>{{ $rating }}</span>
+                                                    </span>
+                                                    <span class="text-gray-300">|</span>
+                                                @endif
+                                                <span>{{ $vendor->city ?? 'Indonesia' }}</span>
+                                            </div>
+                                            <p class="truncate text-[11px] text-gray-500">{{ $vendor->name }}</p>
                                         </div>
                                     </a>
                                 @endforeach
@@ -218,8 +234,8 @@
         <section class="py-16 bg-light-sage" id="venues">
             <x-ui.container>
 
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-dark">Paket Pernikahan per Kota</h2>
+                <div class="mb-6 flex items-end justify-between gap-3">
+                    <h2 class="text-xl font-bold text-dark sm:text-2xl">Paket Pernikahan per Kota</h2>
                     <!-- <a href="{{ route('store') }}" class="text-sm font-medium hover:underline text-accent">Lihat Semua</a> -->
                 </div>
 
@@ -232,44 +248,60 @@
                             <a href="{{ route('store.city', $city) }}" class="text-xs text-accent font-medium hover:underline">Lihat</a>
                         </div>
 
-                        <div class="flex gap-5 overflow-x-auto pb-4 scrollbar-hide">
+                        <div class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 scrollbar-hide">
                             @foreach($cityPackages->take(7) as $pkg)
                                 @php
                                     $vendor = $pkg->vendor;
                                     $price = (int) ($pkg->price ?? 0);
                                     $discount = (int) ($pkg->discount ?? 0);
                                     $final = max($price - $discount, 0);
+                                    $discountPercent = $price > 0 && $discount > 0 ? (int) round(($discount / $price) * 100) : 0;
                                     $cover = $pkg->image_url;
                                     if (!$cover && $vendor) {
                                         $cover = $vendor->cover_image_url ?? null;
                                     }
                                     $cover = $cover ?: 'data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="280" viewBox="0 0 400 280"><rect width="400" height="280" fill="#f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial" font-size="16">No Image</text></svg>');
                                     $items = $pkg->items;
-                                    $maxTags = 2;
-                                    $shownTags = array_slice($items, 0, $maxTags);
-                                    $extraTags = max(0, count($items) - $maxTags);
+                                    $primaryBenefit = $discount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
+                                    $secondaryBenefit = !empty($items[0]) ? \Illuminate\Support\Str::limit($items[0], 16) : 'Gratis Konsultasi';
+                                    $rating = $vendor && $vendor->rating ? number_format((float) $vendor->rating, 1) : null;
                                 @endphp
                                 <a href="{{ route('store.package.show', $pkg) }}"
-                                   class="flex-none w-[44vw] lg:w-60 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition">
+                                   class="flex-none snap-start w-[46.5vw] sm:w-[44vw] lg:w-60 bg-white rounded-[18px] shadow-[0_2px_10px_rgba(15,23,42,0.08)] border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition">
                                     <div class="relative aspect-square">
                                         <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover">
-                                        @if($discount > 0)
-                                            <span class="absolute top-2 left-2 bg-accent text-white text-xs font-bold px-2.5 py-1 rounded-full leading-tight text-center">
-                                                Promo
+                                        @if($discountPercent > 0)
+                                            <span class="absolute right-0 top-0 rounded-bl-2xl bg-accent px-2.5 py-1.5 text-[11px] font-extrabold leading-none text-cream">
+                                                {{ $discountPercent }}%
                                             </span>
                                         @endif
-                                        <span class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                            {{ $city }}
-                                        </span>
+                                        <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5 text-dark" style="background: linear-gradient(90deg, var(--soft-pink), var(--light-sage), var(--sage-green));">
+                                            <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">{{ $primaryBenefit }}</span>
+                                            <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">{{ $secondaryBenefit }}</span>
+                                        </div>
                                     </div>
-                                    <div class="p-4">
-                                        <p class="font-bold text-gray-900 text-sm leading-snug mb-0.5">{{ $pkg->name }}</p>
-                                        <p class="text-xs text-gray-500 mb-3">by <span class="font-medium text-gray-700">{{ $vendor->name }}</span></p>
+                                    <div class="space-y-1 p-3">
+                                        <p class="text-[13px] font-medium leading-tight text-gray-900 sm:min-h-11">{{ $pkg->name }}</p>
                                         @if($discount > 0)
-                                            <p class="text-xs text-gray-400 line-through mb-0.5">IDR {{ number_format($price, 0, ',', '.') }}</p>
+                                            <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($price, 0, ',', '.') }}</p>
                                         @endif
-                                        <p class="font-bold text-sm text-accent">IDR {{ number_format($final ?: $price, 0, ',', '.') }}</p>
+                                        <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[15px]">{{ number_format($final ?: $price, 0, ',', '.') }}</span></p>
+                                        <div class="flex flex-wrap gap-1">
+                                            @if($discount > 0)
+                                                <span class="rounded-lg border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
+                                            @endif
+                                        </div>
+                                        <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
+                                            @if($rating)
+                                                <span class="flex items-center gap-1 text-accent">
+                                                    <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                    <span>{{ $rating }}</span>
+                                                </span>
+                                                <span class="text-gray-300">|</span>
+                                            @endif
+                                            <span>{{ $city }}</span>
+                                        </div>
+                                        <p class="truncate text-[11px] text-gray-500">{{ $vendor->name }}</p>
                                     </div>
                                 </a>
                             @endforeach
@@ -315,19 +347,19 @@
         <section class="py-16 bg-cream" id="venue-reviews">
             <x-ui.container>
 
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-dark">Review Videos</h2>
+                <div class="mb-6 flex items-end justify-between gap-3">
+                    <h2 class="text-xl font-bold text-dark sm:text-2xl">Review Videos</h2>
                     <a href="{{ route('review-videos') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
 
-                <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                <div class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 scrollbar-hide">
 
                     @forelse($venueReviewVideos as $video)
                         @php
                             $thumb = $video->thumbnail_url ?: 'https://picsum.photos/seed/vrvideo-' . $video->id . '/300/533';
                             $hasVideo = !empty($video->video_url);
                         @endphp
-                        <div class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[140px] ar-9x16"
+                        <div class="flex-none snap-start rounded-2xl overflow-hidden cursor-pointer relative group w-[56vw] min-w-[200px] sm:w-[calc((100%-4rem)/5)] sm:min-w-[140px] ar-9x16"
                              @if($hasVideo) data-video-popup="{{ $video->video_url }}" @endif>
                             <img src="{{ $thumb }}" alt="{{ $video->title }}" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -451,14 +483,14 @@
         <section class="py-16 bg-white" id="vendor-promo">
             <x-ui.container>
 
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-dark">Vendor Event dan Promo</h2>
+                <div class="mb-6 flex items-end justify-between gap-3">
+                    <h2 class="text-xl font-bold text-dark sm:text-2xl">Vendor Event dan Promo</h2>
                     <a href="{{ route('store.promo') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
 
                 @if($homePromoPackages->isNotEmpty())
                 <div class="relative">
-                    <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide" id="vendor-promo-scroll">
+                    <div class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 scrollbar-hide" id="vendor-promo-scroll">
 
                         @foreach($homePromoPackages as $pkg)
                             @php
@@ -466,48 +498,65 @@
                                 $price = (int) ($pkg->price ?? 0);
                                 $discount = (int) ($pkg->discount ?? 0);
                                 $final = max($price - $discount, 0);
+                                $discountPercent = $price > 0 && $discount > 0 ? (int) round(($discount / $price) * 100) : 0;
                                 $logo = $vendor->logo_vendor
                                     ? (str_starts_with($vendor->logo_vendor, 'http') ? $vendor->logo_vendor : \Illuminate\Support\Facades\Storage::url($vendor->logo_vendor))
                                     : null;
                                 $logo = $logo ?: $pkg->image_url ?: ($vendor->cover_image_url ?? null);
+                                $rating = $vendor && $vendor->rating ? number_format((float) $vendor->rating, 1) : null;
                             @endphp
                             <a href="{{ route('store.package.show', $pkg) }}"
-                               class="flex-none w-56 bg-white border border-gray-200 rounded-2xl overflow-hidden cursor-pointer hover:shadow-md transition relative">
-                                <div class="absolute top-3 left-3 z-10">
-                                    <span class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full bg-accent-pink text-dark">PROMO</span>
-                                </div>
-                                <div class="flex flex-col items-center px-6 pt-10 pb-5">
-                                    <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-100 mb-4 bg-gray-50">
-                                        @if($logo)
-                                            <img src="{{ $logo }}" alt="{{ $vendor->name }}" class="w-full h-full object-cover">
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center text-gray-300">
-                                                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                            </div>
-                                        @endif
+                               class="flex-none snap-start w-[46.5vw] sm:w-56 bg-white border border-gray-200 rounded-[18px] overflow-hidden cursor-pointer hover:shadow-md transition relative">
+                                <div class="relative aspect-square bg-gray-50">
+                                    @if($logo)
+                                        <img src="{{ $logo }}" alt="{{ $vendor->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="flex h-full w-full items-center justify-center text-gray-300">
+                                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                    @endif
+                                    @if($discountPercent > 0)
+                                        <span class="absolute right-0 top-0 rounded-bl-2xl bg-accent px-2.5 py-1.5 text-[11px] font-extrabold leading-none text-cream">
+                                            {{ $discountPercent }}%
+                                        </span>
+                                    @endif
+                                    <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5 text-dark" style="background: linear-gradient(90deg, var(--soft-pink), var(--light-sage), var(--sage-green));">
+                                        <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">XTRA Voucher</span>
+                                        <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">Gratis Ongkir</span>
                                     </div>
-                                    <p class="font-bold text-sm text-center text-gray-900 leading-snug mb-1">{{ $pkg->name }}</p>
+                                </div>
+                                <div class="space-y-1 p-3">
+                                    <p class="text-[13px] font-medium leading-tight text-gray-900 sm:min-h-11">{{ $pkg->name }}</p>
                                     @php
                                         $catNames = collect($pkg->category_vendor_id ?? [])
                                             ->map(fn($cid) => $homeCategories->firstWhere('id', (int)$cid)?->name)
                                             ->filter()
                                             ->implode(', ');
                                     @endphp
-                                    <p class="text-xs text-gray-500 text-center mb-2">{{ $vendor->name }}{{ $catNames ? ' — ' . $catNames : '' }}</p>
-                                    <p class="text-[11px] text-gray-400 line-through">IDR {{ number_format($price, 0, ',', '.') }}</p>
-                                    <p class="text-sm font-bold text-accent">IDR {{ number_format($final, 0, ',', '.') }}</p>
-                                    @if($vendor->city)
-                                        <p class="text-xs text-gray-500 flex items-center gap-1 mt-2">
-                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                            {{ $vendor->city }}
-                                        </p>
+                                    @if($discount > 0)
+                                        <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($price, 0, ',', '.') }}</p>
                                     @endif
+                                    <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[15px]">{{ number_format($final, 0, ',', '.') }}</span></p>
+                                    <div class="flex flex-wrap gap-1">
+                                        <span class="rounded-lg border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
+                                        @if($rating)
+                                            <span class="flex items-center gap-1 text-accent">
+                                                <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                <span>{{ $rating }}</span>
+                                            </span>
+                                            <span class="text-gray-300">|</span>
+                                        @endif
+                                        <span>{{ $vendor->city ?? 'Indonesia' }}</span>
+                                    </div>
+                                    <p class="truncate text-[11px] text-gray-500">{{ $vendor->name }}</p>
                                 </div>
                             </a>
                         @endforeach
 
                         <!-- View All Card -->
-                        <a href="{{ route('store.promo') }}" class="flex-none w-56 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:shadow-md transition flex flex-col items-center justify-center gap-3 py-10">
+                        <a href="{{ route('store.promo') }}" class="flex-none snap-start w-[46.5vw] sm:w-56 bg-white border border-gray-200 rounded-[18px] cursor-pointer hover:shadow-md transition flex flex-col items-center justify-center gap-3 py-10">
                             <div class="w-14 h-14 rounded-full border-2 border-gray-400 flex items-center justify-center">
                                 <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </div>
@@ -518,12 +567,12 @@
 
                     <!-- Arrow prev -->
                     <button type="button" data-scroll-target="vendor-promo-scroll" data-scroll-by="-300"
-                            class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
+                            class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 hidden h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition hover:shadow-lg z-10 md:flex">
                         <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     </button>
                     <!-- Arrow next -->
                     <button type="button" data-scroll-target="vendor-promo-scroll" data-scroll-by="300"
-                            class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
+                            class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 hidden h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition hover:shadow-lg z-10 md:flex">
                         <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
                 </div>
@@ -538,20 +587,20 @@
         <section class="py-16 bg-cream" id="real-wedding">
             <x-ui.container>
 
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-dark">Real Wedding</h2>
+                <div class="mb-6 flex items-end justify-between gap-3">
+                    <h2 class="text-xl font-bold text-dark sm:text-2xl">Real Wedding</h2>
                     <a href="{{ route('real-wedding.index') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
 
                 <div class="relative">
-                    <div class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide" id="real-wedding-scroll">
+                    <div class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 scrollbar-hide" id="real-wedding-scroll">
 
                         @forelse($realWeddings as $rw)
                             @php
                                 $rwImage = $rw->cover_image_url ?: 'https://picsum.photos/seed/rw-' . $rw->id . '/400/533';
                             @endphp
                             <a href="{{ route('real-wedding.show', $rw->slug) }}"
-                               class="flex-none rounded-2xl overflow-hidden cursor-pointer relative group w-[calc((100%-4rem)/5)] min-w-[160px] aspect-[3/4] block">
+                               class="flex-none snap-start rounded-2xl overflow-hidden cursor-pointer relative group w-[72vw] min-w-[220px] sm:w-[calc((100%-4rem)/5)] sm:min-w-[160px] aspect-[3/4] block">
                                 <img src="{{ $rwImage }}" alt="{{ $rw->couple_names }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                                 <div class="absolute bottom-4 left-4 right-4 text-white">
@@ -572,7 +621,7 @@
 
                     <!-- Arrow next -->
                     <button type="button" data-scroll-target="real-wedding-scroll" data-scroll-by="300"
-                            class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
+                            class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 hidden h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition hover:shadow-lg z-10 md:flex">
                         <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
                 </div>
@@ -586,34 +635,34 @@
             <div class="absolute -top-10 -right-10 w-64 h-64 rounded-full opacity-20 bg-light-sage"></div>
             <div class="absolute -bottom-16 right-32 w-80 h-80 rounded-full opacity-15 bg-light-sage"></div>
 
-            <x-ui.container class="relative flex flex-col lg:flex-row items-center gap-8">
+            <x-ui.container class="relative flex flex-col items-start gap-6 sm:gap-8 lg:flex-row lg:items-center">
 
                 <!-- Left: Title -->
-                <div class="flex-shrink-0 lg:w-64">
-                    <p class="font-bold text-lg leading-snug text-cream">Persiapkan Pernikahan dengan Beragam Kemudahan &amp; Penawaran Ekslusif</p>
+                <div class="flex-shrink-0 max-w-sm lg:w-64">
+                    <p class="font-bold text-lg leading-snug text-cream sm:text-xl">Persiapkan Pernikahan dengan Beragam Kemudahan &amp; Penawaran Ekslusif</p>
                 </div>
 
                 <!-- Middle: Features -->
-                <div class="flex flex-wrap lg:flex-nowrap gap-6 flex-1 justify-center">
-                    <div class="flex items-center gap-2 text-cream">
+                <div class="flex flex-col gap-4 self-stretch sm:flex-row sm:flex-wrap sm:gap-6 lg:flex-nowrap flex-1 lg:justify-center">
+                    <div class="flex items-center gap-2 text-cream sm:max-w-[15rem]">
                         <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-cream-25">
                             <svg class="w-4 h-4 text-cream" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         </div>
                         <p class="text-xs font-medium leading-snug">Vendor &amp; Produk<br>Pernikahan Terlengkap</p>
                     </div>
-                    <div class="flex items-center gap-2 text-cream">
+                    <div class="flex items-center gap-2 text-cream sm:max-w-[15rem]">
                         <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-cream-25">
                             <svg class="w-4 h-4 text-cream" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
                         </div>
                         <p class="text-xs font-medium leading-snug">Sesuaikan Pesanan<br>dengan Impian Anda</p>
                     </div>
-                    <div class="flex items-center gap-2 text-cream">
+                    <div class="flex items-center gap-2 text-cream sm:max-w-[15rem]">
                         <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-cream-25">
                             <svg class="w-4 h-4 text-cream" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 2a2 2 0 00-2 2v14l3.5-2 3.5 2 3.5-2 3.5 2V4a2 2 0 00-2-2H5zm2.5 3a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm6.207.293a1 1 0 00-1.414 0l-6 6a1 1 0 101.414 1.414l6-6a1 1 0 000-1.414zM12.5 10a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" clip-rule="evenodd"/></svg>
                         </div>
                         <p class="text-xs font-medium leading-snug">Promo Eksklusif &amp;<br>Hadiah Menarik</p>
                     </div>
-                    <div class="flex items-center gap-2 text-cream">
+                    <div class="flex items-center gap-2 text-cream sm:max-w-[15rem]">
                         <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-cream-25">
                             <svg class="w-4 h-4 text-cream" fill="currentColor" viewBox="0 0 20 20"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.077 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.077-2.354-1.253V5z" clip-rule="evenodd"/></svg>
                         </div>
@@ -622,9 +671,9 @@
                 </div>
 
                 <!-- Right: CTA Button -->
-                <div class="flex-shrink-0">
+                <div class="flex w-full flex-shrink-0 sm:w-auto">
                     <button type="button" onclick="document.getElementById('cta-coming-soon-modal').classList.remove('hidden');document.getElementById('cta-coming-soon-modal').classList.add('flex');document.body.style.overflow='hidden';"
-                            class="inline-block px-6 py-3 rounded-xl font-semibold text-sm transition hover:opacity-90 bg-cream text-dark cursor-pointer">
+                            class="inline-block w-full px-6 py-3 rounded-xl font-semibold text-sm transition hover:opacity-90 bg-cream text-dark cursor-pointer sm:w-auto">
                         Daftar Sekarang
                     </button>
                 </div>
@@ -703,8 +752,8 @@
         <section class="py-16 bg-light-sage" id="blog">
             <x-ui.container>
 
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-2xl font-bold text-dark">Jangan Lewatkan Blog Post Ini</h2>
+                <div class="mb-8 flex items-end justify-between gap-3">
+                    <h2 class="text-xl font-bold text-dark sm:text-2xl">Jangan Lewatkan Blog Post Ini</h2>
                     <a href="{{ route('blog.index') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
 
