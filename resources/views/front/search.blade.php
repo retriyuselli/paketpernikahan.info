@@ -7,10 +7,14 @@
 @section('content')
     @include('layout.header')
 
+    @php
+        $defaultSearchTab = $packages->count() > 0 || $vendors->isEmpty() ? 'packages' : 'vendors';
+    @endphp
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {{-- Search Bar --}}
-        <form method="GET" action="{{ route('search') }}" class="flex items-center gap-2 mb-8 max-w-xl">
+        <form method="GET" action="{{ route('search') }}" class="hidden sm:flex items-center gap-2 mb-8 max-w-xl">
             <div class="relative flex-1">
                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -52,101 +56,27 @@
                 </a>
             </div>
 
-            {{-- ===== VENDOR RESULTS ===== --}}
-            <section class="mb-12">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-base font-bold text-dark">Vendor</h2>
-                    @if($vendors->count() > 0)
-                        <a href="{{ route('vendor') }}?q={{ urlencode($q) }}" class="text-xs font-semibold text-accent hover:underline">
-                            Lihat Semua Vendor →
-                        </a>
-                    @endif
+            <div class="mb-5 flex justify-center">
+                <div class="inline-flex w-full max-w-xs overflow-hidden rounded-full border border-gray-200 bg-white p-1">
+                    <button type="button"
+                            class="search-tab-button flex-1 rounded-full px-4 py-2 text-sm font-semibold transition"
+                            data-search-tab="packages"
+                            aria-controls="search-tab-packages"
+                            aria-selected="{{ $defaultSearchTab === 'packages' ? 'true' : 'false' }}">
+                        Paket
+                    </button>
+                    <button type="button"
+                            class="search-tab-button flex-1 rounded-full px-4 py-2 text-sm font-semibold transition"
+                            data-search-tab="vendors"
+                            aria-controls="search-tab-vendors"
+                            aria-selected="{{ $defaultSearchTab === 'vendors' ? 'true' : 'false' }}">
+                        Vendor
+                    </button>
                 </div>
-
-                @if($vendors->isEmpty())
-                    <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
-                        <p class="text-sm text-gray-400">Tidak ada vendor yang cocok dengan "<strong>{{ $q }}</strong>"</p>
-                    </div>
-                @else
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                        @foreach ($vendors as $v)
-                        @php
-                            $pkg   = $v->cheapestPackage;
-                            $cover = $v->cover_image_url ?: (optional($v->galleries->first())->image_url ?? null);
-                        @endphp
-                        <a href="{{ route('vendor.detail', $v->slug) }}"
-                           class="group border border-gray-200 rounded-2xl p-2 hover:border-gray-300 transition bg-white block">
-                            {{-- Photo --}}
-                            <div class="relative rounded-xl overflow-hidden mb-2 aspect-[4/5]">
-                                @if($cover)
-                                    <img src="{{ $cover }}" alt="{{ $v->name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                                @else
-                                    <div class="w-full h-full bg-gray-100 flex items-center justify-center">
-                                        <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                    </div>
-                                @endif
-                                @if($pkg && $pkg->discount > 0)
-                                <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent text-white z-10">
-                                    Hemat IDR {{ number_format((int)$pkg->discount, 0, ',', '.') }}
-                                </span>
-                                @endif
-                                @if($v->city)
-                                <div class="absolute bottom-2 left-0 right-0 flex justify-center z-10">
-                                    <span class="flex items-center gap-1 text-[10px] font-semibold text-white px-2.5 py-0.5 rounded-full bg-black/40 backdrop-blur-[2px]">
-                                        <svg class="w-2.5 h-2.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                        {{ $v->city }}
-                                    </span>
-                                </div>
-                                @endif
-                            </div>
-
-                            <p class="font-bold text-sm leading-snug line-clamp-1 group-hover:underline text-dark">{{ $v->name }}</p>
-
-                            @if($pkg)
-                            <div class="mt-1 mb-1">
-                                <p class="text-[9px] text-gray-400">Mulai dari</p>
-                                @if($pkg->discount > 0)
-                                    <p class="text-[10px] line-through text-gray-400">IDR {{ number_format((int)$pkg->price, 0, ',', '.') }}</p>
-                                    <p class="text-[11px] font-bold text-accent">IDR {{ number_format((int)$pkg->price - (int)$pkg->discount, 0, ',', '.') }}</p>
-                                @else
-                                    <p class="text-[11px] font-semibold text-dark">IDR {{ number_format((int)$pkg->price, 0, ',', '.') }}</p>
-                                @endif
-                            </div>
-                            @elseif($v->price_start)
-                            <div class="mt-1 mb-1">
-                                <p class="text-[9px] text-gray-400">Mulai dari</p>
-                                <p class="text-[11px] font-semibold text-dark">{{ is_numeric($v->price_start) ? 'IDR ' . number_format((int) $v->price_start, 0, ',', '.') : $v->price_start }}</p>
-                            </div>
-                            @endif
-
-                            @php
-                                $vComments = (int) ($v->comments_count ?? 0);
-                                $vRating   = (float) ($v->rating ?? 0);
-                                $vLikes    = (int) ($v->likes ?? 0);
-                            @endphp
-                            @if($vRating >= 1 || $vComments >= 1 || $vLikes >= 1)
-                            <div class="flex items-center gap-2 text-[10px] text-gray-500 flex-wrap">
-                                @if($vRating >= 1)
-                                <span class="flex items-center gap-0.5 font-semibold text-yellow-500">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                    {{ number_format($vRating, 1) }}
-                                </span>
-                                @endif
-                                @if($vComments >= 1)
-                                <span>{{ $vComments }} ulasan</span>
-                                @endif
-                            </div>
-                            @endif
-                        </a>
-                        @endforeach
-                    </div>
-                @endif
-            </section>
+            </div>
 
             {{-- ===== PACKAGE RESULTS ===== --}}
-            <section>
+            <section id="search-tab-packages" class="search-tab-panel {{ $defaultSearchTab !== 'packages' ? 'hidden' : '' }}">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-base font-bold text-dark">Paket</h2>
                     @if($packages->count() > 0)
@@ -166,50 +96,79 @@
                         @php
                             $vendor = $pkg->vendor;
                             if (!$vendor) continue;
-                            $price       = (int) ($pkg->price ?? 0);
-                            $discount    = (int) ($pkg->discount ?? 0);
-                            $final       = max($price - $discount, 0);
-                            $cover    = $pkg->image_url ?? null;
+                            $price = (int) ($pkg->price ?? 0);
+                            $discount = (int) ($pkg->discount ?? 0);
+                            $cover = $pkg->image_url ?? null;
                             if (!$cover) {
                                 $cover = $vendor->cover_image_url ?: null;
                                 if (!$cover && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
                                     $cover = $vendor->cover_image[0];
                                 }
                             }
+                            $items = $pkg->items;
+                            $primaryBenefit = $discount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
+                            $secondaryBenefit = !empty($items[0]) ? \Illuminate\Support\Str::limit($items[0], 16) : 'Gratis Konsultasi';
                         @endphp
-                        <a href="{{ route('store.package.show', $pkg) }}"
-                           class="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition block">
-                            <div class="relative aspect-[4/5] overflow-hidden">
-                                @if($cover)
-                                    <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                                @else
-                                    <div class="w-full h-full bg-gray-100 flex items-center justify-center">
-                                        <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                    </div>
-                                @endif
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                                @if($discount > 0)
-                                <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent text-white">
-                                    Hemat IDR {{ number_format($discount, 0, ',', '.') }}
-                                </span>
-                                @endif
-                                <div class="absolute bottom-0 left-0 right-0 p-3">
-                                    <p class="text-white text-xs font-bold leading-snug line-clamp-2">{{ $pkg->name }}</p>
-                                    <p class="text-white/80 text-[10px] mt-0.5 truncate">{{ $vendor->name }}</p>
-                                    <p class="text-white/60 text-[10px] truncate">{{ $vendor->city }}{{ $vendor->location ? ' · ' . $vendor->location : '' }}</p>
-                                </div>
-                            </div>
-                            <div class="p-3">
-                                <p class="text-[9px] text-gray-400 mb-0.5">Mulai dari</p>
-                                @if($discount > 0)
-                                    <p class="text-[11px] text-gray-400 line-through">IDR {{ number_format($price, 0, ',', '.') }}</p>
-                                    <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($final, 0, ',', '.') }}</p>
-                                @else
-                                    <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($price, 0, ',', '.') }}</p>
-                                @endif
-                            </div>
+                        <x-package-card
+                            :href="route('store.package.show', $pkg)"
+                            :name="$pkg->name"
+                            :image="$cover"
+                            :price="$price"
+                            :discount="$discount"
+                            :vendor-name="$vendor->name"
+                            :location="$vendor->city ?? 'Indonesia'"
+                            :rating="$vendor?->rating"
+                            :benefit-primary="$primaryBenefit"
+                            :benefit-secondary="$secondaryBenefit"
+                            width-class="w-full"
+                        />
+                        @endforeach
+                    </div>
+                @endif
+            </section>
+
+            {{-- ===== VENDOR RESULTS ===== --}}
+            <section id="search-tab-vendors" class="search-tab-panel {{ $defaultSearchTab !== 'vendors' ? 'hidden' : '' }}">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-base font-bold text-dark">Vendor</h2>
+                    @if($vendors->count() > 0)
+                        <a href="{{ route('vendor') }}?q={{ urlencode($q) }}" class="text-xs font-semibold text-accent hover:underline">
+                            Lihat Semua Vendor →
+                        </a>
+                    @endif
+                </div>
+
+                @if($vendors->isEmpty())
+                    <div class="bg-white rounded-2xl border border-gray-100 p-8 text-center">
+                        <p class="text-sm text-gray-400">Tidak ada vendor yang cocok dengan "<strong>{{ $q }}</strong>"</p>
+                    </div>
+                @else
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                        @foreach ($vendors as $v)
+                        @php
+                            $vData = [
+                                'name' => $v->name,
+                                'city' => $v->city,
+                                'location' => $v->location,
+                                'rating' => $v->rating,
+                                'likes' => $v->likes,
+                                'comments_count' => $v->comments_count,
+                                'description' => $v->description,
+                                'cover' => $v->cover_image_url ?: (optional($v->galleries->first())->image_url ?? 'https://picsum.photos/seed/' . $v->id . '/800/600'),
+                                'detail_url' => route('vendor.detail', $v->slug),
+                                'wa_url' => 'https://wa.me/' . preg_replace('/[^0-9]/', '', $v->phone ?? ''),
+                                'pkg_price' => optional($v->cheapestPackage)->price,
+                                'pkg_discount' => optional($v->cheapestPackage)->discount ?? 0,
+                                'pkg_name' => optional($v->cheapestPackage)->name,
+                                'price_start' => is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : ($v->price_start ?: '—'),
+                            ];
+                        @endphp
+                        <a href="{{ route('vendor.detail', $v->slug) }}" class="block">
+                            <x-vendor-card
+                                :vendor="$v"
+                                :vendor-data="$vData"
+                                width-class="w-full"
+                            />
                         </a>
                         @endforeach
                     </div>
@@ -219,4 +178,37 @@
     </div>
 
     @include('layout.footer')
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabButtons = Array.from(document.querySelectorAll('.search-tab-button'));
+        const tabPanels = Array.from(document.querySelectorAll('.search-tab-panel'));
+
+        if (!tabButtons.length || !tabPanels.length) {
+            return;
+        }
+
+        function setActiveTab(target) {
+            tabButtons.forEach(function (button) {
+                const isActive = button.getAttribute('data-search-tab') === target;
+                button.classList.toggle('bg-accent', isActive);
+                button.classList.toggle('text-white', isActive);
+                button.classList.toggle('text-gray-500', !isActive);
+                button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            tabPanels.forEach(function (panel) {
+                panel.classList.toggle('hidden', panel.id !== 'search-tab-' + target);
+            });
+        }
+
+        tabButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                setActiveTab(button.getAttribute('data-search-tab'));
+            });
+        });
+
+        setActiveTab(@json($defaultSearchTab));
+    });
+    </script>
 @endsection

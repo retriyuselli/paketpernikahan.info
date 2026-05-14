@@ -19,7 +19,7 @@
     </div>
 
     <!-- Search Bar -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
+    {{-- <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
         <form action="{{ route('vendor') }}" method="GET" class="flex flex-wrap gap-2 items-center">
             <select name="category" class="flex-1 min-w-40 py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
                 <option value="">Semua Kategori</option>
@@ -54,7 +54,7 @@
             </a>
             @endif
         </form>
-    </div>
+    </div> --}}
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -92,7 +92,7 @@
     });
     </script>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="max-w-7xl mx-auto px-4 pt-4 pb-10 sm:px-6 lg:px-8 lg:py-10">
 
         @if(!isset($categories) || $categories->isEmpty())
             <div class="bg-white rounded-2xl border border-gray-100 p-10 text-center flex flex-col items-center">
@@ -108,23 +108,23 @@
             </div>
         @else
             @foreach ($categories as $cat)
-        <div class="mb-12">
+        <div class="mb-6 sm:mb-8 lg:mb-12">
 
             <!-- Category Title -->
             <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-bold text-dark">{{ $cat->name }}</h2>
-                <a href="{{ route('vendor', ['category' => $cat->slug]) }}" class="text-xs font-semibold hover:underline text-accent">Lihat Semua →</a>
+                <h2 class="text-sm font-bold text-dark">{{ $cat->name }}</h2>
+                <a href="{{ route('vendor', ['category' => $cat->slug]) }}" class="text-xs font-bold hover:underline text-accent">Lihat</a>
             </div>
 
             <!-- Scrollable Row -->
             <div class="relative">
                 <!-- Left Arrow -->
-                <button type="button" data-scroll-sibling="next" data-scroll-by="-300"
+                {{-- <button type="button" data-scroll-sibling="next" data-scroll-by="-300"
                         class="absolute left-0 top-1/3 -translate-y-1/2 -translate-x-3 w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
                     <svg class="w-4 h-4 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                </button>
+                </button> --}}
 
-                <div class="flex gap-1 overflow-x-auto scroll-smooth pb-1 scrollbar-hide">
+                <div class="flex gap-1.5 sm:gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide">
                     @foreach ($cat->vendors as $i => $v)
                     @php
                     $vData = [
@@ -147,16 +147,16 @@
                     <x-vendor-card
                         :vendor="$v"
                         :vendor-data="$vData"
-                        width-class="w-56"
+                        width-class="w-[calc((100%-0.25rem)/2)] sm:w-[44vw] lg:w-56"
                     />
                     @endforeach
                 </div>
 
                 <!-- Right Arrow -->
-                <button type="button" data-scroll-sibling="prev" data-scroll-by="300"
+                {{-- <button type="button" data-scroll-sibling="prev" data-scroll-by="300"
                         class="absolute right-0 top-1/3 -translate-y-1/2 translate-x-3 w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
                     <svg class="w-4 h-4 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </button>
+                </button> --}}
             </div>
 
         </div>

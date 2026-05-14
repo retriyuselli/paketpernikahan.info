@@ -37,6 +37,13 @@
 <div class="sticky top-0 z-40 border-b border-gray-200 bg-white lg:backdrop-blur-none">
     <x-ui.container>
         <div class="flex items-center justify-between gap-2 py-2 lg:gap-8 lg:py-3">
+            @php
+                $showMobileBackButton = request()->routeIs('search')
+                    || request()->routeIs('store')
+                    || request()->routeIs('store.*')
+                    || request()->routeIs('vendor')
+                    || request()->routeIs('vendor.*');
+            @endphp
 
             <!-- Logo (left) -->
             <div class="hidden items-center gap-2 h-10 flex-shrink-0 lg:flex">
@@ -46,6 +53,17 @@
                     </span>
                 </a>
             </div>
+
+            @if($showMobileBackButton)
+                <button type="button"
+                        onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href='{{ route('home') }}'; }"
+                        class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-dark transition hover:border-gray-300 lg:hidden"
+                        aria-label="Kembali">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+            @endif
 
             <form method="GET" action="{{ route('search') }}"
                   class="ml-0 mr-3 flex min-w-0 flex-1 items-center gap-2 rounded-none border border-gray-200 bg-gray-50 px-3 py-1.5 transition hover:border-gray-300 focus-within:border-accent focus-within:bg-white lg:hidden">

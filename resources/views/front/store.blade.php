@@ -34,7 +34,7 @@
                             <strong>"{{ $search }}"</strong>
                         @endif
                         @if(!empty($kategori))
-                            <span class="ml-1 inline-block bg-accent/10 text-accent text-xs font-semibold px-2 py-0.5 rounded-full">{{ $kategoriCat?->name ?? ucfirst($kategori) }}</span>
+                            <span class="ml-1 inline-block bg-accent/10 text-accent text-sm font-bold px-2 py-0.5 rounded-full">{{ $kategoriCat?->name ?? ucfirst($kategori) }}</span>
                         @endif
                     </p>
                 </div>
@@ -52,7 +52,7 @@
                 $group = $packagesByCategory->get($category->slug, collect());
             @endphp
             @if($group->isNotEmpty())
-                <div class="mb-[14px] sm:mb-10" id="cat-{{ $category->slug }}">
+                <div class="mb-[10px] sm:mb-10" id="cat-{{ $category->slug }}">
                     <div class="flex items-end justify-between gap-4 mb-3">
                         <div>
                             <p class="text-sm font-bold text-dark">{{ $category->name }}</p>
@@ -122,7 +122,7 @@
         @endforeach
 
         @if(($uncategorizedPackages ?? collect())->isNotEmpty())
-            <div class="mb-[14px] sm:mb-10" id="cat-lainnya">
+            <div class="mb-[10px] sm:mb-10" id="cat-lainnya">
                 <div class="flex items-end justify-between gap-4 mb-3">
                     <div>
                         <p class="text-sm font-bold text-dark">Lainnya</p>
