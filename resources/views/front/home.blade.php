@@ -134,7 +134,7 @@
                                 <a href="{{ route('store.category', $category) }}" class="text-xs font-medium hover:underline text-accent">Lihat</a>
                             </div>
 
-                            <div class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                            <div class="flex snap-x snap-mandatory gap-1.5 sm:gap-2 overflow-x-auto pb-4 scrollbar-hide">
                                 @foreach($group->take(7) as $pkg)
                                     @php
                                         $vendor = $pkg->vendor;
@@ -152,44 +152,19 @@
                                         $secondaryBenefit = !empty($items[0]) ? \Illuminate\Support\Str::limit($items[0], 16) : 'Gratis Konsultasi';
                                         $rating = $vendor && $vendor->rating ? number_format((float) $vendor->rating, 1) : null;
                                     @endphp
-                                    <a href="{{ route('store.package.show', $pkg) }}"
-                                       class="flex-none snap-start w-[46.5vw] sm:w-[44vw] lg:w-60 bg-white rounded-[18px] shadow-[0_2px_10px_rgba(15,23,42,0.08)] border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition">
-                                        <div class="relative aspect-square">
-                                            <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover">
-                                            @if($discountPercent > 0)
-                                                <span class="absolute right-0 top-0 rounded-bl-2xl bg-accent px-2.5 py-1.5 text-[11px] font-extrabold leading-none text-cream">
-                                                    {{ $discountPercent }}%
-                                                </span>
-                                            @endif
-                                            <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5 text-dark" style="background: linear-gradient(90deg, var(--soft-pink), var(--light-sage), var(--sage-green));">
-                                                <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">{{ $primaryBenefit }}</span>
-                                                <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">{{ $secondaryBenefit }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="space-y-1 p-3">
-                                            <p class="text-[13px] font-medium leading-tight text-gray-900 sm:min-h-11">{{ $pkg->name }}</p>
-                                            @if($discount > 0)
-                                                <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($price, 0, ',', '.') }}</p>
-                                            @endif
-                                            <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[15px]">{{ number_format($final ?: $price, 0, ',', '.') }}</span></p>
-                                            <div class="flex flex-wrap gap-1">
-                                                @if($discount > 0)
-                                                    <span class="rounded-lg border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
-                                                @endif
-                                            </div>
-                                            <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
-                                                @if($rating)
-                                                    <span class="flex items-center gap-1 text-accent">
-                                                        <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                                        <span>{{ $rating }}</span>
-                                                    </span>
-                                                    <span class="text-gray-300">|</span>
-                                                @endif
-                                                <span>{{ $vendor->city ?? 'Indonesia' }}</span>
-                                            </div>
-                                            <p class="truncate text-[11px] text-gray-500">{{ $vendor->name }}</p>
-                                        </div>
-                                    </a>
+                                    <x-package-card
+                                        :href="route('store.package.show', $pkg)"
+                                        :name="$pkg->name"
+                                        :image="$cover"
+                                        :price="$price"
+                                        :discount="$discount"
+                                        :vendor-name="$vendor->name"
+                                        :location="$vendor->city ?? 'Indonesia'"
+                                        :rating="$vendor?->rating"
+                                        :benefit-primary="$primaryBenefit"
+                                        :benefit-secondary="$secondaryBenefit"
+                                        width-class="w-[46.5vw] sm:w-[44vw] lg:w-60"
+                                    />
                                 @endforeach
                             </div>
                         </div>
@@ -248,7 +223,7 @@
                             <a href="{{ route('store.city', $city) }}" class="text-xs text-accent font-medium hover:underline">Lihat</a>
                         </div>
 
-                        <div class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 scrollbar-hide">
+                        <div class="flex snap-x snap-mandatory gap-1.5 sm:gap-2 overflow-x-auto pb-4 scrollbar-hide">
                             @foreach($cityPackages->take(7) as $pkg)
                                 @php
                                     $vendor = $pkg->vendor;
@@ -266,44 +241,19 @@
                                     $secondaryBenefit = !empty($items[0]) ? \Illuminate\Support\Str::limit($items[0], 16) : 'Gratis Konsultasi';
                                     $rating = $vendor && $vendor->rating ? number_format((float) $vendor->rating, 1) : null;
                                 @endphp
-                                <a href="{{ route('store.package.show', $pkg) }}"
-                                   class="flex-none snap-start w-[46.5vw] sm:w-[44vw] lg:w-60 bg-white rounded-[18px] shadow-[0_2px_10px_rgba(15,23,42,0.08)] border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition">
-                                    <div class="relative aspect-square">
-                                        <img src="{{ $cover }}" alt="{{ $pkg->name }}" class="w-full h-full object-cover">
-                                        @if($discountPercent > 0)
-                                            <span class="absolute right-0 top-0 rounded-bl-2xl bg-accent px-2.5 py-1.5 text-[11px] font-extrabold leading-none text-cream">
-                                                {{ $discountPercent }}%
-                                            </span>
-                                        @endif
-                                        <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5 text-dark" style="background: linear-gradient(90deg, var(--soft-pink), var(--light-sage), var(--sage-green));">
-                                            <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">{{ $primaryBenefit }}</span>
-                                            <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">{{ $secondaryBenefit }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="space-y-1 p-3">
-                                        <p class="text-[13px] font-medium leading-tight text-gray-900 sm:min-h-11">{{ $pkg->name }}</p>
-                                        @if($discount > 0)
-                                            <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($price, 0, ',', '.') }}</p>
-                                        @endif
-                                        <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[15px]">{{ number_format($final ?: $price, 0, ',', '.') }}</span></p>
-                                        <div class="flex flex-wrap gap-1">
-                                            @if($discount > 0)
-                                                <span class="rounded-lg border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
-                                            @endif
-                                        </div>
-                                        <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
-                                            @if($rating)
-                                                <span class="flex items-center gap-1 text-accent">
-                                                    <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                                    <span>{{ $rating }}</span>
-                                                </span>
-                                                <span class="text-gray-300">|</span>
-                                            @endif
-                                            <span>{{ $city }}</span>
-                                        </div>
-                                        <p class="truncate text-[11px] text-gray-500">{{ $vendor->name }}</p>
-                                    </div>
-                                </a>
+                                <x-package-card
+                                    :href="route('store.package.show', $pkg)"
+                                    :name="$pkg->name"
+                                    :image="$cover"
+                                    :price="$price"
+                                    :discount="$discount"
+                                    :vendor-name="$vendor->name"
+                                    :location="$city"
+                                    :rating="$vendor?->rating"
+                                    :benefit-primary="$primaryBenefit"
+                                    :benefit-secondary="$secondaryBenefit"
+                                    width-class="w-[46.5vw] sm:w-[44vw] lg:w-60"
+                                />
                             @endforeach
                         </div>
                     </div>

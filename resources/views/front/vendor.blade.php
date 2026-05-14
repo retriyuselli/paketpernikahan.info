@@ -144,98 +144,11 @@
                         'price_start'    => is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : ($v->price_start ?: '—'),
                     ];
                     @endphp
-                    <div data-vendor-preview-open data-vendor='@json($vData)' class="flex-none w-56 cursor-pointer group border border-gray-200 rounded-2xl p-2 hover:border-gray-300 transition bg-white block">
-                        <!-- Photo -->
-                        <div class="relative rounded-xl overflow-hidden mb-2 aspect-4/5">
-                            <img src="{{ $v->cover_image_url ?: (optional($v->galleries->first())->image_url ?? 'https://picsum.photos/seed/'.$v->id.'/350/260') }}"
-                                 alt="{{ $v->name }}"
-                                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                            @if (!empty($v->promo))
-                            <div class="absolute top-2 left-2 flex flex-col gap-1">
-                                @foreach ((array) $v->promo as $p)
-                                <span class="text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full text-white bg-accent">{{ \App\Enums\VendorPromo::from($p)->label() }}</span>
-                                @endforeach
-                            </div>
-                            @endif
-                            @if (!empty($v->badge))
-                            <div class="absolute bottom-0 left-0 right-0 px-2 py-1.5 flex items-center gap-1 bg-accent-gradient">
-                                <svg class="w-3 h-3 text-white shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                @php $allBadges = (array) $v->badge; $extraBadges = count($allBadges) - 2; @endphp
-                                @foreach (array_slice($allBadges, 0, 2) as $b)
-                                <span class="text-[9px] font-bold text-white uppercase tracking-wide">{{ \App\Enums\VendorBadge::from($b)->label() }}</span>
-                                @endforeach
-                                @if ($extraBadges > 0)
-                                <span class="text-[9px] font-bold text-white/70 uppercase tracking-wide">+{{ $extraBadges }}</span>
-                                @endif
-                                <svg class="w-3 h-3 text-white ml-auto shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                            </div>
-                            @endif
-                            @if ($v->city)
-                            <div class="absolute {{ !empty($v->badge) ? 'bottom-8' : 'bottom-2' }} left-0 right-0 flex justify-center z-10">
-                                <span class="flex items-center gap-1 text-[10px] font-semibold text-white px-2.5 py-0.5 rounded-full bg-backdrop-45 backdrop-blur-[2px]">
-                                    <svg class="w-2.5 h-2.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
-                                    {{ $v->city }}
-                                </span>
-                            </div>
-                            @endif
-                        </div>
-
-                        <!-- Info -->
-                        <p class="font-bold text-sm leading-snug group-hover:underline text-dark">{{ $v->name }}</p>
-                        @php $pkg = $v->cheapestPackage; @endphp
-                        @if ($pkg)
-                        <div class="flex items-center gap-1.5 mt-1 mb-2">
-                            <span class="text-[9px] text-gray-400">Mulai</span>
-                            @if ($pkg->discount > 0)
-                            <span class="text-[10px] line-through text-gray-400">Rp {{ number_format($pkg->price, 0, ',', '.') }}</span>
-                            <span class="text-[11px] font-bold text-dark">Rp {{ number_format($pkg->price - $pkg->discount, 0, ',', '.') }}</span>
-                            @else
-                            <span class="text-[11px] font-semibold text-dark">Rp {{ number_format($pkg->price, 0, ',', '.') }}</span>
-                            @endif
-                        </div>
-                        @else
-                        <div class="flex items-center gap-1.5 mt-1 mb-2">
-                            <span class="text-[9px] text-gray-400">Mulai</span>
-                            <span class="text-[11px] font-semibold text-dark">{{ is_numeric($v->price_start) ? 'Rp ' . number_format((int) $v->price_start, 0, ',', '.') : ($v->price_start ?: '—') }}</span>
-                        </div>
-                        @endif
-
-                        <!-- Stats -->
-                        @php
-                            $vComments = (int) ($v->comments_count ?? 0);
-                            $vRating = (float) ($v->rating ?? 0);
-                            $vPhotos = (int) ($v->galleries_count ?? 0);
-                            $vLikes = (int) ($v->likes ?? 0);
-                        @endphp
-                        @if($vComments >= 1 || $vRating >= 1 || $vPhotos >= 1 || $vLikes >= 1)
-                            <div class="flex items-center gap-2 text-[10px] text-gray-500 flex-wrap">
-                                @if($vComments >= 1)
-                                    <span class="flex items-center gap-0.5">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                                        {{ $vComments }}
-                                    </span>
-                                @endif
-                                @if($vRating >= 1)
-                                    <span class="flex items-center gap-0.5 font-semibold text-rating">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                        {{ number_format($vRating, 1) }}
-                                    </span>
-                                @endif
-                                @if($vPhotos >= 1)
-                                    <span class="flex items-center gap-0.5">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                        {{ $vPhotos }}
-                                    </span>
-                                @endif
-                                @if($vLikes >= 1)
-                                    <span class="flex items-center gap-0.5">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                        {{ $vLikes }}
-                                    </span>
-                                @endif
-                            </div>
-                        @endif
-                    </div>
+                    <x-vendor-card
+                        :vendor="$v"
+                        :vendor-data="$vData"
+                        width-class="w-56"
+                    />
                     @endforeach
                 </div>
 
