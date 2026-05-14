@@ -1632,6 +1632,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // ── Chat (public) ──────────────────────────────────────────────────────────
+Route::get('/chat', [ChatController::class, 'publicPage'])->name('chat.public');
+Route::get('/chat/{token}', [ChatController::class, 'publicPage'])->name('chat.public.session');
 Route::post('/chat/start', [ChatController::class, 'start'])->name('chat.start')
     ->middleware('throttle:20,1');
 Route::post('/chat/{token}/send', [ChatController::class, 'send'])->name('chat.send')

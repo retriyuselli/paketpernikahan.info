@@ -189,6 +189,8 @@
         </script>
         @endif
 
+        @hasSection('hide-live-chat-widget')
+        @else
         {{-- ── Live Chat Widget ── --}}
         <div id="lc-widget" class="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-[9990] flex flex-col items-end gap-3">
 
@@ -541,6 +543,7 @@
             welcomeTimer = setTimeout(maybeShowWelcome, 1200);
         })();
         </script>
+        @endif
 
     </body>
 </html>

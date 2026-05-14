@@ -23,7 +23,7 @@
 
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-extrabold text-dark">Paket Pernikahan di {{ $city }}</h1>
+                    <h1 class="text-sm sm:text-2xl font-extrabold text-dark">Paket Pernikahan di {{ $city }}</h1>
                 </div>
                 <div class="flex items-center gap-2">
                     <form method="GET" action="{{ route('store.city', $city) }}" class="flex items-center gap-2">

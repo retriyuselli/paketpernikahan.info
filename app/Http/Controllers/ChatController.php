@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ChatSession;
 use App\Models\ChatMessage;
 use App\Models\User;
+use App\Models\VendorPackage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,32 @@ class ChatController extends Controller
         $bookingUserCount = \App\Models\VendorBooking::where('status', 'pending')->count();
 
         return compact('user', 'reviewCount', 'favoriteCount', 'bookingCount', 'bookingUserCount');
+    }
+
+    public function publicPage(Request $request, ?string $token = null)
+    {
+        $session = null;
+
+        if ($token) {
+            $session = ChatSession::where('session_token', $token)->firstOrFail();
+        }
+
+        $package = null;
+        $vendor = null;
+        $packageId = (int) $request->query('package', 0);
+
+        if ($packageId > 0) {
+            $package = VendorPackage::query()
+                ->where('is_active', true)
+                ->with('vendor')
+                ->find($packageId);
+
+            $vendor = $package?->vendor;
+        }
+
+        $guestName = Auth::check() ? (string) (Auth::user()?->name ?? '') : '';
+
+        return view('chat.public', compact('session', 'package', 'vendor', 'guestName'));
     }
 
     // ── Public: mulai sesi baru ──────────────────────────────────────
@@ -66,6 +93,8 @@ class ChatController extends Controller
             'sender'          => 'guest',
             'message'         => strip_tags(trim($request->message)),
         ]);
+
+        $session->touch();
 
         return response()->json(['id' => $msg->id, 'created_at' => $msg->created_at]);
     }
