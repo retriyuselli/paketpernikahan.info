@@ -16,9 +16,9 @@
         $coverImage = $blog->cover_image_url ?: 'https://picsum.photos/seed/blog-' . $blog->id . '/1200/630';
     @endphp
 
-    <section class="py-8 bg-cream">
+    <section class="pt-3 lg:py-8 bg-cream">
         <x-ui.container>
-            <div class="pt-4 pb-4">
+            <div class="pt-1 pb-4 lg:pt-4">
                 @include('layout.breadcrumb', ['items' => $breadcrumbItems])
             </div>
 

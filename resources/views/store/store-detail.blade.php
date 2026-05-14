@@ -170,9 +170,9 @@
         ];
     @endphp
 
-    <section class="py-8 pb-44 lg:pb-8 bg-cream">
+    <section class="pt-3 pb-44 lg:py-8 bg-cream">
         <x-ui.container>
-            <div class="pt-4 pb-4">
+            <div class="pt-1 pb-4 lg:pt-4">
                 @include('layout.breadcrumb', ['items' => $breadcrumbItems])
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">

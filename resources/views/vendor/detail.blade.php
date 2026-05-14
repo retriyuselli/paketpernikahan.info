@@ -151,7 +151,7 @@
     @endphp
 
     <!-- Breadcrumb -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1 pb-4 lg:pt-4">
         <div class="flex items-center justify-between gap-4">
             @include('layout.breadcrumb', ['items' => $breadcrumbItems])
 

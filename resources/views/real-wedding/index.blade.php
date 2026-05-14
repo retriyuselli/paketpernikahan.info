@@ -14,9 +14,9 @@
         ];
     @endphp
 
-    <section class="py-8 bg-cream">
+    <section class="pt-3 lg:py-8 bg-cream">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="pt-4 pb-4">
+            <div class="pt-1 pb-4 lg:pt-4">
                 @include('layout.breadcrumb', ['items' => $breadcrumbItems])
             </div>
 
