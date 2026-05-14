@@ -9,7 +9,7 @@
     'rating' => null,
     'benefitPrimary' => 'Paket Pilihan',
     'benefitSecondary' => 'Gratis Konsultasi',
-    'widthClass' => 'w-[46.5vw] sm:w-[44vw] lg:w-60',
+    'widthClass' => 'w-[calc((100%-0.375rem)/2)] sm:w-[44vw] lg:w-60',
     'aspectClass' => 'aspect-square',
 ])
 
@@ -27,7 +27,7 @@
 
 <a href="{{ $href }}"
    {{ $attributes->class([
-       'flex-none snap-start overflow-hidden rounded-[18px] border border-gray-200 bg-white shadow-[0_2px_10px_rgba(15,23,42,0.08)] transition hover:border-gray-200 hover:shadow-sm',
+       'flex-none snap-start overflow-hidden rounded-[10px] border border-gray-200 bg-white shadow-[0_2px_10px_rgba(15,23,42,0.08)] transition hover:border-gray-200 hover:shadow-sm',
        $widthClass,
    ]) }}>
     <div class="relative {{ $aspectClass }}">
@@ -47,7 +47,7 @@
     </div>
 
     <div class="space-y-1 p-3">
-        <p class="text-[13px] font-medium leading-tight text-gray-900 sm:min-h-11">{{ $displayName }}</p>
+        <p class="text-[12px] font-medium leading-tight text-gray-900 sm:text-[13px] sm:min-h-11">{{ $displayName }}</p>
 
         @if($discountAmount > 0)
             <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($basePrice, 0, ',', '.') }}</p>

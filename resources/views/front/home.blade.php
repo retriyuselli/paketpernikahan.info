@@ -126,7 +126,7 @@
                     @php $group = $homePackagesByCategory->get($category->slug, collect()); @endphp
                     @if($group->isNotEmpty())
                         @php $catIndex++; @endphp
-                        <div class="mb-10 pkg-category-block" @if($catIndex > 3) style="display:none" @endif>
+                        <div class="mb-[14px] sm:mb-10 pkg-category-block" @if($catIndex > 3) style="display:none" @endif>
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
                                     <p class="text-base font-bold text-dark">{{ $category->name }}</p>
@@ -163,7 +163,7 @@
                                         :rating="$vendor?->rating"
                                         :benefit-primary="$primaryBenefit"
                                         :benefit-secondary="$secondaryBenefit"
-                                        width-class="w-[46.5vw] sm:w-[44vw] lg:w-60"
+                                        width-class="w-[calc((100%-0.375rem)/2)] sm:w-[44vw] lg:w-60"
                                     />
                                 @endforeach
                             </div>
@@ -252,7 +252,7 @@
                                     :rating="$vendor?->rating"
                                     :benefit-primary="$primaryBenefit"
                                     :benefit-secondary="$secondaryBenefit"
-                                    width-class="w-[46.5vw] sm:w-[44vw] lg:w-60"
+                                    width-class="w-[calc((100%-0.375rem)/2)] sm:w-[44vw] lg:w-60"
                                 />
                             @endforeach
                         </div>

@@ -83,7 +83,7 @@
                 $group = $packagesByCategory->get($category->slug, collect());
             @endphp
             @if($group->isNotEmpty())
-                <div class="mb-10" id="cat-{{ $category->slug }}">
+                <div class="mb-[14px] sm:mb-10" id="cat-{{ $category->slug }}">
                     <div class="flex items-end justify-between gap-4 mb-3">
                         <div>
                             <p class="text-sm font-bold text-dark">{{ $category->name }}</p>
@@ -153,7 +153,7 @@
         @endforeach
 
         @if(($uncategorizedPackages ?? collect())->isNotEmpty())
-            <div class="mb-10" id="cat-lainnya">
+            <div class="mb-[14px] sm:mb-10" id="cat-lainnya">
                 <div class="flex items-end justify-between gap-4 mb-3">
                     <div>
                         <p class="text-sm font-bold text-dark">Lainnya</p>
@@ -205,7 +205,7 @@
                                 :rating="$vendor?->rating"
                                 :benefit-primary="$primaryBenefit"
                                 :benefit-secondary="$secondaryBenefit"
-                                width-class="w-[46.5vw] sm:w-[44vw] lg:w-60"
+                                width-class="w-[calc((100%-0.375rem)/2)] sm:w-[44vw] lg:w-60"
                             />
                         @endforeach
                     </div>
