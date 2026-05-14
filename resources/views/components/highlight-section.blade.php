@@ -85,7 +85,7 @@
             <div id="{{ $scrollId }}-mobile" class="flex snap-x snap-mandatory gap-0 overflow-x-auto scroll-smooth scrollbar-hide">
                 @foreach($mobileHighlights as $mobileHighlight)
                     <a href="{{ $mobileHighlight['url'] }}"
-                       class="relative flex-none w-screen overflow-hidden bg-white aspect-[34/11]">
+                       class="relative flex-none snap-start w-screen overflow-hidden bg-white aspect-[34/11]">
                         <img src="{{ $mobileHighlight['image'] }}" alt="{{ $mobileHighlight['title'] }}" class="h-full w-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent"></div>
                         <div class="absolute inset-x-0 bottom-0 top-0 flex flex-col justify-between p-4 text-white">
