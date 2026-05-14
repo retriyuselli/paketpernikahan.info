@@ -217,13 +217,13 @@
                 @php $cityIndex = 0; @endphp
                 @foreach($homePackagesByCity as $city => $cityPackages)
                     @php $cityIndex++; @endphp
-                    <div class="mb-10 venue-city-block" @if($cityIndex > 3) style="display:none" @endif>
+                    <div class="mb-[14px] sm:mb-10 venue-city-block" @if($cityIndex > 3) style="display:none" @endif>
                         <div class="flex items-center justify-between mb-3">
                             <p class="text-base font-bold text-dark">{{ $city }}</p>
                             <a href="{{ route('store.city', $city) }}" class="text-xs text-accent font-medium hover:underline">Lihat</a>
                         </div>
 
-                        <div class="flex snap-x snap-mandatory gap-1.5 sm:gap-2 overflow-x-auto pb-4 scrollbar-hide">
+                        <div class="flex snap-x snap-mandatory gap-1 sm:gap-1.5 overflow-x-auto pb-4 scrollbar-hide">
                             @foreach($cityPackages->take(7) as $pkg)
                                 @php
                                     $vendor = $pkg->vendor;
@@ -252,7 +252,7 @@
                                     :rating="$vendor?->rating"
                                     :benefit-primary="$primaryBenefit"
                                     :benefit-secondary="$secondaryBenefit"
-                                    width-class="w-[calc((100%-0.375rem)/2)] sm:w-[44vw] lg:w-60"
+                                    width-class="w-[calc((100%-0.25rem)/2)] sm:w-[44vw] lg:w-60"
                                 />
                             @endforeach
                         </div>

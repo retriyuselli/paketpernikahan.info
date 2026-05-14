@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <div class="space-y-1 p-3">
+    <div class="space-y-0.5 p-3 sm:space-y-1">
         <p class="text-[12px] font-medium leading-tight text-gray-900 sm:text-[13px] sm:min-h-11">{{ $displayName }}</p>
 
         @if($discountAmount > 0)
@@ -61,6 +61,10 @@
             </div>
         @endif
 
+        @if(filled($vendorName))
+            <p class="truncate text-[11px] text-gray-500">{{ $vendorName }}</p>
+        @endif
+
         <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
             @if($ratingText)
                 <span class="flex items-center gap-1 text-accent">
@@ -69,9 +73,5 @@
                 </span>
             @endif
         </div>
-
-        @if(filled($vendorName))
-            <p class="truncate text-[11px] text-gray-500">{{ $vendorName }}</p>
-        @endif
     </div>
 </a>
