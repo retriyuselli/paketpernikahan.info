@@ -91,7 +91,7 @@
                     @endforeach
                 </div>
 
-                <div class="mt-8">
+                <div class="mt-8 mb-8 sm:mb-10">
                     {{ $packages->links() }}
                 </div>
             @endif
