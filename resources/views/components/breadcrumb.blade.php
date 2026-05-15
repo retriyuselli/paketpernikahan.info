@@ -1,6 +1,6 @@
 @props(['items' => []])
 
-<nav class="flex items-center gap-2 text-xs font-semibold text-dark overflow-hidden min-w-0">
+<nav class="flex items-center gap-2 text-[11px] font-semibold text-dark overflow-hidden min-w-0">
     @foreach($items as $i => $item)
         @if($i > 0)
             <svg class="w-3 h-3 opacity-30 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -9,7 +9,7 @@
         @endif
 
         @php
-            $label = (string) ($item['label'] ?? '');
+            $label = mb_convert_case((string) ($item['label'] ?? ''), MB_CASE_TITLE, 'UTF-8');
             $url = $item['url'] ?? null;
         @endphp
 
