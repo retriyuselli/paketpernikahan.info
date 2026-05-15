@@ -261,10 +261,10 @@
 
     <!-- Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-28 lg:pb-16">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8">
 
             <!-- Left: Main Content -->
-            <div class="lg:col-span-2 space-y-8">
+            <div class="lg:col-span-2 space-y-4 lg:space-y-8">
 
                 <!-- Vendor Name + Type -->
                 <div class="flex items-start justify-between gap-4 pt-2">
@@ -298,7 +298,7 @@
                 </div>
 
                 <!-- Stats Bar -->
-                <div class="sm:hidden flex items-center gap-3 py-3 border-y border-gray-100 text-xs text-gray-600 whitespace-nowrap overflow-x-auto">
+                <div class="hidden items-center gap-3 py-3 border-y border-gray-100 text-xs text-gray-600 whitespace-nowrap overflow-x-auto">
                     <div class="flex items-center gap-1.5">
                         <svg class="w-4 h-4 text-rating" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <span class="font-bold">{{ $displayRating }}</span>
@@ -389,7 +389,7 @@
                 <!-- Packages -->
                 <div id="packages">
                     <h2 class="text-base font-bold mb-4 text-dark">Paket & Harga</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         @foreach ($vendor->packages as $pkg)
                         @php
                             $pkgData = array_merge(
@@ -397,30 +397,24 @@
                                 ['item_html' => (string) ($pkg->item ?? '')]
                             );
                         @endphp
-                        <div class="rounded-2xl p-5 flex flex-col cursor-pointer group ring-2 ring-transparent hover:ring-white/50 transition"
+                        <div class="rounded-2xl p-3 sm:p-5 flex flex-col cursor-pointer group ring-2 ring-transparent hover:ring-white/50 transition"
                              style="background-color: {{ $pkg->card_color }}; color: {{ $pkg->card_text_color }}"
                              data-action="open-package"
                              data-package='@json($pkgData)'>
-                            <p class="text-xs font-bold uppercase tracking-widest mb-1 opacity-70">{{ $pkg->name }}</p>
-                            <p class="text-sm font-bold leading-tight mb-1">Rp {{ number_format($pkg->price, 0, ',', '.') }}</p>
-                            <p class="text-xs mb-4 opacity-70">{{ $pkg->max_guests ?: '0' }} Pax</p>
+                            <p class="text-[9px] sm:text-xs font-bold uppercase tracking-widest mb-1 opacity-70 leading-tight">{{ $pkg->name }}</p>
+                            <p class="text-sm font-bold leading-tight mb-0.5">Rp {{ number_format($pkg->price, 0, ',', '.') }}</p>
+                            <p class="text-[10px] sm:text-xs mb-2 sm:mb-3 opacity-70">{{ $pkg->max_guests ?: '0' }} Pax</p>
                             @php $maxShow = 5; $total = count($pkg->items); $more = $total - $maxShow; @endphp
-                            <ul class="space-y-1.5 flex-1 mb-4">
+                            <ul class="space-y-1.5 flex-1 mb-3">
                                 @if($pkg->type)
-                                <li class="flex items-start gap-2 text-xs font-semibold">
+                                <li class="hidden sm:flex items-start gap-2 text-xs font-semibold">
                                     <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                                     {{ $pkg->type }}
                                 </li>
                                 @endif
-                                @if($pkg->capacity)
-                                <li class="flex items-start gap-2 text-xs font-semibold">
-                                    <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                    Kapasitas up to {{ number_format($pkg->capacity, 0, ',', '.') }} orang
-                                </li>
-                                @endif
                                 @foreach ($pkg->items as $idx => $item)
                                 @if ($idx < $maxShow)
-                                <li class="flex items-start gap-2 text-xs">
+                                <li class="{{ $idx >= 3 ? 'hidden sm:flex' : 'flex' }} items-start gap-2 text-xs">
                                     <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                     {{ $item }}
                                 </li>
@@ -434,7 +428,7 @@
                                 @endif
                             </ul>
                             <button type="button"
-                                    class="block w-full text-center text-xs font-bold uppercase tracking-wider py-2 rounded-full transition hover:opacity-80 bg-white/25">
+                                    class="block w-full text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider py-1.5 sm:py-2 rounded-full transition hover:opacity-80 bg-white/25">
                                 Pilih Paket
                             </button>
                         </div>

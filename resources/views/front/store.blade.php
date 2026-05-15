@@ -105,7 +105,7 @@
                                     :benefit-primary="$primaryBenefit"
                                     :benefit-secondary="$secondaryBenefit"
                                     width-class="w-[calc(50%-0.1875rem)] sm:w-[44vw] lg:w-52"
-                                    :class="$loop->index >= 2 ? 'hidden lg:flex' : ''"
+                                    :class="$loop->index >= 2 ? 'hidden lg:block' : ''"
                                 />
                             @endforeach
                         </div>
@@ -176,7 +176,7 @@
                                 :benefit-primary="$primaryBenefit"
                                 :benefit-secondary="$secondaryBenefit"
                                 width-class="w-[calc(50%-0.1875rem)] sm:w-[44vw] lg:w-60"
-                                :class="$loop->index >= 2 ? 'hidden lg:flex' : ''"
+                                :class="$loop->index >= 2 ? 'hidden lg:block' : ''"
                             />
                         @endforeach
                     </div>

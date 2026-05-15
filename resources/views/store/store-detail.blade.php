@@ -666,7 +666,7 @@
                                     :benefit-primary="$opPrimaryBenefit"
                                     :benefit-secondary="$opSecondaryBenefit"
                                     width-class="w-full"
-                                    :class="$loop->index >= 6 ? 'hidden lg:flex' : ''"
+                                    :class="$loop->index >= 6 ? 'hidden lg:block' : ''"
                                 />
                             @endforeach
                         </div>

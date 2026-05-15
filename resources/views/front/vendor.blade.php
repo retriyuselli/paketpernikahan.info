@@ -148,7 +148,7 @@
                         :vendor="$v"
                         :vendor-data="$vData"
                         width-class="w-[calc(50%-0.1875rem)] sm:w-[44vw] lg:w-56"
-                        :class="$loop->index >= 2 ? 'hidden lg:flex' : ''"
+                        :class="$loop->index >= 2 ? 'hidden lg:block' : ''"
                     />
                     @endforeach
                 </div>
