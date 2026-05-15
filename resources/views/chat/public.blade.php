@@ -26,7 +26,6 @@
 @section('title', 'Chat dengan ' . $chatVendorName . ' - Makna Wedding')
 @section('meta-description', 'Mulai chat langsung dengan ' . $chatVendorName . ' untuk tanya detail paket dan ketersediaan.')
 @section('body-class', 'bg-white text-dark chat-public-page')
-@section('hide-live-chat-widget', '1')
 
 @section('extra-head')
 <style>
@@ -54,7 +53,7 @@
         position: relative;
         min-height: 100dvh;
         padding-top: calc(var(--chat-header-height) + 0.75rem);
-        padding-bottom: 24rem;
+        padding-bottom: 34rem; /* fallback; JS will override with measured footer height */
     }
 
     .public-chat-wallpaper {
@@ -90,7 +89,7 @@
 
     .public-chat-wallpaper-ghost {
         position: absolute;
-        color: rgba(148, 163, 184, 0.13);
+        color: rgba(148, 163, 184, 0.18);
         pointer-events: none;
     }
 
@@ -167,9 +166,25 @@
         backdrop-filter: blur(6px);
     }
 
+    #chat-promo-banner {
+        transition: opacity 0.55s ease, max-height 0.55s ease, margin-top 0.55s ease,
+                    padding-top 0.55s ease, padding-bottom 0.55s ease, border-width 0.55s ease;
+        overflow: hidden;
+        max-height: 12rem;
+    }
+
+    #chat-promo-banner.chat-banner--fadeout {
+        opacity: 0;
+        max-height: 0;
+        margin-top: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-width: 0;
+    }
+
     @media (min-width: 768px) {
         .public-chat-main {
-            padding-bottom: 21rem;
+            padding-bottom: 28rem;
         }
 
         .public-chat-footer {
@@ -223,70 +238,100 @@
 
         <main class="public-chat-main">
             <div class="public-chat-wallpaper" aria-hidden="true">
-                {{-- Ghost 1: bird with wings, top-left --}}
-                <div class="public-chat-wallpaper-ghost" style="width: 8rem; height: 9rem; top: 3rem; left: 0.5rem;">
-                    <svg viewBox="0 0 100 110" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                        <ellipse cx="50" cy="74" rx="30" ry="33"/>
-                        <circle cx="50" cy="36" r="28"/>
-                        <ellipse cx="16" cy="72" rx="13" ry="22" transform="rotate(-18 16 72)"/>
-                        <ellipse cx="84" cy="72" rx="13" ry="22" transform="rotate(18 84 72)"/>
-                        <path d="M35 34 L41 39 L35 44" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M65 34 L59 39 L65 44" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <ellipse cx="50" cy="50" rx="7" ry="4" fill="white" opacity="0.3"/>
+                {{-- Shape 1: wedding rings (two interlocking circles), top-left --}}
+                <div class="public-chat-wallpaper-ghost" style="width: 9rem; height: 6rem; top: 2.5rem; left: 0.5rem;">
+                    <svg viewBox="0 0 130 80" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <circle cx="48" cy="40" r="30"/>
+                        <circle cx="82" cy="40" r="30"/>
                     </svg>
                 </div>
-                {{-- Ghost 2: tiny round bird, top-right --}}
-                <div class="public-chat-wallpaper-ghost" style="width: 4.5rem; height: 4.5rem; top: 7rem; right: 1.5rem;">
-                    <svg viewBox="0 0 80 80" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                        <circle cx="40" cy="40" r="36"/>
-                        <path d="M25 38 L31 43 L25 48" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M55 38 L49 43 L55 48" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        <ellipse cx="40" cy="53" rx="5" ry="3" fill="white" opacity="0.3"/>
+                {{-- Shape 2: 6-petal flower, top-right small --}}
+                <div class="public-chat-wallpaper-ghost" style="width: 5rem; height: 5rem; top: 6.5rem; right: 1rem;">
+                    <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3.5" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <ellipse cx="50" cy="24" rx="9" ry="20" transform="rotate(0, 50, 50)"/>
+                        <ellipse cx="50" cy="24" rx="9" ry="20" transform="rotate(60, 50, 50)"/>
+                        <ellipse cx="50" cy="24" rx="9" ry="20" transform="rotate(120, 50, 50)"/>
+                        <ellipse cx="50" cy="24" rx="9" ry="20" transform="rotate(180, 50, 50)"/>
+                        <ellipse cx="50" cy="24" rx="9" ry="20" transform="rotate(240, 50, 50)"/>
+                        <ellipse cx="50" cy="24" rx="9" ry="20" transform="rotate(300, 50, 50)"/>
+                        <circle cx="50" cy="50" r="9"/>
                     </svg>
                 </div>
-                {{-- Ghost 3: bear/panda, center --}}
-                <div class="public-chat-wallpaper-ghost" style="width: 9rem; height: 8.5rem; top: 17rem; left: 50%; transform: translateX(-50%);">
-                    <svg viewBox="0 0 110 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                        <circle cx="24" cy="22" r="16"/>
-                        <circle cx="86" cy="22" r="16"/>
-                        <circle cx="55" cy="56" r="40"/>
-                        <path d="M38 52 L45 57 L38 62" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M72 52 L65 57 L72 62" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <ellipse cx="55" cy="68" rx="8" ry="5" fill="white" opacity="0.3"/>
+                {{-- Shape 3: diamond / gem outline, center --}}
+                <div class="public-chat-wallpaper-ghost" style="width: 9rem; height: 10rem; top: 15rem; left: 50%; transform: translateX(-50%);">
+                    <svg viewBox="0 0 100 115" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <path d="M50 6 L94 44 L50 109 L6 44 Z"/>
+                        <path d="M6 44 L94 44"/>
+                        <path d="M50 6 L22 44 L50 109"/>
+                        <path d="M50 6 L78 44 L50 109"/>
+                        <path d="M22 44 L36 6"/>
+                        <path d="M78 44 L64 6"/>
                     </svg>
                 </div>
-                {{-- Ghost 4: classic ghost, bottom-left --}}
-                <div class="public-chat-wallpaper-ghost" style="width: 5.5rem; height: 7rem; bottom: 14rem; left: 0.75rem;">
-                    <svg viewBox="0 0 80 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                        <path d="M40 5 C20 5 5 20 5 40 L5 92 L15 82 L25 92 L35 82 L45 92 L55 82 L65 92 L75 82 L75 40 C75 20 60 5 40 5Z"/>
-                        <path d="M27 41 L33 46 L27 51" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M53 41 L47 46 L53 51" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                {{-- Shape 4: heart outline, bottom-left --}}
+                <div class="public-chat-wallpaper-ghost" style="width: 6rem; height: 5.5rem; bottom: 16rem; left: 0.5rem;">
+                    <svg viewBox="0 0 100 90" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <path d="M50 80 C50 80 8 52 8 26 C8 13 18 7 30 7 C38 7 45 12 50 18 C55 12 62 7 70 7 C82 7 92 13 92 26 C92 52 50 80 50 80Z"/>
                     </svg>
                 </div>
-                {{-- Ghost 5: cat/fox, bottom-right --}}
-                <div class="public-chat-wallpaper-ghost" style="width: 8rem; height: 8rem; right: 1rem; bottom: 18rem;">
-                    <svg viewBox="0 0 100 90" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                        <path d="M20 36 L14 7 L38 28Z"/>
-                        <path d="M80 36 L86 7 L62 28Z"/>
-                        <circle cx="50" cy="54" r="35"/>
-                        <path d="M33 51 L40 57 L33 63" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M67 51 L60 57 L67 63" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M45 66 L50 72 L55 66Z" fill="white" opacity="0.3"/>
+                {{-- Shape 5: infinity / eternal knot, bottom-right --}}
+                <div class="public-chat-wallpaper-ghost" style="width: 9rem; height: 5rem; bottom: 20rem; right: 0.5rem;">
+                    <svg viewBox="0 0 130 60" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <path d="M65 30 C65 30 54 8 32 8 C10 8 10 52 32 52 C54 52 65 30 65 30 C65 30 76 8 98 8 C120 8 120 52 98 52 C76 52 65 30 65 30Z"/>
                     </svg>
                 </div>
-                {{-- Ghost 6: extra small floating bird, mid-right --}}
-                <div class="public-chat-wallpaper-ghost" style="width: 3.5rem; height: 3.5rem; top: 28rem; right: 0.5rem;">
-                    <svg viewBox="0 0 60 70" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
-                        <ellipse cx="30" cy="44" rx="20" ry="24"/>
-                        <circle cx="30" cy="23" r="18"/>
-                        <path d="M20 22 L25 26 L20 30" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M40 22 L35 26 L40 30" fill="none" stroke="white" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M25 31 l5 5 5-5z" fill="white" opacity="0.3"/>
+                {{-- Shape 6: 4-petal flower small, mid-right --}}
+                <div class="public-chat-wallpaper-ghost" style="width: 4rem; height: 4rem; top: 30rem; right: 0.75rem;">
+                    <svg viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="3.5" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <ellipse cx="40" cy="19" rx="8" ry="17" transform="rotate(0, 40, 40)"/>
+                        <ellipse cx="40" cy="19" rx="8" ry="17" transform="rotate(90, 40, 40)"/>
+                        <ellipse cx="40" cy="19" rx="8" ry="17" transform="rotate(180, 40, 40)"/>
+                        <ellipse cx="40" cy="19" rx="8" ry="17" transform="rotate(270, 40, 40)"/>
+                        <circle cx="40" cy="40" r="7"/>
                     </svg>
                 </div>
             </div>
 
             <div id="public-chat-messages" class="public-chat-scroll">
+
+                {{-- Context block: muncul di atas chat saat percakapan dimulai --}}
+                <div id="chat-context-top"
+                     style="display:none; opacity:0; transition: opacity 0.5s ease;"
+                     class="mb-4 w-full">
+                    <p class="text-center text-[10px] leading-5 text-slate-400 px-1">
+                        Hati-hati penipuan! Mohon tidak bertransaksi di luar platform resmi dan tidak memberikan data pribadi kepada penjual, seperti nomor HP dan alamat. Tetap berinteraksi melalui Makna Wedding, ya.
+                        <a href="{{ route('home') }}" class="font-bold text-emerald-600">Baca Panduan Keamanan.</a>
+                    </p>
+                    <div class="mt-2 rounded-2xl border border-cyan-300/70 bg-cyan-50/80 px-4 py-3 shadow-sm">
+                        <div class="flex items-start gap-3">
+                            <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-cyan-300 text-cyan-600">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8v.01"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-[12px] leading-5 text-slate-700">Ada konsultasi gratis untuk 1 sesi percakapan di vendor ini.</p>
+                                <p class="text-xs font-bold text-emerald-600">Cek info terbaru</p>
+                            </div>
+                        </div>
+                    </div>
+                    @if($package)
+                        <div class="mt-3 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-xl shadow-slate-200/70">
+                            <div class="flex items-center gap-3">
+                                <a href="{{ route('store.package.show', $package) }}" class="shrink-0">
+                                    <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-14 w-14 rounded-2xl object-cover bg-slate-100">
+                                </a>
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate text-sm font-semibold leading-tight text-slate-800">{{ $chatProductName }}</p>
+                                    @if($chatProductPrice)
+                                        <p class="mt-0.5 text-base font-bold text-slate-900">{{ $chatProductPrice }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
                 <div id="public-chat-empty" class="public-chat-empty">
                     <div class="max-w-sm">
                         <p class="text-sm font-medium text-slate-400">Percakapan akan muncul di sini. Kirim pesan pertama untuk mulai tanya detail paket, jadwal, atau konsultasi.</p>
@@ -297,12 +342,13 @@
 
         <div class="public-chat-footer">
             <div class="mx-auto w-full max-w-3xl px-4">
-                <p class="mx-auto max-w-2xl text-center text-[12px] leading-6 text-slate-400 sm:text-[13px]">
+                <p id="chat-footer-notice" class="mx-auto max-w-2xl text-center text-[10px] leading-5 text-slate-400 sm:text-[11px]"
+                   style="transition: opacity 0.5s ease, max-height 0.5s ease; overflow:hidden; max-height:6rem;">
                     Hati-hati penipuan! Mohon tidak bertransaksi di luar platform resmi dan tidak memberikan data pribadi kepada penjual, seperti nomor HP dan alamat. Tetap berinteraksi melalui Makna Wedding, ya.
                     <a href="{{ route('home') }}" class="font-bold text-emerald-600">Baca Panduan Keamanan.</a>
                 </p>
 
-                <div class="mt-3 rounded-2xl border border-cyan-300/70 bg-cyan-50/80 px-4 py-3 shadow-sm backdrop-blur-sm">
+                <div id="chat-promo-banner" class="mt-3 rounded-2xl border border-cyan-300/70 bg-cyan-50/80 px-4 py-3 shadow-sm backdrop-blur-sm">
                     <div class="flex items-start gap-3">
                         <div class="mt-0.5 flex h-7 w-7 items-center justify-center rounded-full border border-cyan-300 text-cyan-600">
                             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -663,6 +709,8 @@
                     return;
                 }
 
+                showContextTop();
+
                 ensureSession(function () {
                     fetchJson('/chat/' + token + '/send', {
                         method: 'POST',
@@ -694,6 +742,7 @@
                 if (token) {
                     history.replaceState({}, '', buildChatUrl(token));
                     loadMessages(0).then(function () {
+                        showContextTop();
                         startPolling();
                         scrollBottom();
                     });
@@ -719,6 +768,7 @@
                 history.replaceState({}, '', buildChatUrl(token));
                 loadMessages(0)
                     .then(function () {
+                        showContextTop();
                         startPolling();
                         scrollBottom();
                     })
@@ -779,12 +829,70 @@
                 }
             });
 
+            // ── dynamic footer padding (prevent text overlap) ──────────────
+            var mainEl = document.querySelector('.public-chat-main');
+            var footerEl = document.querySelector('.public-chat-footer');
+            function adjustMainPadding() {
+                if (mainEl && footerEl) {
+                    mainEl.style.paddingBottom = (footerEl.offsetHeight + 24) + 'px';
+                }
+            }
+            adjustMainPadding();
+            window.addEventListener('resize', adjustMainPadding);
+            // ── promo banner fadeout ────────────────────────────────────
+            var promoBanner = document.getElementById('chat-promo-banner');
+            var promoBannerFaded = false;
+            function fadePromoBanner() {
+                if (!promoBanner || promoBannerFaded) { return; }
+                promoBannerFaded = true;
+                promoBanner.classList.add('chat-banner--fadeout');
+                window.setTimeout(adjustMainPadding, 600);
+            }
+
+            // ── show context block at top of chat + fade footer items ─────────
+            var contextTopEl = document.getElementById('chat-context-top');
+            var footerNoticeEl = document.getElementById('chat-footer-notice');
+            var contextTopShown = false;
+            function showContextTop() {
+                if (contextTopShown) { return; }
+                contextTopShown = true;
+                // Reveal block at top of messages
+                if (contextTopEl) {
+                    contextTopEl.style.display = 'block';
+                    window.requestAnimationFrame(function () {
+                        contextTopEl.style.opacity = '1';
+                    });
+                }
+                // Fade footer notice
+                if (footerNoticeEl) {
+                    footerNoticeEl.style.opacity = '0';
+                    footerNoticeEl.style.maxHeight = '0';
+                    window.setTimeout(function () { footerNoticeEl.style.display = 'none'; }, 560);
+                }
+                // Fade promo banner
+                fadePromoBanner();
+                // Fade footer product card
+                if (productCard) {
+                    productCard.style.transition = 'opacity 0.5s ease, max-height 0.5s ease, margin-top 0.5s ease, padding 0.5s ease';
+                    productCard.style.opacity = '0';
+                    productCard.style.maxHeight = '0';
+                    productCard.style.overflow = 'hidden';
+                    productCard.style.marginTop = '0';
+                    productCard.style.paddingTop = '0';
+                    productCard.style.paddingBottom = '0';
+                    window.setTimeout(function () {
+                        productCard.style.display = 'none';
+                        adjustMainPadding();
+                    }, 560);
+                }
+            }
             // ── product card dismiss ─────────────────────────────
             var productCard = document.getElementById('chat-product-card');
             var productDismiss = document.getElementById('chat-product-dismiss');
             if (productDismiss && productCard) {
                 productDismiss.addEventListener('click', function () {
                     productCard.style.display = 'none';
+                    window.setTimeout(adjustMainPadding, 50);
                 });
             }
 
