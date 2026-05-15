@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ChatMessage extends Model
 {
-    protected $fillable = ['chat_session_id', 'sender', 'message', 'admin_user_id'];
+    protected $fillable = ['chat_session_id', 'sender', 'message', 'admin_user_id', 'vendor_package_id'];
+
+    public function vendorPackage(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\VendorPackage::class);
+    }
 
     public function session(): BelongsTo
     {

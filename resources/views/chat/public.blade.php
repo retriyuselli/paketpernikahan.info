@@ -16,11 +16,18 @@
     $chatProductName = $package?->name ?? 'Konsultasi Paket Pernikahan';
     $chatVendorInitial = strtoupper(substr($chatVendorName, 0, 1));
     $chatQuickReplies = [
-        'Hai, paket ini masih ready?',
+        'Hai, paket ini update?',
         'Bisa kirim detail paket ini?',
-        'Bisa dikirim hari ini?',
+        'Apakah ada promo kak?',
         'Terima kasih',
     ];
+    $chatCurrentPkgData = $package ? [
+        'id'    => $package->id,
+        'name'  => $chatProductName,
+        'image' => $chatProductImage,
+        'price' => $chatProductPrice,
+        'url'   => route('store.package.show', $package),
+    ] : null;
 @endphp
 
 @section('title', 'Chat dengan ' . $chatVendorName . ' - Makna Wedding')
@@ -236,6 +243,27 @@
             </div>
         </header>
 
+        @if($sessionNotFound ?? false)
+        <main class="flex min-h-dvh flex-col items-center justify-center px-6 pt-[var(--chat-header-height)] pb-12">
+            <div class="flex flex-col items-center gap-4 text-center">
+                <div class="flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
+                    <svg class="h-10 w-10 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-lg font-bold text-slate-800">Percakapan tidak ditemukan</p>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Percakapan ini sudah dihapus atau tidak tersedia.<br>Kamu bisa kembali dan memulai percakapan baru.</p>
+                </div>
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Kembali ke Beranda
+                </a>
+            </div>
+        </main>
+        @else
         <main class="public-chat-main">
             <div class="public-chat-wallpaper" aria-hidden="true">
                 {{-- Shape 1: wedding rings (two interlocking circles), top-left --}}
@@ -318,14 +346,12 @@
                     @if($package)
                         <div class="mt-3 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-xl shadow-slate-200/70">
                             <div class="flex items-center gap-3">
-                                <a href="{{ route('store.package.show', $package) }}" class="shrink-0">
-                                    <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-14 w-14 rounded-2xl object-cover bg-slate-100">
+                                <a id="chat-ctx-pkg-link" href="{{ route('store.package.show', $package) }}" class="shrink-0">
+                                    <img id="chat-ctx-pkg-img" src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-14 w-14 rounded-2xl object-cover bg-slate-100">
                                 </a>
                                 <div class="min-w-0 flex-1">
-                                    <p class="truncate text-sm font-semibold leading-tight text-slate-800">{{ $chatProductName }}</p>
-                                    @if($chatProductPrice)
-                                        <p class="mt-0.5 text-base font-bold text-slate-900">{{ $chatProductPrice }}</p>
-                                    @endif
+                                    <p id="chat-ctx-pkg-name" class="truncate text-sm font-semibold leading-tight text-slate-800">{{ $chatProductName }}</p>
+                                    <p id="chat-ctx-pkg-price" class="mt-0.5 text-base font-bold text-slate-900" style="{{ $chatProductPrice ? '' : 'display:none;' }}">{{ $chatProductPrice }}</p>
                                 </div>
                             </div>
                         </div>
@@ -333,9 +359,23 @@
                 </div>
 
                 <div id="public-chat-empty" class="public-chat-empty">
+                    @if($isGuest)
+                    <div class="flex flex-col items-center gap-3 text-center max-w-xs">
+                        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+                            <svg class="h-7 w-7 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-700">Masuk untuk mulai chat</p>
+                            <p class="mt-1 text-xs leading-5 text-slate-400">Login atau daftar gratis untuk berkonsultasi langsung dengan <span class="font-semibold">{{ $chatVendorName }}</span>.</p>
+                        </div>
+                    </div>
+                    @else
                     <div class="max-w-sm">
                         <p class="text-sm font-medium text-slate-400">Percakapan akan muncul di sini. Kirim pesan pertama untuk mulai tanya detail paket, jadwal, atau konsultasi.</p>
                     </div>
+                    @endif
                 </div>
             </div>
         </main>
@@ -385,14 +425,38 @@
                     </div>
                 @endif
 
+                @if($isGuest)
+                {{-- ── Login gate (guest) ─────────────────────────────── --}}
+                <div class="mt-3 rounded-2xl border border-slate-200 bg-white/98 px-5 py-5 shadow-xl shadow-slate-200/60">
+                    <div class="flex items-start gap-3">
+                        <div class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-50 ring-1 ring-amber-200">
+                            <svg class="h-4.5 w-4.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
+                            </svg>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-sm font-semibold text-slate-800">Masuk untuk mulai chat</p>
+                            <p class="mt-0.5 text-xs leading-5 text-slate-500">Login atau daftar gratis untuk berkonsultasi langsung dengan <span class="font-semibold text-slate-700">{{ $chatVendorName }}</span>.</p>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{{ route('login', ['redirect' => request()->getRequestUri()]) }}"
+                           class="inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90">
+                            Masuk
+                        </a>
+                    </div>
+                </div>
+                @else
+                {{-- ── Quick replies ───────────────────────────────────── --}}
                 <div class="public-chat-scrollbar mt-4 flex gap-2 overflow-x-auto px-1 pb-1">
                     @foreach($chatQuickReplies as $quickReply)
-                        <button type="button" data-quick-reply="{{ $quickReply }}" class="shrink-0 rounded-full bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-50">
+                        <button type="button" data-quick-reply="{{ $quickReply }}" class="shrink-0 rounded-full bg-white px-4 py-3 text-xs font-medium text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-50">
                             {{ $quickReply }}
                         </button>
                     @endforeach
                 </div>
 
+                {{-- ── Composer ────────────────────────────────────────── --}}
                 <div class="mt-3 flex items-center gap-2 sm:gap-3">
                     <button type="button" class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-50" aria-label="Fitur lampiran segera hadir">
                         <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -417,13 +481,41 @@
                 </div>
 
                 <p id="public-chat-closed" class="hidden pt-3 text-center text-xs font-medium text-rose-500">Sesi ini sudah ditutup admin. Silakan buka percakapan baru bila perlu bantuan lagi.</p>
+                @endif
             </div>
         </div>
     </div>
 
-    <div id="public-chat-name-sheet" class="public-chat-name-sheet fixed inset-0 z-[60] hidden items-end justify-center p-4 sm:items-center">
+        @endif
+
+    {{-- Template kartu paket baru (di-clone oleh JS saat paket berbeda) --}}
+    @if($package)
+    <div id="chat-pkg-divider-tpl" style="display:none;" aria-hidden="true" class="my-4 w-full px-2">
+        <div class="flex items-center gap-2 mb-3">
+            <hr class="flex-1 border-slate-200">
+            <span class="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-400">Menanyakan paket baru</span>
+            <hr class="flex-1 border-slate-200">
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-sm">
+            <div class="flex items-center gap-3">
+                <a href="{{ route('store.package.show', $package) }}" class="shrink-0">
+                    <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-14 w-14 rounded-2xl object-cover bg-slate-100">
+                </a>
+                <div class="min-w-0 flex-1">
+                    <p class="text-[11px] font-medium text-slate-400 mb-0.5">{{ $chatVendorName }}</p>
+                    <p class="truncate text-sm font-semibold leading-tight text-slate-800">{{ $chatProductName }}</p>
+                    @if($chatProductPrice)
+                        <p class="mt-0.5 text-base font-bold text-slate-900">{{ $chatProductPrice }}</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <div id="public-chat-name-sheet" class="public-chat-name-sheet fixed inset-0 z-60 hidden items-end justify-center p-4 sm:items-center">
         <div id="public-chat-name-backdrop" class="absolute inset-0"></div>
-        <div class="relative z-10 w-full max-w-md rounded-[2rem] bg-white p-6 shadow-2xl">
+        <div class="relative z-10 w-full max-w-md rounded-4xl bg-white p-6 shadow-2xl">
             <p class="text-lg font-bold text-slate-900">Mulai chat</p>
             <p class="mt-2 text-sm leading-6 text-slate-500">Sebelum mengirim pesan, masukkan nama yang ingin ditampilkan ke admin.</p>
             <input id="public-chat-name-input" type="text" maxlength="100" placeholder="Nama kamu" class="mt-4 h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm outline-none transition focus:border-slate-400">
@@ -437,6 +529,8 @@
 
     <script>
         (function () {
+            if (@json($isGuest)) { return; }
+
             var CSRF = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
             var messagesEl = document.getElementById('public-chat-messages');
             var emptyEl = document.getElementById('public-chat-empty');
@@ -451,14 +545,20 @@
             var nameSaveBtn = document.getElementById('public-chat-name-save');
             var quickReplyButtons = document.querySelectorAll('[data-quick-reply]');
             var packageId = @json($package?->id);
+            var vendorId = @json($vendor?->id);
             var token = @json($session?->session_token);
             var guestName = @json($guestName);
+            var currentPkgData = @json($chatCurrentPkgData);
             var pollTimer = null;
             var lastId = 0;
             var pendingAction = null;
-            var tokenStorageKey = 'lc_token';
-            var lastIdStorageKey = 'lc_last_id';
+            var tokenStorageKey = vendorId ? 'lc_token_v' + vendorId : 'lc_token';
+            var lastIdStorageKey = vendorId ? 'lc_last_id_v' + vendorId : 'lc_last_id';
             var guestNameStorageKey = 'lc_guest_name';
+            var packageStorageKey = vendorId ? 'lc_pkg_v' + vendorId : 'lc_package_id';
+            var pkgDataStorageKey = vendorId ? 'lc_pkg_data_v' + vendorId : 'lc_pkg_data';
+            var isDifferentPackage = false;
+            var dividerInjected = false;
             var APP_TZ = 'Asia/Jakarta';
             var timeFormatter = null;
 
@@ -590,6 +690,27 @@
                 });
             }
 
+            function syncSessionContext() {
+                if (!token || !packageId) {
+                    return Promise.resolve();
+                }
+
+                return fetchJson('/chat/' + token + '/context', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': CSRF,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({
+                        vendor_id: vendorId || null,
+                        package_id: packageId || null,
+                    }),
+                }).catch(function () {
+                    return null;
+                });
+            }
+
             function loadMessages(afterId) {
                 if (!token) {
                     return Promise.resolve();
@@ -671,7 +792,7 @@
                             'X-CSRF-TOKEN': CSRF,
                             'X-Requested-With': 'XMLHttpRequest',
                         },
-                        body: JSON.stringify({ guest_name: guestName }),
+                        body: JSON.stringify({ guest_name: guestName, vendor_id: vendorId || null, package_id: packageId || null }),
                     })
                         .then(function (data) {
                             token = data.token;
@@ -680,10 +801,14 @@
                                 sessionStorage.setItem(tokenStorageKey, token);
                                 sessionStorage.setItem(lastIdStorageKey, '0');
                                 sessionStorage.setItem(guestNameStorageKey, guestName);
+                                sessionStorage.setItem(packageStorageKey, String(packageId || ''));
+                                sessionStorage.setItem(pkgDataStorageKey, currentPkgData ? JSON.stringify(currentPkgData) : '');
                             } catch (error) {}
 
                             history.replaceState({}, '', buildChatUrl(token));
-                            return loadMessages(0);
+                            return syncSessionContext().then(function () {
+                                return loadMessages(0);
+                            });
                         })
                         .then(function () {
                             startPolling();
@@ -709,7 +834,11 @@
                     return;
                 }
 
-                showContextTop();
+                if (!isDifferentPackage) {
+                    showContextTop();
+                } else {
+                    injectPackageDivider();
+                }
 
                 ensureSession(function () {
                     fetchJson('/chat/' + token + '/send', {
@@ -719,7 +848,7 @@
                             'X-CSRF-TOKEN': CSRF,
                             'X-Requested-With': 'XMLHttpRequest',
                         },
-                        body: JSON.stringify({ message: message }),
+                        body: JSON.stringify({ message: message, package_id: packageId || null }),
                     })
                         .then(function (data) {
                             appendMessage({
@@ -739,10 +868,27 @@
             }
 
             function restoreStoredSession() {
-                if (token) {
-                    history.replaceState({}, '', buildChatUrl(token));
-                    loadMessages(0).then(function () {
+                function resolveContextAndDivider(isDiffPkg) {
+                    if (isDiffPkg) {
+                        var storedData = null;
+                        try { storedData = JSON.parse(sessionStorage.getItem(pkgDataStorageKey) || ''); } catch (e) {}
+                        updateContextTopWithStoredPackage(storedData);
                         showContextTop();
+                        injectPackageDivider();
+                    } else {
+                        showContextTop();
+                    }
+                }
+
+                if (token) {
+                    var storedPkgId = null;
+                    try { storedPkgId = sessionStorage.getItem(packageStorageKey); } catch (e) {}
+                    isDifferentPackage = !!storedPkgId && !!packageId && String(packageId) !== storedPkgId;
+                    history.replaceState({}, '', buildChatUrl(token));
+                    syncSessionContext().then(function () {
+                        return loadMessages(0);
+                    }).then(function () {
+                        resolveContextAndDivider(isDifferentPackage);
                         startPolling();
                         scrollBottom();
                     });
@@ -751,10 +897,12 @@
 
                 var storedToken = null;
                 var storedLastId = 0;
+                var storedPkgId2 = null;
 
                 try {
                     storedToken = sessionStorage.getItem(tokenStorageKey);
                     storedLastId = parseInt(sessionStorage.getItem(lastIdStorageKey) || '0', 10) || 0;
+                    storedPkgId2 = sessionStorage.getItem(packageStorageKey);
                 } catch (error) {}
 
                 if (!storedToken) {
@@ -762,13 +910,17 @@
                     return;
                 }
 
+                isDifferentPackage = !!storedPkgId2 && !!packageId && String(packageId) !== storedPkgId2;
                 token = storedToken;
                 lastId = storedLastId;
 
                 history.replaceState({}, '', buildChatUrl(token));
-                loadMessages(0)
+                syncSessionContext()
                     .then(function () {
-                        showContextTop();
+                        return loadMessages(0);
+                    })
+                    .then(function () {
+                        resolveContextAndDivider(isDifferentPackage);
                         startPolling();
                         scrollBottom();
                     })
@@ -847,6 +999,39 @@
                 promoBannerFaded = true;
                 promoBanner.classList.add('chat-banner--fadeout');
                 window.setTimeout(adjustMainPadding, 600);
+            }
+
+            // ── inject inline package divider into messages ────────────────────
+            function injectPackageDivider() {
+                if (dividerInjected || !messagesEl) { return; }
+                dividerInjected = true;
+                var tpl = document.getElementById('chat-pkg-divider-tpl');
+                if (!tpl) { return; }
+                var card = tpl.cloneNode(true);
+                card.id = '';
+                card.style.display = 'block';
+                messagesEl.appendChild(card);
+                updateEmptyState();
+            }
+
+            // ── update #chat-context-top package card with stored (first) package data ────
+            function updateContextTopWithStoredPackage(pkgData) {
+                if (!pkgData) { return; }
+                var linkEl  = document.getElementById('chat-ctx-pkg-link');
+                var imgEl   = document.getElementById('chat-ctx-pkg-img');
+                var nameEl  = document.getElementById('chat-ctx-pkg-name');
+                var priceEl = document.getElementById('chat-ctx-pkg-price');
+                if (linkEl)  { linkEl.href = pkgData.url || '#'; }
+                if (imgEl)   { imgEl.src = pkgData.image || ''; imgEl.alt = pkgData.name || ''; }
+                if (nameEl)  { nameEl.textContent = pkgData.name || ''; }
+                if (priceEl) {
+                    if (pkgData.price) {
+                        priceEl.textContent = pkgData.price;
+                        priceEl.style.display = '';
+                    } else {
+                        priceEl.style.display = 'none';
+                    }
+                }
             }
 
             // ── show context block at top of chat + fade footer items ─────────

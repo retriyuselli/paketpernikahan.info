@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ChatSession;
 use App\Models\ChatMessage;
 use App\Models\User;
+use App\Models\Vendor;
 use App\Models\VendorPackage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,8 +30,13 @@ class ChatController extends Controller
     {
         $session = null;
 
+        $sessionNotFound = false;
+
         if ($token) {
-            $session = ChatSession::where('session_token', $token)->firstOrFail();
+            $session = ChatSession::where('session_token', $token)->first();
+            if (! $session) {
+                $sessionNotFound = true;
+            }
         }
 
         $package = null;
@@ -46,9 +52,10 @@ class ChatController extends Controller
             $vendor = $package?->vendor;
         }
 
-        $guestName = Auth::check() ? (string) (Auth::user()?->name ?? '') : '';
+        $isGuest   = !Auth::check();
+        $guestName = $isGuest ? '' : (string) (Auth::user()?->name ?? '');
 
-        return view('chat.public', compact('session', 'package', 'vendor', 'guestName'));
+        return view('chat.public', compact('session', 'package', 'vendor', 'guestName', 'sessionNotFound', 'isGuest'));
     }
 
     // ── Public: mulai sesi baru ──────────────────────────────────────
@@ -56,12 +63,25 @@ class ChatController extends Controller
     {
         $request->validate([
             'guest_name' => 'required|string|max:100',
+            'vendor_id'  => 'nullable|integer|exists:vendors,id',
+            'package_id' => 'nullable|integer|exists:vendor_packages,id',
         ]);
+
+        $firstPackage = null;
+        $packageId = (int) $request->input('package_id', 0);
+        $vendorId = $request->input('vendor_id') ?: null;
+
+        if ($packageId > 0) {
+            $firstPackage = VendorPackage::query()->find($packageId);
+            $vendorId = $firstPackage?->vendor_id ?: $vendorId;
+        }
 
         $session = ChatSession::create([
             'guest_name'    => strip_tags(trim($request->guest_name)),
             'session_token' => Str::random(48),
             'status'        => 'open',
+            'vendor_id'     => $vendorId,
+            'vendor_package_id' => $firstPackage?->id,
         ]);
 
         // Pesan selamat datang otomatis dari admin
@@ -81,22 +101,60 @@ class ChatController extends Controller
     public function send(Request $request, string $token)
     {
         $request->validate([
-            'message' => 'required|string|max:2000',
+            'message'    => 'required|string|max:2000',
+            'package_id' => 'nullable|integer|exists:vendor_packages,id',
         ]);
 
         $session = ChatSession::where('session_token', $token)
             ->where('status', 'open')
             ->firstOrFail();
 
+        $packageId = (int) $request->input('package_id', 0);
+        $pkg = $packageId > 0 ? VendorPackage::query()->find($packageId) : null;
+
         $msg = ChatMessage::create([
-            'chat_session_id' => $session->id,
-            'sender'          => 'guest',
-            'message'         => strip_tags(trim($request->message)),
+            'chat_session_id'   => $session->id,
+            'sender'            => 'guest',
+            'message'           => strip_tags(trim($request->message)),
+            'vendor_package_id' => $pkg?->id,
         ]);
 
         $session->touch();
 
         return response()->json(['id' => $msg->id, 'created_at' => $msg->created_at]);
+    }
+
+    public function syncContext(Request $request, string $token)
+    {
+        $request->validate([
+            'vendor_id'  => 'nullable|integer|exists:vendors,id',
+            'package_id' => 'nullable|integer|exists:vendor_packages,id',
+        ]);
+
+        $session = ChatSession::where('session_token', $token)->firstOrFail();
+
+        $packageId = (int) $request->input('package_id', 0);
+        $package = $packageId > 0 ? VendorPackage::query()->find($packageId) : null;
+        $nextVendorId = $package?->vendor_id ?: ($request->input('vendor_id') ?: null);
+
+        $updates = [];
+
+        if (! $session->vendor_id && $nextVendorId) {
+            $updates['vendor_id'] = $nextVendorId;
+        }
+
+        if (! $session->vendor_package_id && $package?->id) {
+            $updates['vendor_package_id'] = $package->id;
+        }
+
+        if ($updates !== []) {
+            $session->fill($updates)->save();
+        }
+
+        return response()->json([
+            'vendor_id' => $session->fresh()->vendor_id,
+            'vendor_package_id' => $session->fresh()->vendor_package_id,
+        ]);
     }
 
     // ── Public: polling pesan baru ───────────────────────────────────
@@ -108,16 +166,24 @@ class ChatController extends Controller
 
         $messages = ChatMessage::where('chat_session_id', $session->id)
             ->where('id', '>', $afterId)
-            ->with('adminUser:id,name')
+            ->with(['adminUser:id,name', 'vendorPackage:id,name,price,discount,image_path'])
             ->orderBy('id')
-            ->get(['id', 'sender', 'message', 'created_at', 'admin_user_id'])
-            ->map(fn ($m) => [
-                'id' => $m->id,
-                'sender' => $m->sender,
-                'message' => $m->message,
-                'created_at' => $m->created_at,
-                'admin_name' => $m->adminUser?->name,
-            ]);
+            ->get(['id', 'sender', 'message', 'created_at', 'admin_user_id', 'vendor_package_id'])
+            ->map(function ($m) {
+                $pkg = $m->vendorPackage;
+                $finalPrice = $pkg ? max(((int)$pkg->price) - ((int)$pkg->discount), 0) : null;
+                return [
+                    'id'                => $m->id,
+                    'sender'            => $m->sender,
+                    'message'           => $m->message,
+                    'created_at'        => $m->created_at,
+                    'admin_name'        => $m->adminUser?->name,
+                    'vendor_package_id' => $m->vendor_package_id,
+                    'package_name'      => $pkg?->name,
+                    'package_price'     => $finalPrice !== null ? 'Rp' . number_format($finalPrice, 0, ',', '.') : null,
+                    'package_image_url' => $pkg?->image_url,
+                ];
+            });
 
         return response()->json([
             'status'   => $session->status,
@@ -128,10 +194,13 @@ class ChatController extends Controller
     // ── Admin: daftar sesi ───────────────────────────────────────────
     public function adminIndex(Request $request)
     {
-        $sessions = ChatSession::withCount([
-                'messages as unread_count' => fn($q) => $q->where('sender', 'guest')
-                    ->where('created_at', '>=', now()->subHours(24)),
-            ])
+        $user = User::findOrFail(Auth::id());
+        abort_unless($user->hasRole(['super_admin', 'admin']), 403);
+
+        $selectedVendorId = (int) $request->query('vendor_id', 0);
+
+        $sessions = ChatSession::with(['vendor:id,name', 'vendorPackage:id,vendor_id,name'])
+            ->when($selectedVendorId > 0, fn ($query) => $query->where('vendor_id', $selectedVendorId))
             ->select('chat_sessions.*')
             ->selectSub(
                 DB::table('chat_messages')
@@ -144,13 +213,20 @@ class ChatController extends Controller
                 'last_admin_user_id'
             )
             ->orderByDesc('updated_at')
-            ->paginate(30);
+            ->paginate(30)
+            ->withQueryString();
+
+        $vendors = Vendor::query()
+            ->withCount('chatSessions')
+            ->whereHas('chatSessions')
+            ->orderBy('name')
+            ->get(['id', 'name']);
 
         $adminUsers = User::whereIn('id', $sessions->pluck('last_admin_user_id')->filter()->unique())
             ->get(['id', 'name'])
             ->keyBy('id');
 
-        return view('dashboard.chat.index', array_merge($this->dashboardContext(), compact('sessions', 'adminUsers')));
+        return view('dashboard.chat.index', array_merge($this->dashboardContext(), compact('sessions', 'adminUsers', 'vendors', 'selectedVendorId')));
     }
 
     public function adminNotify(Request $request)
@@ -178,8 +254,16 @@ class ChatController extends Controller
     // ── Admin: detail sesi ───────────────────────────────────────────
     public function adminDetail(string $token)
     {
+        $user = User::findOrFail(Auth::id());
+        abort_unless($user->hasRole(['super_admin', 'admin']), 403);
+
         $session = ChatSession::where('session_token', $token)
-            ->with('messages.adminUser:id,name')
+            ->with([
+                'messages.adminUser:id,name',
+                'messages.vendorPackage:id,name,price,discount,image_path',
+                'vendor:id,name',
+                'vendorPackage:id,vendor_id,name,price,discount,image_path',
+            ])
             ->firstOrFail();
 
         return view('dashboard.chat.detail', array_merge($this->dashboardContext(), compact('session')));
@@ -212,32 +296,6 @@ class ChatController extends Controller
         }
 
         return back();
-    }
-
-    // ── Admin: polling pesan baru (untuk admin detail page) ─────────
-    public function adminPoll(Request $request, string $token)
-    {
-        $session = ChatSession::where('session_token', $token)->firstOrFail();
-
-        $afterId = (int) $request->query('after', 0);
-
-        $messages = ChatMessage::where('chat_session_id', $session->id)
-            ->where('id', '>', $afterId)
-            ->with('adminUser:id,name')
-            ->orderBy('id')
-            ->get(['id', 'sender', 'message', 'created_at', 'admin_user_id'])
-            ->map(fn ($m) => [
-                'id' => $m->id,
-                'sender' => $m->sender,
-                'message' => $m->message,
-                'created_at' => $m->created_at,
-                'admin_name' => $m->adminUser?->name,
-            ]);
-
-        return response()->json([
-            'status'   => $session->status,
-            'messages' => $messages,
-        ]);
     }
 
     public function adminDeleteMessage(Request $request, string $token, ChatMessage $message)
@@ -275,6 +333,9 @@ class ChatController extends Controller
     // ── Admin: tutup sesi ────────────────────────────────────────────
     public function adminClose(string $token)
     {
+        $user = User::findOrFail(Auth::id());
+        abort_unless($user->hasRole(['super_admin', 'admin']), 403);
+
         $session = ChatSession::where('session_token', $token)->firstOrFail();
         $session->update(['status' => 'closed']);
 

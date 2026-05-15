@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -92,7 +93,6 @@ class Vendor extends Model
         'likes'           => 'integer',
         'comments_count'  => 'integer',
         'price_start'     => 'integer',
-        'discount'        => 'integer',
         'cover_image'     => 'array',
     ];
 
@@ -152,6 +152,11 @@ class Vendor extends Model
     public function bookings()
     {
         return $this->hasMany(VendorBooking::class);
+    }
+
+    public function chatSessions(): HasMany
+    {
+        return $this->hasMany(ChatSession::class);
     }
 
     public function categoryVendor()

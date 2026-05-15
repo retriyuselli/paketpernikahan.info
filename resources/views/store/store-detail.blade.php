@@ -191,7 +191,7 @@
                         }
                     @endphp
                     @if(!empty($galleryImages))
-                        <div class="relative w-full rounded-2xl overflow-hidden bg-white border border-gray-100 aspect-square cursor-zoom-in" id="gallery-main-wrap">
+                        <div class="relative -mx-4 w-[calc(100%+2rem)] lg:mx-0 lg:w-full rounded-none lg:rounded-2xl overflow-hidden bg-white lg:border lg:border-gray-100 aspect-square cursor-zoom-in" id="gallery-main-wrap">
                             <img id="gallery-main-img"
                                  src="{{ $galleryImages[0] }}"
                                  alt="Paket {{ $package->name }}"
@@ -266,7 +266,7 @@
                                     </div>
                                 </div>
                                 <div class="flex flex-wrap items-center justify-end gap-2">
-                                    <a href="{{ route('store') }}" class="shrink-0 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                    <a href="{{ route('store') }}" class="hidden lg:inline-flex shrink-0 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
                                         ← Kembali
                                     </a>
                                     @auth
@@ -586,7 +586,7 @@
                         </div>
 
                         {{-- ── CTA Buttons ─────────────────────────────── --}}
-                        <div class="px-5 pb-4 space-y-2.5">
+                        <div class="hidden lg:block px-5 pb-4 space-y-2.5">
                             <a id="store-booking-link"
                                data-store-booking-link
                                data-base-href="{{ route('booking.package', $package) }}"
@@ -594,17 +594,13 @@
                                class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-bold transition hover:opacity-90 bg-accent text-white shadow-sm">
                                 + Booking Sekarang
                             </a>
-                            @if($waUrl)
-                                <a href="{{ $waUrl }}" target="_blank"
-                                   class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-bold border-2 border-accent text-accent bg-white hover:bg-accent/5 transition">
-                                    Hubungi Vendor
-                                </a>
-                            @else
-                                <button type="button" disabled
-                                        class="flex items-center justify-center w-full py-2.5 rounded-xl text-xs font-bold border-2 border-gray-200 text-gray-400 cursor-not-allowed">
-                                    Hubungi Vendor
-                                </button>
-                            @endif
+                            <a href="{{ $chatUrl }}"
+                               class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-bold border-2 border-accent text-accent bg-white hover:bg-accent/5 transition">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                                Chat
+                            </a>
                         </div>
 
                         {{-- ── Bottom actions: Chat | Wishlist | Share ─── --}}
@@ -691,41 +687,19 @@
         </x-ui.container>
     </section>
 
-    <div class="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur-sm shadow-2xl">
-        <div class="px-4 pt-3.5" style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);">
-            <div class="mx-auto flex flex-wrap items-center gap-2.5">
-                <div class="min-w-0 flex-1 basis-full">
-                    <p class="text-[10px] font-bold uppercase tracking-[0.24em] text-gray-400">Mulai Dari</p>
-                    @if($discount > 0)
-                        <p data-store-price-original
-                           data-unit="{{ $price }}"
-                           class="text-[11px] text-gray-400 line-through">IDR {{ number_format($price, 0, ',', '.') }}</p>
-                        <p data-store-price-final
-                           data-unit="{{ $final }}"
-                           class="text-base font-extrabold leading-tight text-accent">IDR {{ number_format($final, 0, ',', '.') }}</p>
-                    @else
-                        <p data-store-price-final
-                           data-unit="{{ $price }}"
-                           class="text-base font-extrabold leading-tight text-accent">IDR {{ number_format($price, 0, ',', '.') }}</p>
-                    @endif
-                </div>
-
-                @if($waUrl)
-                    <a href="{{ $waUrl }}" target="_blank"
-                       class="btn-wa inline-flex h-10 min-w-0 flex-1 items-center justify-center rounded-2xl px-3.5 text-xs font-bold whitespace-nowrap">
-                        WhatsApp
-                    </a>
-                @else
-                    <button type="button" disabled
-                            class="inline-flex h-10 min-w-0 flex-1 items-center justify-center rounded-2xl px-3.5 text-xs font-bold bg-gray-100 text-gray-400 cursor-not-allowed whitespace-nowrap">
-                        WhatsApp
-                    </button>
-                @endif
-
+    <div class="lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white shadow-2xl">
+        <div class="px-4 py-3" style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);">
+            <div class="flex items-center gap-2.5">
+                <a href="{{ $chatUrl }}"
+                   class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                </a>
                 <a data-store-booking-link
                    data-base-href="{{ route('booking.package', $package) }}"
                    href="{{ route('booking.package', $package) }}"
-                   class="inline-flex h-10 min-w-0 flex-1 items-center justify-center rounded-2xl bg-accent px-3.5 text-xs font-bold text-white shadow-sm whitespace-nowrap">
+                   class="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl bg-accent px-3.5 text-sm font-bold text-white shadow-sm whitespace-nowrap">
                     Booking
                 </a>
             </div>

@@ -11,6 +11,24 @@
     </div>
 </div>
 
+<form method="GET" class="mb-4 flex flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:flex-row sm:items-end sm:justify-between">
+    <div class="w-full max-w-sm">
+        <label for="chat-vendor-filter" class="mb-1 block text-xs font-semibold uppercase tracking-wide text-gray-500">Filter Vendor</label>
+        <select id="chat-vendor-filter" name="vendor_id" class="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-dark outline-none transition focus:border-accent">
+            <option value="">Semua vendor</option>
+            @foreach($vendors as $vendorOption)
+                <option value="{{ $vendorOption->id }}" @selected($selectedVendorId === (int) $vendorOption->id)>{{ $vendorOption->name }} ({{ $vendorOption->chat_sessions_count }})</option>
+            @endforeach
+        </select>
+    </div>
+    <div class="flex items-center gap-2">
+        <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90">Terapkan</button>
+        @if($selectedVendorId > 0)
+            <a href="{{ route('chat.admin') }}" class="inline-flex items-center justify-center rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-50">Reset</a>
+        @endif
+    </div>
+</form>
+
 @if(session('success'))
     <div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm">
         {{ session('success') }}
@@ -30,6 +48,7 @@
             <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
                 <tr>
                     <th class="text-left px-4 py-3 font-semibold">Nama</th>
+                    <th class="text-left px-4 py-3 font-semibold">Vendor</th>
                     <th class="text-left px-4 py-3 font-semibold">Status</th>
                     <th class="text-left px-4 py-3 font-semibold">Dibalas oleh</th>
                     <th class="text-left px-4 py-3 font-semibold">Terakhir aktif</th>
@@ -41,6 +60,10 @@
                 <tr class="hover:bg-gray-50 transition">
                     <td class="px-4 py-3 font-medium text-dark">
                         {{ $s->guest_name }}
+                    </td>
+                    <td class="px-4 py-3 text-gray-500 text-xs">
+                        <p>{{ $s->vendor?->name ?? 'Belum terdeteksi' }}</p>
+                        <p class="mt-0.5 text-[11px] text-gray-400">Paket pertama: {{ $s->vendorPackage?->name ?? 'Belum terdeteksi' }}</p>
                     </td>
                     <td class="px-4 py-3">
                         @if($s->status === 'open')

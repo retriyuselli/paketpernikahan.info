@@ -13,7 +13,17 @@
         Semua Chat
     </a>
     <span class="text-gray-300">/</span>
-    <span class="text-sm font-semibold text-dark">{{ $session->guest_name }}</span>
+    <div>
+        <span class="text-sm font-semibold text-dark">{{ $session->guest_name }}</span>
+        <p class="mt-0.5 text-xs text-gray-400">
+            Vendor:
+            @if($session->vendor)
+                <a href="{{ route('chat.admin', ['vendor_id' => $session->vendor->id]) }}" class="font-medium text-accent transition hover:underline">{{ $session->vendor->name }}</a>
+            @else
+                Belum terdeteksi
+            @endif
+        </p>
+    </div>
 
     @if($session->status === 'closed')
         <span class="ml-auto inline-flex text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">Ditutup</span>
@@ -38,17 +48,74 @@
 </div>
 
 {{-- Chat box --}}
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col" style="height: calc(100vh - 240px); min-height: 420px;">
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col" style="height: calc(100vh - 150px); min-height: 480px;">
 
     {{-- Messages --}}
+    @php
+        $lastMsgPkgId = $session->messages->whereNotNull('vendor_package_id')->last()?->vendor_package_id
+            ?? $session->vendor_package_id;
+    @endphp
     <div id="admin-chat-messages"
          class="flex-1 overflow-y-auto px-4 py-5 space-y-3"
          data-session-token="{{ $session->session_token }}"
          data-session-status="{{ $session->status }}"
-         data-last-id="{{ $session->messages->max('id') ?? 0 }}">
+         data-last-id="{{ $session->messages->max('id') ?? 0 }}"
+         data-last-pkg-id="{{ $lastMsgPkgId ?? '' }}">
+        @php $lastRenderedPkgId = $session->vendor_package_id; @endphp
+        @if($session->vendorPackage)
+        @php
+            $fpkg = $session->vendorPackage;
+            $fpkgPrice = max(((int)$fpkg->price) - ((int)$fpkg->discount), 0);
+        @endphp
+        <div class="mx-1 w-fit flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+            <a href="{{ route('store.package.show', $fpkg->id) }}" target="_blank" class="shrink-0">
+                <img src="{{ $fpkg->image_url ?: url(config('app.logo_url')) }}" alt="{{ $fpkg->name }}"
+                     class="h-14 w-14 rounded-xl object-cover bg-gray-100">
+            </a>
+            <div class="min-w-0 flex-1">
+                <a href="{{ route('store.package.show', $fpkg->id) }}" target="_blank"
+                   class="block truncate text-sm font-semibold text-dark hover:text-accent transition">
+                    {{ $fpkg->name }}
+                </a>
+                <p class="mt-0.5 text-xs text-gray-400">{{ $session->vendor?->name }}</p>
+                <p class="mt-0.5 text-sm font-bold text-slate-700">
+                    Rp{{ number_format($fpkgPrice ?: (int)$fpkg->price, 0, ',', '.') }}
+                </p>
+            </div>
+        </div>
+        @endif
         @foreach($session->messages as $msg)
+        @if($msg->vendor_package_id && $msg->vendor_package_id !== $lastRenderedPkgId && $msg->vendorPackage)
+        {{-- Package-switch divider --}}
+        <div class="my-1 flex items-center gap-2 px-1">
+            <div class="flex-1 border-t border-gray-200"></div>
+            <span class="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-400">Menanyakan paket baru</span>
+            <div class="flex-1 border-t border-gray-200"></div>
+        </div>
+        @php
+            $dpkg = $msg->vendorPackage;
+            $dpkgPrice = max(((int)$dpkg->price) - ((int)$dpkg->discount), 0);
+        @endphp
+        <div class="mx-1 w-fit flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+            <a href="{{ route('store.package.show', $dpkg->id) }}" target="_blank" class="shrink-0">
+                <img src="{{ $dpkg->image_url ?: url(config('app.logo_url')) }}" alt="{{ $dpkg->name }}"
+                     class="h-14 w-14 rounded-xl object-cover bg-gray-100">
+            </a>
+            <div class="min-w-0 flex-1">
+                <a href="{{ route('store.package.show', $dpkg->id) }}" target="_blank"
+                   class="block truncate text-sm font-semibold text-dark hover:text-accent transition">
+                    {{ $dpkg->name }}
+                </a>
+                <p class="mt-0.5 text-sm font-bold text-slate-700">
+                    Rp{{ number_format($dpkgPrice ?: (int)$dpkg->price, 0, ',', '.') }}
+                </p>
+            </div>
+        </div>
+        @php $lastRenderedPkgId = $msg->vendor_package_id; @endphp
+        @endif
         <div class="flex group {{ $msg->sender === 'admin' ? 'justify-end' : 'justify-start' }}"
-             data-msg-id="{{ $msg->id }}">
+             data-msg-id="{{ $msg->id }}"
+             data-pkg-id="{{ $msg->vendor_package_id ?? '' }}">
             <div class="relative max-w-[85%] break-words px-4 py-2.5 rounded-2xl text-sm leading-snug
                 {{ $msg->sender === 'admin'
                     ? 'bg-accent text-white rounded-br-sm'
@@ -107,6 +174,7 @@
     var token = msgBox?.dataset?.sessionToken || '';
     var status = msgBox?.dataset?.sessionStatus || '';
     var lastId = parseInt(msgBox?.dataset?.lastId || '0', 10);
+    var lastSeenPkgId = parseInt(msgBox?.dataset?.lastPkgId || '0', 10) || null;
     var APP_TZ = 'Asia/Jakarta';
     var timeFormatter = null;
     try {
@@ -122,9 +190,35 @@
 
     function appendMessage(msg) {
         var isAdmin = msg.sender === 'admin';
+        var msgPkgId = msg.vendor_package_id ? parseInt(msg.vendor_package_id, 10) : null;
+
+        // Inject package-switch divider when guest switches to a new package
+        if (!isAdmin && msgPkgId && msgPkgId !== lastSeenPkgId && msg.package_name) {
+            var dividerRow = document.createElement('div');
+            dividerRow.className = 'my-1 flex items-center gap-2 px-1';
+            dividerRow.innerHTML = '<div class="flex-1 border-t border-gray-200"></div>'
+                + '<span class="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-400">Menanyakan paket baru</span>'
+                + '<div class="flex-1 border-t border-gray-200"></div>';
+            msgBox.appendChild(dividerRow);
+
+            var imgHtml = msg.package_image_url
+                ? '<img src="' + escHtml(msg.package_image_url) + '" class="h-14 w-14 rounded-xl object-cover bg-gray-100">'
+                : '<div class="h-14 w-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 text-xs">No img</div>';
+            var cardRow = document.createElement('div');
+            cardRow.className = 'mx-1 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm';
+            cardRow.innerHTML = '<div class="shrink-0">' + imgHtml + '</div>'
+                + '<div class="min-w-0 flex-1">'
+                + '<p class="block truncate text-sm font-semibold text-dark">' + escHtml(msg.package_name) + '</p>'
+                + (msg.package_price ? '<p class="mt-0.5 text-sm font-bold text-slate-700">' + escHtml(msg.package_price) + '</p>' : '')
+                + '</div>';
+            msgBox.appendChild(cardRow);
+            lastSeenPkgId = msgPkgId;
+        }
+
         var wrap = document.createElement('div');
         wrap.className = 'flex group ' + (isAdmin ? 'justify-end' : 'justify-start');
         wrap.dataset.msgId = msg.id;
+        if (msgPkgId) wrap.dataset.pkgId = msgPkgId;
         var t = new Date(msg.created_at);
         var hhmm = timeFormatter ? timeFormatter.format(t) : (t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0'));
         var nameHtml = (isAdmin && msg.admin_name) ? '<span class="block text-[10px] mb-1 text-white/70">' + escHtml(msg.admin_name) + '</span>' : '';

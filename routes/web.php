@@ -1632,14 +1632,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // ── Chat (public) ──────────────────────────────────────────────────────────
+// View routes: accessible to guests (login gate shown in the view)
 Route::get('/chat', [ChatController::class, 'publicPage'])->name('chat.public');
 Route::get('/chat/{token}', [ChatController::class, 'publicPage'])->name('chat.public.session');
-Route::post('/chat/start', [ChatController::class, 'start'])->name('chat.start')
-    ->middleware('throttle:20,1');
-Route::post('/chat/{token}/send', [ChatController::class, 'send'])->name('chat.send')
-    ->middleware('throttle:60,1');
-Route::get('/chat/{token}/messages', [ChatController::class, 'poll'])->name('chat.poll')
-    ->middleware('throttle:120,1');
+
+// Action routes: require auth
+Route::middleware(['auth'])->group(function () {
+    Route::post('/chat/start', [ChatController::class, 'start'])->name('chat.start')
+        ->middleware('throttle:20,1');
+    Route::post('/chat/{token}/send', [ChatController::class, 'send'])->name('chat.send')
+        ->middleware('throttle:60,1');
+    Route::post('/chat/{token}/context', [ChatController::class, 'syncContext'])->name('chat.context')
+        ->middleware('throttle:60,1');
+    Route::get('/chat/{token}/messages', [ChatController::class, 'poll'])->name('chat.poll')
+        ->middleware('throttle:120,1');
+});
 
 // ── Chat (admin) ───────────────────────────────────────────────────────────
 Route::middleware(['auth', 'verified'])->prefix('dashboard/chat')->name('chat.')->group(function () {
@@ -1647,7 +1654,6 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard/chat')->name('chat.')
     Route::get('/notify', [ChatController::class, 'adminNotify'])->name('admin.notify');
     Route::get('/{token}', [ChatController::class, 'adminDetail'])->name('admin.detail');
     Route::post('/{token}/reply', [ChatController::class, 'adminReply'])->name('admin.reply');
-    Route::get('/{token}/poll', [ChatController::class, 'adminPoll'])->name('admin.poll');
     Route::delete('/{token}/messages/{message}', [ChatController::class, 'adminDeleteMessage'])->name('admin.message.delete');
     Route::delete('/{token}', [ChatController::class, 'adminDeleteSession'])->name('admin.delete');
     Route::post('/{token}/close', [ChatController::class, 'adminClose'])->name('admin.close');
