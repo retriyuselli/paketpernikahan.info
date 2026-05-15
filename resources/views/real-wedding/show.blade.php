@@ -19,7 +19,10 @@
     <section class="pt-3 lg:py-8 bg-cream">
         <x-ui.container>
             <div class="pt-1 pb-4 lg:pt-4">
-                @include('layout.breadcrumb', ['items' => $breadcrumbItems])
+                <x-breadcrumb :items="$breadcrumbItems" />
+            </div>
+            <div class="mt-3">
+                <x-banner-ad mt="0" />
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">

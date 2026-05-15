@@ -17,8 +17,9 @@
     <section class="pt-3 lg:py-8 bg-cream">
         <x-ui.container>
             <div class="pt-1 pb-4 lg:pt-4">
-                @include('layout.breadcrumb', ['items' => $breadcrumbItems])
+                <x-breadcrumb :items="$breadcrumbItems" />
             </div>
+            <x-banner-ad mt="0" mb="1rem" />
 
             <!-- Page Header -->
             <div class="mb-8">

@@ -3,9 +3,9 @@
 @php
     $chatVendorName = $vendor->name ?? 'Makna Wedding';
     $chatVendorBadge = $vendor ? 'Vendor Terverifikasi' : 'Power Chat';
-    $chatBackUrl = url()->previous() !== url()->current()
-        ? url()->previous()
-        : ($package ? route('store.package.show', $package) : route('store'));
+    $chatBackUrl = $package
+        ? route('store.package.show', $package)
+        : ($vendor ? route('vendor.detail', $vendor) : route('store'));
     $chatProductImage = $package?->image_url ?: $vendor?->cover_image_url ?: url(config('app.logo_url'));
     $chatProductPriceBase = (int) ($package->price ?? 0);
     $chatProductDiscount = (int) ($package->discount ?? 0);
@@ -137,7 +137,7 @@
         border-radius: 1.5rem;
         padding: 0.85rem 1rem;
         line-height: 1.45;
-        font-size: 0.8125rem;
+        font-size: 0.875rem;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
     }
 
@@ -331,12 +331,12 @@
                         <a href="{{ route('home') }}" class="font-bold text-emerald-600">Baca Panduan Keamanan.</a>
                     </p>
                     @if($package)
-                        <div class="mt-3 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-xl shadow-slate-200/70">
-                            <div class="flex items-center gap-3">
-                                <a id="chat-ctx-pkg-link" href="{{ route('store.package.show', $package) }}" class="shrink-0">
-                                    <img id="chat-ctx-pkg-img" src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-14 w-14 rounded-2xl object-cover bg-slate-100">
+                        <div class="mt-3 rounded-2xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70 overflow-hidden">
+                            <div class="flex items-stretch">
+                                <a id="chat-ctx-pkg-link" href="{{ route('store.package.show', $package) }}" class="shrink-0 flex">
+                                    <img id="chat-ctx-pkg-img" src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-full w-24 object-cover bg-slate-100">
                                 </a>
-                                <div class="min-w-0 flex-1">
+                                <div class="min-w-0 flex-1 p-3">
                                     <p id="chat-ctx-pkg-name" class="truncate text-sm font-semibold leading-tight text-slate-800">{{ $chatProductName }}</p>
                                     <p id="chat-ctx-pkg-price" class="mt-0.5 text-base font-bold text-slate-900" style="{{ $chatProductPrice ? '' : 'display:none;' }}">{{ $chatProductPrice }}</p>
                                 </div>
@@ -365,20 +365,20 @@
 
 
                 @if($package)
-                    <div id="chat-product-card" class="relative mt-4 w-full max-w-md rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-xl shadow-slate-200/70">
+                    <div id="chat-product-card" class="relative mt-4 w-full max-w-md rounded-2xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70 overflow-hidden">
                         <button type="button" id="chat-product-dismiss"
-                                class="absolute -right-2.5 -top-2.5 flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-slate-500 shadow-sm transition hover:bg-slate-300"
+                                class="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-slate-500 shadow-sm transition hover:bg-slate-300"
                                 aria-label="Tutup kartu produk">
                             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
-                        <div class="flex items-center gap-3">
-                            <a href="{{ route('store.package.show', $package) }}" class="shrink-0">
-                                <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-16 w-16 rounded-2xl object-cover bg-slate-100">
+                        <div class="flex items-stretch">
+                            <a href="{{ route('store.package.show', $package) }}" class="shrink-0 flex">
+                                <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-full w-24 object-cover bg-slate-100">
                             </a>
-                            <div class="min-w-0 flex-1">
-                                <p class="truncate text-sm font-semibold leading-tight text-slate-800">{{ $chatProductName }}</p>
+                            <div class="min-w-0 flex-1 p-3">
+                                <p class="truncate text-sm font-semibold leading-tight text-slate-800 pr-6">{{ $chatProductName }}</p>
                                 @if($chatProductPrice)
                                     <p class="mt-1 text-base font-bold text-slate-900">{{ $chatProductPrice }}</p>
                                 @endif
@@ -458,12 +458,12 @@
             <span class="shrink-0 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-medium text-slate-400">Menanyakan paket baru</span>
             <hr class="flex-1 border-slate-200">
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-sm">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('store.package.show', $package) }}" class="shrink-0">
-                    <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-14 w-14 rounded-2xl object-cover bg-slate-100">
+        <div class="rounded-2xl border border-slate-200 bg-white/95 shadow-sm overflow-hidden">
+            <div class="flex items-stretch">
+                <a href="{{ route('store.package.show', $package) }}" class="shrink-0 flex">
+                    <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-full w-24 object-cover bg-slate-100">
                 </a>
-                <div class="min-w-0 flex-1">
+                <div class="min-w-0 flex-1 p-3">
                     <p class="text-[11px] font-medium text-slate-400 mb-0.5">{{ $chatVendorName }}</p>
                     <p class="truncate text-sm font-semibold leading-tight text-slate-800">{{ $chatProductName }}</p>
                     @if($chatProductPrice)
