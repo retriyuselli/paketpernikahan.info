@@ -137,7 +137,7 @@
         border-radius: 1.5rem;
         padding: 0.85rem 1rem;
         line-height: 1.45;
-        font-size: 0.94rem;
+        font-size: 0.8125rem;
         box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
     }
 
@@ -330,19 +330,6 @@
                         Hati-hati penipuan! Mohon tidak bertransaksi di luar platform resmi dan tidak memberikan data pribadi kepada penjual, seperti nomor HP dan alamat. Tetap berinteraksi melalui Makna Wedding, ya.
                         <a href="{{ route('home') }}" class="font-bold text-emerald-600">Baca Panduan Keamanan.</a>
                     </p>
-                    <div class="mt-2 rounded-2xl border border-cyan-300/70 bg-cyan-50/80 px-4 py-3 shadow-sm">
-                        <div class="flex items-start gap-3">
-                            <div class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-cyan-300 text-cyan-600">
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8v.01"/>
-                                </svg>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="text-[12px] leading-5 text-slate-700">Ada konsultasi gratis untuk 1 sesi percakapan di vendor ini.</p>
-                                <p class="text-xs font-bold text-emerald-600">Cek info terbaru</p>
-                            </div>
-                        </div>
-                    </div>
                     @if($package)
                         <div class="mt-3 rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-xl shadow-slate-200/70">
                             <div class="flex items-center gap-3">
