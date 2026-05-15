@@ -359,23 +359,11 @@
                 </div>
 
                 <div id="public-chat-empty" class="public-chat-empty">
-                    @if($isGuest)
-                    <div class="flex flex-col items-center gap-3 text-center max-w-xs">
-                        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
-                            <svg class="h-7 w-7 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700">Masuk untuk mulai chat</p>
-                            <p class="mt-1 text-xs leading-5 text-slate-400">Login atau daftar gratis untuk berkonsultasi langsung dengan <span class="font-semibold">{{ $chatVendorName }}</span>.</p>
-                        </div>
-                    </div>
-                    @else
+                    @unless($isGuest)
                     <div class="max-w-sm">
                         <p class="text-sm font-medium text-slate-400">Percakapan akan muncul di sini. Kirim pesan pertama untuk mulai tanya detail paket, jadwal, atau konsultasi.</p>
                     </div>
-                    @endif
+                    @endunless
                 </div>
             </div>
         </main>
@@ -388,19 +376,6 @@
                     <a href="{{ route('home') }}" class="font-bold text-emerald-600">Baca Panduan Keamanan.</a>
                 </p>
 
-                <div id="chat-promo-banner" class="mt-3 rounded-2xl border border-cyan-300/70 bg-cyan-50/80 px-4 py-3 shadow-sm backdrop-blur-sm">
-                    <div class="flex items-start gap-3">
-                        <div class="mt-0.5 flex h-7 w-7 items-center justify-center rounded-full border border-cyan-300 text-cyan-600">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8v.01"/>
-                            </svg>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <p class="text-[13px] leading-5 text-slate-700">Ada konsultasi gratis untuk 1 sesi percakapan di vendor ini.</p>
-                            <p class="text-sm font-bold text-emerald-600">Cek info terbaru</p>
-                        </div>
-                    </div>
-                </div>
 
                 @if($package)
                     <div id="chat-product-card" class="relative mt-4 w-full max-w-md rounded-2xl border border-slate-200 bg-white/95 p-3 shadow-xl shadow-slate-200/70">
