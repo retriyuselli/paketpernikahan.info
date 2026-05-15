@@ -151,7 +151,7 @@
     @endphp
 
     <!-- Breadcrumb -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1 pb-4 lg:pt-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1 pb-2 lg:pt-4">
         <div class="flex items-center justify-between gap-4">
             @include('layout.breadcrumb', ['items' => $breadcrumbItems])
 
@@ -166,6 +166,9 @@
                     </a>
                 @endif
             @endauth
+        </div>
+        <div class="mt-2">
+            <x-banner-ad />
         </div>
     </div>
 
@@ -224,7 +227,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
 
             <!-- Main Photo -->
-            <div class="lg:col-span-2 rounded-2xl overflow-hidden relative ar-16x9">
+            <div class="lg:col-span-2 -mx-4 w-[calc(100%+2rem)] rounded-none lg:mx-0 lg:w-full lg:rounded-2xl overflow-hidden relative ar-16x9">
                 <img :src="mainSrc" loading="lazy"
                      alt="{{ $vendor->name }}"
                      class="w-full h-full object-cover transition-all duration-500">
@@ -257,7 +260,7 @@
     </section>
 
     <!-- Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-28 lg:pb-16">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
             <!-- Left: Main Content -->
@@ -1671,6 +1674,27 @@
         showShareToast('Link berhasil disalin');
     }
     </script>
+
+    <!-- Mobile Sticky Bar -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 px-4 py-3">
+        @php
+            $stickyBarChatUrl = $vendor->cheapestPackage
+                ? route('chat.public', ['package' => $vendor->cheapestPackage->id])
+                : route('chat.public');
+        @endphp
+        <div class="flex items-center gap-2.5">
+            <a href="{{ $stickyBarChatUrl }}"
+               class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+            </a>
+            <button type="button" data-action="open-booking-page"
+                    class="inline-flex h-11 min-w-0 flex-1 items-center justify-center rounded-2xl bg-accent px-3.5 text-sm font-bold text-white shadow-sm whitespace-nowrap transition hover:opacity-90">
+                Booking Sekarang
+            </button>
+        </div>
+    </div>
 
     @include('layout.footer')
 
