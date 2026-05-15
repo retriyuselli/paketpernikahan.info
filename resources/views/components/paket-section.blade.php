@@ -14,7 +14,7 @@
                 <p class="text-sm text-gray-500">Belum ada paket tersedia.</p>
             </div>
         @else
-            <div class="grid grid-cols-2 lg:grid-cols-6 gap-1.5 sm:gap-2 lg:gap-3">
+            <div class="grid grid-cols-2 lg:grid-cols-6 gap-3 lg:gap-3">
                 @foreach($packages->take(6) as $pkg)
                     @php
                         $vendor = $pkg->vendor;
@@ -24,7 +24,7 @@
                         if (!$cover && $vendor && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
                             $cover = $vendor->cover_image[0];
                         }
-                        $cover = $cover ?: 'https://picsum.photos/seed/rv-pkg-' . $pkg->id . '/800/600';
+                        $cover = $cover ?: null;
                         $items = $pkg->items;
                         $vendorName = $vendor ? $vendor->name : null;
                         $vendorLocation = $vendor && $vendor->city ? $vendor->city : 'Indonesia';

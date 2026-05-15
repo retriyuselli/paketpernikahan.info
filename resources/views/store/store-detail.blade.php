@@ -638,47 +638,36 @@
                             </div>
                         </div>
                         <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-                                @foreach($otherPackages->take(8) as $op)
+                            @foreach($otherPackages->take(8) as $op)
                                 @php
-                                    $opPrice = (int) ($op->price ?? 0);
+                                    $opPrice    = (int) ($op->price ?? 0);
                                     $opDiscount = (int) ($op->discount ?? 0);
-                                    $opFinal = max($opPrice - $opDiscount, 0);
-                                    $opCover = $op->image_url ?: null;
+                                    $opCover    = $op->image_url ?: null;
                                     if (!$opCover && is_array($op->image_path ?? null) && count($op->image_path) > 0) {
                                         $opCover = $op->image_path[0];
                                         if ($opCover && !str_starts_with($opCover, 'http')) {
                                             $opCover = \Illuminate\Support\Facades\Storage::url($opCover);
                                         }
                                     }
-                                    if (!$opCover) {
-                                        $opCover = $vendor->cover_image_url ?: null;
-                                    }
-                                    if (!$opCover && is_array($vendor->cover_image ?? null) && count($vendor->cover_image) > 0) {
-                                        $opCover = $vendor->cover_image[0];
-                                    }
-                                    $opCover = $opCover ?: ('data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480"><defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#f3f4f6"/><stop offset="1" stop-color="#e5e7eb"/></linearGradient></defs><rect width="640" height="480" fill="url(#g)"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-family="Arial, sans-serif" font-size="20">No Image</text></svg>'));
+                                    if (!$opCover) { $opCover = $vendor->cover_image_url ?: null; }
+                                    if (!$opCover && is_array($vendor->cover_image ?? null)) { $opCover = $vendor->cover_image[0] ?? null; }
+                                    $opPrimaryBenefit   = $opDiscount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
+                                    $opSecondaryBenefit = !empty($op->items[0]) ? \Illuminate\Support\Str::limit($op->items[0], 16) : 'Gratis Konsultasi';
                                 @endphp
-                                <a href="{{ route('store.package.show', $op) }}"
-                                   class="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:border-gray-200 hover:shadow-sm transition {{ $loop->index >= 6 ? 'hidden lg:block' : '' }}">
-                                    <div class="relative aspect-4/3">
-                                        <img src="{{ $opCover }}" alt="{{ $op->name }}" class="w-full h-full object-cover">
-                                        <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
-                                        @if($opDiscount > 0)
-                                            <span class="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/90 border border-gray-200 text-dark">Diskon</span>
-                                        @endif
-                                        <div class="absolute bottom-0 left-0 right-0 p-2.5">
-                                            <p class="text-white text-xs font-bold leading-snug line-clamp-2">{{ $op->name }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="p-3">
-                                        @if($opDiscount > 0)
-                                            <p class="text-[10px] text-gray-400 line-through">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
-                                            <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($opFinal, 0, ',', '.') }}</p>
-                                        @else
-                                            <p class="text-sm font-extrabold leading-tight text-accent">IDR {{ number_format($opPrice, 0, ',', '.') }}</p>
-                                        @endif
-                                    </div>
-                                </a>
+                                <x-package-card
+                                    :href="route('store.package.show', $op)"
+                                    :name="$op->name"
+                                    :image="$opCover"
+                                    :price="$opPrice"
+                                    :discount="$opDiscount"
+                                    :vendor-name="$vendor->name"
+                                    :location="$vendor->city ?? 'Indonesia'"
+                                    :rating="$vendor->rating ?? null"
+                                    :benefit-primary="$opPrimaryBenefit"
+                                    :benefit-secondary="$opSecondaryBenefit"
+                                    width-class="w-full"
+                                    :class="$loop->index >= 6 ? 'hidden lg:flex' : ''"
+                                />
                             @endforeach
                         </div>
                     </div>

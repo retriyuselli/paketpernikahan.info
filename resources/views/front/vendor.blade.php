@@ -108,7 +108,7 @@
             </div>
         @else
             @foreach ($categories as $cat)
-        <div class="mb-6 sm:mb-8 lg:mb-12">
+        <div class="mb-2.5 sm:mb-8 lg:mb-12">
 
             <!-- Category Title -->
             <div class="flex items-center justify-between mb-4">
@@ -124,7 +124,7 @@
                     <svg class="w-4 h-4 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 </button> --}}
 
-                <div class="flex gap-1.5 sm:gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide">
+                <div class="flex gap-1.5 sm:gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide -mx-4 px-3 sm:mx-0 sm:px-0">
                     @foreach ($cat->vendors as $i => $v)
                     @php
                     $vData = [
@@ -147,7 +147,8 @@
                     <x-vendor-card
                         :vendor="$v"
                         :vendor-data="$vData"
-                        width-class="w-[calc((100%-0.25rem)/2)] sm:w-[44vw] lg:w-56"
+                        width-class="w-[calc(50%-0.1875rem)] sm:w-[44vw] lg:w-56"
+                        :class="$loop->index >= 2 ? 'hidden lg:flex' : ''"
                     />
                     @endforeach
                 </div>

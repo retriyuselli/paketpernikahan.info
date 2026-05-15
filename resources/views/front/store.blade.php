@@ -72,7 +72,7 @@
                             </svg>
                         </button>
 
-                        <div id="store-cat-{{ $category->slug }}" class="flex gap-1.5 sm:gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide">
+                        <div id="store-cat-{{ $category->slug }}" class="flex gap-1.5 sm:gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide -mx-4 px-3 sm:mx-0 sm:px-0">
                             @foreach($group->take(12) as $pkg)
                                 @php
                                     $vendor = $pkg->vendor;
@@ -104,7 +104,8 @@
                                     :rating="$vendor?->rating"
                                     :benefit-primary="$primaryBenefit"
                                     :benefit-secondary="$secondaryBenefit"
-                                    width-class="w-[46.5vw] sm:w-[44vw] lg:w-52"
+                                    width-class="w-[calc(50%-0.1875rem)] sm:w-[44vw] lg:w-52"
+                                    :class="$loop->index >= 2 ? 'hidden lg:flex' : ''"
                                 />
                             @endforeach
                         </div>
@@ -139,7 +140,7 @@
                         </svg>
                     </button>
 
-                    <div id="store-cat-lainnya" class="flex gap-1.5 sm:gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide">
+                    <div id="store-cat-lainnya" class="flex gap-1.5 sm:gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide -mx-4 px-3 sm:mx-0 sm:px-0">
                         @foreach($uncategorizedPackages->take(12) as $pkg)
                             @php
                                 $vendor = $pkg->vendor;
@@ -174,7 +175,8 @@
                                 :rating="$vendor?->rating"
                                 :benefit-primary="$primaryBenefit"
                                 :benefit-secondary="$secondaryBenefit"
-                                width-class="w-[calc((100%-0.375rem)/2)] sm:w-[44vw] lg:w-60"
+                                width-class="w-[calc(50%-0.1875rem)] sm:w-[44vw] lg:w-60"
+                                :class="$loop->index >= 2 ? 'hidden lg:flex' : ''"
                             />
                         @endforeach
                     </div>
