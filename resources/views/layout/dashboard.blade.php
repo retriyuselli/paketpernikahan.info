@@ -83,6 +83,7 @@
         .sidebar-link svg { width: 1rem; height: 1rem; flex-shrink: 0; }
         .sidebar-link:hover { background: #f3f4f6; color: #374151; }
         .sidebar-link.active { background: var(--light-sage); color: var(--sidebar-active-text); font-weight: 600; }
+        .sidebar-link.active .ml-auto { background: rgba(255,255,255,0.22) !important; color: var(--sidebar-active-text) !important; }
     </style>
 </head>
 <body class="bg-cream text-dark"
@@ -167,7 +168,7 @@
                 </svg>
                 Favorit
                 @if(($favoriteCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $favoriteCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$favoriteCount }}</span>
                 @endif
             </a>
 
@@ -177,7 +178,7 @@
                 </svg>
                 Booking
                 @if(($bookingCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $bookingCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$bookingCount }}</span>
                 @endif
             </a>
 
@@ -188,7 +189,7 @@
                 </svg>
                 Booking User
                 @if(($bookingUserCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $bookingUserCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$bookingUserCount }}</span>
                 @endif
             </a>
             @endif
@@ -199,7 +200,7 @@
                 </svg>
                 Ulasan Saya
                 @if($reviewCount > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $reviewCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$reviewCount }}</span>
                 @endif
             </a>
 
@@ -221,7 +222,7 @@
                     </svg>
                     Vendor Saya
                     @if(($menuVendorCount ?? 0) > 0)
-                    <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorCount }}</span>
+                    <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuVendorCount }}</span>
                     @endif
                 </a>
             @endif
@@ -232,7 +233,7 @@
                 </svg>
                 Paket
                 @if($menuPaketCount > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuPaketCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuPaketCount }}</span>
                 @endif
             </a>
             @endif
@@ -242,7 +243,7 @@
                 </svg>
                 Booking Masuk
                 @if(($menuVendorBookingPendingCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorBookingPendingCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuVendorBookingPendingCount }}</span>
                 @endif
             </a>
             <a href="{{ route('dashboard.vendor.payments') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.payments*') ? 'active' : '' }}">
@@ -265,7 +266,7 @@
                 </svg>
                 All Vendor
                 @if(($menuAllVendorCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuAllVendorCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuAllVendorCount }}</span>
                 @endif
             </a>
             <a href="{{ route('dashboard.vendor.applications') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.applications*') ? 'active' : '' }}">
@@ -274,7 +275,7 @@
                 </svg>
                 Pengajuan Vendor
                 @if(($menuVendorApplicationPendingCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorApplicationPendingCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuVendorApplicationPendingCount }}</span>
                 @endif
             </a>
             <a href="{{ route('dashboard.payment.user') }}" class="sidebar-link {{ request()->routeIs('dashboard.payment.user*') ? 'active' : '' }}">
@@ -284,7 +285,7 @@
                 </svg>
                 Pembayaran User
                 @if(($menuPaymentUserPendingCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuPaymentUserPendingCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuPaymentUserPendingCount }}</span>
                 @endif
             </a>
             <a href="{{ route('chat.admin') }}" class="sidebar-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
@@ -392,7 +393,7 @@
                         </svg>
                         Favorit
                         @if(($favoriteCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $favoriteCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$favoriteCount }}</span>
                         @endif
                     </a>
 
@@ -402,7 +403,7 @@
                         </svg>
                         Booking
                         @if(($bookingCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $bookingCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$bookingCount }}</span>
                         @endif
                     </a>
 
@@ -413,7 +414,7 @@
                         </svg>
                         Booking User
                         @if(($bookingUserCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $bookingUserCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$bookingUserCount }}</span>
                         @endif
                     </a>
                     @endif
@@ -424,7 +425,7 @@
                         </svg>
                         Ulasan Saya
                         @if(($reviewCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $reviewCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$reviewCount }}</span>
                         @endif
                     </a>
 
@@ -446,7 +447,7 @@
                 </svg>
                 Vendor Saya
                 @if(($menuVendorCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuVendorCount }}</span>
                 @endif
             </a>
             @endif
@@ -457,7 +458,7 @@
                 </svg>
                 Paket
                 @if($menuPaketCount > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuPaketCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuPaketCount }}</span>
                 @endif
             </a>
             @endif
@@ -467,7 +468,7 @@
                 </svg>
                 Booking Masuk
                 @if(($menuVendorBookingPendingCount ?? 0) > 0)
-                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorBookingPendingCount }}</span>
+                <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuVendorBookingPendingCount }}</span>
                 @endif
             </a>
             <a href="{{ route('dashboard.vendor.payments') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.payments*') ? 'active' : '' }}">
@@ -490,7 +491,7 @@
                         </svg>
                         All Vendor
                         @if(($menuAllVendorCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuAllVendorCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuAllVendorCount }}</span>
                         @endif
                     </a>
                     <a href="{{ route('dashboard.vendor.applications') }}" class="sidebar-link {{ request()->routeIs('dashboard.vendor.applications*') ? 'active' : '' }}">
@@ -499,7 +500,7 @@
                         </svg>
                         Pengajuan Vendor
                         @if(($menuVendorApplicationPendingCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuVendorApplicationPendingCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuVendorApplicationPendingCount }}</span>
                         @endif
                     </a>
                     <a href="{{ route('dashboard.payment.user') }}" class="sidebar-link {{ request()->routeIs('dashboard.payment.user*') ? 'active' : '' }}">
@@ -509,7 +510,7 @@
                         </svg>
                         Pembayaran User
                         @if(($menuPaymentUserPendingCount ?? 0) > 0)
-                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark">{{ $menuPaymentUserPendingCount }}</span>
+                        <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuPaymentUserPendingCount }}</span>
                         @endif
                     </a>
                     <a href="{{ route('chat.admin') }}" class="sidebar-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
