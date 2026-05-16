@@ -105,11 +105,11 @@
         z-index: 1;
         display: flex;
         flex-direction: column;
-        gap: 0.85rem;
+        gap: 0.4rem;
         width: 100%;
         max-width: 48rem;
         margin: 0 auto;
-        padding: 0 1rem;
+        padding: 0 0.75rem;
     }
 
     .public-chat-empty {
@@ -133,22 +133,22 @@
     }
 
     .public-chat-bubble {
-        max-width: min(86%, 22rem);
-        border-radius: 1.5rem;
-        padding: 0.85rem 1rem;
+        max-width: min(88%, 24rem);
+        border-radius: 0.5rem;
+        padding: 0.4rem 0.75rem;
         line-height: 1.45;
         font-size: 0.875rem;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
     }
 
     .public-chat-bubble--admin {
-        border-top-left-radius: 0.5rem;
+        border-top-left-radius: 0.125rem;
         background: rgba(255, 255, 255, 0.96);
         color: #1f2937;
     }
 
     .public-chat-bubble--guest {
-        border-top-right-radius: 0.5rem;
+        border-top-right-radius: 0.125rem;
         background: #cdd8ee;
         color: #334155;
     }
@@ -618,13 +618,13 @@
                 wrap.className = 'flex ' + (isAdmin ? 'justify-start' : 'justify-end');
 
                 var adminLabel = isAdmin && message.admin_name
-                    ? '<span class="mb-1 block text-[11px] font-medium text-slate-400">' + esc(message.admin_name) + '</span>'
+                    ? '<span class="mb-0.5 block text-[11px] font-medium text-slate-400">' + esc(message.admin_name) + '</span>'
                     : '';
 
                 wrap.innerHTML = '<div class="public-chat-bubble ' + (isAdmin ? 'public-chat-bubble--admin' : 'public-chat-bubble--guest') + '">'
                     + adminLabel
                     + '<div class="break-words">' + esc(message.message) + '</div>'
-                    + '<span class="mt-2 block text-[11px] ' + (isAdmin ? 'text-slate-400' : 'text-slate-500 text-right') + '">' + fmtTime(message.created_at) + '</span>'
+                    + '<span class="mt-1 block text-[11px] ' + (isAdmin ? 'text-slate-400' : 'text-slate-500 text-right') + '">' + fmtTime(message.created_at) + '</span>'
                     + '</div>';
 
                 messagesEl.appendChild(wrap);
