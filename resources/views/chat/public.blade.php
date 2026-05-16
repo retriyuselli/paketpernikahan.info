@@ -332,9 +332,9 @@
                     </p>
                     @if($package)
                         <div class="mt-3 rounded-2xl border border-slate-200 bg-white/95 shadow-xl shadow-slate-200/70 overflow-hidden">
-                            <div class="flex items-stretch">
+                            <div class="flex items-center">
                                 <a id="chat-ctx-pkg-link" href="{{ route('store.package.show', $package) }}" class="shrink-0 flex">
-                                    <img id="chat-ctx-pkg-img" src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-full w-24 object-cover bg-slate-100">
+                                    <img id="chat-ctx-pkg-img" src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-20 w-20 object-cover bg-slate-100">
                                 </a>
                                 <div class="min-w-0 flex-1 p-3">
                                     <p id="chat-ctx-pkg-name" class="truncate text-sm font-semibold leading-tight text-slate-800">{{ $chatProductName }}</p>
@@ -373,9 +373,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
-                        <div class="flex items-stretch">
+                        <div class="flex items-center">
                             <a href="{{ route('store.package.show', $package) }}" class="shrink-0 flex">
-                                <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-full w-24 object-cover bg-slate-100">
+                                <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-20 w-20 object-cover bg-slate-100">
                             </a>
                             <div class="min-w-0 flex-1 p-3">
                                 <p class="truncate text-sm font-semibold leading-tight text-slate-800 pr-6">{{ $chatProductName }}</p>
@@ -478,9 +478,9 @@
             <hr class="flex-1 border-slate-200">
         </div>
         <div class="rounded-2xl border border-slate-200 bg-white/95 shadow-sm overflow-hidden">
-            <div class="flex items-stretch">
+            <div class="flex items-center">
                 <a href="{{ route('store.package.show', $package) }}" class="shrink-0 flex">
-                    <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-full w-24 object-cover bg-slate-100">
+                    <img src="{{ $chatProductImage }}" alt="{{ $chatProductName }}" class="h-20 w-20 object-cover bg-slate-100">
                 </a>
                 <div class="min-w-0 flex-1 p-3">
                     <p class="text-[11px] font-medium text-slate-400 mb-0.5">{{ $chatVendorName }}</p>
