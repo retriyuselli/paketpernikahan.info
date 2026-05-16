@@ -544,6 +544,12 @@
         </div>
 
         <main class="flex-1 px-6 py-8 w-full max-w-6xl mx-auto">
+            @if(session('status'))
+                <div id="flash-status" class="mb-5 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 text-sm text-emerald-800 flex items-center justify-between">
+                    <span>✓ {{ session('status') }}</span>
+                    <button onclick="document.getElementById('flash-status').remove()" class="text-emerald-500 hover:text-emerald-800 ml-4 text-lg leading-none">&times;</button>
+                </div>
+            @endif
             @yield('content')
         </main>
     </div>

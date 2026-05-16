@@ -1148,15 +1148,21 @@ Route::post('/reset-password', function (\Illuminate\Http\Request $request) {
         'email'    => 'required|email',
         'password' => 'required|min:8|confirmed',
     ]);
+    $loggedInUser = null;
     $status = \Illuminate\Support\Facades\Password::reset(
         $request->only('email', 'password', 'password_confirmation', 'token'),
-        function (\App\Models\User $user, string $password) {
+        function (\App\Models\User $user, string $password) use (&$loggedInUser) {
             $user->forceFill(['password' => \Illuminate\Support\Facades\Hash::make($password)])->save();
             event(new \Illuminate\Auth\Events\PasswordReset($user));
+            $loggedInUser = $user;
         }
     );
+    if ($status === \Illuminate\Support\Facades\Password::PASSWORD_RESET && $loggedInUser) {
+        \Illuminate\Support\Facades\Auth::login($loggedInUser);
+        return redirect()->route('dashboard')->with('status', 'Password berhasil diperbarui. Selamat datang kembali!');
+    }
     return $status === \Illuminate\Support\Facades\Password::PASSWORD_RESET
-        ? redirect()->route('login')->with('status', __($status))
+        ? redirect()->route('dashboard')->with('status', 'Password berhasil diperbarui.')
         : back()->withErrors(['email' => __($status)]);
 })->middleware('guest')->name('password.update');
 
