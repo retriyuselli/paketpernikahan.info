@@ -44,7 +44,62 @@
             <p class="text-sm">Belum ada sesi chat.</p>
         </div>
     @else
-        <table class="min-w-full text-sm">
+        {{-- Mobile: card list --}}
+        <div class="lg:hidden divide-y divide-gray-100">
+            @foreach($sessions as $s)
+            @php($adminName = $adminUsers[$s->last_admin_user_id]->name ?? null)
+            <div class="px-4 py-4">
+                <div class="flex items-start justify-between gap-3 mb-2">
+                    <div class="min-w-0">
+                        <p class="font-semibold text-dark text-sm truncate">{{ $s->guest_name }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5 truncate">{{ $s->vendor?->name ?? 'Belum terdeteksi' }}</p>
+                        @if($s->vendorPackage)
+                            <p class="text-[11px] text-gray-400 truncate">{{ $s->vendorPackage->name }}</p>
+                        @endif
+                    </div>
+                    @if($s->status === 'open')
+                        <span class="inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-50 text-green-700">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                            Aktif
+                        </span>
+                    @else
+                        <span class="inline-flex shrink-0 text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500">
+                            Ditutup
+                        </span>
+                    @endif
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="text-[11px] text-gray-400 space-y-0.5">
+                        @if($adminName)
+                            <p>Dibalas: <span class="text-gray-500">{{ $adminName }}</span></p>
+                        @endif
+                        <p>{{ $s->updated_at->diffForHumans() }}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('chat.admin.detail', $s->session_token) }}"
+                           class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg bg-accent/10 text-accent">
+                            Buka
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                        <form method="POST" action="{{ route('chat.admin.delete', $s->session_token) }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    onclick="return confirm('Hapus sesi chat ini beserta semua pesannya?')"
+                                    class="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-50 text-red-600">
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        {{-- Desktop: table --}}
+        <table class="hidden lg:table min-w-full text-sm">
             <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
                 <tr>
                     <th class="text-left px-4 py-3 font-semibold">Nama</th>

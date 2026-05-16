@@ -52,6 +52,7 @@
                     <p class="text-[10px] text-red-500 mt-1">{{ $message }}</p>
                     @enderror
                     <p class="text-[10px] text-gray-400 mt-1.5">Format: JPG, PNG, WEBP &bull; Maks. 1 MB</p>
+
                 </div>
             </div>
             <button type="submit"
@@ -209,6 +210,7 @@ function previewAvatar(event) {
             img.className = 'w-20 h-20 rounded-full object-cover border-4 border-gray-100 shadow';
             initials.replaceWith(img);
         }
+
     };
     reader.readAsDataURL(file);
 }

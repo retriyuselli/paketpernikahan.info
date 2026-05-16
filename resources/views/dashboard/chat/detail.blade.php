@@ -145,18 +145,45 @@
 
     {{-- Input --}}
     @if($session->status === 'open')
-    <div class="border-t border-gray-100 px-4 py-3 flex items-end gap-2">
-        <textarea id="admin-reply-input"
-                  placeholder="Ketik balasan..."
-                  rows="1"
-                  class="flex-1 resize-none bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent transition"
-                  style="max-height:120px;"></textarea>
-        <button type="button" id="admin-reply-btn"
-                class="w-10 h-10 rounded-xl flex items-center justify-center bg-accent text-white hover:opacity-90 transition flex-shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-            </svg>
-        </button>
+    <div class="border-t border-gray-100 px-4 pt-2 pb-3">
+        {{-- Emoji Picker --}}
+        <div id="admin-emoji-picker" class="hidden mb-2 bg-white rounded-2xl shadow-xl ring-1 ring-gray-200 p-3">
+            <div class="grid grid-cols-8 gap-1">
+                @php
+                $emojis = ['😊','😂','❤️','🥰','😍','😘','🤗','😭',
+                           '😅','🙏','💕','✨','🎉','💍','👰','🤵',
+                           '💐','🌸','🌹','🥂','🍰','📸','💌','🎊',
+                           '😔','😢','😮','🤔','👍','👏','🙌','💯',
+                           '🔥','⭐','🌟','💫','🕊️','🌺','🌷','🌼'];
+                @endphp
+                @foreach($emojis as $emoji)
+                    <button type="button" data-emoji="{{ $emoji }}"
+                            class="admin-emoji-btn flex h-9 w-9 items-center justify-center rounded-xl text-xl hover:bg-gray-100 transition">
+                        {{ $emoji }}
+                    </button>
+                @endforeach
+            </div>
+        </div>
+
+        <div class="flex items-end gap-2">
+            <button type="button" id="admin-emoji-toggle"
+                    class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition flex-shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 0 1-5.656 0M9 10h.01M15 10h.01M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/>
+                </svg>
+            </button>
+            <textarea id="admin-reply-input"
+                      placeholder="Ketik balasan..."
+                      rows="1"
+                      class="flex-1 resize-none bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-accent transition"
+                      style="max-height:120px;"></textarea>
+            <button type="button" id="admin-reply-btn"
+                    class="w-10 h-10 rounded-xl flex items-center justify-center bg-accent text-white hover:opacity-90 transition flex-shrink-0">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                </svg>
+            </button>
+        </div>
     </div>
     @else
     <div class="border-t border-gray-100 px-4 py-3 text-center text-sm text-gray-400">
@@ -320,6 +347,35 @@
         input.addEventListener('input', function () {
             this.style.height = 'auto';
             this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+    }
+
+    // ── Emoji picker ─────────────────────────────────────────────────────
+    var emojiToggle = document.getElementById('admin-emoji-toggle');
+    var emojiPicker = document.getElementById('admin-emoji-picker');
+    if (emojiToggle && emojiPicker) {
+        emojiToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            emojiPicker.classList.toggle('hidden');
+            if (!emojiPicker.classList.contains('hidden') && input) input.focus();
+        });
+        document.querySelectorAll('.admin-emoji-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                if (!input) return;
+                var start = input.selectionStart;
+                var end = input.selectionEnd;
+                var val = input.value;
+                var emoji = btn.getAttribute('data-emoji');
+                input.value = val.slice(0, start) + emoji + val.slice(end);
+                input.selectionStart = input.selectionEnd = start + emoji.length;
+                input.focus();
+                input.dispatchEvent(new Event('input'));
+            });
+        });
+        document.addEventListener('click', function (e) {
+            if (!emojiPicker.contains(e.target) && e.target !== emojiToggle) {
+                emojiPicker.classList.add('hidden');
+            }
         });
     }
 })();

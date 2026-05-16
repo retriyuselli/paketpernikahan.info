@@ -231,7 +231,7 @@
                                 Online
                             </span>
                         </div>
-                        <p class="truncate text-[1.05rem] font-bold text-slate-800">{{ $chatVendorName }}</p>
+                        <p class="truncate text-sm font-bold text-slate-800">{{ $chatVendorName }}</p>
                     </div>
                 </div>
 
@@ -418,6 +418,25 @@
                     @endforeach
                 </div>
 
+                {{-- ── Emoji Picker ─────────────────────────────────────── --}}
+                <div id="emoji-picker" class="hidden mb-2 bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 p-3">
+                    <div class="grid grid-cols-8 gap-1">
+                        @php
+                        $emojis = ['😊','😂','❤️','🥰','😍','😘','🤗','😭',
+                                   '😅','🙏','💕','✨','🎉','💍','👰','🤵',
+                                   '💐','🌸','🌹','🥂','🍰','📸','💌','🎊',
+                                   '😔','😢','😮','🤔','👍','👏','🙌','💯',
+                                   '🔥','⭐','🌟','💫','🕊️','🌺','🌷','🌼'];
+                        @endphp
+                        @foreach($emojis as $emoji)
+                            <button type="button" data-emoji="{{ $emoji }}"
+                                    class="emoji-btn flex h-9 w-9 items-center justify-center rounded-xl text-xl hover:bg-slate-100 transition">
+                                {{ $emoji }}
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
                 {{-- ── Composer ────────────────────────────────────────── --}}
                 <div class="mt-3 flex items-center gap-2 sm:gap-3">
                     <button type="button" class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-50" aria-label="Fitur lampiran segera hadir">
@@ -428,7 +447,7 @@
 
                     <div class="public-chat-composer flex min-w-0 flex-1 items-center gap-3 rounded-full px-4">
                         <input id="public-chat-input" type="text" placeholder="Tulis pesan..." class="h-12 min-w-0 flex-1 bg-transparent text-base text-slate-700 outline-none placeholder:text-slate-400">
-                        <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600" aria-label="Emoji segera hadir">
+                        <button id="emoji-toggle" type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600" aria-label="Emoji">
                             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 0 1-5.656 0M9 10h.01M15 10h.01M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/>
                             </svg>
@@ -919,6 +938,36 @@
                     sendMessage(button.getAttribute('data-quick-reply') || '');
                 });
             });
+
+            // ── Emoji picker ────────────────────────────────────────────────
+            var emojiToggle = document.getElementById('emoji-toggle');
+            var emojiPicker = document.getElementById('emoji-picker');
+            if (emojiToggle && emojiPicker) {
+                emojiToggle.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    var isHidden = emojiPicker.classList.contains('hidden');
+                    emojiPicker.classList.toggle('hidden', !isHidden);
+                    if (isHidden && inputEl) inputEl.focus();
+                });
+                document.querySelectorAll('.emoji-btn').forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        if (!inputEl) return;
+                        var start = inputEl.selectionStart;
+                        var end = inputEl.selectionEnd;
+                        var val = inputEl.value;
+                        var emoji = btn.getAttribute('data-emoji');
+                        inputEl.value = val.slice(0, start) + emoji + val.slice(end);
+                        inputEl.selectionStart = inputEl.selectionEnd = start + emoji.length;
+                        inputEl.focus();
+                        syncSendState();
+                    });
+                });
+                document.addEventListener('click', function (e) {
+                    if (!emojiPicker.contains(e.target) && e.target !== emojiToggle) {
+                        emojiPicker.classList.add('hidden');
+                    }
+                });
+            }
 
             nameBackdrop.addEventListener('click', hideNameSheet);
             nameCancelBtn.addEventListener('click', hideNameSheet);
