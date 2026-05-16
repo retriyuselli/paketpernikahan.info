@@ -154,7 +154,7 @@
     }
 
     .public-chat-composer {
-        min-height: 3.75rem;
+        min-height: 2.75rem;
         border: 1px solid #dbe4f0;
         background: rgba(255, 255, 255, 0.98);
         box-shadow: 0 16px 40px rgba(148, 163, 184, 0.16);
@@ -438,24 +438,24 @@
                 </div>
 
                 {{-- ── Composer ────────────────────────────────────────── --}}
-                <div class="mt-3 flex items-center gap-2 sm:gap-3">
-                    <button type="button" class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-50" aria-label="Fitur lampiran segera hadir">
-                        <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mt-2 flex items-center gap-2 px-1">
+                    <button type="button" class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-50" aria-label="Fitur lampiran segera hadir">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m7-7H5"/>
                         </svg>
                     </button>
 
-                    <div class="public-chat-composer flex min-w-0 flex-1 items-center gap-3 rounded-full px-4">
-                        <input id="public-chat-input" type="text" placeholder="Tulis pesan..." class="h-12 min-w-0 flex-1 bg-transparent text-base text-slate-700 outline-none placeholder:text-slate-400">
-                        <button id="emoji-toggle" type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600" aria-label="Emoji">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="public-chat-composer flex min-w-0 flex-1 items-center gap-2 rounded-full px-3">
+                        <input id="public-chat-input" type="text" placeholder="Tulis pesan..." class="h-10 min-w-0 flex-1 bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400">
+                        <button id="emoji-toggle" type="button" class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-600" aria-label="Emoji">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 0 1-5.656 0M9 10h.01M15 10h.01M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/>
                             </svg>
                         </button>
                     </div>
 
-                    <button id="public-chat-send" type="button" class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-slate-300 text-white transition hover:bg-slate-400 disabled:cursor-not-allowed">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button id="public-chat-send" type="button" class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-300 text-white transition hover:bg-slate-400 disabled:cursor-not-allowed">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12l14-7-3 7 3 7-14-7Z"/>
                         </svg>
                     </button>
