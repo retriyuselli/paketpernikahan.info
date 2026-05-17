@@ -27,12 +27,66 @@
         @endif
     </div>
 
-    {{-- Stats --}}
     @php
         $isAdmin = $user->hasRole(['super_admin', 'admin']);
         $isVendor = $user->hasRole(['vendor']);
     @endphp
 
+    {{-- Chat Saya shortcut --}}
+    @if(!$isAdmin && !$isVendor)
+    <a href="{{ route('dashboard.my-chats') }}"
+       class="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 hover:border-gray-200 hover:shadow-sm transition group mb-4">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-blue-50">
+            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+        </div>
+        <div class="flex-1">
+            <p class="text-sm font-bold text-dark">Chat Saya</p>
+            <p class="text-xs text-gray-400">Temukan rekapan chat dengan vendor</p>
+        </div>
+        <svg class="w-4 h-4 text-gray-300 group-hover:text-gray-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+    </a>
+    @endif
+
+    {{-- Quick Links --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        <a href="{{ route('vendor') }}"
+           class="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 hover:border-gray-200 hover:shadow-sm transition group">
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-light-sage">
+                <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-bold text-dark">Jelajahi Vendor</p>
+                <p class="text-xs text-gray-400">Temukan WO, venue &amp; fotografer</p>
+            </div>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-gray-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </a>
+
+        <a href="{{ route('home') }}"
+           class="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 hover:border-gray-200 hover:shadow-sm transition group">
+            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-accent-pink">
+                <svg class="w-5 h-5 text-accent-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+            </div>
+            <div class="flex-1">
+                <p class="text-sm font-bold text-dark">Beranda</p>
+                <p class="text-xs text-gray-400">Kembali ke halaman utama</p>
+            </div>
+            <svg class="w-4 h-4 text-gray-300 group-hover:text-gray-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+        </a>
+    </div>
+
+    {{-- Stats --}}
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
         @if($isAdmin)
             <div class="bg-white rounded-2xl border border-gray-100 p-5">
@@ -207,43 +261,6 @@
                 </p>
             </div>
         @endif
-    </div>
-
-    
-
-    {{-- Quick Links --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <a href="{{ route('vendor') }}"
-           class="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 hover:border-gray-200 hover:shadow-sm transition group">
-            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-light-sage">
-                <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-            </div>
-            <div class="flex-1">
-                <p class="text-sm font-bold text-dark">Jelajahi Vendor</p>
-                <p class="text-xs text-gray-400">Temukan WO, venue &amp; fotografer</p>
-            </div>
-            <svg class="w-4 h-4 text-gray-300 group-hover:text-gray-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-        </a>
-
-        <a href="{{ route('home') }}"
-           class="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 hover:border-gray-200 hover:shadow-sm transition group">
-            <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-accent-pink">
-                <svg class="w-5 h-5 text-accent-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                </svg>
-            </div>
-            <div class="flex-1">
-                <p class="text-sm font-bold text-dark">Beranda</p>
-                <p class="text-xs text-gray-400">Kembali ke halaman utama</p>
-            </div>
-            <svg class="w-4 h-4 text-gray-300 group-hover:text-gray-400 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-        </a>
     </div>
 
     @if($user->hasRole('super_admin'))

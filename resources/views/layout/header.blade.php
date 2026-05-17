@@ -23,11 +23,14 @@
             </div>
             <div class="flex items-center gap-6 text-xs">
                 @auth
-                    <a href="{{ url('/dashboard') }}" class="font-medium hover:text-accent">Dashboard</a>
+                    @if(($headerShowJoinVendorForAuth ?? false))
+                        <a href="{{ route('join.vendor') }}" class="font-medium text-accent hover:underline">Join Vendor</a>
+                    @endif
+                    <a href="{{ url('/dashboard') }}" class="font-medium text-accent hover:underline">Dashboard</a>
                 @else
-                    <button type="button" data-open-login-modal class="font-medium hover:text-accent">Login</button>
+                    <a href="{{ route('join.vendor.signup') }}" class="font-medium text-accent hover:underline">Join Vendor</a>
+                    <button type="button" data-open-login-modal class="font-medium text-accent hover:underline">Login</button>
                 @endauth
-                <a href="#" class="font-medium hover:text-accent">Rp 0</a>
             </div>
         </div>
     </x-ui.container>
@@ -65,7 +68,7 @@
                 </button>
             @endif
 
-            <form method="GET" action="{{ route('search') }}"
+            <form id="tour-search-mobile" method="GET" action="{{ route('search') }}"
                   class="ml-0 mr-3 flex min-w-0 flex-1 items-center gap-2 rounded-none border border-gray-200 bg-gray-50 px-3 py-1.5 transition hover:border-gray-300 focus-within:border-accent focus-within:bg-white lg:hidden">
                 <input type="text" name="q" value="{{ request('q') }}" placeholder="Temukan paket pernikahan impian Anda"
                        class="min-w-0 flex-1 bg-transparent text-sm text-dark placeholder-gray-400 focus:outline-none">
@@ -83,16 +86,18 @@
                    class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsHome ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
                     Home
                 </a>
-                <a href="{{ route('vendor') }}"
-                   class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsVendor ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
-                    Vendor
-                </a>
-                <a href="{{ route('store') }}"
-                   class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsStore ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
-                    Store
-                </a>
-                <a href="{{ route('store.promo') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Promo</a>
-                <a href="{{ route('real-wedding.index') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Real Wedding</a>
+                <span id="tour-nav-vendor-store" class="flex items-center gap-6">
+                    <a href="{{ route('vendor') }}"
+                       class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsVendor ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
+                        Vendor
+                    </a>
+                    <a href="{{ route('store') }}"
+                       class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsStore ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
+                        Store
+                    </a>
+                </span>
+                <a id="tour-nav-promo" href="{{ route('store.promo') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Promo</a>
+                <a id="tour-nav-real-wedding" href="{{ route('real-wedding.index') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Real Wedding</a>
                 <a href="{{ route('blog.index') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Blog</a>
                 <div class="relative group">
                     <button type="button" data-toggle-header-dropdown="lain"
@@ -112,21 +117,10 @@
                         </a>
                     </div>
                 </div>
-                @auth
-                    @if(($headerShowJoinVendorForAuth ?? false))
-                        <x-ui.button href="{{ route('join.vendor') }}" size="xs" class="tracking-wide uppercase">
-                            Join Vendor
-                        </x-ui.button>
-                    @endif
-                @else
-                    <x-ui.button href="{{ route('join.vendor.signup') }}" size="xs" class="tracking-wide uppercase">
-                        Join Vendor
-                    </x-ui.button>
-                @endauth
             </nav>
 
             <!-- Search Bar -->
-            <form method="GET" action="{{ route('search') }}"
+            <form id="tour-search" method="GET" action="{{ route('search') }}"
                   class="hidden lg:flex flex-1 items-center gap-1.5 bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 mx-4 hover:border-gray-300 focus-within:border-accent focus-within:bg-white transition">
                 <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -146,6 +140,29 @@
                           class="inline-block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-1">
                     </span>
                 </button> -->
+
+                @auth
+                @php
+                    $hdrUser = auth()->user();
+                    $hdrIsAdmin = $hdrUser->hasRole(['super_admin', 'admin']);
+                    $hdrIsVendor = !$hdrIsAdmin && \App\Models\Vendor::where('owner_user_id', $hdrUser->id)->exists();
+                @endphp
+                @if($hdrIsAdmin || $hdrIsVendor)
+                <a href="{{ $hdrIsAdmin ? route('chat.admin') : route('chat.vendor.index') }}"
+                   class="relative items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition"
+                   style="display:none"
+                   id="header-public-chat-btn">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <span id="header-public-chat-count"
+                          class="absolute -top-0.5 -right-0.5 min-w-[1.1rem] h-[1.1rem] rounded-full bg-red-500 ring-2 ring-white text-white text-[9px] font-bold items-center justify-center px-0.5"
+                          style="display:none">
+                        0
+                    </span>
+                </a>
+                @endif
+                @endauth
 
                 <!-- Profile Dropdown -->
                 <div class="relative" id="main-profile-wrapper">
@@ -220,7 +237,7 @@
                     </div>
                 </div>
 
-                <button type="button" data-open-mobile-menu
+                <button type="button" id="tour-hamburger" data-open-mobile-menu
                         class="lg:hidden p-2 text-gray-600 hover:text-accent transition rounded-full hover:bg-gray-100"
                         aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -698,4 +715,35 @@ document.addEventListener('keydown', function(e) {
         if (dl) dl.classList.add('hidden');
     }
 });
+
+@auth
+@php
+    $hdrNotifyUrl = isset($hdrIsAdmin) && $hdrIsAdmin
+        ? route('chat.admin.notify')
+        : (isset($hdrIsVendor) && $hdrIsVendor ? route('chat.vendor.notify') : '');
+@endphp
+@if($hdrNotifyUrl)
+(function () {
+    var btn   = document.getElementById('header-public-chat-btn');
+    var count = document.getElementById('header-public-chat-count');
+    if (!btn) return;
+    var url = '{{ $hdrNotifyUrl }}';
+    function poll() {
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                var n = parseInt(d.open_guest_sessions_count || 0, 10);
+                btn.style.display   = n > 0 ? 'flex' : 'none';
+                if (count) {
+                    count.style.display = n > 0 ? 'flex' : 'none';
+                    count.textContent   = n > 9 ? '9+' : String(n);
+                }
+            })
+            .catch(function () {});
+    }
+    poll();
+    setInterval(poll, 10000);
+})();
+@endif
+@endauth
 </script>

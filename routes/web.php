@@ -1637,6 +1637,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('dashboard.whatsapp.update');
 });
 
+// ── Chat (user: my chats) ──────────────────────────────────────────────────
+Route::middleware(['auth', 'verified'])->get('/dashboard/my-chats', [ChatController::class, 'userChatList'])->name('dashboard.my-chats');
+
 // ── Chat (public) ──────────────────────────────────────────────────────────
 // View routes: accessible to guests (login gate shown in the view)
 Route::get('/chat', [ChatController::class, 'publicPage'])->name('chat.public');
@@ -1664,4 +1667,26 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard/chat')->name('chat.')
     Route::delete('/{token}', [ChatController::class, 'adminDeleteSession'])->name('admin.delete');
     Route::post('/{token}/close', [ChatController::class, 'adminClose'])->name('admin.close');
     Route::post('/{token}/open', [ChatController::class, 'adminOpen'])->name('admin.open');
+});
+
+// ── Chat (vendor) ──────────────────────────────────────────────────────────
+Route::middleware(['auth', 'verified'])->prefix('dashboard/vendor-chat')->name('chat.vendor.')->group(function () {
+    Route::get('/', [ChatController::class, 'vendorChatList'])->name('index');
+    Route::get('/notify', [ChatController::class, 'vendorNotify'])->name('notify');
+    Route::get('/{token}', [ChatController::class, 'vendorDetail'])->name('detail');
+    Route::post('/{token}/reply', [ChatController::class, 'vendorReply'])->name('reply');
+});
+
+// ── Chat Internal (vendor ↔ admin) ─────────────────────────────────────────
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Vendor side
+    Route::get('/dashboard/internal-chat', [ChatController::class, 'vendorInternalChat'])->name('chat.internal.vendor');
+    Route::post('/dashboard/internal-chat/send', [ChatController::class, 'vendorInternalSend'])->name('chat.internal.vendor.send')->middleware('throttle:60,1');
+    Route::get('/dashboard/internal-chat/poll', [ChatController::class, 'vendorInternalPoll'])->name('chat.internal.vendor.poll')->middleware('throttle:120,1');
+
+    // Admin side
+    Route::get('/dashboard/chat-internal', [ChatController::class, 'adminInternalIndex'])->name('chat.internal.admin');
+    Route::get('/dashboard/chat-internal/{token}', [ChatController::class, 'adminInternalDetail'])->name('chat.internal.admin.detail');
+    Route::post('/dashboard/chat-internal/{token}/reply', [ChatController::class, 'adminInternalReply'])->name('chat.internal.admin.reply')->middleware('throttle:60,1');
+    Route::get('/dashboard/chat-internal/{token}/poll', [ChatController::class, 'adminInternalPoll'])->name('chat.internal.admin.poll')->middleware('throttle:120,1');
 });

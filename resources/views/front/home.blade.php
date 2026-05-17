@@ -5,6 +5,7 @@
 @section('meta-image', url(config('app.logo_url')))
 
 @section('extra-head')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css">
     @php
         $homeSchema = [
             '@context' => 'https://schema.org',
@@ -838,6 +839,8 @@
                     document.body.style.overflow = 'hidden';
                 }
 
+                window.openHomeAdModal = openModal;
+
                 window.closeHomeAdModal = function (persist) {
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
@@ -859,7 +862,9 @@
                     });
                 }
 
-                window.setTimeout(openModal, delay);
+                if (typeof window.__tourActive === 'undefined') {
+                    window.setTimeout(openModal, delay);
+                }
 
                 document.addEventListener('keydown', function (e) {
                     if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
@@ -870,4 +875,195 @@
         </script>
 
         @include('layout.footer')
+
+        {{-- ── Onboarding Tour (Driver.js) ─────────────────────────────── --}}
+        <script src="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js"></script>
+        <script>
+        (function () {
+            var TOUR_KEY = 'mw_tour_done_v1';
+            var forceTour = new URLSearchParams(window.location.search).get('tour') === '1';
+            if (!forceTour && localStorage.getItem(TOUR_KEY)) return;
+
+            window.__tourActive = true;
+            setTimeout(function () {
+                var driverNs = window["driver.js"] || (window.driver && window.driver.js) || {};
+                var driver = driverNs.driver;
+                if (typeof driver !== 'function') {
+                    window.__tourActive = undefined;
+                    return;
+                }
+
+                function afterTour() {
+                    localStorage.setItem(TOUR_KEY, '1');
+                    window.__tourActive = undefined;
+                    setTimeout(function () {
+                        if (typeof window.openHomeAdModal === 'function') {
+                            window.openHomeAdModal();
+                        }
+                    }, 400);
+                }
+
+                var isMobile = window.innerWidth < 1024;
+
+                var desktopSteps = [
+                    {
+                        element: '#tour-search',
+                        popover: {
+                            title: '🔍 Cari Vendor & Paket',
+                            description: 'Ketik nama vendor, kota, atau jenis paket yang kamu inginkan. Temukan pilihan terbaik dalam hitungan detik.',
+                            side: 'bottom',
+                            align: 'center',
+                        },
+                    },
+                    {
+                        element: '#tour-nav-vendor-store',
+                        popover: {
+                            title: '💍 Vendor & Store',
+                            description: 'Temukan vendor pernikahan terpercaya di menu Vendor, atau cari produk & perlengkapan di menu Store.',
+                            side: 'bottom',
+                            align: 'center',
+                        },
+                    },
+                    {
+                        element: '#tour-nav-promo',
+                        popover: {
+                            title: '🎉 Promo',
+                            description: 'Jangan lewatkan penawaran spesial dari vendor-vendor terpilih. Cek promo terbaru di sini sebelum memesan!',
+                            side: 'bottom',
+                            align: 'center',
+                        },
+                    },
+                    {
+                        element: '#tour-nav-real-wedding',
+                        popover: {
+                            title: '💒 Real Wedding',
+                            description: 'Temukan inspirasi dari kisah nyata pasangan yang telah menikah. Lihat foto, cerita, dan vendor yang mereka gunakan.',
+                            side: 'bottom',
+                            align: 'center',
+                        },
+                    },
+                    {
+                        element: '#main-profile-wrapper',
+                        popover: {
+                            title: '👤 Profil & Akun',
+                            description: 'Klik foto profil untuk mengakses dashboard, pengaturan akun, riwayat pesanan, dan keluar dari aplikasi.',
+                            side: 'bottom',
+                            align: 'end',
+                        },
+                    },
+                    {
+                        popover: {
+                            title: '💬 Chat Langsung dengan Vendor',
+                            description: 'Sudah menemukan vendor yang cocok? Buka halamannya dan klik tombol Chat untuk bertanya langsung — gratis, tanpa perantara.',
+                            align: 'center',
+                        },
+                    },
+                ];
+
+                var mobileSteps = [
+                    {
+                        element: '#tour-search-mobile',
+                        popover: {
+                            title: '🔍 Cari Vendor & Paket',
+                            description: 'Ketik nama vendor, kota, atau jenis paket yang kamu inginkan. Temukan pilihan terbaik dalam hitungan detik.',
+                            side: 'bottom',
+                            align: 'center',
+                        },
+                    },
+                    {
+                        element: '#tour-hamburger',
+                        popover: {
+                            title: '💍 Vendor & Store',
+                            description: 'Ketuk ikon menu untuk menjelajahi Vendor pernikahan, Store produk, dan halaman lainnya.',
+                            side: 'bottom',
+                            align: 'end',
+                        },
+                    },
+                    {
+                        element: '#main-profile-wrapper',
+                        popover: {
+                            title: '👤 Profil & Akun',
+                            description: 'Ketuk foto profil untuk mengakses dashboard, pengaturan akun, riwayat pesanan, dan keluar dari aplikasi.',
+                            side: 'bottom',
+                            align: 'end',
+                        },
+                    },
+                    {
+                        popover: {
+                            title: '💬 Chat Langsung dengan Vendor',
+                            description: 'Sudah menemukan vendor yang cocok? Buka halamannya dan ketuk tombol Chat untuk bertanya langsung — gratis, tanpa perantara.',
+                            align: 'center',
+                        },
+                    },
+                ];
+
+                var driverObj = driver({
+                    animate: true,
+                    overlayOpacity: 0.55,
+                    allowClose: true,
+                    smoothScroll: true,
+                    showProgress: true,
+                    nextBtnText: 'Lanjut →',
+                    prevBtnText: '← Kembali',
+                    doneBtnText: 'Mulai Jelajahi',
+                    popoverClass: 'mw-tour-popover',
+                    onDestroyStarted: function () {
+                        driverObj.destroy();
+                        afterTour();
+                    },
+                    steps: isMobile ? mobileSteps : desktopSteps,
+                });
+
+                driverObj.drive();
+            }, 1000);
+        })();
+        </script>
+        <style>
+        .driver-popover {
+            font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif !important;
+        }
+        .mw-tour-popover .driver-popover-title {
+            font-size: 0.95rem !important;
+            font-weight: 700 !important;
+            color: var(--sage-green) !important;
+            font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif !important;
+        }
+        .mw-tour-popover .driver-popover-description {
+            font-size: 0.8rem !important;
+            color: var(--dark-gray) !important;
+            line-height: 1.6 !important;
+            font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif !important;
+        }
+        .mw-tour-popover .driver-popover-next-btn,
+        .mw-tour-popover .driver-popover-done-btn {
+            background: var(--sage-green) !important;
+            color: #ffffff !important;
+            border: none !important;
+            border-radius: 0.5rem !important;
+            font-size: 0.78rem !important;
+            font-weight: 600 !important;
+            font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif !important;
+            text-shadow: none !important;
+        }
+        .mw-tour-popover .driver-popover-next-btn:hover,
+        .mw-tour-popover .driver-popover-done-btn:hover {
+            opacity: 0.88 !important;
+            background: var(--sage-green) !important;
+            color: #ffffff !important;
+        }
+        .mw-tour-popover .driver-popover-prev-btn {
+            font-size: 0.78rem !important;
+            color: var(--dark-gray) !important;
+            border-color: #e5e7eb !important;
+            border-radius: 0.5rem !important;
+            font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif !important;
+            background: transparent !important;
+            text-shadow: none !important;
+        }
+        .mw-tour-popover .driver-popover-progress-text {
+            font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif !important;
+            font-size: 0.75rem !important;
+            color: #9b9b9b !important;
+        }
+        </style>
 @endsection

@@ -113,13 +113,12 @@
         </div>
         @php $lastRenderedPkgId = $msg->vendor_package_id; @endphp
         @endif
-        <div class="flex group {{ $msg->sender === 'admin' ? 'justify-end' : 'justify-start' }}"
+        @php $isAdminMsg = $msg->sender === 'admin'; $isVendorMsg = $msg->sender === 'vendor'; @endphp
+        <div class="flex group {{ $isAdminMsg ? 'justify-end' : 'justify-start' }}"
              data-msg-id="{{ $msg->id }}"
              data-pkg-id="{{ $msg->vendor_package_id ?? '' }}">
             <div class="relative max-w-[85%] break-words px-4 py-2.5 rounded-2xl text-sm leading-snug
-                {{ $msg->sender === 'admin'
-                    ? 'bg-accent text-white rounded-br-sm'
-                    : 'bg-gray-100 text-dark rounded-bl-sm' }}">
+                {{ $isAdminMsg ? 'bg-accent text-white rounded-br-sm' : ($isVendorMsg ? 'bg-slate-100 text-slate-700 rounded-bl-sm' : 'bg-gray-100 text-dark rounded-bl-sm') }}">
                 <form method="POST"
                       action="{{ route('chat.admin.message.delete', [$session->session_token, $msg]) }}"
                       class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition">
@@ -131,8 +130,10 @@
                         ×
                     </button>
                 </form>
-                @if($msg->sender === 'admin' && $msg->adminUser)
+                @if($isAdminMsg && $msg->adminUser)
                     <span class="block text-[10px] mb-1 text-white/70">{{ $msg->adminUser->name }}</span>
+                @elseif($isVendorMsg)
+                    <span class="block text-[10px] mb-1 text-slate-400 font-medium">Vendor{{ $msg->adminUser ? ': ' . $msg->adminUser->name : '' }}</span>
                 @endif
                 {{ $msg->message }}
                 <span class="block text-[10px] mt-1 {{ $msg->sender === 'admin' ? 'text-white/60 text-right' : 'text-gray-400' }}">
@@ -216,11 +217,12 @@
     scrollBottom();
 
     function appendMessage(msg) {
-        var isAdmin = msg.sender === 'admin';
+        var isAdmin  = msg.sender === 'admin';
+        var isVendor = msg.sender === 'vendor';
         var msgPkgId = msg.vendor_package_id ? parseInt(msg.vendor_package_id, 10) : null;
 
         // Inject package-switch divider when guest switches to a new package
-        if (!isAdmin && msgPkgId && msgPkgId !== lastSeenPkgId && msg.package_name) {
+        if (!isAdmin && !isVendor && msgPkgId && msgPkgId !== lastSeenPkgId && msg.package_name) {
             var dividerRow = document.createElement('div');
             dividerRow.className = 'my-1 flex items-center gap-2 px-1';
             dividerRow.innerHTML = '<div class="flex-1 border-t border-gray-200"></div>'
@@ -248,17 +250,20 @@
         if (msgPkgId) wrap.dataset.pkgId = msgPkgId;
         var t = new Date(msg.created_at);
         var hhmm = timeFormatter ? timeFormatter.format(t) : (t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0'));
-        var nameHtml = (isAdmin && msg.admin_name) ? '<span class="block text-[10px] mb-1 text-white/70">' + escHtml(msg.admin_name) + '</span>' : '';
+        var nameHtml = (isAdmin && msg.admin_name)
+            ? '<span class="block text-[10px] mb-1 text-white/70">' + escHtml(msg.admin_name) + '</span>'
+            : (isVendor ? '<span class="block text-[10px] mb-1 text-slate-400 font-medium">Vendor' + (msg.admin_name ? ': ' + escHtml(msg.admin_name) : '') + '</span>' : '');
+        var bubbleClass = isAdmin ? 'bg-accent text-white rounded-br-sm' : (isVendor ? 'bg-slate-100 text-slate-700 rounded-bl-sm' : 'bg-gray-100 text-dark rounded-bl-sm');
         var delUrl = '/dashboard/chat/' + token + '/messages/' + msg.id;
         var delHtml = '<button type="button" data-delete-msg="' + msg.id + '" data-delete-url="' + delUrl + '" class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition w-6 h-6 rounded-full bg-white border border-gray-200 text-gray-500 hover:text-red-600 hover:border-red-200 flex items-center justify-center text-xs font-bold">×</button>';
         wrap.innerHTML = '<div class="relative max-w-[85%] break-words px-4 py-2.5 rounded-2xl text-sm leading-snug '
-            + (isAdmin ? 'bg-accent text-white rounded-br-sm' : 'bg-gray-100 text-dark rounded-bl-sm')
+            + bubbleClass
             + '">'
             + delHtml
             + nameHtml
             + escHtml(msg.message)
             + '<span class="block text-[10px] mt-1 '
-            + (isAdmin ? 'text-white/60 text-right' : 'text-gray-400') + '">' + hhmm + '</span>'
+            + (isAdmin ? 'text-white/60 text-right' : (isVendor ? 'text-slate-400' : 'text-gray-400')) + '">' + hhmm + '</span>'
             + '</div>';
         msgBox.appendChild(wrap);
     }

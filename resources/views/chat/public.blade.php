@@ -388,6 +388,27 @@
                 @endif
 
                 @if($isGuest)
+                {{-- ── Banner lanjutkan chat (guest localStorage) ──────── --}}
+                <div id="ls-resume-banner" class="hidden mt-3 rounded-2xl border border-emerald-200 bg-emerald-50/90 px-4 py-3 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs font-semibold text-emerald-800">Kamu punya percakapan sebelumnya</p>
+                            <p class="text-[11px] text-emerald-700 mt-0.5">Lanjutkan chat atau mulai percakapan baru.</p>
+                        </div>
+                    </div>
+                    <div class="mt-3 flex gap-2">
+                        <a id="ls-resume-link" href="#" class="flex-1 inline-flex items-center justify-center rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700 no-underline">
+                            Lanjutkan Chat
+                        </a>
+                        <button id="ls-resume-dismiss" type="button" class="inline-flex items-center justify-center rounded-xl border border-emerald-200 px-3 py-2 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100">
+                            Baru
+                        </button>
+                    </div>
+                </div>
+
                 {{-- ── Login gate (guest) ─────────────────────────────── --}}
                 <div class="mt-3 rounded-2xl border border-slate-200 bg-white/98 px-5 py-5 shadow-xl shadow-slate-200/60">
                     <div class="flex items-start gap-3">
@@ -611,7 +632,7 @@
                     return;
                 }
 
-                var isAdmin = message.sender === 'admin';
+                var isAdmin = message.sender === 'admin' || message.sender === 'vendor';
                 var wrap = document.createElement('div');
                 wrap.dataset.chatMessage = '1';
                 wrap.dataset.messageId = String(message.id);
@@ -784,6 +805,13 @@
                                 sessionStorage.setItem(guestNameStorageKey, guestName);
                                 sessionStorage.setItem(packageStorageKey, String(packageId || ''));
                                 sessionStorage.setItem(pkgDataStorageKey, currentPkgData ? JSON.stringify(currentPkgData) : '');
+
+                                // Simpan ke localStorage untuk rekap guest
+                                var lsSessions = JSON.parse(localStorage.getItem('mw_chat_sessions') || '[]');
+                                lsSessions = lsSessions.filter(function(s) { return s.vendor_id !== (vendorId || null); });
+                                lsSessions.unshift({ token: token, vendor_id: vendorId || null, guest_name: guestName, ts: Date.now() });
+                                if (lsSessions.length > 20) lsSessions = lsSessions.slice(0, 20);
+                                localStorage.setItem('mw_chat_sessions', JSON.stringify(lsSessions));
                             } catch (error) {}
 
                             history.replaceState({}, '', buildChatUrl(token));
@@ -1095,6 +1123,35 @@
             updateEmptyState();
             syncSendState();
             restoreStoredSession();
+
+            // ── LocalStorage: banner lanjutkan chat (guest) ─────────────
+            @if($isGuest)
+            (function () {
+                var currentVendorId = {{ $vendor?->id ?? 'null' }};
+                var banner = document.getElementById('ls-resume-banner');
+                var resumeLink = document.getElementById('ls-resume-link');
+                var dismissBtn = document.getElementById('ls-resume-dismiss');
+                if (!banner || !resumeLink) return;
+
+                try {
+                    var sessions = JSON.parse(localStorage.getItem('mw_chat_sessions') || '[]');
+                    var match = sessions.find(function(s) {
+                        return currentVendorId && s.vendor_id == currentVendorId;
+                    });
+                    if (match) {
+                        resumeLink.href = '/chat/' + match.token;
+                        banner.classList.remove('hidden');
+                    }
+                } catch (e) {}
+
+                if (dismissBtn) {
+                    dismissBtn.addEventListener('click', function () {
+                        banner.classList.add('hidden');
+                    });
+                }
+            })();
+            @endif
+
         })();
     </script>
 @endsection

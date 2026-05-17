@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard — Makna Wedding')</title>
     <link rel="icon" href="{{ config('app.favicon_url') }}">
 
@@ -86,9 +87,15 @@
         .sidebar-link.active .ml-auto { background: rgba(255,255,255,0.22) !important; color: var(--sidebar-active-text) !important; }
     </style>
 </head>
+@php
+    $isVendorOwner = !$user->hasRole(['super_admin', 'admin'])
+        && \App\Models\Vendor::where('owner_user_id', $user->id)->exists();
+@endphp
 <body class="bg-cream text-dark"
       data-chat-can-notify="{{ $user->hasRole(['super_admin', 'admin']) ? '1' : '0' }}"
-      data-chat-notify-url="{{ route('chat.admin.notify') }}">
+      data-chat-notify-url="{{ route('chat.admin.notify') }}"
+      data-vendor-chat-can-notify="{{ $isVendorOwner ? '1' : '0' }}"
+      data-vendor-chat-notify-url="{{ $isVendorOwner ? route('chat.vendor.notify') : '' }}">
 
 @include('layout.header')
 
@@ -141,13 +148,17 @@
                     <p class="text-[10px] text-gray-400 truncate">{{ $user->email }}</p>
                 </div>
             </div>
-            @if($user->hasRole(['super_admin', 'admin']))
             <div class="mt-2.5">
-                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent-pink text-dark">
-                    {{ $user->hasRole('super_admin') ? 'Super Admin' : 'Admin' }}
-                </span>
-            </div>
+            @if($user->hasRole('super_admin'))
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent-pink text-dark">Super Admin</span>
+            @elseif($user->hasRole('admin'))
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent-pink text-dark">Admin</span>
+            @elseif($user->hasRole('vendor'))
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-light-sage text-dark">Vendor</span>
+            @else
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Customer</span>
             @endif
+        </div>
         </div>
 
         {{-- Navigation --}}
@@ -193,6 +204,13 @@
                 @endif
             </a>
             @endif
+
+            <a href="{{ route('dashboard.my-chats') }}" class="sidebar-link {{ request()->routeIs('dashboard.my-chats') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+                </svg>
+                Chat Saya
+            </a>
 
             <a href="{{ route('dashboard.ulasan') }}" class="sidebar-link {{ request()->routeIs('dashboard.ulasan') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -254,6 +272,21 @@
                 Pembayaran Masuk
                 <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 {{ ($menuVendorPaymentPendingCount ?? 0) > 0 ? 'bg-light-sage text-dark' : 'bg-gray-100 text-gray-500' }}">{{ $menuVendorPaymentPendingCount ?? 0 }}</span>
             </a>
+            @if($isVendorOwner)
+            <a href="{{ route('chat.vendor.index') }}" class="sidebar-link {{ request()->routeIs('chat.vendor.*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                Chat Masuk
+                <span id="menu-vendor-chat-badge" class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark hidden">0</span>
+            </a>
+            <a href="{{ route('chat.internal.vendor') }}" class="sidebar-link {{ request()->routeIs('chat.internal.vendor*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                Chat ke Admin
+            </a>
+            @endif
             @endif
 
             @if($user->hasRole(['super_admin', 'admin']))
@@ -288,12 +321,18 @@
                 <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuPaymentUserPendingCount }}</span>
                 @endif
             </a>
-            <a href="{{ route('chat.admin') }}" class="sidebar-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+            <a href="{{ route('chat.admin') }}" class="sidebar-link {{ request()->routeIs('chat.admin*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                 </svg>
                 Live Chat
                 <span id="menu-chat-badge" class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark hidden">0</span>
+            </a>
+            <a href="{{ route('chat.internal.admin') }}" class="sidebar-link {{ request()->routeIs('chat.internal.admin*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                Chat Vendor
             </a>
             <a href="/admin" class="sidebar-link {{ request()->is('admin*') ? 'active' : '' }}">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -374,6 +413,17 @@
                             <p class="text-[10px] text-gray-400 truncate">{{ $user->email }}</p>
                         </div>
                     </div>
+                    <div class="mt-2.5">
+                        @if($user->hasRole('super_admin'))
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent-pink text-dark">Super Admin</span>
+                        @elseif($user->hasRole('admin'))
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent-pink text-dark">Admin</span>
+                        @elseif($user->hasRole('vendor'))
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-light-sage text-dark">Vendor</span>
+                        @else
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Customer</span>
+                        @endif
+                    </div>
                 </div>
 
                 <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
@@ -418,6 +468,13 @@
                         @endif
                     </a>
                     @endif
+
+                    <a href="{{ route('dashboard.my-chats') }}" class="sidebar-link {{ request()->routeIs('dashboard.my-chats') ? 'active' : '' }}">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+                        </svg>
+                        Chat Saya
+                    </a>
 
                     <a href="{{ route('dashboard.ulasan') }}" class="sidebar-link {{ request()->routeIs('dashboard.ulasan') ? 'active' : '' }}">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -479,6 +536,21 @@
                 Pembayaran Masuk
                 <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 {{ ($menuVendorPaymentPendingCount ?? 0) > 0 ? 'bg-light-sage text-dark' : 'bg-gray-100 text-gray-500' }}">{{ $menuVendorPaymentPendingCount ?? 0 }}</span>
             </a>
+            @if($isVendorOwner)
+            <a href="{{ route('chat.vendor.index') }}" class="sidebar-link {{ request()->routeIs('chat.vendor.*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                Chat Masuk
+                <span id="menu-vendor-chat-badge-mobile" class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark hidden">0</span>
+            </a>
+            <a href="{{ route('chat.internal.vendor') }}" class="sidebar-link {{ request()->routeIs('chat.internal.vendor*') ? 'active' : '' }}">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                Chat ke Admin
+            </a>
+            @endif
             @endif
 
                     @if($user->hasRole(['super_admin', 'admin']))
@@ -513,12 +585,18 @@
                         <span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-soft-pink text-dark">{{$menuPaymentUserPendingCount }}</span>
                         @endif
                     </a>
-                    <a href="{{ route('chat.admin') }}" class="sidebar-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+                    <a href="{{ route('chat.admin') }}" class="sidebar-link {{ request()->routeIs('chat.admin*') ? 'active' : '' }}">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                         </svg>
                         Live Chat
                         <span id="menu-chat-badge-mobile" class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full flex-shrink-0 bg-light-sage text-dark hidden">0</span>
+                    </a>
+                    <a href="{{ route('chat.internal.admin') }}" class="sidebar-link {{ request()->routeIs('chat.internal.admin*') ? 'active' : '' }}">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        Chat Vendor
                     </a>
                     <a href="/admin" class="sidebar-link {{ request()->is('admin*') ? 'active' : '' }}">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -629,14 +707,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         function setBadgeCount(n) {
             var show = n > 0;
-            if (badge) {
-                badge.textContent = String(n);
-                badge.classList.toggle('hidden', !show);
-            }
-            if (badgeMobile) {
-                badgeMobile.textContent = String(n);
-                badgeMobile.classList.toggle('hidden', !show);
-            }
+            if (badge) { badge.textContent = String(n); badge.classList.toggle('hidden', !show); }
+            if (badgeMobile) { badgeMobile.textContent = String(n); badgeMobile.classList.toggle('hidden', !show); }
+            var headerDot = document.getElementById('header-chat-dot');
+            if (headerDot) headerDot.classList.toggle('hidden', !show);
         }
 
         function ensureAudio() {
@@ -732,6 +806,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
         pollNotify();
         setInterval(pollNotify, 7000);
+    }
+
+    // ── Vendor chat notification polling ─────────────────────────────
+    var canVendorNotify = (document.body && document.body.dataset)
+        ? document.body.dataset.vendorChatCanNotify === '1'
+        : false;
+    if (canVendorNotify) {
+        var vendorNotifyUrl = document.body.dataset.vendorChatNotifyUrl || '';
+        var vendorBadge = document.getElementById('menu-vendor-chat-badge');
+        var vendorBadgeMobile = document.getElementById('menu-vendor-chat-badge-mobile');
+        var vendorLastId = parseInt(localStorage.getItem('mw_vendor_last_msg_id') || '0', 10);
+
+        function setVendorBadge(n) {
+            var show = n > 0;
+            if (vendorBadge) { vendorBadge.textContent = String(n); vendorBadge.classList.toggle('hidden', !show); }
+            if (vendorBadgeMobile) { vendorBadgeMobile.textContent = String(n); vendorBadgeMobile.classList.toggle('hidden', !show); }
+            var headerDot = document.getElementById('header-vendor-chat-dot');
+            if (headerDot) headerDot.classList.toggle('hidden', !show);
+        }
+
+        function pollVendorNotify() {
+            if (!vendorNotifyUrl) return;
+            fetch(vendorNotifyUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    setVendorBadge(parseInt(data.open_guest_sessions_count || 0, 10));
+                    var latest = parseInt(data.latest_guest_message_id || 0, 10);
+                    if (!latest) return;
+                    if (!vendorLastId) { vendorLastId = latest; localStorage.setItem('mw_vendor_last_msg_id', String(vendorLastId)); return; }
+                    if (latest > vendorLastId) {
+                        vendorLastId = latest;
+                        localStorage.setItem('mw_vendor_last_msg_id', String(vendorLastId));
+                        var name = data.latest_guest_name || 'Pengunjung';
+                        if (typeof notify === 'function') notify('Chat masuk ke vendor', 'Dari ' + name, null);
+                    }
+                })
+                .catch(function () {});
+        }
+
+        pollVendorNotify();
+        setInterval(pollVendorNotify, 7000);
     }
 });
 </script>
