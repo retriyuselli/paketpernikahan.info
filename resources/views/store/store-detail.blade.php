@@ -462,7 +462,7 @@
                                     <div class="bg-white rounded-full px-3 py-1">
                                         <span id="sidebar-countdown"
                                               data-expires="{{ $package->discount_expires_at->timestamp * 1000 }}"
-                                              class="text-red-500 font-extrabold text-sm tabular-nums tracking-wide">-- : -- : --</span>
+                                              class="text-accent font-extrabold text-sm tabular-nums tracking-wide">-- : -- : --</span>
                                     </div>
                                     @else
                                     <p class="text-white/80 text-[10px] font-semibold">Diskon Aktif</p>
