@@ -154,8 +154,8 @@
     @endphp
 
     <!-- Breadcrumb -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 lg:pt-4">
-        <div class="pt-1 pb-4 lg:pt-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-3 lg:pt-3">
+        <div class="pt-1 pb-4 lg:pt-1">
             <x-breadcrumb :items="$breadcrumbItems" />
 
             @auth

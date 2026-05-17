@@ -171,9 +171,9 @@
         ];
     @endphp
 
-    <section class="pt-3 pb-44 lg:py-8 bg-cream">
+    <section class="pt-3 pb-44 lg:pt-3 lg:pb-8 bg-cream">
         <x-ui.container>
-            <div class="pt-1 pb-4 lg:pt-4">
+            <div class="pt-1 pb-4 lg:pt-1">
                 <x-breadcrumb :items="$breadcrumbItems" />
             </div>
             <x-banner-ad mt="0" mb="1rem" />
@@ -331,8 +331,8 @@
                                 <button type="button"
                                         data-facilities-toggle
                                         data-label-more="Lihat Selengkapnya..."
-                                        data-label-less="Tampilkan Ringkas"
-                                    class="mt-1 hidden text-left text-xs font-semibold text-accent transition hover:text-accent/80 hover:underline">
+                                        data-label-less="Tampilkan Ringkas..."
+                                    class="-mt-1 relative z-10 hidden w-full justify-center text-xs font-semibold text-accent transition hover:text-accent/80 hover:underline">
                                     <span>Lihat Selengkapnya...</span>
                                 </button>
                             @else
@@ -919,14 +919,15 @@
                     facilitiesContent.classList.remove('max-h-64', 'overflow-hidden');
                     if (facilitiesFade) facilitiesFade.classList.add('hidden');
                     facilitiesToggle.classList.remove('hidden');
-                    facilitiesToggle.querySelector('span').textContent = facilitiesToggle.getAttribute('data-label-less') || 'Tampilkan Ringkas';
+                    facilitiesToggle.classList.add('flex');
+                    facilitiesToggle.querySelector('span').textContent = facilitiesToggle.getAttribute('data-label-less') || 'Tampilkan Ringkas...';
                     return;
                 }
 
                 facilitiesContent.classList.add('max-h-64', 'overflow-hidden');
                 var hasOverflow = facilitiesContent.scrollHeight > facilitiesContent.clientHeight + 8;
                 facilitiesToggle.classList.toggle('hidden', !hasOverflow);
-                facilitiesToggle.classList.toggle('inline-flex', hasOverflow);
+                facilitiesToggle.classList.toggle('flex', hasOverflow);
                 if (facilitiesFade) {
                     facilitiesFade.classList.toggle('hidden', !hasOverflow);
                 }
