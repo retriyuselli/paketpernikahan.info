@@ -291,31 +291,6 @@
                                     @endauth
                                 </div>
                             </div>
-
-                            {{-- Tags / Badges --}}
-                            {{-- <div class="mt-4 flex flex-wrap items-center gap-2">
-                                @if($package->max_guests)
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-accent/10 text-accent border border-accent/20">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        </svg>
-                                        {{ $package->max_guests }}
-                                    </span>
-                                @endif
-                                @if($vendor->location)
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-gray-50 text-gray-600 border border-gray-100">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                        </svg>
-                                        {{ $vendor->location }}
-                                    </span>
-                                @endif
-                                @if($discount > 0)
-                                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-extrabold bg-red-50 text-red-500 border border-red-100">
-                                        🔥 Hemat IDR {{ number_format($discount, 0, ',', '.') }}
-                                    </span>
-                                @endif
-                            </div> --}}
                         </div>
                     </div>
 
@@ -482,10 +457,16 @@
                                     </div>
                                 </div>
                                 <div class="text-right shrink-0">
+                                    @if($package->discount_expires_at && $package->discount_expires_at->isFuture())
                                     <p class="text-white/80 text-[10px] font-semibold mb-1">Berakhir dalam</p>
                                     <div class="bg-white rounded-full px-3 py-1">
-                                        <span id="sidebar-countdown" class="text-red-500 font-extrabold text-sm tabular-nums tracking-wide">-- : -- : --</span>
+                                        <span id="sidebar-countdown"
+                                              data-expires="{{ $package->discount_expires_at->timestamp * 1000 }}"
+                                              class="text-red-500 font-extrabold text-sm tabular-nums tracking-wide">-- : -- : --</span>
                                     </div>
+                                    @else
+                                    <p class="text-white/80 text-[10px] font-semibold">Diskon Aktif</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -593,15 +574,8 @@
                                data-store-booking-link
                                data-base-href="{{ route('booking.package', $package) }}"
                                href="{{ route('booking.package', $package) }}"
-                               class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-bold transition hover:opacity-90 bg-accent text-white shadow-sm">
+                               class="flex items-center justify-center gap-2 w-full h-11 rounded-xl text-xs font-bold transition hover:opacity-90 bg-accent text-white shadow-sm">
                                 + Booking Sekarang
-                            </a>
-                            <a href="{{ $chatUrl }}"
-                               class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl text-xs font-bold border-2 border-accent text-accent bg-white hover:bg-accent/5 transition">
-                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                                Chat
                             </a>
                         </div>
 
@@ -613,9 +587,14 @@
                                     Chat
                                 </a>
                             <button type="button"
+                                    id="wishlist-btn"
+                                    data-package-id="{{ $package->id }}"
+                                    data-toggle-url="{{ route('wishlist.toggle', $package) }}"
+                                    data-login-url="{{ route('login') }}"
+                                    data-is-auth="{{ Auth::check() ? '1' : '0' }}"
                                     class="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-semibold text-gray-500 hover:text-accent hover:bg-gray-50 transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                Wishlist
+                                <svg id="wishlist-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                <span id="wishlist-label">Wishlist</span>
                             </button>
                             <button type="button"
                                     id="store-share-button"
@@ -915,7 +894,8 @@
         (function () {
             var el = document.getElementById('sidebar-countdown');
             if (!el) return;
-            var end = Date.now() + (1 * 3600 + 3 * 60 + 12) * 1000;
+            var end = parseInt(el.dataset.expires, 10);
+            if (!end || isNaN(end)) return;
             function pad(n) { return String(n).padStart(2, '0'); }
             function tick() {
                 var diff = Math.max(0, Math.floor((end - Date.now()) / 1000));
@@ -1173,6 +1153,53 @@
                 if (e.key === 'ArrowRight') showAt(currentIndex + 1);
             });
         })();
+    </script>
+
+    <script>
+    (function () {
+        var btn   = document.getElementById('wishlist-btn');
+        var icon  = document.getElementById('wishlist-icon');
+        var label = document.getElementById('wishlist-label');
+        if (!btn) return;
+
+        var csrfToken  = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+        var toggleUrl  = btn.dataset.toggleUrl;
+        var loginUrl   = btn.dataset.loginUrl;
+        var isAuth     = btn.dataset.isAuth === '1';
+        var wishlisted = false;
+
+        function setWishlisted(val) {
+            wishlisted = val;
+            if (val) {
+                icon.setAttribute('fill', 'currentColor');
+                btn.classList.add('text-accent');
+                btn.classList.remove('text-gray-500');
+                label.textContent = 'Disimpan';
+            } else {
+                icon.setAttribute('fill', 'none');
+                btn.classList.remove('text-accent');
+                btn.classList.add('text-gray-500');
+                label.textContent = 'Wishlist';
+            }
+        }
+
+        @auth
+        fetch('{{ route("wishlist.check", $package) }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.json()).then(d => setWishlisted(d.wishlisted)).catch(() => {});
+        @endauth
+
+        btn.addEventListener('click', function () {
+            if (!isAuth) { window.location.href = loginUrl; return; }
+            fetch(toggleUrl, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            }).then(r => r.json()).then(d => setWishlisted(d.wishlisted)).catch(() => {});
+        });
+    })();
     </script>
 
     @include('layout.footer')

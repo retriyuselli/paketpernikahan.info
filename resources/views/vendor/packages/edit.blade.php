@@ -155,6 +155,13 @@
                                    class="w-full h-11 rounded-xl border border-gray-200 px-4 text-sm focus:outline-none">
                         </div>
                         <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-2">Diskon Berakhir</label>
+                            <input type="datetime-local" name="discount_expires_at"
+                                   value="{{ old('discount_expires_at', $package->discount_expires_at?->format('Y-m-d\TH:i')) }}"
+                                   class="w-full h-11 rounded-xl border border-gray-200 px-4 text-sm focus:outline-none">
+                            <p class="text-[10px] text-gray-400 mt-1">Kosongkan jika diskon tidak berbatas waktu</p>
+                        </div>
+                        <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-2">Down Payment (dp_paket)</label>
                             @php
                                 $dpDigits = preg_replace('/\D+/', '', (string) old('dp_paket', $package->dp_paket ?? 0));

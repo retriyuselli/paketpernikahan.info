@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\VendorApplicationController;
 use App\Http\Controllers\VendorApplicationAdminController;
@@ -1618,12 +1619,16 @@ Route::get('/dashboard/favorit', function () {
         ->withAvg('approvedReviews as rating', 'rating')
         ->latest('vendor_user_likes.created_at')
         ->get();
-    $favoriteCount = $likedVendors->count();
+    $wishlistPackages = \App\Models\VendorPackage::whereHas('wishlists', fn($q) => $q->where('user_id', $user->id))
+        ->with('vendor')
+        ->latest()
+        ->get();
+    $favoriteCount = $likedVendors->count() + $wishlistPackages->count();
     $bookingCount = $user->vendorBookings()->count();
     $bookingUserCount = $user->hasRole(['super_admin', 'admin'])
         ? \App\Models\VendorBooking::where('status', 'pending')->count()
         : 0;
-    return view('dashboard.favorit', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount', 'bookingUserCount', 'likedVendors'));
+    return view('dashboard.favorit', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount', 'bookingUserCount', 'likedVendors', 'wishlistPackages'));
 })->name('dashboard.favorit')->middleware(['auth', 'verified']);
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -1690,4 +1695,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard/chat-internal/{token}', [ChatController::class, 'adminInternalDetail'])->name('chat.internal.admin.detail');
     Route::post('/dashboard/chat-internal/{token}/reply', [ChatController::class, 'adminInternalReply'])->name('chat.internal.admin.reply')->middleware('throttle:60,1');
     Route::get('/dashboard/chat-internal/{token}/poll', [ChatController::class, 'adminInternalPoll'])->name('chat.internal.admin.poll')->middleware('throttle:120,1');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::post('/wishlist/{package}/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::get('/wishlist/{package}/check', [WishlistController::class, 'check'])->name('wishlist.check');
 });

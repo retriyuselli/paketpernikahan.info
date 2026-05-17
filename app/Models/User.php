@@ -79,4 +79,14 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
     {
         return $this->belongsToMany(Vendor::class, 'vendor_user_likes')->withTimestamps();
     }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function wishlistedPackages()
+    {
+        return $this->belongsToMany(VendorPackage::class, 'wishlists')->withTimestamps();
+    }
 }

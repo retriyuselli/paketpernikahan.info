@@ -29,15 +29,17 @@ class VendorPackage extends Model
         'type',
         'capacity',
         'facilities',
-        'sort_order', 
+        'sort_order',
         'is_active',
+        'discount_expires_at',
     ];
 
     protected $casts = [
-        'image_path' => 'array',
-        'facilities' => 'array',
-        'category_vendor_id' => 'array',
-        'is_active'  => 'boolean',
+        'image_path'          => 'array',
+        'facilities'          => 'array',
+        'category_vendor_id'  => 'array',
+        'is_active'           => 'boolean',
+        'discount_expires_at' => 'datetime',
     ];
 
     public function vendor()
@@ -53,6 +55,11 @@ class VendorPackage extends Model
     public function galleries()
     {
         return $this->hasMany(PaketGallery::class, 'vendor_package_id');
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
     }
 
     public function getImageUrlAttribute(): ?string

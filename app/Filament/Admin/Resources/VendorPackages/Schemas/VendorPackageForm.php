@@ -10,6 +10,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -69,6 +70,10 @@ class VendorPackageForm
                                     ->stripCharacters(',')
                                     ->placeholder('0')
                                     ->helperText('Isi jika ada potongan harga khusus'),
+                                DateTimePicker::make('discount_expires_at')
+                                    ->label('Diskon Berakhir')
+                                    ->nullable()
+                                    ->helperText('Kosongkan jika diskon tidak berbatas waktu'),
                                 TextInput::make('dp_paket')
                                     ->label('Down Payment (DP)')
                                     ->prefix('Rp. ')
