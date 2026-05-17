@@ -54,7 +54,7 @@
                 </p>
 
                 <!-- Search Bar -->
-                <form action="{{ route('store') }}" method="GET">
+                {{-- <form action="{{ route('store') }}" method="GET">
                     <div class="flex items-center bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden pr-2 py-2 pl-5 gap-3">
                         <input
                             type="text"
@@ -69,7 +69,7 @@
                             </svg>
                         </button>
                     </div>
-                </form>
+                </form> --}}
             </div>
 
             <!-- Right: Team Image Slideshow + Floating Circles -->

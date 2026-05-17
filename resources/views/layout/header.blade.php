@@ -121,7 +121,7 @@
 
             <!-- Search Bar -->
             <form id="tour-search" method="GET" action="{{ route('search') }}"
-                  class="hidden lg:flex flex-1 items-center gap-1.5 bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 mx-4 hover:border-gray-300 focus-within:border-accent focus-within:bg-white transition">
+                  class="hidden lg:flex flex-1 items-center gap-1.5 bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 ml-4 hover:border-gray-300 focus-within:border-accent focus-within:bg-white transition">
                 <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
@@ -131,15 +131,6 @@
 
             <!-- Right Actions -->
             <div class="flex items-center justify-end gap-2 relative z-10" id="header-actions">
-
-                <!-- Theme Toggle (iPhone style) -->
-                <!-- <button id="theme-toggle" type="button" data-toggle-theme
-                        class="hidden lg:inline-flex relative items-center w-11 h-6 rounded-full transition-colors duration-300 focus:outline-none bg-accent"
-                        aria-label="Toggle dark mode">
-                    <span id="theme-knob"
-                          class="inline-block w-4 h-4 bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-1">
-                    </span>
-                </button> -->
 
                 @auth
                 @php
