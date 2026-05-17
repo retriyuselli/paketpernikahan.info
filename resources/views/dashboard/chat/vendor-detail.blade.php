@@ -96,25 +96,15 @@
     {{-- Input --}}
     @if($session->status === 'open')
     <div id="vendor-chat-input-area" class="border-t border-gray-100 px-4 pt-2 pb-3">
-        {{-- Emoji Picker --}}
-        <div id="vendor-emoji-picker" class="hidden mb-2 bg-white rounded-2xl shadow-xl ring-1 ring-gray-200 p-3">
+        <div id="vendor-emoji-picker" class="hidden mb-2 bg-white rounded-2xl shadow-xl ring-1 ring-gray-200 p-3 w-fit">
             <div class="grid grid-cols-8 gap-1">
-                @php
-                $emojis = ['😊','😂','❤️','🥰','😍','😘','🤗','😭',
-                           '😅','🙏','💕','✨','🎉','💍','👰','🤵',
-                           '💐','🌸','🌹','🥂','🍰','📸','💌','🎊',
-                           '😔','😢','😮','🤔','👍','👏','🙌','💯',
-                           '🔥','⭐','🌟','💫','🕊️','🌺','🌷','🌼'];
-                @endphp
+                @php $emojis = ['😊','😂','❤️','🥰','😍','😘','🤗','😭','😅','🙏','💕','✨','🎉','💍','👰','🤵','💐','🌸','🌹','🥂','🍰','📸','💌','🎊','😔','😢','😮','🤔','👍','👏','🙌','💯','🔥','⭐','🌟','💫','🕊️','🌺','🌷','🌼']; @endphp
                 @foreach($emojis as $emoji)
                     <button type="button" data-emoji="{{ $emoji }}"
-                            class="vendor-emoji-btn flex h-9 w-9 items-center justify-center rounded-xl text-xl hover:bg-gray-100 transition">
-                        {{ $emoji }}
-                    </button>
+                            class="vendor-emoji-btn flex h-9 w-9 items-center justify-center rounded-xl text-xl hover:bg-gray-100 transition">{{ $emoji }}</button>
                 @endforeach
             </div>
         </div>
-
         <div class="flex items-end gap-2">
             <button type="button" id="vendor-emoji-toggle"
                     class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition shrink-0">
@@ -264,26 +254,25 @@
     }
 
     // Emoji picker
-    var emojiPicker = document.getElementById('vendor-emoji-picker');
     var emojiToggle = document.getElementById('vendor-emoji-toggle');
+    var emojiPicker = document.getElementById('vendor-emoji-picker');
     if (emojiToggle && emojiPicker) {
         emojiToggle.addEventListener('click', function (e) {
             e.stopPropagation();
             emojiPicker.classList.toggle('hidden');
-            if (!emojiPicker.classList.contains('hidden') && input) input.focus();
         });
-        emojiPicker.addEventListener('click', function (e) {
-            var btn = e.target.closest('.vendor-emoji-btn');
-            if (!btn || !input) return;
-            var emoji = btn.dataset.emoji || '';
-            var pos = input.selectionStart ?? input.value.length;
-            input.value = input.value.slice(0, pos) + emoji + input.value.slice(pos);
-            input.focus();
-            input.selectionStart = input.selectionEnd = pos + emoji.length;
-            emojiPicker.classList.add('hidden');
+        emojiPicker.querySelectorAll('.vendor-emoji-btn').forEach(function (el) {
+            el.addEventListener('click', function () {
+                var emoji = el.dataset.emoji;
+                var pos = input.selectionStart ?? input.value.length;
+                input.value = input.value.slice(0, pos) + emoji + input.value.slice(pos);
+                input.selectionStart = input.selectionEnd = pos + emoji.length;
+                input.focus();
+                emojiPicker.classList.add('hidden');
+            });
         });
         document.addEventListener('click', function (e) {
-            if (!emojiPicker.classList.contains('hidden') && !emojiPicker.contains(e.target) && !emojiToggle.contains(e.target)) {
+            if (!emojiPicker.contains(e.target) && e.target !== emojiToggle) {
                 emojiPicker.classList.add('hidden');
             }
         });

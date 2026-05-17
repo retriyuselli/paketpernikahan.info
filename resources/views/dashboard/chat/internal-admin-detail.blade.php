@@ -68,7 +68,22 @@
     {{-- Input --}}
     @if($session->status === 'open')
     <div id="internal-admin-input-area" class="border-t border-gray-100 px-4 pt-2 pb-3">
+        <div id="internal-admin-emoji-picker" class="hidden mb-2 bg-white rounded-2xl shadow-xl ring-1 ring-gray-200 p-3 w-fit">
+            <div class="grid grid-cols-8 gap-1">
+                @php $emojis = ['😊','😂','❤️','🥰','😍','😘','🤗','😭','😅','🙏','💕','✨','🎉','💍','👰','🤵','💐','🌸','🌹','🥂','🍰','📸','💌','🎊','😔','😢','😮','🤔','👍','👏','🙌','💯','🔥','⭐','🌟','💫','🕊️','🌺','🌷','🌼']; @endphp
+                @foreach($emojis as $emoji)
+                    <button type="button" data-emoji="{{ $emoji }}"
+                            class="admin-internal-emoji-btn flex h-9 w-9 items-center justify-center rounded-xl text-xl hover:bg-gray-100 transition">{{ $emoji }}</button>
+                @endforeach
+            </div>
+        </div>
         <div class="flex items-end gap-2">
+            <button type="button" id="internal-admin-emoji-toggle"
+                    class="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition shrink-0">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 0 1-5.656 0M9 10h.01M15 10h.01M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/>
+                </svg>
+            </button>
             <textarea id="internal-admin-reply-input"
                       placeholder="Balas pesan vendor..."
                       rows="1"
@@ -97,6 +112,31 @@
     var msgBox = document.getElementById('internal-admin-messages');
     var input  = document.getElementById('internal-admin-reply-input');
     var btn    = document.getElementById('internal-admin-reply-btn');
+
+    // Emoji picker
+    var emojiToggle = document.getElementById('internal-admin-emoji-toggle');
+    var emojiPicker = document.getElementById('internal-admin-emoji-picker');
+    if (emojiToggle && emojiPicker) {
+        emojiToggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            emojiPicker.classList.toggle('hidden');
+        });
+        emojiPicker.querySelectorAll('.admin-internal-emoji-btn').forEach(function (el) {
+            el.addEventListener('click', function () {
+                var emoji = el.dataset.emoji;
+                var pos = input.selectionStart ?? input.value.length;
+                input.value = input.value.slice(0, pos) + emoji + input.value.slice(pos);
+                input.selectionStart = input.selectionEnd = pos + emoji.length;
+                input.focus();
+                emojiPicker.classList.add('hidden');
+            });
+        });
+        document.addEventListener('click', function (e) {
+            if (!emojiPicker.contains(e.target) && e.target !== emojiToggle) {
+                emojiPicker.classList.add('hidden');
+            }
+        });
+    }
     var token  = msgBox?.dataset?.sessionToken || '';
     var lastId = parseInt(msgBox?.dataset?.lastId || '0', 10);
     var status = msgBox?.dataset?.sessionStatus || '';

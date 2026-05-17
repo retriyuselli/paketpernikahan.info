@@ -203,6 +203,26 @@ class ChatController extends Controller
         return view('dashboard.my-chats', array_merge($this->dashboardContext(), compact('sessions')));
     }
 
+    public function userNotify()
+    {
+        $userId = Auth::id();
+
+        $openSessionsCount = ChatSession::where('user_id', $userId)
+            ->where('status', 'open')
+            ->whereHas('messages', fn ($q) => $q->whereIn('sender', ['admin', 'vendor']))
+            ->count();
+
+        $latestReply = ChatMessage::whereIn('sender', ['admin', 'vendor'])
+            ->whereHas('session', fn ($q) => $q->where('user_id', $userId))
+            ->latest('id')
+            ->first();
+
+        return response()->json([
+            'open_sessions_count' => $openSessionsCount,
+            'latest_message_id'  => $latestReply?->id,
+        ]);
+    }
+
     // ── Admin: daftar sesi ───────────────────────────────────────────
     public function adminIndex(Request $request)
     {

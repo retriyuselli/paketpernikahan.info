@@ -475,7 +475,7 @@
                                     </div>
                                 </div>
                                 <div class="space-y-1 p-3">
-                                    <p class="text-[13px] font-medium leading-tight text-gray-900 sm:min-h-11">{{ $pkg->name }}</p>
+                                    <p class="text-[13px] font-medium leading-tight text-gray-900">{{ $pkg->name }}</p>
                                     @php
                                         $catNames = collect($pkg->category_vendor_id ?? [])
                                             ->map(fn($cid) => $homeCategories->firstWhere('id', (int)$cid)?->name)

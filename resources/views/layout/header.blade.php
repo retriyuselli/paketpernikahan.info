@@ -78,27 +78,33 @@
             <!-- Main Navigation (center) -->
             <nav class="hidden lg:flex items-center justify-start gap-6 whitespace-nowrap relative z-20">
                 @php
-                    $navIsHome = request()->routeIs('home');
-                    $navIsVendor = request()->routeIs('vendor') || request()->is('vendor*');
-                    $navIsStore = request()->routeIs('store') || request()->is('store*');
+                    $navIsHome       = request()->routeIs('home');
+                    $navIsVendor     = request()->routeIs('vendor') || request()->is('vendor*');
+                    $navIsStore      = request()->routeIs('store') || request()->is('store*');
+                    $navIsPromo      = request()->routeIs('store.promo');
+                    $navIsRealWed    = request()->routeIs('real-wedding.*');
+                    $navIsBlog       = request()->routeIs('blog.*');
                 @endphp
                 <a href="{{ route('home') }}"
-                   class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsHome ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
+                   class="text-xs font-bold tracking-wide transition uppercase @if($navIsHome) text-accent @else text-gray-400 hover:text-accent @endif">
                     Home
                 </a>
                 <span id="tour-nav-vendor-store" class="flex items-center gap-6">
                     <a href="{{ route('vendor') }}"
-                       class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsVendor ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
+                       class="text-xs font-bold tracking-wide transition uppercase @if($navIsVendor) text-accent @else text-gray-400 hover:text-accent @endif">
                         Vendor
                     </a>
                     <a href="{{ route('store') }}"
-                       class="relative text-xs font-bold tracking-wide transition uppercase {{ $navIsStore ? 'text-accent' : 'text-gray-800 hover:text-accent' }}">
+                       class="text-xs font-bold tracking-wide transition uppercase @if($navIsStore) text-accent @else text-gray-400 hover:text-accent @endif">
                         Store
                     </a>
                 </span>
-                <a id="tour-nav-promo" href="{{ route('store.promo') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Promo</a>
-                <a id="tour-nav-real-wedding" href="{{ route('real-wedding.index') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Real Wedding</a>
-                <a href="{{ route('blog.index') }}" class="text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase">Blog</a>
+                <a id="tour-nav-promo" href="{{ route('store.promo') }}"
+                   class="text-xs font-bold tracking-wide transition uppercase @if($navIsPromo) text-accent @else text-gray-400 hover:text-accent @endif">Promo</a>
+                <a id="tour-nav-real-wedding" href="{{ route('real-wedding.index') }}"
+                   class="text-xs font-bold tracking-wide transition uppercase @if($navIsRealWed) text-accent @else text-gray-400 hover:text-accent @endif">Real Wedding</a>
+                <a href="{{ route('blog.index') }}"
+                   class="text-xs font-bold tracking-wide transition uppercase @if($navIsBlog) text-accent @else text-gray-400 hover:text-accent @endif">Blog</a>
                 <div class="relative group">
                     <button type="button" data-toggle-header-dropdown="lain"
                             class="flex items-center gap-1 text-xs font-bold tracking-wide text-gray-800 hover:text-accent transition uppercase"
@@ -151,6 +157,18 @@
                           style="display:none">
                         0
                     </span>
+                </a>
+                @else
+                <a href="{{ route('dashboard.my-chats') }}"
+                   class="relative flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition"
+                   id="header-user-chat-btn"
+                   title="Chat saya">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <span id="header-user-chat-count"
+                          class="absolute -top-0.5 -right-0.5 min-w-[1.1rem] h-[1.1rem] rounded-full bg-red-500 ring-2 ring-white text-white text-[9px] font-bold items-center justify-center px-0.5"
+                          style="display:none">0</span>
                 </a>
                 @endif
                 @endauth
@@ -725,6 +743,28 @@ document.addEventListener('keydown', function(e) {
             .then(function (d) {
                 var n = parseInt(d.open_guest_sessions_count || 0, 10);
                 btn.style.display   = n > 0 ? 'flex' : 'none';
+                if (count) {
+                    count.style.display = n > 0 ? 'flex' : 'none';
+                    count.textContent   = n > 9 ? '9+' : String(n);
+                }
+            })
+            .catch(function () {});
+    }
+    poll();
+    setInterval(poll, 10000);
+})();
+@endif
+@if(!$hdrIsAdmin && !$hdrIsVendor)
+(function () {
+    var btn   = document.getElementById('header-user-chat-btn');
+    var count = document.getElementById('header-user-chat-count');
+    if (!btn) return;
+    var url = '{{ route('chat.user.notify') }}';
+    function poll() {
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                var n = parseInt(d.open_sessions_count || 0, 10);
                 if (count) {
                     count.style.display = n > 0 ? 'flex' : 'none';
                     count.textContent   = n > 9 ? '9+' : String(n);

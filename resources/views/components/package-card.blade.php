@@ -47,13 +47,13 @@
     </div>
 
     <div class="space-y-0.5 p-3 sm:space-y-1">
-        <p class="text-[12px] font-medium leading-tight text-gray-900 sm:text-[13px] sm:min-h-11">{{ $displayName }}</p>
+        <p class="text-[12px] font-medium leading-tight text-gray-900 sm:text-[13px]">{{ $displayName }}</p>
 
         @if($discountAmount > 0)
             <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($basePrice, 0, ',', '.') }}</p>
         @endif
 
-        <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[15px]">{{ number_format($displayPrice, 0, ',', '.') }}</span></p>
+        <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[13px]">{{ number_format($displayPrice, 0, ',', '.') }}</span></p>
 
         {{-- @if($discountAmount > 0)
             <div class="flex flex-wrap gap-1">

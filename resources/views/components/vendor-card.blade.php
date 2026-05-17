@@ -70,7 +70,7 @@
     </div>
 
     <div class="p-2">
-        <p class="text-[12px] font-medium leading-tight text-gray-900 sm:text-[13px] sm:min-h-11">{{ $vendor->name }}</p>
+        <p class="text-[12px] font-medium leading-tight text-gray-900 sm:text-[13px]">{{ $vendor->name }}</p>
 
         @if($package)
             <div class="mb-2 mt-1 flex items-center gap-1.5">
@@ -79,7 +79,7 @@
                     <span class="text-[10px] text-gray-400 line-through"><span class="text-[9px]">Rp</span> {{ number_format($packagePrice, 0, ',', '.') }}</span>
                     <span class="font-bold text-dark"><span class="text-[9px]">Rp</span> <span class="text-[11px]">{{ number_format($packageFinal, 0, ',', '.') }}</span></span>
                 @else
-                    <span class="font-semibold text-dark"><span class="text-[9px]">Rp</span> <span class="text-[11px]">{{ number_format($packagePrice, 0, ',', '.') }}</span></span>
+                    <span class="font-semibold text-dark"><span class="text-[9px]">Rp</span> <span class="text-[13px]">{{ number_format($packagePrice, 0, ',', '.') }}</span></span>
                 @endif
             </div>
         @else

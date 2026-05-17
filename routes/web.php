@@ -1639,6 +1639,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // ── Chat (user: my chats) ──────────────────────────────────────────────────
 Route::middleware(['auth', 'verified'])->get('/dashboard/my-chats', [ChatController::class, 'userChatList'])->name('dashboard.my-chats');
+Route::middleware(['auth', 'verified'])->get('/dashboard/my-chats/notify', [ChatController::class, 'userNotify'])->name('chat.user.notify');
 
 // ── Chat (public) ──────────────────────────────────────────────────────────
 // View routes: accessible to guests (login gate shown in the view)

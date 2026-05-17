@@ -148,7 +148,7 @@
     @if($session->status === 'open')
     <div class="border-t border-gray-100 px-4 pt-2 pb-3">
         {{-- Emoji Picker --}}
-        <div id="admin-emoji-picker" class="hidden mb-2 bg-white rounded-2xl shadow-xl ring-1 ring-gray-200 p-3">
+        <div id="admin-emoji-picker" class="hidden mb-2 bg-white rounded-2xl shadow-xl ring-1 ring-gray-200 p-3 w-fit">
             <div class="grid grid-cols-8 gap-1">
                 @php
                 $emojis = ['😊','😂','❤️','🥰','😍','😘','🤗','😭',
