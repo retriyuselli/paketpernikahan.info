@@ -7,6 +7,22 @@
 @section('content')
     @include('layout.header')
 
+    @php
+        $breadcrumbItems = [
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => 'Tentang Kami', 'url' => null],
+        ];
+    @endphp
+
+    <section class="pt-3 lg:pt-3 lg:pb-2 bg-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="pt-1 pb-4 lg:pt-1">
+                <x-breadcrumb :items="$breadcrumbItems" />
+            </div>
+            <x-banner-ad mt="0" mb="1rem" />
+        </div>
+    </section>
+
     {{-- Hero --}}
     <section class="bg-white border-b border-gray-100">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
