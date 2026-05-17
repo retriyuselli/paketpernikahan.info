@@ -1,6 +1,6 @@
 @extends('layout.app')
 
-@section('title', 'Blog Pernikahan - Tips & Inspirasi - Makna Wedding')
+@section('title', 'Blog Pernikahan - Tips & Inspirasi - Paket Pernikahan')
 
 @section('body-class', 'bg-cream text-dark')
 
@@ -14,17 +14,18 @@
         ];
     @endphp
 
-    <section class="pt-3 lg:py-8 bg-cream">
-        <x-ui.container>
-            <div class="pt-1 pb-4 lg:pt-4">
+    <section class="pt-3 lg:pt-3 lg:pb-8 bg-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="pt-1 pb-4 lg:pt-1">
                 <x-breadcrumb :items="$breadcrumbItems" />
             </div>
+            
             <x-banner-ad mt="0" mb="1rem" />
 
             <!-- Page Header -->
             <div class="mb-8">
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-dark">Blog Pernikahan</h1>
-                <p class="text-sm text-gray-500 mt-1">Tips, inspirasi, dan panduan untuk pernikahan impian kamu</p>
+                <h1 class="text-base font-bold text-dark">Blog Pernikahan</h1>
+                <p class="text-xs text-gray-500 mt-1">Tips, inspirasi, dan panduan untuk pernikahan impian kamu</p>
             </div>
 
             <!-- Filter & Search Bar -->
@@ -163,7 +164,7 @@
                 </div>
 
             </div>
-        </x-ui.container>
+        </div>
     </section>
 
     @include('layout.footer')

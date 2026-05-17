@@ -1,6 +1,6 @@
 @extends('layout.app')
 
-@section('title', 'Promo - Store - Makna Wedding')
+@section('title', 'Promo - Store - Paket Pernikahan')
 
 @section('body-class', 'bg-cream text-dark')
 
@@ -20,10 +20,10 @@
             <div class="pt-1 pb-4 lg:pt-1">
                 <x-breadcrumb :items="$breadcrumbItems" />
             </div>
+            
             <x-banner-ad mt="0" mb="1rem" />
 
-            <div class="max-w-7xl mx-auto pt-0 pb-1 lg:py-2">
-                <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
                 <div>
                     <h1 class="text-base font-bold text-dark">Promo</h1>
                     <p class="text-xs text-gray-500 mt-1">Paket pernikahan dengan harga spesial dan promo terbaik.</p>
@@ -55,11 +55,11 @@
                 </div>
             </div>
 
-                @if($packages->isEmpty())
+            @if($packages->isEmpty())
                 <div class="bg-white rounded-2xl border border-gray-100 p-10 text-center">
                     <p class="text-sm text-gray-500">Belum ada paket promo saat ini.</p>
                 </div>
-                @else
+            @else
                 <div class="grid grid-cols-2 lg:grid-cols-5 gap-1.5 sm:gap-2 lg:gap-3">
                     @foreach($packages as $pkg)
                         @php
@@ -98,8 +98,7 @@
                 <div class="mt-8">
                     {{ $packages->links() }}
                 </div>
-                @endif
-            </div>
+            @endif
         </div>
     </section>
 

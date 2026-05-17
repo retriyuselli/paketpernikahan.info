@@ -7,92 +7,22 @@
 @section('content')
     @include('layout.header')
 
-    <x-highlight-section
-        :real-weddings="$realWeddings ?? collect()"
-        :featured-blogs="$homeFeaturedBlogs ?? collect()"
-        :popular-blogs="$homePopularBlogs ?? collect()"
-        :home-ad="$homeAd ?? null"
-    />
+    @php
+        $breadcrumbItems = [
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => 'Vendor', 'url' => null],
+        ];
+    @endphp
 
-    <div class="px-4 sm:px-6 lg:px-8">
-        <x-banner-ad />
-    </div>
+    <section class="pt-3 lg:pt-3 lg:pb-8 bg-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="pt-1 pb-4 lg:pt-1">
+                <x-breadcrumb :items="$breadcrumbItems" />
+            </div>
+            
+            <x-banner-ad mt="0" mb="1rem" />
 
-    <!-- Search Bar -->
-    {{-- <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-2">
-        <form action="{{ route('vendor') }}" method="GET" class="flex flex-wrap gap-2 items-center">
-            <select name="category" class="flex-1 min-w-40 py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
-                <option value="">Semua Kategori</option>
-                @foreach ($categories as $cat)
-                <option value="{{ $cat->slug }}" {{ request('category') === $cat->slug ? 'selected' : '' }}>{{ $cat->name }}</option>
-                @endforeach
-            </select>
-            <select name="province" class="flex-1 min-w-40 py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
-                <option value="">Semua Provinsi</option>
-                @foreach ($provinces as $prov)
-                <option value="{{ $prov }}" {{ request('province') === $prov ? 'selected' : '' }}>{{ $prov }}</option>
-                @endforeach
-            </select>
-            <select id="city-select" name="city"
-                    class="flex-1 min-w-40 py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed text-dark">
-                <option value="">Pilih Provinsi Dulu</option>
-            </select>
-
-            <select name="price" class="flex-1 min-w-40 py-3 px-4 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-400 transition appearance-none cursor-pointer text-dark">
-                <option value="">Semua Harga</option>
-                <option value="0-5000000" {{ request('price') === '0-5000000' ? 'selected' : '' }}>Di bawah Rp 5 Juta</option>
-                <option value="5000000-15000000" {{ request('price') === '5000000-15000000' ? 'selected' : '' }}>Rp 5 – 15 Juta</option>
-                <option value="15000000-50000000" {{ request('price') === '15000000-50000000' ? 'selected' : '' }}>Rp 15 – 50 Juta</option>
-                <option value="50000000-99999999" {{ request('price') === '50000000-99999999' ? 'selected' : '' }}>Di atas Rp 50 Juta</option>
-            </select>
-            <button type="submit" class="px-6 py-3 rounded-2xl text-sm font-semibold transition hover:opacity-90 shrink-0 bg-dark text-cream">
-                Cari Vendor
-            </button>
-            @if (request()->hasAny(['category', 'province', 'city', 'price', 'q']))
-            <a href="{{ route('vendor') }}" class="px-6 py-3 rounded-2xl text-sm font-semibold border border-dark text-dark transition hover:bg-gray-50 shrink-0">
-                Reset
-            </a>
-            @endif
-        </form>
-    </div> --}}
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const citiesByProvince = @json($citiesByProvince);
-        const provinceSelect   = document.querySelector('select[name="province"]');
-        const citySelect       = document.getElementById('city-select');
-        const savedCity        = @json(request('city'));
-
-        function populateCities(province) {
-            citySelect.innerHTML = '';
-            if (!province || !citiesByProvince[province] || !citiesByProvince[province].length) {
-                citySelect.disabled = true;
-                citySelect.add(new Option('Pilih Provinsi dulu', ''));
-                return;
-            }
-            citySelect.disabled = false;
-            citySelect.add(new Option('Semua Kota', ''));
-            citiesByProvince[province].forEach(function (city) {
-                const opt = new Option(city, city);
-                if (city === savedCity) opt.selected = true;
-                citySelect.add(opt);
-            });
-        }
-
-        provinceSelect.addEventListener('change', function () {
-            populateCities(this.value);
-        });
-
-        // Restore state on page load (after filter submit)
-        if (provinceSelect.value) {
-            populateCities(provinceSelect.value);
-        } else {
-            citySelect.disabled = true;
-        }
-    });
-    </script>
-
-    <div class="max-w-7xl mx-auto px-4 pt-4 pb-10 sm:px-6 lg:px-8 lg:py-10">
+            <div class="max-w-7xl mx-auto pt-0 pb-1 lg:py-2">
 
         @if(!isset($categories) || $categories->isEmpty())
             <div class="bg-white rounded-2xl border border-gray-100 p-10 text-center flex flex-col items-center">
@@ -118,12 +48,6 @@
 
             <!-- Scrollable Row -->
             <div class="relative">
-                <!-- Left Arrow -->
-                {{-- <button type="button" data-scroll-sibling="next" data-scroll-by="-300"
-                        class="absolute left-0 top-1/3 -translate-y-1/2 -translate-x-3 w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center hover:shadow-lg transition z-10">
-                    <svg class="w-4 h-4 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                </button> --}}
-
                 <div class="flex gap-1.5 sm:gap-2 overflow-x-auto scroll-smooth pb-2 scrollbar-hide -mx-4 px-3 sm:mx-0 sm:px-0">
                     @foreach ($cat->vendors as $i => $v)
                     @php
@@ -164,7 +88,44 @@
             @endforeach
         @endif
 
-    </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const citiesByProvince = @json($citiesByProvince);
+        const provinceSelect   = document.querySelector('select[name="province"]');
+        const citySelect       = document.getElementById('city-select');
+        const savedCity        = @json(request('city'));
+
+        function populateCities(province) {
+            citySelect.innerHTML = '';
+            if (!province || !citiesByProvince[province] || !citiesByProvince[province].length) {
+                citySelect.disabled = true;
+                citySelect.add(new Option('Pilih Provinsi dulu', ''));
+                return;
+            }
+            citySelect.disabled = false;
+            citySelect.add(new Option('Semua Kota', ''));
+            citiesByProvince[province].forEach(function (city) {
+                const opt = new Option(city, city);
+                if (city === savedCity) opt.selected = true;
+                citySelect.add(opt);
+            });
+        }
+
+        provinceSelect.addEventListener('change', function () {
+            populateCities(this.value);
+        });
+
+        if (provinceSelect.value) {
+            populateCities(provinceSelect.value);
+        } else {
+            citySelect.disabled = true;
+        }
+    });
+    </script>
 
     @include('layout.footer')
 

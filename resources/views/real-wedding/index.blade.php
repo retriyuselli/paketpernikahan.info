@@ -1,6 +1,6 @@
 @extends('layout.app')
 
-@section('title', 'Real Wedding - Makna Wedding')
+@section('title', 'Real Wedding - Paket Pernikahan')
 
 @section('body-class', 'bg-cream text-dark')
 

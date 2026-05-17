@@ -1,6 +1,6 @@
 @extends('layout.app')
 
-@section('title', 'Store - Makna Wedding')
+@section('title', 'Store - Paket Pernikahan')
 
 @section('body-class', 'bg-cream text-dark')
 
@@ -20,6 +20,7 @@
             <div class="pt-1 pb-4 lg:pt-1">
                 <x-breadcrumb :items="$breadcrumbItems" />
             </div>
+            
             <x-banner-ad mt="0" mb="1rem" />
 
             <div class="max-w-7xl mx-auto pt-0 pb-1 lg:py-2">
