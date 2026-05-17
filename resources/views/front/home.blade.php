@@ -99,14 +99,14 @@
                         <div class="inline-flex min-w-max items-center justify-center rounded-2xl px-1.5 py-1.5 sm:px-5 sm:py-3">
                             <img src="{{ $l['src'] }}"
                                  alt="{{ $l['alt'] }}"
-                                 class="h-12 sm:h-22 w-auto object-contain">
+                                 class="h-12 sm:h-14 w-auto object-contain">
                         </div>
                     @endforeach
                     @foreach($logos as $l)
                         <div class="inline-flex min-w-max items-center justify-center rounded-2xl px-1.5 py-1.5 sm:px-5 sm:py-3">
                             <img src="{{ $l['src'] }}"
                                  alt="{{ $l['alt'] }}"
-                                 class="h-12 sm:h-22 w-auto object-contain">
+                                 class="h-12 sm:h-14 w-auto object-contain">
                         </div>
                     @endforeach
                 </div>
@@ -114,7 +114,7 @@
         </section>
 
         <!-- Package Section -->
-        <section class="pt-3 pb-8 sm:py-16 bg-cream" id="packages">
+        <section class="pt-3 pb-8 sm:pt-0 sm:pb-16 bg-cream" id="packages">
             <x-ui.container>
 
                 <div class="mb-2 flex items-end justify-between gap-3">

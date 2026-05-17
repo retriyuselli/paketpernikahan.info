@@ -73,7 +73,7 @@
 
 @endphp
 
-<section class="pt-0 pb-2 sm:py-10 bg-cream">
+<section class="pt-0 pb-2 sm:pt-10 sm:pb-0 bg-cream">
     @if(filled($title))
         <div class="{{ $titleWrapperClass }}">
             <h2 class="mb-3 hidden text-xl font-bold text-dark sm:mb-5 sm:block">{{ $title }}</h2>
