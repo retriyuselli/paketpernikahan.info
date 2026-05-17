@@ -14,17 +14,17 @@
         ];
     @endphp
 
-    <section class="pt-3 lg:py-8 bg-cream">
+    <section class="pt-3 lg:pt-3 lg:pb-8 bg-cream">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="pt-1 pb-4 lg:pt-4">
+            <div class="pt-1 pb-4 lg:pt-1">
                 <x-breadcrumb :items="$breadcrumbItems" />
             </div>
             <x-banner-ad mt="0" mb="1rem" />
 
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-extrabold text-dark">Real Wedding</h1>
-                    <p class="text-sm text-gray-500 mt-1">Inspirasi pernikahan nyata dari pasangan-pasangan yang telah merayakan momen spesial mereka.</p>
+                    <h1 class="text-base font-bold text-dark">Real Wedding</h1>
+                    <p class="text-xs text-gray-500 mt-1">Inspirasi pernikahan nyata dari pasangan-pasangan yang telah merayakan momen spesial mereka.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <form method="GET" action="{{ route('real-wedding.index') }}" class="flex items-center gap-2">

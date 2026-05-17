@@ -8,18 +8,21 @@
     @php $isNavyGold = \App\Http\Controllers\ThemeController::active()['name'] === 'navy-gold'; @endphp
     @include('layout.header')
 
-    <x-highlight-section
-        :real-weddings="$realWeddings ?? collect()"
-        :featured-blogs="$homeFeaturedBlogs ?? collect()"
-        :popular-blogs="$homePopularBlogs ?? collect()"
-        :home-ad="$homeAd ?? null"
-    />
+    @php
+        $breadcrumbItems = [
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => 'Store', 'url' => null],
+        ];
+    @endphp
 
-    <div class="px-4 sm:px-6 lg:px-8">
-        <x-banner-ad />
-    </div>
+    <section class="pt-3 lg:pt-3 lg:pb-8 bg-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="pt-1 pb-4 lg:pt-1">
+                <x-breadcrumb :items="$breadcrumbItems" />
+            </div>
+            <x-banner-ad mt="0" mb="1rem" />
 
-    <div class="max-w-7xl mx-auto px-4 pt-4 pb-10 sm:px-6 lg:px-8 lg:py-10">
+            <div class="max-w-7xl mx-auto pt-0 pb-1 lg:py-2">
         <div id="store-sections"></div>
 
         @if(!empty($search) || !empty($kategori))
@@ -191,7 +194,9 @@
                 </div>
             </div>
         @endif
-    </div>
+            </div>
+        </div>
+    </section>
 
     <script>
         document.addEventListener('click', function (e) {

@@ -21,7 +21,7 @@
             <div class="pt-1 pb-4 lg:pt-4">
                 <x-breadcrumb :items="$breadcrumbItems" />
             </div>
-            <div class="mt-3">
+            <div class="mt-3 mb-6">
                 <x-banner-ad mt="0" />
             </div>
 
