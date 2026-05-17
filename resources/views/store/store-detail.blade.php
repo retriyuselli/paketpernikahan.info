@@ -448,7 +448,7 @@
 
                         {{-- ── Spesial Diskon Banner ───────────────────── --}}
                         @if($discount > 0)
-                        <div class="relative overflow-hidden bg-linear-to-r from-accent to-accent/80 px-5 py-3.5">
+                        <div class="relative overflow-hidden bg-accent px-5 py-3.5">
                             <div class="flex items-center justify-between gap-3">
                                 <div>
                                     <p class="text-white font-extrabold text-sm leading-tight">Spesial Diskon</p>
@@ -462,7 +462,7 @@
                                     <div class="bg-white rounded-full px-3 py-1">
                                         <span id="sidebar-countdown"
                                               data-expires="{{ $package->discount_expires_at->timestamp * 1000 }}"
-                                              class="text-accent font-extrabold text-sm tabular-nums tracking-wide">-- : -- : --</span>
+                                              class="text-accent font-extrabold text-sm tracking-wide">-- Hari</span>
                                     </div>
                                     @else
                                     <p class="text-white/80 text-[10px] font-semibold">Diskon Aktif</p>
@@ -896,14 +896,10 @@
             if (!el) return;
             var end = parseInt(el.dataset.expires, 10);
             if (!end || isNaN(end)) return;
-            function pad(n) { return String(n).padStart(2, '0'); }
             function tick() {
-                var diff = Math.max(0, Math.floor((end - Date.now()) / 1000));
-                var h = Math.floor(diff / 3600);
-                var m = Math.floor((diff % 3600) / 60);
-                var s = diff % 60;
-                el.textContent = pad(h) + ' : ' + pad(m) + ' : ' + pad(s);
-                if (diff > 0) setTimeout(tick, 1000);
+                var diff = Math.max(0, end - Date.now());
+                var days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+                el.textContent = days + ' Hari';
             }
             tick();
         })();
