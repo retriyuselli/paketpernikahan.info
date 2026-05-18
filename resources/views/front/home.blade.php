@@ -11,21 +11,41 @@
             '@context' => 'https://schema.org',
             '@graph' => [
                 [
-                    '@type' => 'Organization',
+                    '@type' => ['Organization', 'LocalBusiness'],
                     '@id' => url('/#organization'),
-                    'name' => 'Makna Wedding',
-                    'alternateName' => 'PT Makna Kreatif Indonesia',
+                    'name' => 'Makna Wedding & Event Planner',
+                    'alternateName' => 'Makna Wedding',
                     'url' => url('/'),
-                    'description' => 'Platform wedding organizer dan vendor pernikahan di Indonesia.',
+                    'description' => 'Wedding organizer dan platform vendor pernikahan di Palembang, Sumatera Selatan.',
                     'logo' => url(config('app.logo_url')),
                     'image' => url(config('app.logo_url')),
-                    'email' => 'mailto:maknawedding@gmail.com',
-                    'telephone' => '+62 822-9796-2600',
+                    'email' => 'maknawedding@gmail.com',
+                    'telephone' => '+62-822-9796-2600',
+                    'priceRange' => 'Rp5.000.000–Rp100.000.000',
                     'sameAs' => ['https://www.instagram.com/makna.wedding/'],
                     'address' => [
                         '@type' => 'PostalAddress',
+                        'streetAddress' => 'Jl. Sintraman Jaya I No.2148, 20 Ilir D II, Kec. Kemuning',
+                        'addressLocality' => 'Palembang',
                         'addressRegion' => 'Sumatera Selatan',
+                        'postalCode' => '30137',
                         'addressCountry' => 'ID',
+                    ],
+                    'geo' => [
+                        '@type' => 'GeoCoordinates',
+                        'addressCountry' => 'ID',
+                    ],
+                    'areaServed' => [
+                        ['@type' => 'City', 'name' => 'Palembang'],
+                        ['@type' => 'State', 'name' => 'Sumatera Selatan'],
+                    ],
+                    'openingHoursSpecification' => [
+                        [
+                            '@type' => 'OpeningHoursSpecification',
+                            'dayOfWeek' => ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+                            'opens' => '08:00',
+                            'closes' => '17:00',
+                        ],
                     ],
                 ],
                 [
