@@ -1,6 +1,8 @@
 @extends('layout.app')
 
-@section('title', 'Real Wedding - Paket Pernikahan')
+@section('title', 'Real Wedding - Inspirasi Pernikahan Nyata di Indonesia | Makna Wedding')
+@section('meta-description', 'Temukan inspirasi dari kisah pernikahan nyata di Indonesia. Lihat foto, vendor, dan paket yang dipakai pasangan sungguhan di Makna Wedding.')
+@section('canonical-url', route('real-wedding.index'))
 
 @section('body-class', 'bg-cream text-dark')
 
@@ -63,11 +65,11 @@
                             $rwImage = $rw->cover_image_url ?: 'https://picsum.photos/seed/rw-' . $rw->id . '/400/533';
                         @endphp
                         <a href="{{ route('real-wedding.show', $rw->slug) }}"
-                           class="relative rounded-2xl overflow-hidden cursor-pointer group aspect-[3/4] block">
+                           class="relative rounded-2xl overflow-hidden cursor-pointer group aspect-3/4 block">
                             <img src="{{ $rwImage }}"
                                  alt="{{ $rw->couple_names }}"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                            <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-transparent"></div>
                             <div class="absolute bottom-4 left-4 right-4 text-white">
                                 @if($rw->badge)
                                     <span class="inline-block text-[9px] border border-white/70 rounded-full px-2 py-0.5 mb-2 bg-black/20 backdrop-blur-sm">

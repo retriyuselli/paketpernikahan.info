@@ -12,6 +12,10 @@ use App\Http\Controllers\VendorReviewModerationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+// Redirect slug lama kategori WO
+Route::redirect('/store/kategori/wo', '/store/kategori/wedding-organizer', 301);
+Route::redirect('/store/kategori/wo/{any}', '/store/kategori/wedding-organizer/{any}', 301)->where('any', '.*');
+
 Route::get('/sitemap.xml', function () {
     $urls = collect([
         ['loc' => route('home'), 'lastmod' => now()->toDateString(), 'changefreq' => 'daily', 'priority' => '1.0'],
@@ -67,7 +71,34 @@ Route::get('/sitemap.xml', function () {
                 'changefreq' => 'weekly',
                 'priority' => '0.7',
             ])
-    )->values();
+    )->merge(
+        \App\Models\CategoryVendor::query()
+            ->where('is_active', true)
+            ->select('slug', 'updated_at')
+            ->get()
+            ->map(fn ($cat) => [
+                'loc' => route('store.category', $cat->slug),
+                'lastmod' => optional($cat->updated_at)->toDateString(),
+                'changefreq' => 'daily',
+                'priority' => '0.8',
+            ])
+    )->merge(
+        \App\Models\Vendor::query()
+            ->where('is_active', true)
+            ->where('is_profile_complete', true)
+            ->whereNotNull('city')
+            ->select('city')
+            ->distinct()
+            ->pluck('city')
+            ->filter()
+            ->map(fn ($city) => [
+                'loc' => route('store.city', $city),
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ])
+    )->merge([
+        ['loc' => route('store.promo'), 'changefreq' => 'daily', 'priority' => '0.7'],
+    ])->values();
 
     return response()
         ->view('sitemap.xml', compact('urls'))
@@ -1553,7 +1584,7 @@ Route::get('/dashboard/admin/vendors', function () {
     return view('dashboard.admin-vendors', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount', 'bookingUserCount', 'vendors', 'q'));
 })->name('dashboard.admin.vendors')->middleware(['auth', 'verified']);
 
-Route::post('/dashboard/admin/vendors/{vendor}/toggle-active', function (\Illuminate\Http\Request $request, \App\Models\Vendor $vendor) {
+Route::post('/dashboard/admin/vendors/{vendor}/toggle-active', function (\App\Models\Vendor $vendor) {
     $user = \App\Models\User::findOrFail(Auth::id());
     abort_unless($user->hasRole(['super_admin', 'admin']), 403);
 

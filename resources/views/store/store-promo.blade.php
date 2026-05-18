@@ -1,6 +1,7 @@
 @extends('layout.app')
 
 @section('title', 'Promo Paket Pernikahan - Diskon & Penawaran Spesial | Makna Wedding')
+@section('meta-description', 'Dapatkan promo dan diskon terbaik paket pernikahan – foto, katering, dekorasi, wedding organizer, dan lebih. Penawaran terbatas di Makna Wedding.')
 @section('canonical-url', route('store.promo'))
 
 @section('body-class', 'bg-cream text-dark')

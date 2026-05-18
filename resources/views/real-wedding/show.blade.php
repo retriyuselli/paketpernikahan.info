@@ -1,6 +1,8 @@
 @extends('layout.app')
 
-@section('title', $realWedding->couple_names . ' - Real Wedding - Makna Wedding')
+@section('title', $realWedding->couple_names . ' - Kisah Real Wedding | Makna Wedding')
+@section('meta-description', \Illuminate\Support\Str::limit(strip_tags((string) ($realWedding->story ?? $realWedding->description ?? $realWedding->couple_names . ' berbagi kisah pernikahan mereka di Makna Wedding.')), 155, ''))
+@section('canonical-url', route('real-wedding.show', $realWedding->slug))
 
 @section('body-class', 'bg-cream text-dark')
 

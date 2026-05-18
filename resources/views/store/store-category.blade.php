@@ -1,6 +1,7 @@
 @extends('layout.app')
 
 @section('title', 'Paket ' . ($category->name ?? 'Pernikahan') . ' - Harga & Pilihan Vendor | Makna Wedding')
+@section('meta-description', 'Cari dan bandingkan paket ' . ($category->name ?? 'pernikahan') . ' terbaik dari vendor terpercaya di Indonesia. Temukan harga, fasilitas, dan ulasan di Makna Wedding.')
 @section('canonical-url', route('store.category', $category))
 
 @section('body-class', 'bg-cream text-dark')

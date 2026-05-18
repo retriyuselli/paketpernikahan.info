@@ -1,6 +1,8 @@
 @extends('layout.app')
 
-@section('title', $blog->title . ' - Blog - Makna Wedding')
+@section('title', $blog->title . ' | Makna Wedding')
+@section('meta-description', \Illuminate\Support\Str::limit(strip_tags((string) ($blog->excerpt ?? $blog->content ?? '')), 155, ''))
+@section('canonical-url', route('blog.show', $blog->slug))
 
 @section('body-class', 'bg-cream text-dark')
 

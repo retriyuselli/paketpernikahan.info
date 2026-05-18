@@ -1,6 +1,7 @@
 @extends('layout.app')
 
-@section('title', 'Paket Pernikahan di ' . $city . ' - Foto, Katering, WO & Lebih | Makna Wedding')
+@section('title', 'Paket Pernikahan di ' . $city . ' - Foto, Katering, Wedding Organizer & Lebih | Makna Wedding')
+@section('meta-description', 'Temukan paket pernikahan terbaik di ' . $city . ' – foto, katering, dekorasi, wedding organizer, gedung, dan vendor lainnya di Makna Wedding.')
 @section('canonical-url', route('store.city', $city))
 
 @section('body-class', 'bg-cream text-dark')
