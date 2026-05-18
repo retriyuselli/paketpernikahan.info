@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class VendorPackage extends Model
 {
@@ -12,20 +13,45 @@ class VendorPackage extends Model
     protected static function boot(): void
     {
         parent::boot();
+
+        static::creating(function ($package) {
+            if (empty($package->slug)) {
+                $package->slug = static::generateUniqueSlug($package);
+            }
+        });
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    protected static function generateUniqueSlug(self $package): string
+    {
+        $vendor = $package->vendor ?? \App\Models\Vendor::find($package->vendor_id);
+        $vendorSlug = $vendor?->slug ?: 'vendor';
+        $base = $vendorSlug . '-' . Str::slug($package->name ?: 'paket');
+        $slug = $base;
+        $i = 2;
+        while (static::where('slug', $slug)->exists()) {
+            $slug = $base . '-' . $i++;
+        }
+        return $slug;
     }
 
     protected $fillable = [
-        'vendor_id', 
+        'vendor_id',
         'category_vendor_id',
-        'name', 
-        'price', 
-        'discount', 
+        'name',
+        'slug',
+        'price',
+        'discount',
         'dp_paket',
         'max_guests',
-        'card_color', 
-        'card_text_color', 
+        'card_color',
+        'card_text_color',
         'image_path',
-        'item', 
+        'item',
         'type',
         'capacity',
         'facilities',

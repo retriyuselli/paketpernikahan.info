@@ -41,11 +41,11 @@ Route::get('/sitemap.xml', function () {
         \App\Models\VendorPackage::query()
             ->where('is_active', true)
             ->with(['vendor:id,is_active,is_profile_complete'])
-            ->select('id', 'vendor_id', 'updated_at')
+            ->select('id', 'slug', 'vendor_id', 'updated_at')
             ->get()
             ->filter(fn ($package) => $package->vendor?->is_active && $package->vendor?->is_profile_complete)
             ->map(fn ($package) => [
-                'loc' => route('store.package.show', $package->id),
+                'loc' => route('store.package.show', $package->slug),
                 'lastmod' => optional($package->updated_at)->toDateString(),
                 'changefreq' => 'weekly',
                 'priority' => '0.7',
@@ -755,6 +755,13 @@ Route::get('/real-wedding/{realWedding:slug}', function (\App\Models\RealWedding
 
     return view('real-wedding.show', compact('realWedding', 'related', 'otherPackages'));
 })->name('real-wedding.show');
+
+// Redirect URL lama pakai ID numerik ke slug
+Route::get('/store/paket/{id}', function (string $id) {
+    $package = \App\Models\VendorPackage::where('id', $id)->first();
+    abort_if(!$package || !$package->slug, 404);
+    return redirect()->route('store.package.show', $package->slug, 301);
+})->where('id', '[0-9]+');
 
 Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $package) {
     abort_unless($package->is_active, 404);

@@ -419,7 +419,7 @@
                         @foreach ($vendor->packages as $pkg)
                         @php
                             $pkgData = array_merge(
-                                $pkg->only(['id', 'name', 'price', 'discount', 'dp_paket', 'max_guests', 'card_color', 'card_text_color', 'items', 'type', 'capacity', 'facilities']),
+                                $pkg->only(['id', 'slug', 'name', 'price', 'discount', 'dp_paket', 'max_guests', 'card_color', 'card_text_color', 'items', 'type', 'capacity', 'facilities']),
                                 ['item_html' => (string) ($pkg->item ?? '')]
                             );
                         @endphp
@@ -1388,7 +1388,7 @@
         // Detail link
         const detailLink = document.getElementById('modal-detail-link');
         if (detailLink) {
-            detailLink.href = pkg.id ? `/store/paket/${pkg.id}` : '#';
+            detailLink.href = pkg.slug ? `/store/paket/${pkg.slug}` : '#';
         }
 
         // Show modal

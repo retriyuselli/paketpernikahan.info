@@ -26,7 +26,7 @@
                 return [
                     '@type' => 'ListItem',
                     'position' => $i + 1,
-                    'url' => route('store.package.show', $pkg->id),
+                    'url' => route('store.package.show', $pkg->slug),
                     'name' => $pkg->name,
                 ];
             })->toArray(),

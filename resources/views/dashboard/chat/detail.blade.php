@@ -68,12 +68,12 @@
             $fpkgPrice = max(((int)$fpkg->price) - ((int)$fpkg->discount), 0);
         @endphp
         <div class="mx-1 w-fit flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3">
-            <a href="{{ route('store.package.show', $fpkg->id) }}" target="_blank" class="shrink-0">
+            <a href="{{ route('store.package.show', $fpkg) }}" target="_blank" class="shrink-0">
                 <img src="{{ $fpkg->image_url ?: url(config('app.logo_url')) }}" alt="{{ $fpkg->name }}"
                      class="h-14 w-14 rounded-xl object-cover bg-gray-100">
             </a>
             <div class="min-w-0 flex-1">
-                <a href="{{ route('store.package.show', $fpkg->id) }}" target="_blank"
+                <a href="{{ route('store.package.show', $fpkg) }}" target="_blank"
                    class="block truncate text-sm font-semibold text-dark hover:text-accent transition">
                     {{ $fpkg->name }}
                 </a>
@@ -97,12 +97,12 @@
             $dpkgPrice = max(((int)$dpkg->price) - ((int)$dpkg->discount), 0);
         @endphp
         <div class="mx-1 w-fit flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-            <a href="{{ route('store.package.show', $dpkg->id) }}" target="_blank" class="shrink-0">
+            <a href="{{ route('store.package.show', $dpkg) }}" target="_blank" class="shrink-0">
                 <img src="{{ $dpkg->image_url ?: url(config('app.logo_url')) }}" alt="{{ $dpkg->name }}"
                      class="h-14 w-14 rounded-xl object-cover bg-gray-100">
             </a>
             <div class="min-w-0 flex-1">
-                <a href="{{ route('store.package.show', $dpkg->id) }}" target="_blank"
+                <a href="{{ route('store.package.show', $dpkg) }}" target="_blank"
                    class="block truncate text-sm font-semibold text-dark hover:text-accent transition">
                     {{ $dpkg->name }}
                 </a>
