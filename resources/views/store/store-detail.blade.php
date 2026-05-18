@@ -39,6 +39,8 @@
         $packageServiceSchema['areaServed'] = array_values(array_filter([$vendor->city, $vendor->province]));
     }
 
+    $packageFinalPrice = max(((int) ($package->price ?? 0)) - ((int) ($package->discount ?? 0)), 0);
+
     // FAQ Schema
     $packageFaqItems = [];
     if ($package->price) {
@@ -78,7 +80,6 @@
         'mainEntity' => $packageFaqItems,
     ];
 
-    $packageFinalPrice = max(((int) ($package->price ?? 0)) - ((int) ($package->discount ?? 0)), 0);
     $packageImages = array_values(array_filter([
         $package->image_url ?? null,
         $packageMetaImage,

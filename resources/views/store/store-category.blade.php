@@ -17,14 +17,12 @@
         ];
     @endphp
 
-    <section class="pt-3 lg:py-8 bg-cream">
+    <section class="pt-3 lg:pt-3 lg:pb-8 bg-cream">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="pt-1 pb-4 lg:pt-4">
+            <div class="pt-1 pb-4 lg:pt-1">
                 <x-breadcrumb :items="$breadcrumbItems" />
             </div>
-            <div class="mt-3">
-                <x-banner-ad mt="0" />
-            </div>
+            <x-banner-ad mt="0" mb="1rem" />
 
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
                 <div>
