@@ -75,8 +75,21 @@
                 ],
             ],
         ];
+        $homeFaqSchema = [
+            '@context' => 'https://schema.org',
+            '@type'    => 'FAQPage',
+            'mainEntity' => [
+                ['@type' => 'Question', 'name' => 'Apa itu Makna Wedding?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Makna Wedding adalah marketplace paket pernikahan yang menghubungkan calon pengantin dengan vendor pernikahan terpercaya di Palembang dan seluruh Indonesia. Tersedia wedding organizer Palembang, paket foto, katering, dekorasi, gedung, dan banyak lagi dalam satu platform.']],
+                ['@type' => 'Question', 'name' => 'Di mana bisa menemukan wedding organizer terbaik di Palembang?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Makna Wedding menyediakan daftar lengkap wedding organizer di Palembang, Sumatera Selatan. Temukan WO terpercaya dengan paket terjangkau, ulasan nyata, dan portofolio lengkap di paketpernikahan.co.id. Setiap wedding organizer Palembang yang terdaftar telah diverifikasi oleh tim Makna Wedding.']],
+                ['@type' => 'Question', 'name' => 'Berapa harga paket wedding organizer di Palembang?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Harga paket wedding organizer di Palembang bervariasi mulai dari Rp5.000.000 hingga Rp50.000.000 tergantung layanan, kapasitas tamu, dan vendor yang dipilih. Di Makna Wedding Anda bisa membandingkan harga dari berbagai WO Palembang sekaligus.']],
+                ['@type' => 'Question', 'name' => 'Bagaimana cara mencari paket pernikahan di Makna Wedding?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Gunakan kolom pencarian di halaman utama, atau jelajahi berdasarkan kategori (wedding organizer, foto, katering, dll.) dan kota. Setiap paket menampilkan harga, fasilitas, dan ulasan dari pengguna lain.']],
+                ['@type' => 'Question', 'name' => 'Apakah Makna Wedding tersedia di luar Palembang?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Saat ini Makna Wedding fokus melayani Palembang dan Sumatera Selatan, dengan rencana ekspansi ke seluruh Indonesia. Anda bisa mencari vendor berdasarkan kota di halaman Store atau Vendor.']],
+                ['@type' => 'Question', 'name' => 'Apakah konsultasi paket pernikahan di Makna Wedding gratis?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Ya, konsultasi dengan wedding organizer maupun vendor pernikahan Palembang lainnya melalui fitur chat di Makna Wedding sepenuhnya gratis. Diskusikan kebutuhan Anda sebelum memutuskan untuk memesan.']],
+            ],
+        ];
     @endphp
     <script type="application/ld+json">@json($homeSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+    <script type="application/ld+json">@json($homeFaqSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
 @endsection
 
 @section('body-class', 'bg-cream text-dark')

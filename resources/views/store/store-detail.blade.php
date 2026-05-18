@@ -39,6 +39,45 @@
         $packageServiceSchema['areaServed'] = array_values(array_filter([$vendor->city, $vendor->province]));
     }
 
+    // FAQ Schema
+    $packageFaqItems = [];
+    if ($package->price) {
+        $packageFaqItems[] = [
+            '@type' => 'Question',
+            'name' => 'Berapa harga paket ' . $package->name . '?',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Harga paket ' . $package->name . ' adalah Rp' . number_format((int) $final, 0, ',', '.') . ($package->discount ? ' (sudah termasuk diskon Rp' . number_format((int) $package->discount, 0, ',', '.') . ')' : '') . '.'],
+        ];
+    }
+    if ($package->max_guests) {
+        $packageFaqItems[] = [
+            '@type' => 'Question',
+            'name' => 'Berapa kapasitas tamu untuk paket ' . $package->name . '?',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Paket ' . $package->name . ' dapat menampung hingga ' . $package->max_guests . ' tamu undangan.'],
+        ];
+    }
+    if ($package->dp_paket) {
+        $packageFaqItems[] = [
+            '@type' => 'Question',
+            'name' => 'Berapa uang muka (DP) untuk paket ini?',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Down Payment (DP) untuk paket ' . $package->name . ' adalah Rp' . number_format((int) $package->dp_paket, 0, ',', '.') . '.'],
+        ];
+    }
+    $packageFaqItems[] = [
+        '@type' => 'Question',
+        'name' => 'Apa saja yang termasuk dalam paket ' . $package->name . '?',
+        'acceptedAnswer' => ['@type' => 'Answer', 'text' => filled($package->item) ? \Illuminate\Support\Str::limit(strip_tags((string) $package->item), 300, '') : 'Silakan lihat detail fasilitas di halaman ini atau hubungi vendor untuk informasi lengkap.'],
+    ];
+    $packageFaqItems[] = [
+        '@type' => 'Question',
+        'name' => 'Bagaimana cara memesan paket ' . $package->name . '?',
+        'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Klik tombol "Pesan Sekarang" atau hubungi ' . $vendor->name . ' melalui WhatsApp/chat yang tersedia di halaman ini. Anda juga bisa konsultasi terlebih dahulu sebelum melakukan pemesanan.'],
+    ];
+    $packageFaqSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'FAQPage',
+        'mainEntity' => $packageFaqItems,
+    ];
+
     $packageSchema = [
         '@context' => 'https://schema.org',
         '@graph' => [
@@ -77,6 +116,7 @@
 
 @section('extra-head')
 <script type="application/ld+json">@json($packageSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+<script type="application/ld+json">@json($packageFaqSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
 <style>
     .prose { font-size: 12px; }
     .prose ul { list-style: disc; padding-left: 1.4rem; margin: 4px 0; }

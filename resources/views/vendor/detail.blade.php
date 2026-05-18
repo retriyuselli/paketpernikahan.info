@@ -91,6 +91,43 @@
         })->values()->toArray();
     }
 
+    // FAQ Schema
+    $vendorFaqItems = [];
+    if ($vendorPriceStart) {
+        $vendorFaqItems[] = [
+            '@type' => 'Question',
+            'name' => 'Berapa harga paket pernikahan di ' . $vendor->name . '?',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Harga paket di ' . $vendor->name . ' mulai dari Rp' . number_format((int) $vendorPriceStart, 0, ',', '.') . '. Tersedia berbagai pilihan paket sesuai kebutuhan dan anggaran Anda.'],
+        ];
+    }
+    if (filled($vendor->city)) {
+        $vendorFaqItems[] = [
+            '@type' => 'Question',
+            'name' => 'Dimana lokasi ' . $vendor->name . '?',
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $vendor->name . ' berlokasi di ' . (filled($vendor->location) ? $vendor->location . ', ' : '') . $vendor->city . (filled($vendor->province) ? ', ' . $vendor->province : '') . '.'],
+        ];
+    }
+    $vendorFaqItems[] = [
+        '@type' => 'Question',
+        'name' => 'Bagaimana cara memesan paket di ' . $vendor->name . '?',
+        'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Klik tombol Chat atau WhatsApp yang tersedia di halaman ini untuk menghubungi ' . $vendor->name . ' secara langsung. Anda juga bisa memilih paket terlebih dahulu lalu klik tombol booking.'],
+    ];
+    $vendorFaqItems[] = [
+        '@type' => 'Question',
+        'name' => 'Apa layanan yang ditawarkan ' . $vendor->name . '?',
+        'acceptedAnswer' => ['@type' => 'Answer', 'text' => $vendor->name . ' adalah vendor ' . $vendorCategoryLabel . ' yang menyediakan layanan pernikahan profesional' . (filled($vendor->city) ? ' di ' . $vendor->city : '') . '. Lihat daftar paket lengkap di halaman ini.'],
+    ];
+    $vendorFaqItems[] = [
+        '@type' => 'Question',
+        'name' => 'Apakah bisa konsultasi sebelum memesan?',
+        'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Ya, Anda dapat berkonsultasi dulu dengan ' . $vendor->name . ' melalui fitur chat yang tersedia. Diskusikan kebutuhan, anggaran, dan tanggal pernikahan Anda sebelum memilih paket.'],
+    ];
+    $vendorFaqSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'FAQPage',
+        'mainEntity' => $vendorFaqItems,
+    ];
+
     $vendorSchema = [
         '@context' => 'https://schema.org',
         '@graph' => [
@@ -130,6 +167,7 @@
 
 @section('extra-head')
 <script type="application/ld+json">@json($vendorSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+<script type="application/ld+json">@json($vendorFaqSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
 <style>
     .prose ul { list-style: disc; padding-left: 1.4rem; margin: 4px 0; }
     .prose ol { list-style: decimal; padding-left: 1.4rem; margin: 4px 0; }

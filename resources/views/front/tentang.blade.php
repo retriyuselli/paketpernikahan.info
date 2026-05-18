@@ -1,6 +1,68 @@
 @extends('layout.app')
 
-@section('title', 'Tentang Makna - Makna Wedding')
+@section('title', 'Tentang Makna Wedding & Event Planner - Wedding Organizer Palembang')
+@section('meta-description', 'Kenali Makna Wedding & Event Planner, platform wedding organizer dan marketplace paket pernikahan terpercaya di Palembang, Sumatera Selatan. Vendor terverifikasi, harga transparan, konsultasi gratis.')
+@section('canonical-url', route('tentang'))
+
+@section('extra-head')
+@php
+$tentangFaqSchema = [
+    '@context'   => 'https://schema.org',
+    '@type'      => 'FAQPage',
+    'mainEntity' => [
+        [
+            '@type'          => 'Question',
+            'name'           => 'Apa itu Makna Wedding & Event Planner?',
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text'  => 'Makna Wedding & Event Planner adalah platform wedding organizer dan marketplace paket pernikahan terpercaya di Palembang, Sumatera Selatan. Kami menghubungkan calon pengantin dengan vendor-vendor pernikahan terverifikasi seperti fotografer, katering, dekorasi, dan wedding organizer terbaik di Palembang.',
+            ],
+        ],
+        [
+            '@type'          => 'Question',
+            'name'           => 'Di mana lokasi Makna Wedding & Event Planner?',
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text'  => 'Makna Wedding & Event Planner berlokasi di Jl. Sintraman Jaya I No.2148, 20 Ilir D II, Kec. Kemuning, Palembang 30137, Sumatera Selatan. Anda dapat menghubungi kami melalui WhatsApp di 0822-9796-2600 atau mengunjungi langsung kantor kami.',
+            ],
+        ],
+        [
+            '@type'          => 'Question',
+            'name'           => 'Apakah Makna Wedding hanya melayani Palembang?',
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text'  => 'Makna Wedding berfokus di Palembang dan seluruh Sumatera Selatan, namun beberapa vendor kami juga melayani kota-kota lain di Indonesia. Platform kami tersedia untuk siapa saja yang membutuhkan referensi vendor dan paket pernikahan terpercaya.',
+            ],
+        ],
+        [
+            '@type'          => 'Question',
+            'name'           => 'Berapa harga paket pernikahan di Makna Wedding?',
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text'  => 'Harga paket pernikahan di Makna Wedding bervariasi mulai dari Rp 5.000.000 hingga ratusan juta rupiah, tergantung jenis layanan dan vendor yang Anda pilih. Semua harga ditampilkan secara transparan di halaman masing-masing vendor tanpa biaya tersembunyi.',
+            ],
+        ],
+        [
+            '@type'          => 'Question',
+            'name'           => 'Bagaimana cara memesan paket pernikahan melalui Makna Wedding?',
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text'  => 'Cara memesan paket pernikahan di Makna Wedding sangat mudah: (1) Cari vendor atau paket yang sesuai kebutuhan Anda, (2) Klik tombol "Hubungi Vendor" atau "Pesan Sekarang", (3) Tim vendor akan menghubungi Anda melalui WhatsApp untuk diskusi lebih lanjut. Anda juga bisa berkonsultasi langsung dengan tim Makna Wedding.',
+            ],
+        ],
+        [
+            '@type'          => 'Question',
+            'name'           => 'Apakah konsultasi pernikahan di Makna Wedding gratis?',
+            'acceptedAnswer' => [
+                '@type' => 'Answer',
+                'text'  => 'Ya, konsultasi awal dengan tim Makna Wedding sepenuhnya gratis. Kami siap membantu Anda menemukan vendor wedding organizer terbaik di Palembang sesuai budget dan kebutuhan. Hubungi kami melalui WhatsApp di 0822-9796-2600.',
+            ],
+        ],
+    ],
+];
+@endphp
+<script type="application/ld+json">{!! json_encode($tentangFaqSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
+@endsection
 
 @section('body-class', 'bg-cream text-dark')
 
@@ -139,6 +201,66 @@
                         <h3 class="text-sm font-bold text-dark mb-2">Support Responsif</h3>
                         <p class="text-xs text-gray-500 leading-relaxed">Tim support siap membantu menjawab pertanyaan Anda melalui WhatsApp maupun email kapan saja.</p>
                     </div>
+                </div>
+            </div>
+
+            {{-- FAQ --}}
+            <div class="mb-14">
+                <h2 class="text-xl font-bold text-dark mb-2 text-center">Pertanyaan yang Sering Ditanyakan</h2>
+                <p class="text-sm text-gray-500 text-center mb-8">Temukan jawaban atas pertanyaan umum seputar Makna Wedding & Event Planner.</p>
+                <div class="max-w-3xl mx-auto space-y-3">
+                    @php
+                    $faqs = [
+                        [
+                            'q' => 'Apa itu Makna Wedding & Event Planner?',
+                            'a' => 'Makna Wedding & Event Planner adalah platform <strong>wedding organizer</strong> dan marketplace paket pernikahan terpercaya di <strong>Palembang, Sumatera Selatan</strong>. Kami menghubungkan calon pengantin dengan vendor-vendor pernikahan terverifikasi — mulai dari fotografer, katering, dekorasi, hingga wedding organizer Palembang terbaik.',
+                        ],
+                        [
+                            'q' => 'Di mana lokasi Makna Wedding & Event Planner?',
+                            'a' => 'Kami berlokasi di Jl. Sintraman Jaya I No.2148, 20 Ilir D II, Kec. Kemuning, <strong>Palembang 30137</strong>, Sumatera Selatan. Anda bisa menghubungi kami melalui WhatsApp di <strong>0822-9796-2600</strong>.',
+                        ],
+                        [
+                            'q' => 'Berapa harga paket pernikahan di Makna Wedding?',
+                            'a' => 'Harga paket pernikahan bervariasi mulai dari <strong>Rp 5.000.000</strong> hingga ratusan juta rupiah, tergantung jenis layanan dan vendor yang dipilih. Semua harga ditampilkan secara <strong>transparan</strong> di halaman masing-masing vendor, tanpa biaya tersembunyi.',
+                        ],
+                        [
+                            'q' => 'Bagaimana cara memesan paket pernikahan?',
+                            'a' => 'Caranya mudah: (1) Cari vendor atau paket sesuai kebutuhan Anda, (2) Klik tombol "Hubungi Vendor" atau "Pesan Sekarang", (3) Tim vendor akan menghubungi Anda via WhatsApp untuk diskusi lebih lanjut. Anda juga bisa berkonsultasi langsung dengan tim Makna Wedding.',
+                        ],
+                        [
+                            'q' => 'Apakah Makna Wedding hanya melayani Palembang?',
+                            'a' => 'Makna Wedding berfokus di <strong>Palembang dan seluruh Sumatera Selatan</strong>, namun beberapa vendor kami juga melayani kota-kota lain di Indonesia. Platform kami terbuka untuk siapa saja yang membutuhkan referensi vendor pernikahan terpercaya.',
+                        ],
+                        [
+                            'q' => 'Apakah konsultasi pernikahan gratis?',
+                            'a' => 'Ya, konsultasi awal dengan tim Makna Wedding <strong>sepenuhnya gratis</strong>. Kami siap membantu Anda menemukan vendor dan paket pernikahan terbaik sesuai budget. Hubungi kami via WhatsApp di <strong>0822-9796-2600</strong>.',
+                        ],
+                    ];
+                    @endphp
+
+                    @foreach($faqs as $i => $faq)
+                    <div x-data="{ open: {{ $i === 0 ? 'true' : 'false' }} }"
+                         class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        <button @click="open = !open"
+                                class="w-full flex items-center justify-between gap-4 px-6 py-4 text-left focus:outline-none">
+                            <span class="text-sm font-bold text-dark">{{ $faq['q'] }}</span>
+                            <svg class="w-4 h-4 text-accent shrink-0 transition-transform duration-200"
+                                 :class="{ 'rotate-180': open }"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div x-show="open"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 -translate-y-1"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 -translate-y-1">
+                            <p class="px-6 pb-5 text-sm text-gray-500 leading-relaxed">{!! $faq['a'] !!}</p>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
             </div>
 
