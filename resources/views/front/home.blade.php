@@ -816,7 +816,7 @@
                     @if($homeAd->link_url)
                         <a href="{{ $homeAd->link_url }}" class="block">
                     @endif
-                    <img src="{{ $homeAd->image_url }}" alt="{{ $homeAd->title ?: 'Iklan' }}" class="block w-auto h-auto" style="max-width:min(84vw,340px);max-height:78vh;display:block;">
+                    <img src="{{ $homeAd->image_url }}" alt="{{ $homeAd->title ?: 'Iklan' }}" loading="lazy" class="block w-auto h-auto" style="max-width:min(84vw,340px);max-height:78vh;display:block;">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"></div>
                     @if($homeAd->link_url)
                         </a>

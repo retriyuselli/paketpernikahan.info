@@ -914,8 +914,8 @@
                     <!-- Map Placeholder -->
                     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                         <div class="relative h-36 bg-gray-100 flex items-center justify-center">
-                            <img src="https://picsum.photos/seed/map-{{ $vendor->slug }}/600/200" 
-                                 alt="Lokasi" class="w-full h-full object-cover opacity-70">
+                            <img src="https://picsum.photos/seed/map-{{ $vendor->slug }}/600/200"
+                                 alt="Lokasi" loading="lazy" class="w-full h-full object-cover opacity-70">
                             <div class="absolute inset-0 flex items-center justify-center">
                                 @php
                                     $mapsQuery = trim(implode(' ', array_filter([$vendor->location, $vendor->city, $vendor->province])));

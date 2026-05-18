@@ -61,7 +61,7 @@
 
                         <!-- Cover Image -->
                         <div class="rounded-xl overflow-hidden aspect-video">
-                            <img src="{{ $coverImage }}" alt="{{ $realWedding->couple_names }}" class="w-full h-full object-cover">
+                            <img src="{{ $coverImage }}" alt="{{ $realWedding->couple_names }}" loading="lazy" class="w-full h-full object-cover">
                         </div>
                     </div>
 

@@ -85,6 +85,7 @@
                                    class="bg-white rounded-2xl overflow-hidden hover:shadow-md transition group border border-gray-100 flex flex-col">
                                     <div class="overflow-hidden">
                                         <img src="{{ $image }}" alt="{{ $post->title }}"
+                                             loading="lazy"
                                              class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105">
                                     </div>
                                     <div class="p-4 flex-1 flex flex-col">
@@ -129,7 +130,7 @@
                                         <div class="border-t border-gray-100"></div>
                                     @endif
                                     <a href="{{ route('blog.show', $pop->slug) }}" class="flex gap-3 group">
-                                        <img src="{{ $popImage }}" alt="{{ $pop->title }}" class="w-16 h-12 rounded-xl object-cover flex-shrink-0">
+                                        <img src="{{ $popImage }}" alt="{{ $pop->title }}" loading="lazy" class="w-16 h-12 rounded-xl object-cover shrink-0">
                                         <div>
                                             @if($pop->category)
                                                 <p class="text-[10px] font-bold text-accent">{{ $pop->category }} <span class="text-gray-400 font-normal">· {{ number_format($pop->views_count) }} views</span></p>

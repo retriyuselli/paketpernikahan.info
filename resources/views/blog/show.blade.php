@@ -107,7 +107,7 @@
 
                         <!-- Cover Image -->
                         <div class="rounded-xl overflow-hidden">
-                            <img src="{{ $coverImage }}" alt="{{ $blog->title }}" class="w-full object-cover max-h-[420px]">
+                            <img src="{{ $coverImage }}" alt="{{ $blog->title }}" loading="lazy" class="w-full object-cover max-h-105">
                         </div>
                     </div>
 
@@ -273,6 +273,7 @@
                                         @if($pkgImg)
                                             <img src="{{ $pkgImg }}"
                                                  alt="{{ $pkg->name }} oleh {{ $pkg->vendor->name ?? '' }}"
+                                                 loading="lazy"
                                                  class="w-16 h-14 rounded-xl object-cover shrink-0">
                                         @else
                                             <div class="w-16 h-14 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">

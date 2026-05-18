@@ -86,7 +86,7 @@
                 @foreach($mobileHighlights as $mobileHighlight)
                     <a href="{{ $mobileHighlight['url'] }}"
                        class="relative flex-none snap-start w-screen overflow-hidden bg-white aspect-[34/11]">
-                        <img src="{{ $mobileHighlight['image'] }}" alt="{{ $mobileHighlight['title'] }}" class="h-full w-full object-cover">
+                        <img src="{{ $mobileHighlight['image'] }}" alt="{{ $mobileHighlight['title'] }}" loading="lazy" class="h-full w-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-r from-black/35 via-black/10 to-transparent"></div>
                         <div class="absolute inset-x-0 bottom-0 top-0 flex flex-col justify-between p-4 text-white">
                             <span class="inline-flex w-fit rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-dark shadow-sm">
@@ -120,7 +120,7 @@
                 @foreach ($items as $item)
                     @if (($item['type'] ?? null) === 'story')
                         <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                            <img src="{{ $item['image'] }}" alt="Real Wedding - {{ $item['title'] ?? 'Wedding Story' }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ $item['image'] }}" alt="Real Wedding - {{ $item['title'] ?? 'Wedding Story' }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-4">
                                 <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">{{ $item['title'] }}</span></p>
@@ -129,7 +129,7 @@
                         </div>
                     @elseif (($item['type'] ?? null) === 'promo')
                         <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3 {{ $item['theme'] ?? 'bg-accent-pink' }}">
-                            <img src="{{ $item['image'] }}" alt="{{ strip_tags($item['title_html'] ?? $item['title'] ?? 'Promo Pernikahan') }}" class="w-full h-full object-cover {{ $item['imageClass'] ?? 'opacity-30' }} transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ $item['image'] }}" alt="{{ strip_tags($item['title_html'] ?? $item['title'] ?? 'Promo Pernikahan') }}" loading="lazy" class="w-full h-full object-cover {{ $item['imageClass'] ?? 'opacity-30' }} transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
                                 <p class="text-2xl font-bold leading-tight text-dark">{!! $item['title_html'] ?? '' !!}</p>
                                 @if(!empty($item['caption_html']))
@@ -146,7 +146,7 @@
                         </div>
                     @elseif (($item['type'] ?? null) === 'feature')
                         <a href="{{ $item['url'] ?? '#' }}" class="{{ $item['cardClass'] ?? 'flex-none w-80 rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-md transition ar-16x9' }}">
-                            <img src="{{ $item['image'] }}" alt="{{ $item['alt'] ?? $item['title'] ?? 'Highlight' }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ $item['image'] }}" alt="{{ $item['alt'] ?? $item['title'] ?? 'Highlight' }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 {{ $item['overlayClass'] ?? 'bg-linear-to-t from-black/70 via-black/10 to-transparent' }}"></div>
                             <div class="absolute bottom-0 left-0 right-0 {{ $item['contentClass'] ?? 'p-4' }}">
                                 <p class="text-white text-sm font-bold leading-snug">{{ $item['title'] }}</p>
@@ -157,7 +157,7 @@
                         </a>
                     @elseif (($item['type'] ?? null) === 'blog')
                         <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                            <img src="{{ $item['image'] }}" alt="{{ $item['title'] ?? $item['category'] ?? 'Artikel Pernikahan' }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ $item['image'] }}" alt="{{ $item['title'] ?? $item['category'] ?? 'Artikel Pernikahan' }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-4">
                                 <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">{{ $item['category'] }}</p>
@@ -171,7 +171,7 @@
                     @php $rwCover = $rw->cover_image_url ?: 'https://picsum.photos/seed/rw-' . $rw->id . '/640/480'; @endphp
                     <a href="{{ route('real-wedding.show', $rw) }}"
                        class="flex-none w-72 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="{{ $rwCover }}" alt="{{ $rw->couple_names }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <img src="{{ $rwCover }}" alt="{{ $rw->couple_names }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
                             <p class="text-white text-xs mb-2 opacity-80">Wedding Story of <span class="font-bold">{{ $rw->couple_names }}</span></p>
@@ -183,7 +183,7 @@
                         @php $adInserted = true; @endphp
                         <a href="{{ $homeAd->link_url ?: '#' }}" class="flex-none w-52 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition bg-accent-pink ar-4x3">
                             @if($homeAd->image_url)
-                                <img src="{{ $homeAd->image_url }}" alt="{{ $homeAd->title }}" class="w-full h-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105">
+                                <img src="{{ $homeAd->image_url }}" alt="{{ $homeAd->title }}" loading="lazy" class="w-full h-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105">
                             @endif
                             <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
                                 <p class="text-2xl font-bold leading-tight text-dark">{{ $homeAd->title }}</p>
@@ -201,7 +201,7 @@
                 @if(!$adInserted && $homeAd)
                     <a href="{{ $homeAd->link_url ?: '#' }}" class="flex-none w-52 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition bg-accent-pink ar-4x3">
                         @if($homeAd->image_url)
-                            <img src="{{ $homeAd->image_url }}" alt="{{ $homeAd->title }}" class="w-full h-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ $homeAd->image_url }}" alt="{{ $homeAd->title }}" loading="lazy" class="w-full h-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-105">
                         @endif
                         <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
                             <p class="text-2xl font-bold leading-tight text-dark">{{ $homeAd->title }}</p>
@@ -219,7 +219,7 @@
                     @php $blogCover = $blog->cover_image_url ?: 'https://picsum.photos/seed/blog-' . $blog->id . '/640/480'; @endphp
                     <a href="{{ route('blog.show', $blog) }}"
                        class="flex-none w-72 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                        <img src="{{ $blogCover }}" alt="{{ $blog->title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <img src="{{ $blogCover }}" alt="{{ $blog->title }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent"></div>
                         <div class="absolute bottom-0 left-0 right-0 p-4">
                             @if($blog->category)

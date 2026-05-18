@@ -18,7 +18,7 @@
     <div class="relative overflow-hidden w-full max-w-182 mx-auto aspect-728/90">
         <a href="{{ $ad->link_url ?: '#' }}" class="block w-full h-full">
             @if($ad->image_url)
-            <img src="{{ $ad->image_url }}" alt="{{ $ad->title }}" class="w-full h-full object-cover">
+            <img src="{{ $ad->image_url }}" alt="{{ $ad->title }}" loading="lazy" class="w-full h-full object-cover">
             @endif
         </a>
         <button type="button"

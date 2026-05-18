@@ -390,7 +390,7 @@
                                         data-facilities-toggle
                                         data-label-more="Lihat Selengkapnya..."
                                         data-label-less="Tampilkan Ringkas..."
-                                    class="-mt-1 relative z-10 hidden w-full justify-center text-xs font-semibold text-accent transition hover:text-accent/80 hover:underline">
+                                    class="-mt-6 relative z-10 hidden w-full justify-center text-xs font-semibold text-accent transition hover:text-accent/80 hover:underline">
                                     <span>Lihat Selengkapnya...</span>
                                 </button>
                             @else
@@ -564,6 +564,7 @@
                             <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 mb-4">
                                 @if($sideThumb)
                                     <img src="{{ $sideThumb }}" alt="{{ $package->name }}"
+                                         loading="lazy"
                                          class="w-14 h-14 rounded-lg object-cover shrink-0 border border-gray-200">
                                 @else
                                     <div class="w-14 h-14 rounded-lg bg-gray-200 shrink-0 flex items-center justify-center">
@@ -741,7 +742,7 @@
              class="relative z-1 flex h-full w-full max-w-4xl flex-col overflow-hidden bg-black lg:h-auto lg:max-h-[90vh] lg:rounded-2xl lg:bg-white lg:shadow-2xl">
 
             {{-- Full-width header: title + close --}}
-            <div class="flex items-center justify-between gap-4 px-4 py-4 text-white shrink-0 lg:px-5 lg:py-3.5 lg:border-b lg:border-gray-100 lg:text-dark">
+            <div class="flex items-center justify-between gap-4 px-4 py-4 text-white shrink-0 lg:px-5 lg:py-3.5 lg:border-b lg:border-gray-100 lg:text-gray-900">
                 <button type="button" id="store-image-modal-mobile-back"
                         class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10 lg:hidden"
                         aria-label="Kembali">
@@ -749,11 +750,11 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </button>
-                <p class="min-w-0 flex-1 text-center text-sm font-bold text-white truncate lg:text-left lg:text-dark">{{ $package->name }}</p>
+                <p class="min-w-0 flex-1 text-center text-sm font-bold text-white truncate lg:text-left lg:text-gray-900">{{ $package->name }}</p>
                 <button type="button" id="store-image-modal-close"
-                        class="shrink-0 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10 lg:h-9 lg:w-9 lg:border-gray-200 lg:bg-white lg:text-dark lg:hover:bg-gray-50">
+                        class="shrink-0 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10 lg:h-9 lg:w-9 lg:border-gray-300 lg:bg-gray-100 lg:text-gray-700 lg:hover:bg-gray-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
@@ -764,17 +765,17 @@
                 {{-- Left: main image + arrows --}}
                 <div class="relative flex min-h-0 flex-1 items-center justify-center bg-black py-4 lg:bg-gray-50 lg:py-6" style="min-height:300px;">
                     <button type="button" id="store-image-modal-prev"
-                            class="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white transition hover:bg-black/70 lg:border-gray-200 lg:bg-white lg:text-dark lg:shadow-md lg:hover:shadow-lg">
+                            class="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition hover:bg-black/70 lg:border-gray-300 lg:bg-white lg:text-gray-800 lg:shadow-lg lg:hover:bg-gray-100">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
                         </svg>
                     </button>
                     <img id="store-image-modal-img" src="" alt="Preview"
                          class="max-w-full object-contain px-4 lg:px-16" style="max-height:56vh;">
                     <button type="button" id="store-image-modal-next"
-                            class="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white transition hover:bg-black/70 lg:border-gray-200 lg:bg-white lg:text-dark lg:shadow-md lg:hover:shadow-lg">
+                            class="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white transition hover:bg-black/70 lg:border-gray-300 lg:bg-white lg:text-gray-800 lg:shadow-lg lg:hover:bg-gray-100">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
                         </svg>
                     </button>
                     <div id="store-image-modal-counter"
@@ -977,8 +978,8 @@
                 if (expanded) {
                     facilitiesContent.classList.remove('max-h-64', 'overflow-hidden');
                     if (facilitiesFade) facilitiesFade.classList.add('hidden');
-                    facilitiesToggle.classList.remove('hidden');
-                    facilitiesToggle.classList.add('flex');
+                    facilitiesToggle.classList.remove('hidden', '-mt-6');
+                    facilitiesToggle.classList.add('flex', 'mt-4');
                     facilitiesToggle.querySelector('span').textContent = facilitiesToggle.getAttribute('data-label-less') || 'Tampilkan Ringkas...';
                     return;
                 }
@@ -987,6 +988,8 @@
                 var hasOverflow = facilitiesContent.scrollHeight > facilitiesContent.clientHeight + 8;
                 facilitiesToggle.classList.toggle('hidden', !hasOverflow);
                 facilitiesToggle.classList.toggle('flex', hasOverflow);
+                facilitiesToggle.classList.remove('mt-4');
+                facilitiesToggle.classList.add('-mt-6');
                 if (facilitiesFade) {
                     facilitiesFade.classList.toggle('hidden', !hasOverflow);
                 }
@@ -1156,10 +1159,17 @@
                 }
             }
 
+            function updateNavVisibility() {
+                var single = images.length <= 1;
+                if (prevBtn) prevBtn.style.display = single ? 'none' : '';
+                if (nextBtn) nextBtn.style.display = single ? 'none' : '';
+            }
+
             function open(src) {
                 buildImages();
                 var idx = images.indexOf(src);
                 renderThumbs();
+                updateNavVisibility();
                 showAt(idx < 0 ? 0 : idx);
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
