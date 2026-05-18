@@ -678,7 +678,15 @@ Route::get('/blog/{blog:slug}', function (\App\Models\Blog $blog) {
         ->limit(5)
         ->get();
 
-    return view('blog.show', compact('blog', 'related', 'popularBlogs'));
+    $featuredPackages = \App\Models\VendorPackage::query()
+        ->where('is_active', true)
+        ->with(['vendor' => fn ($q) => $q->select('id', 'name', 'slug', 'city')->where('is_active', true)])
+        ->has('vendor')
+        ->inRandomOrder()
+        ->limit(3)
+        ->get();
+
+    return view('blog.show', compact('blog', 'related', 'popularBlogs', 'featuredPackages'));
 })->name('blog.show');
 
 Route::get('/real-wedding', function () {
@@ -752,7 +760,8 @@ Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $packag
     abort_unless($package->is_active, 404);
     $package->load([
         'vendor' => fn ($q) => $q->with([
-            'galleries' => fn ($g) => $g->orderBy('sort_order'),
+            'galleries'       => fn ($g) => $g->orderBy('sort_order'),
+            'approvedReviews' => fn ($r) => $r->select('id', 'vendor_id', 'rating', 'is_approved'),
         ]),
     ]);
 

@@ -45,7 +45,7 @@
         $packageFaqItems[] = [
             '@type' => 'Question',
             'name' => 'Berapa harga paket ' . $package->name . '?',
-            'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Harga paket ' . $package->name . ' adalah Rp' . number_format((int) $final, 0, ',', '.') . ($package->discount ? ' (sudah termasuk diskon Rp' . number_format((int) $package->discount, 0, ',', '.') . ')' : '') . '.'],
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Harga paket ' . $package->name . ' adalah Rp' . number_format($packageFinalPrice, 0, ',', '.') . ($package->discount ? ' (sudah termasuk diskon Rp' . number_format((int) $package->discount, 0, ',', '.') . ')' : '') . '.'],
         ];
     }
     if ($package->max_guests) {
@@ -78,33 +78,50 @@
         'mainEntity' => $packageFaqItems,
     ];
 
+    $packageFinalPrice = max(((int) ($package->price ?? 0)) - ((int) ($package->discount ?? 0)), 0);
+    $packageImages = array_values(array_filter([
+        $package->image_url ?? null,
+        $packageMetaImage,
+    ]));
+
+    $packageProductSchema = [
+        '@type'       => 'Product',
+        'name'        => $package->name,
+        'description' => \Illuminate\Support\Str::limit(strip_tags((string) ($package->item ?? $vendor->description ?? $package->name)), 200, ''),
+        'image'       => $packageImages,
+        'brand'       => [
+            '@type' => 'Brand',
+            'name'  => $vendor->name,
+        ],
+        'offers' => [
+            '@type'           => 'Offer',
+            'price'           => $packageFinalPrice,
+            'priceCurrency'   => 'IDR',
+            'availability'    => 'https://schema.org/InStock',
+            'url'             => url()->current(),
+            'priceValidUntil' => now()->addYear()->toDateString(),
+            'seller'          => [
+                '@type' => 'Organization',
+                'name'  => $vendor->name,
+            ],
+        ],
+    ];
+
+    if ($vendor->rating && $vendor->rating > 0 && $vendor->approvedReviews->count() > 0) {
+        $packageProductSchema['aggregateRating'] = [
+            '@type'       => 'AggregateRating',
+            'ratingValue' => round((float) $vendor->rating, 1),
+            'reviewCount' => $vendor->approvedReviews->count(),
+            'bestRating'  => 5,
+            'worstRating' => 1,
+        ];
+    }
+
     $packageSchema = [
         '@context' => 'https://schema.org',
-        '@graph' => [
+        '@graph'   => [
             $packageServiceSchema,
-            [
-                '@type' => 'BreadcrumbList',
-                'itemListElement' => [
-                    [
-                        '@type' => 'ListItem',
-                        'position' => 1,
-                        'name' => 'Home',
-                        'item' => route('home'),
-                    ],
-                    [
-                        '@type' => 'ListItem',
-                        'position' => 2,
-                        'name' => 'Store',
-                        'item' => route('store'),
-                    ],
-                    [
-                        '@type' => 'ListItem',
-                        'position' => 3,
-                        'name' => $package->name,
-                        'item' => url()->current(),
-                    ],
-                ],
-            ],
+            $packageProductSchema,
         ],
     ];
 @endphp
@@ -253,7 +270,7 @@
                                             data-gallery-thumb="{{ $tUrl }}"
                                             data-gallery-index="{{ $ti }}"
                                             class="gallery-thumb shrink-0 w-17.5 h-17.5 rounded-xl overflow-hidden border-2 transition-all duration-200 bg-gray-50 {{ $ti === 0 ? 'border-accent' : 'border-transparent' }}">
-                                        <img src="{{ $tUrl }}" alt="Foto {{ $ti + 1 }}" class="w-full h-full object-cover">
+                                        <img src="{{ $tUrl }}" alt="Paket {{ $package->name }} - Foto {{ $ti + 1 }}" loading="lazy" class="w-full h-full object-cover">
                                     </button>
                                 @endforeach
                             </div>
@@ -458,7 +475,8 @@
                                     <div class="relative shrink-0 rounded-2xl overflow-hidden cursor-pointer group snap-start w-45 h-70"
                                          @if($hasVideo) data-action="open-video" data-video-url="{{ $v->video_url }}" @endif>
                                         <img src="{{ $cover }}"
-                                             alt="Review Video {{ $idx + 1 }}"
+                                             alt="{{ $package->name }} - Video Review {{ $idx + 1 }}"
+                                             loading="lazy"
                                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                                         <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
                                         @if($hasVideo)

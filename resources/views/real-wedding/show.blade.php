@@ -143,6 +143,7 @@
                                         @endphp
                                         @if($vLogo)
                                             <img src="{{ $vLogo }}" alt="{{ $vendor->name }}"
+                                                 loading="lazy"
                                                  class="w-16 h-16 object-cover rounded-xl flex-shrink-0">
                                         @else
                                             <div class="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
@@ -168,6 +169,7 @@
                                         @endphp
                                         @if($pkgImg)
                                             <img src="{{ $pkgImg }}" alt="{{ $pkg->name }}"
+                                                 loading="lazy"
                                                  class="w-16 h-16 object-cover rounded-xl flex-shrink-0">
                                         @else
                                             <div class="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
@@ -217,6 +219,7 @@
                                     <a href="{{ route('real-wedding.show', $rw->slug) }}"
                                        class="flex items-center gap-3 hover:opacity-80 transition">
                                         <img src="{{ $rwThumb }}" alt="{{ $rw->couple_names }}"
+                                             loading="lazy"
                                              class="w-14 h-14 object-cover rounded-xl flex-shrink-0">
                                         <div>
                                             <p class="text-xs font-bold text-dark uppercase">{{ $rw->couple_names }}</p>

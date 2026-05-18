@@ -35,7 +35,8 @@
     <div class="relative aspect-square overflow-hidden">
         <img
             src="{{ $coverImage }}"
-            alt="{{ $vendor->name }}"
+            alt="{{ $vendor->name }}{{ $vendor->city ? ' di ' . $vendor->city : '' }}"
+            loading="lazy"
             class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
 
         @if($promoLabels->isNotEmpty())

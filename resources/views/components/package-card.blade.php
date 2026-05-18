@@ -31,7 +31,7 @@
        $widthClass,
    ]) }}>
     <div class="relative {{ $aspectClass }}">
-        <img src="{{ $image }}" alt="{{ $name }}" class="h-full w-full object-cover">
+        <img src="{{ $image }}" alt="{{ $name }}{{ $vendorName ? ' oleh ' . $vendorName : '' }}{{ $location && $location !== 'Indonesia' ? ' di ' . $location : '' }}" loading="lazy" class="h-full w-full object-cover">
         @if($discountPercent > 0)
             <span class="absolute right-0 top-0 rounded-bl-2xl bg-accent px-2.5 py-1.5 text-[11px] font-extrabold leading-none text-cream">
                 {{ $discountPercent }}%

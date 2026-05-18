@@ -132,6 +132,7 @@
                         <div class="inline-flex min-w-max items-center justify-center rounded-2xl px-1.5 py-1.5 sm:px-5 sm:py-3">
                             <img src="{{ $l['src'] }}"
                                  alt="{{ $l['alt'] }}"
+                                 loading="lazy"
                                  class="h-12 sm:h-14 w-auto object-contain">
                         </div>
                     @endforeach
@@ -139,6 +140,7 @@
                         <div class="inline-flex min-w-max items-center justify-center rounded-2xl px-1.5 py-1.5 sm:px-5 sm:py-3">
                             <img src="{{ $l['src'] }}"
                                  alt="{{ $l['alt'] }}"
+                                 loading="lazy"
                                  class="h-12 sm:h-14 w-auto object-contain">
                         </div>
                     @endforeach
@@ -343,7 +345,7 @@
                         @endphp
                         <div class="flex-none snap-start rounded-2xl overflow-hidden cursor-pointer relative group w-[56vw] min-w-[200px] sm:w-[calc((100%-4rem)/5)] sm:min-w-[140px] ar-9x16"
                              @if($hasVideo) data-video-popup="{{ $video->video_url }}" @endif>
-                            <img src="{{ $thumb }}" alt="{{ $video->title }}" class="w-full h-full object-cover">
+                            <img src="{{ $thumb }}" alt="{{ $video->title }}" loading="lazy" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                             <div class="absolute inset-0 flex items-center justify-center @if(!$hasVideo) opacity-0 @endif group-hover:opacity-100 transition-opacity duration-200">
                                 <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
@@ -491,7 +493,7 @@
                                          class="flex-none snap-start w-[calc((100%-0.375rem)/2)] sm:w-56 bg-white border border-gray-200 rounded-[18px] overflow-hidden cursor-pointer hover:shadow-md transition relative">
                                 <div class="relative aspect-square bg-gray-50">
                                     @if($logo)
-                                        <img src="{{ $logo }}" alt="{{ $vendor->name }}" class="w-full h-full object-cover">
+                                        <img src="{{ $logo }}" alt="{{ $vendor->name }}" loading="lazy" class="w-full h-full object-cover">
                                     @else
                                         <div class="flex h-full w-full items-center justify-center text-gray-300">
                                             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -583,7 +585,7 @@
                             @endphp
                             <a href="{{ route('real-wedding.show', $rw->slug) }}"
                                class="flex-none snap-start rounded-2xl overflow-hidden cursor-pointer relative group w-[72vw] min-w-[220px] sm:w-[calc((100%-4rem)/5)] sm:min-w-[160px] aspect-[3/4] block">
-                                <img src="{{ $rwImage }}" alt="{{ $rw->couple_names }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                <img src="{{ $rwImage }}" alt="{{ $rw->couple_names }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                                 <div class="absolute bottom-4 left-4 right-4 text-white">
                                     @if($rw->badge)
@@ -749,7 +751,7 @@
                             @endphp
                             <a href="{{ route('blog.show', $blog->slug) }}" class="bg-white rounded-2xl overflow-hidden hover:shadow-md transition group block">
                                 <div class="overflow-hidden">
-                                    <img src="{{ $blogImage }}" alt="{{ $blog->title }}" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105">
+                                    <img src="{{ $blogImage }}" alt="{{ $blog->title }}" loading="lazy" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105">
                                 </div>
                                 <div class="p-4">
                                     <div class="flex items-center gap-2 mb-2">
@@ -780,7 +782,7 @@
                                     <div class="border-t border-gray-200"></div>
                                 @endif
                                 <a href="{{ route('blog.show', $popular->slug) }}" class="flex gap-3 group cursor-pointer">
-                                    <img src="{{ $popularImage }}" alt="{{ $popular->title }}" class="w-16 h-14 rounded-xl object-cover flex-shrink-0">
+                                    <img src="{{ $popularImage }}" alt="{{ $popular->title }}" loading="lazy" class="w-16 h-14 rounded-xl object-cover shrink-0">
                                     <div>
                                         <p class="text-[11px] font-semibold mb-0.5 text-accent">
                                             {{ $popular->category ?: '—' }}

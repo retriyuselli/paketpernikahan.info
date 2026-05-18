@@ -68,6 +68,7 @@
                            class="relative rounded-2xl overflow-hidden cursor-pointer group aspect-3/4 block">
                             <img src="{{ $rwImage }}"
                                  alt="{{ $rw->couple_names }}"
+                                 loading="lazy"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/10 to-transparent"></div>
                             <div class="absolute bottom-4 left-4 right-4 text-white">

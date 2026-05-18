@@ -120,7 +120,7 @@
                 @foreach ($items as $item)
                     @if (($item['type'] ?? null) === 'story')
                         <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                            <img src="{{ $item['image'] }}" alt="Wedding Story" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ $item['image'] }}" alt="Real Wedding - {{ $item['title'] ?? 'Wedding Story' }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-4">
                                 <p class="text-white text-xs mb-1 opacity-80">Wedding Story of <span class="font-bold">{{ $item['title'] }}</span></p>
@@ -129,7 +129,7 @@
                         </div>
                     @elseif (($item['type'] ?? null) === 'promo')
                         <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3 {{ $item['theme'] ?? 'bg-accent-pink' }}">
-                            <img src="{{ $item['image'] }}" alt="Promo" class="w-full h-full object-cover {{ $item['imageClass'] ?? 'opacity-30' }} transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ $item['image'] }}" alt="{{ strip_tags($item['title_html'] ?? $item['title'] ?? 'Promo Pernikahan') }}" class="w-full h-full object-cover {{ $item['imageClass'] ?? 'opacity-30' }} transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 gap-3">
                                 <p class="text-2xl font-bold leading-tight text-dark">{!! $item['title_html'] ?? '' !!}</p>
                                 @if(!empty($item['caption_html']))
@@ -157,7 +157,7 @@
                         </a>
                     @elseif (($item['type'] ?? null) === 'blog')
                         <div class="flex-none w-80 rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm hover:shadow-md transition ar-4x3">
-                            <img src="{{ $item['image'] }}" alt="{{ $item['category'] }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                            <img src="{{ $item['image'] }}" alt="{{ $item['title'] ?? $item['category'] ?? 'Artikel Pernikahan' }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-4">
                                 <p class="text-[10px] font-bold uppercase tracking-widest mb-1 text-accent-pink">{{ $item['category'] }}</p>

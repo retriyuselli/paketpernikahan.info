@@ -1,5 +1,22 @@
 @props(['items' => []])
 
+@php
+    $breadcrumbSchema = [
+        '@context'        => 'https://schema.org',
+        '@type'           => 'BreadcrumbList',
+        'itemListElement' => collect($items)->values()->map(function ($item, $i) {
+            $entry = [
+                '@type'    => 'ListItem',
+                'position' => $i + 1,
+                'name'     => (string) ($item['label'] ?? ''),
+                'item'     => $item['url'] ?? request()->url(),
+            ];
+            return $entry;
+        })->toArray(),
+    ];
+@endphp
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+
 <nav class="flex items-center gap-2 text-[11px] font-semibold text-dark overflow-hidden min-w-0">
     @foreach($items as $i => $item)
         @if($i > 0)

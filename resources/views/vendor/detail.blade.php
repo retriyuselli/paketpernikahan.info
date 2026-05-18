@@ -283,7 +283,7 @@
             <!-- Main Photo -->
             <div class="lg:col-span-2 -mx-4 w-[calc(100%+2rem)] rounded-none lg:mx-0 lg:w-full lg:rounded-2xl overflow-hidden relative ar-16x9">
                 <img :src="mainSrc" loading="lazy"
-                     alt="{{ $vendor->name }}"
+                     alt="{{ $vendor->name }} - {{ $vendorCategoryLabel }}{{ $vendor->city ? ' di ' . $vendor->city : '' }}"
                      class="w-full h-full object-cover transition-all duration-500">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
                 <!-- Stats overlay bottom -->
@@ -304,7 +304,7 @@
                 <template x-for="(src, index) in sideSrcs" :key="index">
                     <div class="relative rounded-xl overflow-hidden min-h-0 h-full cursor-pointer bg-gray-100" @click="swap(index)">
                         <img :src="src"
-                             :alt="'Foto ' + (index + 1)"
+                             :alt="'{{ $vendor->name }} - Foto Galeri ' + (index + 1)"
                              class="absolute inset-0 w-full h-full object-cover hover:scale-105 hover:brightness-90 transition-all duration-300">
                     </div>
                 </template>
@@ -330,7 +330,7 @@
                                     : asset('storage/' . ltrim($vendor->logo_vendor, '/'));
                             @endphp
                             <div class="w-12 h-12 rounded-xl overflow-hidden border border-gray-100 bg-gray-50 flex-shrink-0">
-                                <img src="{{ $logoUrl }}" alt="Logo {{ $vendor->name }}" class="w-full h-full object-cover">
+                                <img src="{{ $logoUrl }}" alt="Logo {{ $vendor->name }}" loading="lazy" class="w-full h-full object-cover">
                             </div>
                         @endif
                         <div class="min-w-0">
@@ -475,7 +475,8 @@
                              @if($hasVideo) data-action="open-video" data-video-url="{{ $g->video_url }}" @endif>
                             <!-- Background image -->
                             <img src="{{ $g->image_url }}"
-                                 alt="Review Video {{ $idx + 1 }}"
+                                 alt="{{ $g->caption ?: $vendor->name . ' - Galeri Foto ' . ($idx + 1) }}"
+                                 loading="lazy"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <!-- Dark gradient overlay -->
                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
@@ -565,7 +566,8 @@
                             <div class="flex items-center gap-3 mb-2">
                                 <img src="{{ $rev->reviewer_avatar ?? 'https://picsum.photos/seed/rv-'.$rev->id.'/80/80' }}"
                                      alt="{{ $rev->reviewer_name }}"
-                                     class="w-9 h-9 rounded-full object-cover flex-shrink-0">
+                                     loading="lazy"
+                                     class="w-9 h-9 rounded-full object-cover shrink-0">
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-bold leading-tight text-dark">{{ $rev->reviewer_name }}</p>
                                     <p class="text-[10px] text-gray-400">{{ $rev->reviewed_at->translatedFormat('d M Y') }}</p>

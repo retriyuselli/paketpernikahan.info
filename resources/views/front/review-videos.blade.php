@@ -43,7 +43,7 @@
                         @endphp
                         <div class="rounded-2xl overflow-hidden cursor-pointer relative group ar-9x16"
                              @if($hasVideo) data-video-popup="{{ $video->video_url }}" @endif>
-                            <img src="{{ $thumb }}" alt="{{ $video->title }}" class="w-full h-full object-cover">
+                            <img src="{{ $thumb }}" alt="{{ $video->title }}" loading="lazy" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent"></div>
                             <div class="absolute inset-0 flex items-center justify-center @if(!$hasVideo) opacity-0 @endif group-hover:opacity-100 transition-opacity duration-200">
                                 <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
