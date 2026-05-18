@@ -1,6 +1,6 @@
 @extends('layout.app')
 
-@section('title', ($package->name ?? 'Detail Paket') . ' - Makna Wedding')
+@section('title', ($package->name ?? 'Detail Paket') . ' oleh ' . ($vendor->name ?? '') . ($vendor->city ? ' di ' . $vendor->city : '') . ' | Makna Wedding')
 @php
     $packageMetaImage = $package->image_url ?: $vendor->cover_image_url ?: url(config('app.logo_url'));
     $packageMetaDescription = \Illuminate\Support\Str::limit(

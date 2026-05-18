@@ -1,6 +1,42 @@
 @extends('layout.app')
 
-@section('title', 'Vendor - Makna Wedding')
+@php
+    $vendorListSchema = null;
+    if (isset($categories) && $categories->isNotEmpty()) {
+        $allVendors = collect();
+        foreach ($categories as $cat) {
+            if (isset($cat->vendors)) {
+                $allVendors = $allVendors->merge($cat->vendors);
+            }
+        }
+        $allVendors = $allVendors->take(10);
+        if ($allVendors->isNotEmpty()) {
+            $vendorListSchema = [
+                '@context' => 'https://schema.org',
+                '@type' => 'ItemList',
+                'name' => 'Vendor Pernikahan',
+                'url' => route('vendor'),
+                'itemListElement' => $allVendors->values()->map(function ($v, $i) {
+                    return [
+                        '@type' => 'ListItem',
+                        'position' => $i + 1,
+                        'url' => route('vendor.detail', $v->slug ?? $v->id),
+                        'name' => $v->name,
+                    ];
+                })->toArray(),
+            ];
+        }
+    }
+@endphp
+@section('title', 'Vendor Pernikahan - WO, Fotografer, Katering, Dekorasi & Lebih | Makna Wedding')
+@section('meta-description', 'Temukan vendor pernikahan terpercaya di Indonesia – wedding organizer, fotografer, katering, dekorasi, gedung, dan banyak lagi di Makna Wedding.')
+@section('canonical-url', route('vendor'))
+
+@if($vendorListSchema)
+@section('extra-head')
+<script type="application/ld+json">@json($vendorListSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+@endsection
+@endif
 
 @section('body-class', 'bg-cream text-dark')
 

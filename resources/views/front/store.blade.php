@@ -1,6 +1,47 @@
 @extends('layout.app')
 
-@section('title', 'Store - Paket Pernikahan')
+@php
+    $storePageTitle = 'Paket Pernikahan - Foto, Katering, WO, Dekorasi & Lebih | Makna Wedding';
+    if (!empty($search)) {
+        $storePageTitle = 'Hasil: "' . $search . '" - Paket Pernikahan | Makna Wedding';
+    } elseif (!empty($kategoriCat)) {
+        $storePageTitle = ($kategoriCat->name ?? 'Kategori') . ' - Paket Pernikahan | Makna Wedding';
+    }
+
+    $storeListSchema = null;
+    $storeListItems = collect();
+    if (!empty($packagesByCategory)) {
+        foreach ($packagesByCategory as $pkgs) {
+            $storeListItems = $storeListItems->merge($pkgs);
+        }
+    }
+    $storeListItems = $storeListItems->take(10);
+    if ($storeListItems->isNotEmpty()) {
+        $storeListSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ItemList',
+            'name' => 'Paket Pernikahan',
+            'url' => route('store'),
+            'itemListElement' => $storeListItems->values()->map(function ($pkg, $i) {
+                return [
+                    '@type' => 'ListItem',
+                    'position' => $i + 1,
+                    'url' => route('store.package.show', $pkg->id),
+                    'name' => $pkg->name,
+                ];
+            })->toArray(),
+        ];
+    }
+@endphp
+@section('title', $storePageTitle)
+@section('meta-description', 'Temukan ratusan paket pernikahan terbaik di Indonesia – foto, katering, dekorasi, wedding organizer, dan lebih di Makna Wedding.')
+@section('canonical-url', route('store'))
+
+@if($storeListSchema)
+@section('extra-head')
+<script type="application/ld+json">@json($storeListSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>
+@endsection
+@endif
 
 @section('body-class', 'bg-cream text-dark')
 

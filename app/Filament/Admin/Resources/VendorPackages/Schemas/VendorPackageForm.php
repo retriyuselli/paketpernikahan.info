@@ -69,6 +69,8 @@ class VendorPackageForm
                                     ->mask(RawJs::make('$money($input)'))
                                     ->stripCharacters(',')
                                     ->placeholder('0')
+                                    ->numeric()
+                                    ->dehydrateStateUsing(fn ($state) => (int) preg_replace('/[^\d]/', '', (string) $state))
                                     ->helperText('Isi jika ada potongan harga khusus'),
                                 DateTimePicker::make('discount_expires_at')
                                     ->label('Diskon Berakhir')
@@ -80,6 +82,8 @@ class VendorPackageForm
                                     ->mask(RawJs::make('$money($input)'))
                                     ->stripCharacters(',')
                                     ->placeholder('0')
+                                    ->numeric()
+                                    ->dehydrateStateUsing(fn ($state) => (int) preg_replace('/[^\d]/', '', (string) $state))
                                     ->default(0),
                                 TextInput::make('max_guests')
                                     ->label('Kapasitas Tamu')
@@ -118,8 +122,8 @@ class VendorPackageForm
 
                                 $catId = $get('category_vendor_id');
                                 if (filled($catId)) {
-                                    $slug = CategoryVendor::whereKey($catId)->value('slug');
-                                    if (in_array((string) $slug, $allowed, true)) {
+                                    $slugs = CategoryVendor::whereKey($catId)->pluck('slug');
+                                    if ($slugs->intersect($allowed)->isNotEmpty()) {
                                         return true;
                                     }
                                 }

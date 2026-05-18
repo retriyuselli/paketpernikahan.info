@@ -1,6 +1,7 @@
 @extends('layout.app')
 
-@section('title', ($category->name ?? 'Kategori') . ' - Store - Makna Wedding')
+@section('title', 'Paket ' . ($category->name ?? 'Pernikahan') . ' - Harga & Pilihan Vendor | Makna Wedding')
+@section('canonical-url', route('store.category', $category))
 
 @section('body-class', 'bg-cream text-dark')
 

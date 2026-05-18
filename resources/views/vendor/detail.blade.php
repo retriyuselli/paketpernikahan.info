@@ -1,7 +1,12 @@
 @extends('layout.app')
 
-@section('title', $vendor->name . ' - Makna Wedding')
 @php
+    $vendorCategoryLabel = $vendor->categoryVendor?->name ?? ucfirst((string) $vendor->category);
+    $vendorPageTitle = $vendor->name
+        . ($vendorCategoryLabel ? ' - ' . $vendorCategoryLabel : '')
+        . ($vendor->city ? ' di ' . $vendor->city : '')
+        . ' | Makna Wedding';
+
     $vendorInstagramUrl = blank($vendor->instagram)
         ? null
         : (str_starts_with($vendor->instagram, 'http')
@@ -75,6 +80,15 @@
             'bestRating' => 5,
             'worstRating' => 1,
         ];
+        $vendorBusinessSchema['review'] = $vendor->approvedReviews->take(5)->map(function ($rev) {
+            return [
+                '@type' => 'Review',
+                'author' => ['@type' => 'Person', 'name' => $rev->reviewer_name ?: 'Pengguna'],
+                'reviewRating' => ['@type' => 'Rating', 'ratingValue' => $rev->rating, 'bestRating' => 5, 'worstRating' => 1],
+                'reviewBody' => \Illuminate\Support\Str::limit(strip_tags((string) $rev->body), 300, ''),
+                'datePublished' => optional($rev->reviewed_at ?? $rev->created_at)->format('Y-m-d'),
+            ];
+        })->values()->toArray();
     }
 
     $vendorSchema = [
@@ -107,6 +121,7 @@
         ],
     ];
 @endphp
+@section('title', $vendorPageTitle)
 @section('meta-description', $vendorMetaDescription)
 @section('meta-image', $vendorMetaImage)
 @section('meta-type', 'business.business')

@@ -1,6 +1,7 @@
 @extends('layout.app')
 
-@section('title', $city . ' - Store - Makna Wedding')
+@section('title', 'Paket Pernikahan di ' . $city . ' - Foto, Katering, WO & Lebih | Makna Wedding')
+@section('canonical-url', route('store.city', $city))
 
 @section('body-class', 'bg-cream text-dark')
 

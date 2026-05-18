@@ -1,6 +1,7 @@
 @extends('layout.app')
 
-@section('title', 'Promo - Store - Paket Pernikahan')
+@section('title', 'Promo Paket Pernikahan - Diskon & Penawaran Spesial | Makna Wedding')
+@section('canonical-url', route('store.promo'))
 
 @section('body-class', 'bg-cream text-dark')
 
