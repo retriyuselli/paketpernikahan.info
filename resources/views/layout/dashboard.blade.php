@@ -7,6 +7,7 @@
         html, body { overscroll-behavior: none; }
         body { padding-bottom: env(safe-area-inset-bottom); }
         .safe-area-header { padding-top: env(safe-area-inset-top); }
+        a, button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
     </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard — Makna Wedding')</title>

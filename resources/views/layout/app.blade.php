@@ -16,6 +16,7 @@
             html, body { overscroll-behavior: none; }
             body { padding-top: calc(60px + env(safe-area-inset-top)); padding-bottom: env(safe-area-inset-bottom); }
             .safe-area-header { padding-top: env(safe-area-inset-top); }
+            a, button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
         </style>
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="description" content="{{ $metaDescription }}">
