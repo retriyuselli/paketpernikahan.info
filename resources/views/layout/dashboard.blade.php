@@ -2,7 +2,12 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <style>
+        html, body { overscroll-behavior: none; }
+        body { padding-bottom: env(safe-area-inset-bottom); }
+        .safe-area-header { padding-top: env(safe-area-inset-top); }
+    </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard — Makna Wedding')</title>
     <link rel="icon" href="{{ config('app.favicon_url') }}">
@@ -362,7 +367,7 @@
     <div class="flex-1 flex flex-col min-w-0">
 
         {{-- Mobile top bar --}}
-        <header class="lg:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between gap-3">
+        <header class="safe-area-header lg:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between gap-3 sticky top-0 z-40">
             <button type="button" data-open-dashboard-mobile-menu class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Menu">
                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
