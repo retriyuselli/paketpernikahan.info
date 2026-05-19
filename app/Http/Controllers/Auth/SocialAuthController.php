@@ -58,9 +58,29 @@ class SocialAuthController extends Controller
         Auth::login($user, true);
 
         if (session()->pull('oauth_source') === 'app') {
-            return redirect()->to('paketpernikahan://auth-success');
+            $token = \Illuminate\Support\Str::random(64);
+            cache()->put('app_login_token_' . $token, $user->id, now()->addMinutes(5));
+            return redirect()->to('paketpernikahan://auth-success?token=' . $token);
         }
 
+        return redirect()->intended(route('dashboard'));
+    }
+
+    public function loginWithAppToken(\Illuminate\Http\Request $request)
+    {
+        $token = $request->query('token');
+        $userId = $token ? cache()->pull('app_login_token_' . $token) : null;
+
+        if (!$userId) {
+            return redirect()->route('login')->with('login_error', 'Token tidak valid atau sudah kedaluwarsa.');
+        }
+
+        $user = \App\Models\User::find($userId);
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        Auth::login($user, true);
         return redirect()->intended(route('dashboard'));
     }
 }

@@ -1141,6 +1141,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::get('/auth/app-token', [SocialAuthController::class, 'loginWithAppToken'])->name('auth.app.token');
 
 Route::get('/register', function () {
     if (request()->filled('redirect')) {

@@ -1,2 +1,0 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/web-DYdia3Z5.js","assets/dist-CRsPgqLG.js"])))=>i.map(i=>d[i]);
-import{t as e}from"./app-jUX1c9C4.js";import{n as t}from"./dist-CRsPgqLG.js";var n=t(`Browser`,{web:()=>e(()=>import(`./web-DYdia3Z5.js`).then(e=>new e.BrowserWeb),__vite__mapDeps([0,1]))});export{n as Browser};

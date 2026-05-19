@@ -4,7 +4,7 @@
     "name": "dist"
   },
   "node_modules/@capacitor/app/dist/esm/index.js": {
-    "file": "assets/esm-6h58A98B.js",
+    "file": "assets/esm-CKEJbURF.js",
     "name": "esm",
     "src": "node_modules/@capacitor/app/dist/esm/index.js",
     "isDynamicEntry": true,
@@ -26,7 +26,7 @@
     ]
   },
   "node_modules/@capacitor/browser/dist/esm/index.js": {
-    "file": "assets/esm-PvFEsDdz.js",
+    "file": "assets/esm-DW8PXV2d.js",
     "name": "esm",
     "src": "node_modules/@capacitor/browser/dist/esm/index.js",
     "isDynamicEntry": true,
@@ -57,7 +57,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-jUX1c9C4.js",
+    "file": "assets/app-CAD2Xw4Z.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

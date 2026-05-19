@@ -22,7 +22,9 @@ async function initCapacitorOAuth() {
     App.addListener('appUrlOpen', async (data) => {
         if (data.url.startsWith('paketpernikahan://auth-success')) {
             await Browser.close();
-            window.location.href = '/dashboard';
+            const url = new URL(data.url.replace('paketpernikahan://', 'https://dummy.com/'));
+            const token = url.searchParams.get('token');
+            window.location.href = token ? `/auth/app-token?token=${token}` : '/dashboard';
         }
     });
 
