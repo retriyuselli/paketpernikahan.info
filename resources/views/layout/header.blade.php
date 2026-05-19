@@ -297,7 +297,7 @@
 <div id="mobile-menu" class="hidden fixed inset-0 z-50 lg:hidden">
     <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
     <div class="absolute right-0 top-0 h-full w-full max-w-sm bg-white shadow-2xl flex flex-col">
-        <div class="px-4 py-4 border-b border-gray-100 flex items-center justify-between">
+        <div class="px-4 py-4 border-b border-gray-100 flex items-center justify-between" style="padding-top: calc(1rem + env(safe-area-inset-top))">
             <div class="flex items-center gap-2">
                 <span class="text-lg font-extrabold tracking-tight">
                     <span class="text-accent">M</span><span class="text-dark">W</span>
