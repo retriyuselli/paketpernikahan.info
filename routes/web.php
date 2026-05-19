@@ -1109,11 +1109,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/vendor/{vendor:slug}/packages', [\App\Http\Controllers\VendorPackageController::class, 'store'])
         ->name('vendor.packages.store');
-    Route::get('/vendor/{vendor:slug}/packages/{package}/edit', [\App\Http\Controllers\VendorPackageController::class, 'edit'])
+    Route::get('/vendor/{vendor:slug}/packages/{package:id}/edit', [\App\Http\Controllers\VendorPackageController::class, 'edit'])
         ->name('vendor.packages.edit');
-    Route::put('/vendor/{vendor:slug}/packages/{package}', [\App\Http\Controllers\VendorPackageController::class, 'update'])
+    Route::put('/vendor/{vendor:slug}/packages/{package:id}', [\App\Http\Controllers\VendorPackageController::class, 'update'])
         ->name('vendor.packages.update');
-    Route::delete('/vendor/{vendor:slug}/packages/{package}', [\App\Http\Controllers\VendorPackageController::class, 'destroy'])
+    Route::delete('/vendor/{vendor:slug}/packages/{package:id}', [\App\Http\Controllers\VendorPackageController::class, 'destroy'])
         ->name('vendor.packages.destroy');
 
     Route::post('/vendor/{vendor:slug}/gallery', [\App\Http\Controllers\VendorGalleryController::class, 'store'])
