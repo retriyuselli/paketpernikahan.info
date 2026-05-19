@@ -11,7 +11,7 @@
             $metaType = trim($__env->yieldContent('meta-type', 'website')) ?: 'website';
         @endphp
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
         <style>
             html, body { overscroll-behavior: none; }
             body { padding-top: calc(60px + env(safe-area-inset-top)); padding-bottom: env(safe-area-inset-bottom); }
