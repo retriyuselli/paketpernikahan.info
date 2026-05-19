@@ -13,7 +13,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <style>
-            body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+            body { padding-bottom: env(safe-area-inset-bottom); }
+            .safe-area-header { padding-top: env(safe-area-inset-top); }
         </style>
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="description" content="{{ $metaDescription }}">

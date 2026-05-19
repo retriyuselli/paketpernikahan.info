@@ -37,7 +37,7 @@
 </div>
 
 <!-- Sticky Header Wrapper (main nav only, no collapsible) -->
-<div class="sticky top-0 z-40 border-b border-gray-200 bg-white lg:backdrop-blur-none">
+<div class="safe-area-header sticky top-0 z-40 border-b border-gray-200 bg-white lg:backdrop-blur-none">
     <x-ui.container>
         <div class="flex items-center justify-between gap-2 py-2 lg:gap-8 lg:py-3">
             @php
