@@ -375,11 +375,11 @@
                 </svg>
             </button>
             <p class="text-sm font-semibold truncate text-dark">@yield('page-title', 'Dashboard')</p>
-            <a href="{{ url('/dashboard') }}" class="w-9 h-9 rounded-full overflow-hidden border border-gray-200 flex items-center justify-center bg-white">
+            <a href="{{ url('/dashboard') }}" class="w-9 h-9 rounded-full overflow-hidden border border-gray-200 flex items-center justify-center bg-white" style="-webkit-tap-highlight-color:transparent;transform:translateZ(0);will-change:transform;">
                 @if($user->avatar_url)
-                    <img src="{{ $user->avatarUrl() }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                    <img src="{{ $user->avatarUrl() }}" alt="{{ $user->name }}" class="w-full h-full object-cover" draggable="false" style="pointer-events:none;-webkit-user-select:none;user-select:none;">
                 @else
-                    <span class="w-full h-full flex items-center justify-center text-xs font-bold text-white bg-accent">
+                    <span class="w-full h-full flex items-center justify-center text-xs font-bold text-white bg-accent" style="pointer-events:none;">
                         {{ strtoupper(substr($user->name, 0, 1)) }}
                     </span>
                 @endif
