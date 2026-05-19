@@ -13,6 +13,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <style>
+            html, body { overscroll-behavior: none; }
             body { padding-top: calc(60px + env(safe-area-inset-top)); padding-bottom: env(safe-area-inset-bottom); }
             .safe-area-header { padding-top: env(safe-area-inset-top); }
         </style>
