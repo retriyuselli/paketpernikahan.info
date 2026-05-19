@@ -39,12 +39,19 @@
     .chat-public-page {
         --chat-header-height: calc(5rem + env(safe-area-inset-top));
         --chat-safe-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
-        background: #f6f7fb;
-        padding-top: 0 !important; /* override layout/app.blade.php — chat manages its own header */
+        padding-top: 0 !important;
+        height: 100dvh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
 
     .public-chat-shell {
-        min-height: 100dvh;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
         background:
             radial-gradient(circle at top left, rgba(155, 184, 128, 0.12), transparent 30%),
             radial-gradient(circle at top right, rgba(167, 204, 225, 0.16), transparent 22%),
@@ -56,18 +63,22 @@
         padding-top: env(safe-area-inset-top);
         backdrop-filter: blur(14px);
         background: rgba(255, 255, 255, 0.92);
+        flex-shrink: 0;
     }
 
     .public-chat-main {
         position: relative;
-        min-height: 100dvh;
-        padding-top: calc(var(--chat-header-height) + 0.75rem);
-        padding-bottom: 34rem; /* fallback; JS will override with measured footer height */
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-top: 0.75rem;
+        padding-bottom: 1rem;
     }
 
     .public-chat-wallpaper {
         position: absolute;
-        inset: calc(var(--chat-header-height) + 0.75rem) 0 0;
+        inset: 0.75rem 0 0;
         overflow: hidden;
         pointer-events: none;
     }
@@ -125,13 +136,10 @@
     }
 
     .public-chat-footer {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        flex-shrink: 0;
         z-index: 40;
         padding-bottom: var(--chat-safe-bottom);
-        background: linear-gradient(180deg, rgba(246, 247, 251, 0) 0%, rgba(246, 247, 251, 0.88) 18%, #f6f7fb 42%);
+        background: rgba(246, 247, 251, 0.98);
     }
 
     .public-chat-bubble {
@@ -193,7 +201,7 @@
 
     @media (min-width: 768px) {
         .public-chat-main {
-            padding-bottom: 28rem;
+            padding-bottom: 1rem;
         }
 
         .public-chat-footer {
@@ -205,7 +213,7 @@
 
 @section('content')
     <div class="public-chat-shell">
-        <header class="public-chat-header fixed inset-x-0 top-0 z-50 border-b border-slate-100">
+        <header class="public-chat-header border-b border-slate-100">
             <div class="mx-auto flex h-full w-full max-w-3xl items-center gap-3 px-4">
                 <a href="{{ $chatBackUrl }}" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-700 transition hover:bg-slate-100" aria-label="Kembali">
                     <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,7 +254,7 @@
         </header>
 
         @if($sessionNotFound ?? false)
-        <main class="flex min-h-dvh flex-col items-center justify-center px-6 pt-(--chat-header-height) pb-12">
+        <main class="flex flex-1 flex-col items-center justify-center px-6 pb-12">
             <div class="flex flex-col items-center gap-4 text-center">
                 <div class="flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
                     <svg class="h-10 w-10 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -603,7 +611,7 @@
 
             function scrollBottom() {
                 window.requestAnimationFrame(function () {
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    if (mainEl) { mainEl.scrollTo({ top: mainEl.scrollHeight, behavior: 'smooth' }); }
                 });
             }
 
@@ -1022,16 +1030,9 @@
                 }
             });
 
-            // ── dynamic footer padding (prevent text overlap) ──────────────
+            // ── scroll container reference ──────────────────────────────────
             var mainEl = document.querySelector('.public-chat-main');
-            var footerEl = document.querySelector('.public-chat-footer');
-            function adjustMainPadding() {
-                if (mainEl && footerEl) {
-                    mainEl.style.paddingBottom = (footerEl.offsetHeight + 24) + 'px';
-                }
-            }
-            adjustMainPadding();
-            window.addEventListener('resize', adjustMainPadding);
+            window.addEventListener('resize', function () { scrollBottom(); });
             // ── promo banner fadeout ────────────────────────────────────
             var promoBanner = document.getElementById('chat-promo-banner');
             var promoBannerFaded = false;
@@ -1039,7 +1040,6 @@
                 if (!promoBanner || promoBannerFaded) { return; }
                 promoBannerFaded = true;
                 promoBanner.classList.add('chat-banner--fadeout');
-                window.setTimeout(adjustMainPadding, 600);
             }
 
             // ── inject inline package divider into messages ────────────────────
@@ -1108,7 +1108,6 @@
                     productCard.style.paddingBottom = '0';
                     window.setTimeout(function () {
                         productCard.style.display = 'none';
-                        adjustMainPadding();
                     }, 560);
                 }
             }
@@ -1118,7 +1117,6 @@
             if (productDismiss && productCard) {
                 productDismiss.addEventListener('click', function () {
                     productCard.style.display = 'none';
-                    window.setTimeout(adjustMainPadding, 50);
                 });
             }
 
