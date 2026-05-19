@@ -40,15 +40,15 @@
         --chat-header-height: calc(5rem + env(safe-area-inset-top));
         --chat-safe-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
         padding-top: 0 !important;
-        height: 100dvh;
         overflow: hidden;
-        display: flex;
-        flex-direction: column;
     }
 
     .public-chat-shell {
-        flex: 1;
-        min-height: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100dvh; /* JS will override via visualViewport */
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -540,6 +540,19 @@
     </div>
 
     <script>
+        // iOS keyboard fix: sync shell position to visual viewport
+        (function () {
+            var shell = document.querySelector('.public-chat-shell');
+            if (!shell || !window.visualViewport) return;
+            function sync() {
+                var vv = window.visualViewport;
+                shell.style.top = vv.offsetTop + 'px';
+                shell.style.height = vv.height + 'px';
+            }
+            window.visualViewport.addEventListener('resize', sync);
+            window.visualViewport.addEventListener('scroll', sync);
+        })();
+
         (function () {
             if (@json($isGuest)) { return; }
 
