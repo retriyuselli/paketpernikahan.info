@@ -167,7 +167,7 @@ class ChatController extends Controller
 
         $messages = ChatMessage::where('chat_session_id', $session->id)
             ->where('id', '>', $afterId)
-            ->with(['adminUser:id,name', 'vendorPackage:id,name,price,discount,image_path'])
+            ->with(['adminUser:id,name', 'vendorPackage:id,slug,name,price,discount,image_path'])
             ->orderBy('id')
             ->get(['id', 'sender', 'message', 'created_at', 'admin_user_id', 'vendor_package_id'])
             ->map(function ($m) {
@@ -231,7 +231,7 @@ class ChatController extends Controller
 
         $selectedVendorId = (int) $request->query('vendor_id', 0);
 
-        $sessions = ChatSession::with(['vendor:id,name', 'vendorPackage:id,vendor_id,name'])
+        $sessions = ChatSession::with(['vendor:id,name', 'vendorPackage:id,slug,vendor_id,name'])
             ->when($selectedVendorId > 0, fn ($query) => $query->where('vendor_id', $selectedVendorId))
             ->select('chat_sessions.*')
             ->selectSub(
@@ -292,9 +292,9 @@ class ChatController extends Controller
         $session = ChatSession::where('session_token', $token)
             ->with([
                 'messages.adminUser:id,name',
-                'messages.vendorPackage:id,name,price,discount,image_path',
+                'messages.vendorPackage:id,slug,name,price,discount,image_path',
                 'vendor:id,name',
-                'vendorPackage:id,vendor_id,name,price,discount,image_path',
+                'vendorPackage:id,slug,vendor_id,name,price,discount,image_path',
             ])
             ->firstOrFail();
 
@@ -392,9 +392,9 @@ class ChatController extends Controller
             ->where('vendor_id', $vendor->id)
             ->with([
                 'messages.adminUser:id,name',
-                'messages.vendorPackage:id,name,price,discount,image_path',
+                'messages.vendorPackage:id,slug,name,price,discount,image_path',
                 'vendor:id,name',
-                'vendorPackage:id,vendor_id,name,price,discount,image_path',
+                'vendorPackage:id,slug,vendor_id,name,price,discount,image_path',
             ])
             ->firstOrFail();
 
