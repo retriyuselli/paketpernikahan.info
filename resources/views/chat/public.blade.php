@@ -40,6 +40,7 @@
         --chat-header-height: calc(5rem + env(safe-area-inset-top));
         --chat-safe-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
         background: #f6f7fb;
+        padding-top: 0 !important; /* override layout/app.blade.php — chat manages its own header */
     }
 
     .public-chat-shell {
@@ -245,7 +246,7 @@
         </header>
 
         @if($sessionNotFound ?? false)
-        <main class="flex min-h-dvh flex-col items-center justify-center px-6 pt-[var(--chat-header-height)] pb-12">
+        <main class="flex min-h-dvh flex-col items-center justify-center px-6 pt-(--chat-header-height) pb-12">
             <div class="flex flex-col items-center gap-4 text-center">
                 <div class="flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
                     <svg class="h-10 w-10 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
