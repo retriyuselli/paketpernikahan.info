@@ -190,7 +190,7 @@ class Vendor extends Model
     public function computeProfileProgress(): array
     {
         $covers = array_values(array_filter((array) ($this->cover_image ?? [])));
-        $hasCovers = count($covers) >= 5;
+        $hasCovers = count($covers) >= 1;
         $hasPackage = $this->packages()->exists();
         $hasGallery = $this->galleries()->exists();
 
@@ -202,7 +202,7 @@ class Vendor extends Model
             'city' => ['label' => 'Kota / Kabupaten', 'ok' => filled($this->city)],
             'phone' => ['label' => 'No. WhatsApp', 'ok' => filled($this->phone)],
             'description' => ['label' => 'Deskripsi', 'ok' => filled($this->description)],
-            'cover_image' => ['label' => 'Foto cover (min. 5)', 'ok' => $hasCovers],
+            'cover_image' => ['label' => 'Foto cover (min. 1)', 'ok' => $hasCovers],
             'packages' => ['label' => 'Paket (min. 1)', 'ok' => $hasPackage],
             'galleries' => ['label' => 'Galeri media (min. 1)', 'ok' => $hasGallery],
         ];

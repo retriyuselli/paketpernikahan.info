@@ -11,7 +11,10 @@
             $metaType = trim($__env->yieldContent('meta-type', 'website')) ?: 'website';
         @endphp
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <style>
+            body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+        </style>
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="description" content="{{ $metaDescription }}">
         <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">

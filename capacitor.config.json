@@ -1,0 +1,23 @@
+{
+  "appId": "id.co.paketpernikahan.app",
+  "appName": "Paket Pernikahan",
+  "webDir": "dist",
+  "server": {
+    "url": "https://paketpernikahan.co.id",
+    "cleartext": false
+  },
+  "ios": {
+    "contentInset": "always",
+    "allowsLinkPreview": false,
+    "scrollEnabled": true,
+    "limitsNavigationsToAppBoundDomains": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 3000,
+      "launchAutoHide": true,
+      "backgroundColor": "#FAF6F0",
+      "showSpinner": false
+    }
+  }
+}

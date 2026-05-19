@@ -211,17 +211,6 @@
         <div class="pt-1 pb-4 lg:pt-1">
             <x-breadcrumb :items="$breadcrumbItems" />
 
-            @auth
-                @if(auth()->user()->hasRole(['super_admin', 'admin']) || (int) $vendor->owner_user_id === (int) auth()->id())
-                    <a href="{{ route('vendor.edit', $vendor) }}"
-                       class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-accent transition hover:opacity-80 text-accent bg-transparent">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
-                        Edit
-                    </a>
-                @endif
-            @endauth
         </div>
         <x-banner-ad mt="0" mb="1rem" />
     </div>
@@ -864,6 +853,12 @@
                                 Bagikan
                             </button>
                             @auth
+                                @if(auth()->user()->hasRole(['super_admin', 'admin']) || (int) $vendor->owner_user_id === (int) auth()->id())
+                                <a href="{{ route('vendor.edit', $vendor) }}" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold border border-gray-200 hover:border-gray-300 transition text-dark">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                    Edit
+                                </a>
+                                @endif
                                 <form method="POST" action="{{ route('vendor.like', $vendor) }}" class="flex-1">
                                     @csrf
                                     <button type="submit" class="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold border border-gray-200 hover:border-gray-300 transition text-dark">

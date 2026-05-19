@@ -563,7 +563,7 @@
                             @endif
                             <div class="flex-1">
                                 <label class="block text-xs font-semibold text-gray-500 mb-1.5">
-                                    Ganti Foto Cover <span class="font-normal text-gray-400">(minimal 5 foto, maks. 1MB/file)</span>
+                                    Ganti Foto Cover <span class="font-normal text-gray-400">(minimal 1 foto, maks. 1MB/file)</span>
                                 </label>
                                 <label for="cover_upload2"
                                        id="upload-label2"
@@ -571,7 +571,7 @@
                                     <svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                                     </svg>
-                                    <span class="text-xs font-medium text-accent">Klik untuk pilih foto (minimal 5 foto)</span>
+                                    <span class="text-xs font-medium text-accent">Klik untuk pilih foto (minimal 1 foto)</span>
                                     <span class="text-xs text-gray-400">JPG, PNG, WEBP · maks. 1MB/file</span>
                                     <input type="file" name="cover_image[]" accept="image/*" multiple
                                            class="hidden"
