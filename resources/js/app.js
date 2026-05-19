@@ -2,6 +2,7 @@ import "./bootstrap";
 import Alpine from "alpinejs";
 window.Alpine = Alpine;
 Alpine.start();
+import "./capacitor-oauth";
 
 // Dark Mode Toggle
 document.addEventListener("DOMContentLoaded", function () {

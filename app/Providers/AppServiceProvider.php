@@ -10,15 +10,13 @@ use App\Models\VendorReview;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Filament\Auth\Http\Responses\Contracts\LogoutResponse as LogoutResponseContract;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
-        //
+        $this->app->bind(LogoutResponseContract::class, \App\Http\Responses\LogoutResponse::class);
     }
 
     /**

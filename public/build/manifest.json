@@ -1,6 +1,54 @@
 {
+  "_dist-CRsPgqLG.js": {
+    "file": "assets/dist-CRsPgqLG.js",
+    "name": "dist"
+  },
+  "node_modules/@capacitor/app/dist/esm/index.js": {
+    "file": "assets/esm-6h58A98B.js",
+    "name": "esm",
+    "src": "node_modules/@capacitor/app/dist/esm/index.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_dist-CRsPgqLG.js"
+    ],
+    "dynamicImports": [
+      "node_modules/@capacitor/app/dist/esm/web.js"
+    ]
+  },
+  "node_modules/@capacitor/app/dist/esm/web.js": {
+    "file": "assets/web-bTL5Wb9r.js",
+    "name": "web",
+    "src": "node_modules/@capacitor/app/dist/esm/web.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_dist-CRsPgqLG.js"
+    ]
+  },
+  "node_modules/@capacitor/browser/dist/esm/index.js": {
+    "file": "assets/esm-PvFEsDdz.js",
+    "name": "esm",
+    "src": "node_modules/@capacitor/browser/dist/esm/index.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_dist-CRsPgqLG.js"
+    ],
+    "dynamicImports": [
+      "node_modules/@capacitor/browser/dist/esm/web.js"
+    ]
+  },
+  "node_modules/@capacitor/browser/dist/esm/web.js": {
+    "file": "assets/web-DYdia3Z5.js",
+    "name": "web",
+    "src": "node_modules/@capacitor/browser/dist/esm/web.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_dist-CRsPgqLG.js"
+    ]
+  },
   "resources/css/app.css": {
-    "file": "assets/app-CU2EVCtW.css",
+    "file": "assets/app-6xBQ_uTh.css",
     "name": "app",
     "names": [
       "app.css"
@@ -9,9 +57,13 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-DrVWe-zm.js",
+    "file": "assets/app-jUX1c9C4.js",
     "name": "app",
     "src": "resources/js/app.js",
-    "isEntry": true
+    "isEntry": true,
+    "dynamicImports": [
+      "node_modules/@capacitor/browser/dist/esm/index.js",
+      "node_modules/@capacitor/app/dist/esm/index.js"
+    ]
   }
 }

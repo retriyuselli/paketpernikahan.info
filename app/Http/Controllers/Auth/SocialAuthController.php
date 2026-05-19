@@ -18,6 +18,9 @@ class SocialAuthController extends Controller
         if ($request->filled('redirect')) {
             $request->session()->put('url.intended', $request->query('redirect'));
         }
+        if ($request->query('source') === 'app') {
+            $request->session()->put('oauth_source', 'app');
+        }
         return Socialite::driver('google')->redirect();
     }
 
@@ -53,6 +56,10 @@ class SocialAuthController extends Controller
         }
 
         Auth::login($user, true);
+
+        if (session()->pull('oauth_source') === 'app') {
+            return redirect()->to('paketpernikahan://auth-success');
+        }
 
         return redirect()->intended(route('dashboard'));
     }
