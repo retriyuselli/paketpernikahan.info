@@ -37,7 +37,7 @@
 @section('extra-head')
 <style>
     .chat-public-page {
-        --chat-header-height: 5rem;
+        --chat-header-height: calc(5rem + env(safe-area-inset-top));
         --chat-safe-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
         background: #f6f7fb;
     }
@@ -52,6 +52,7 @@
 
     .public-chat-header {
         height: var(--chat-header-height);
+        padding-top: env(safe-area-inset-top);
         backdrop-filter: blur(14px);
         background: rgba(255, 255, 255, 0.92);
     }

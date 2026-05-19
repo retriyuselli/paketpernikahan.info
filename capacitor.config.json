@@ -7,7 +7,6 @@
     "cleartext": false
   },
   "ios": {
-    "contentInset": "always",
     "allowsLinkPreview": false,
     "scrollEnabled": true,
     "limitsNavigationsToAppBoundDomains": true
