@@ -15,6 +15,16 @@
         @endphp
         <div class="min-h-screen flex items-center justify-center px-4 py-12">
             <div class="w-full max-w-[38rem]">
+                <!-- Back to Home -->
+                <div class="mb-4">
+                    <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-dark transition no-underline">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                        Kembali ke Beranda
+                    </a>
+                </div>
+
                 <!-- Logo -->
                 <div class="text-center mb-8">
                     <a href="{{ route('home') }}" class="inline-block">
