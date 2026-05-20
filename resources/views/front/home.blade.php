@@ -306,6 +306,107 @@
             </x-ui.container>
         </section>
 
+        <!-- Vendor Event & Promo Section -->
+        <section class="pt-6 pb-6 bg-white" id="vendor-promo">
+            <x-ui.container>
+
+                <div class="mb-6 flex items-end justify-between gap-3">
+                    <h2 class="text-xl font-bold text-dark sm:text-2xl">Vendor Event dan Promo</h2>
+                    <a href="{{ route('store.promo') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
+                </div>
+
+                @if($homePromoPackages->isNotEmpty())
+                <div class="relative">
+                    <div class="flex snap-x snap-mandatory gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide" id="vendor-promo-scroll">
+
+                        @foreach($homePromoPackages as $pkg)
+                            @php
+                                $vendor = $pkg->vendor;
+                                $price = (int) ($pkg->price ?? 0);
+                                $discount = (int) ($pkg->discount ?? 0);
+                                $final = max($price - $discount, 0);
+                                $discountPercent = $price > 0 && $discount > 0 ? (int) round(($discount / $price) * 100) : 0;
+                                $logo = $vendor->logo_vendor
+                                    ? (str_starts_with($vendor->logo_vendor, 'http') ? $vendor->logo_vendor : \Illuminate\Support\Facades\Storage::url($vendor->logo_vendor))
+                                    : null;
+                                $logo = $logo ?: $pkg->image_url ?: ($vendor->cover_image_url ?? null);
+                                $rating = $vendor && $vendor->rating ? number_format((float) $vendor->rating, 1) : null;
+                            @endphp
+                                     <a href="{{ route('store.package.show', $pkg) }}"
+                                         class="flex-none snap-start w-[calc((100%-0.375rem)/2)] sm:w-56 bg-white border border-gray-200 rounded-[18px] overflow-hidden cursor-pointer hover:shadow-md transition relative">
+                                <div class="relative aspect-square bg-gray-50">
+                                    @if($logo)
+                                        <img src="{{ $logo }}" alt="{{ $vendor->name }}" loading="lazy" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="flex h-full w-full items-center justify-center text-gray-300">
+                                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                    @endif
+                                    @if($discountPercent > 0)
+                                        <span class="absolute right-0 top-0 rounded-bl-2xl bg-accent px-2.5 py-1.5 text-[11px] font-extrabold leading-none text-cream">
+                                            {{ $discountPercent }}%
+                                        </span>
+                                    @endif
+                                    <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5 text-dark" style="background: linear-gradient(90deg, var(--soft-pink), var(--light-sage), var(--sage-green));">
+                                        <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">XTRA Voucher</span>
+                                        <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">Gratis Ongkir</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-1 p-3">
+                                    <p class="text-[13px] font-medium leading-tight text-gray-900">{{ $pkg->name }}</p>
+                                    @php
+                                        $catNames = collect($pkg->category_vendor_id ?? [])
+                                            ->map(fn($cid) => $homeCategories->firstWhere('id', (int)$cid)?->name)
+                                            ->filter()
+                                            ->implode(', ');
+                                    @endphp
+                                    @if($discount > 0)
+                                        <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($price, 0, ',', '.') }}</p>
+                                    @endif
+                                    <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[15px]">{{ number_format($final, 0, ',', '.') }}</span></p>
+                                    <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
+                                        @if($rating)
+                                            <span class="flex items-center gap-1 text-accent">
+                                                <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                <span>{{ $rating }}</span>
+                                            </span>
+                                            <span class="text-gray-300">|</span>
+                                        @endif
+                                        <span>{{ $vendor->city ?? 'Indonesia' }}</span>
+                                    </div>
+                                    <p class="truncate text-[11px] text-gray-500">{{ $vendor->name }}</p>
+                                </div>
+                            </a>
+                        @endforeach
+
+                        <!-- View All Card -->
+                        <a href="{{ route('store.promo') }}" class="flex-none snap-start w-[calc((100%-0.375rem)/2)] sm:w-56 bg-white border border-gray-200 rounded-[18px] cursor-pointer hover:shadow-md transition flex flex-col items-center justify-center gap-3 py-10">
+                            <div class="w-14 h-14 rounded-full border-2 border-gray-400 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </div>
+                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">LIHAT SEMUA PROMO</p>
+                        </a>
+
+                    </div>
+
+                    <!-- Arrow prev -->
+                    <button type="button" data-scroll-target="vendor-promo-scroll" data-scroll-by="-300"
+                            class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 hidden h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition hover:shadow-lg z-10 md:flex">
+                        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <!-- Arrow next -->
+                    <button type="button" data-scroll-target="vendor-promo-scroll" data-scroll-by="300"
+                            class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 hidden h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition hover:shadow-lg z-10 md:flex">
+                        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+                @else
+                    <p class="text-sm text-gray-400">Belum ada promo saat ini.</p>
+                @endif
+
+            </x-ui.container>
+        </section>
+
         <!-- Venue Section -->
         <section class="pt-8 pb-12 sm:py-16 bg-light-sage" id="venues">
             <x-ui.container>
@@ -394,7 +495,7 @@
         </section>
 
         <!-- Venue Review Video Section -->
-        <section class="py-16 bg-cream" id="venue-reviews">
+        <section class="pt-6 pb-2 bg-cream" id="venue-reviews">
             <x-ui.container>
 
                 <div class="mb-6 flex items-end justify-between gap-3">
@@ -529,112 +630,8 @@
             </x-ui.container>
         </section>
 
-        <!-- Vendor Event & Promo Section -->
-        <section class="py-16 bg-white" id="vendor-promo">
-            <x-ui.container>
-
-                <div class="mb-6 flex items-end justify-between gap-3">
-                    <h2 class="text-xl font-bold text-dark sm:text-2xl">Vendor Event dan Promo</h2>
-                    <a href="{{ route('store.promo') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
-                </div>
-
-                @if($homePromoPackages->isNotEmpty())
-                <div class="relative">
-                    <div class="flex snap-x snap-mandatory gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide" id="vendor-promo-scroll">
-
-                        @foreach($homePromoPackages as $pkg)
-                            @php
-                                $vendor = $pkg->vendor;
-                                $price = (int) ($pkg->price ?? 0);
-                                $discount = (int) ($pkg->discount ?? 0);
-                                $final = max($price - $discount, 0);
-                                $discountPercent = $price > 0 && $discount > 0 ? (int) round(($discount / $price) * 100) : 0;
-                                $logo = $vendor->logo_vendor
-                                    ? (str_starts_with($vendor->logo_vendor, 'http') ? $vendor->logo_vendor : \Illuminate\Support\Facades\Storage::url($vendor->logo_vendor))
-                                    : null;
-                                $logo = $logo ?: $pkg->image_url ?: ($vendor->cover_image_url ?? null);
-                                $rating = $vendor && $vendor->rating ? number_format((float) $vendor->rating, 1) : null;
-                            @endphp
-                                     <a href="{{ route('store.package.show', $pkg) }}"
-                                         class="flex-none snap-start w-[calc((100%-0.375rem)/2)] sm:w-56 bg-white border border-gray-200 rounded-[18px] overflow-hidden cursor-pointer hover:shadow-md transition relative">
-                                <div class="relative aspect-square bg-gray-50">
-                                    @if($logo)
-                                        <img src="{{ $logo }}" alt="{{ $vendor->name }}" loading="lazy" class="w-full h-full object-cover">
-                                    @else
-                                        <div class="flex h-full w-full items-center justify-center text-gray-300">
-                                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                        </div>
-                                    @endif
-                                    @if($discountPercent > 0)
-                                        <span class="absolute right-0 top-0 rounded-bl-2xl bg-accent px-2.5 py-1.5 text-[11px] font-extrabold leading-none text-cream">
-                                            {{ $discountPercent }}%
-                                        </span>
-                                    @endif
-                                    <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5 text-dark" style="background: linear-gradient(90deg, var(--soft-pink), var(--light-sage), var(--sage-green));">
-                                        <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">XTRA Voucher</span>
-                                        <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">Gratis Ongkir</span>
-                                    </div>
-                                </div>
-                                <div class="space-y-1 p-3">
-                                    <p class="text-[13px] font-medium leading-tight text-gray-900">{{ $pkg->name }}</p>
-                                    @php
-                                        $catNames = collect($pkg->category_vendor_id ?? [])
-                                            ->map(fn($cid) => $homeCategories->firstWhere('id', (int)$cid)?->name)
-                                            ->filter()
-                                            ->implode(', ');
-                                    @endphp
-                                    @if($discount > 0)
-                                        <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($price, 0, ',', '.') }}</p>
-                                    @endif
-                                    <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[15px]">{{ number_format($final, 0, ',', '.') }}</span></p>
-                                    {{-- <div class="flex flex-wrap gap-1">
-                                        <span class="rounded-lg border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
-                                    </div> --}}
-                                    <div class="flex items-center gap-1.5 text-[11px] text-gray-500">
-                                        @if($rating)
-                                            <span class="flex items-center gap-1 text-accent">
-                                                <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                                <span>{{ $rating }}</span>
-                                            </span>
-                                            <span class="text-gray-300">|</span>
-                                        @endif
-                                        <span>{{ $vendor->city ?? 'Indonesia' }}</span>
-                                    </div>
-                                    <p class="truncate text-[11px] text-gray-500">{{ $vendor->name }}</p>
-                                </div>
-                            </a>
-                        @endforeach
-
-                        <!-- View All Card -->
-                        <a href="{{ route('store.promo') }}" class="flex-none snap-start w-[calc((100%-0.375rem)/2)] sm:w-56 bg-white border border-gray-200 rounded-[18px] cursor-pointer hover:shadow-md transition flex flex-col items-center justify-center gap-3 py-10">
-                            <div class="w-14 h-14 rounded-full border-2 border-gray-400 flex items-center justify-center">
-                                <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                            </div>
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">LIHAT SEMUA PROMO</p>
-                        </a>
-
-                    </div>
-
-                    <!-- Arrow prev -->
-                    <button type="button" data-scroll-target="vendor-promo-scroll" data-scroll-by="-300"
-                            class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 hidden h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition hover:shadow-lg z-10 md:flex">
-                        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    </button>
-                    <!-- Arrow next -->
-                    <button type="button" data-scroll-target="vendor-promo-scroll" data-scroll-by="300"
-                            class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 hidden h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition hover:shadow-lg z-10 md:flex">
-                        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                </div>
-                @else
-                    <p class="text-sm text-gray-400">Belum ada promo saat ini.</p>
-                @endif
-
-            </x-ui.container>
-        </section>
-
         <!-- Real Wedding Section -->
-        <section class="py-16 bg-cream" id="real-wedding">
+        <section class="pt-6 pb-6 bg-cream" id="real-wedding">
             <x-ui.container>
 
                 <div class="mb-6 flex items-end justify-between gap-3">
