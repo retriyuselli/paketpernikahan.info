@@ -368,7 +368,8 @@
     <div class="flex-1 flex flex-col min-w-0">
 
         {{-- Mobile top bar --}}
-        <header class="safe-area-header lg:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between gap-3 sticky top-0 z-40">
+        <header class="lg:hidden bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between gap-3 sticky z-40"
+                style="top: calc(52px + env(safe-area-inset-top));">
             <button type="button" data-open-dashboard-mobile-menu class="p-2 rounded-xl hover:bg-gray-50 transition" aria-label="Menu">
                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
