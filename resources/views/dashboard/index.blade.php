@@ -72,7 +72,7 @@
         <a href="{{ route('home') }}"
            class="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4 hover:border-gray-200 hover:shadow-sm transition group">
             <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-accent-pink">
-                <svg class="w-5 h-5 text-accent-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
             </div>
@@ -275,6 +275,7 @@
             'dusty-rose'      => ['from' => '#C4846B', 'to' => '#D4A5A5'],
             'navy-gold'       => ['from' => '#1B3A6B', 'to' => '#4A7FAA'],
             'blush-burgundy'  => ['from' => '#7B2D42', 'to' => '#C8909A'],
+            'pinkbride'       => ['from' => '#D4796B', 'to' => '#E8A898'],
         ];
     @endphp
 

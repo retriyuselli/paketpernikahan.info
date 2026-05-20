@@ -57,6 +57,16 @@ class ThemeController extends Controller
             'accent-dark'         => '#5C1F31',
             'sidebar-active-text' => '#ffffff',
         ],
+        'pinkbride' => [
+            'label'               => 'Pink Bride',
+            'sage-green'          => '#D4796B',
+            'light-sage'          => '#E8A898',
+            'soft-pink'           => '#FAE8E6',
+            'cream'               => '#FFF8F7',
+            'dark-gray'           => '#2D2020',
+            'accent-dark'         => '#B56358',
+            'sidebar-active-text' => '#2D2020',
+        ],
     ];
 
     public static function active(): array
