@@ -409,7 +409,7 @@
                             $thumb = $video->thumbnail_url ?: 'https://picsum.photos/seed/vrvideo-' . $video->id . '/300/533';
                             $hasVideo = !empty($video->video_url);
                         @endphp
-                        <div class="flex-none snap-start rounded-2xl overflow-hidden cursor-pointer relative group w-[56vw] min-w-[200px] sm:w-[calc((100%-4rem)/5)] sm:min-w-[140px] ar-9x16"
+                        <div class="flex-none snap-start rounded-2xl overflow-hidden cursor-pointer relative group w-[30vw] min-w-25 sm:w-[calc((100%-4rem)/5)] sm:min-w-35 ar-9x16"
                              @if($hasVideo) data-video-popup="{{ $video->video_url }}" @endif>
                             <img src="{{ $thumb }}" alt="{{ $video->title }}" loading="lazy" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -650,7 +650,7 @@
                                 $rwImage = $rw->cover_image_url ?: 'https://picsum.photos/seed/rw-' . $rw->id . '/400/533';
                             @endphp
                             <a href="{{ route('real-wedding.show', $rw->slug) }}"
-                               class="flex-none snap-start rounded-2xl overflow-hidden cursor-pointer relative group w-[72vw] min-w-[220px] sm:w-[calc((100%-4rem)/5)] sm:min-w-[160px] aspect-[3/4] block">
+                               class="flex-none snap-start rounded-2xl overflow-hidden cursor-pointer relative group w-[30vw] min-w-25 sm:w-[calc((100%-4rem)/5)] sm:min-w-40 aspect-3/4 block">
                                 <img src="{{ $rwImage }}" alt="{{ $rw->couple_names }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
                                 <div class="absolute bottom-4 left-4 right-4 text-white">
