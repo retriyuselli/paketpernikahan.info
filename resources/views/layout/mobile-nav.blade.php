@@ -94,10 +94,8 @@
         if (nav) nav.style.display = 'block';
         document.body.style.paddingBottom = 'calc(60px + env(safe-area-inset-bottom))';
         document.querySelectorAll('.app-breadcrumb').forEach(function (el) {
-            el.style.display = 'none';
-        });
-        document.querySelectorAll('.app-banner-ad').forEach(function (el) {
-            el.style.display = 'none';
+            var wrapper = el.parentElement;
+            if (wrapper) wrapper.style.display = 'none';
         });
     }
 })();
