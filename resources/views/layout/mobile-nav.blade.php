@@ -92,8 +92,10 @@
     if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
         var nav = document.getElementById('app-bottom-nav');
         if (nav) nav.style.display = 'block';
-        // push body content above the nav
         document.body.style.paddingBottom = 'calc(60px + env(safe-area-inset-bottom))';
+        document.querySelectorAll('.app-breadcrumb').forEach(function (el) {
+            el.style.display = 'none';
+        });
     }
 })();
 </script>

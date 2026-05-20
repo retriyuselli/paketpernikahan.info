@@ -17,7 +17,7 @@
 @endphp
 <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
 
-<nav class="flex items-center gap-2 text-[11px] font-semibold text-dark overflow-hidden min-w-0">
+<nav class="app-breadcrumb flex items-center gap-2 text-[11px] font-semibold text-dark overflow-hidden min-w-0">
     @foreach($items as $i => $item)
         @if($i > 0)
             <svg class="w-3 h-3 opacity-30 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
