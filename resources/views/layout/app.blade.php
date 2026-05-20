@@ -14,7 +14,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
         <style>
             html, body { overscroll-behavior: none; }
-            body { padding-top: calc(60px + env(safe-area-inset-top)); padding-bottom: env(safe-area-inset-bottom); }
+            body { padding-bottom: env(safe-area-inset-bottom); }
             .safe-area-header { padding-top: env(safe-area-inset-top); }
             a, button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
         </style>
@@ -195,5 +195,6 @@
         </script>
         @endif
 
+        @include('layout.mobile-nav')
     </body>
 </html>
