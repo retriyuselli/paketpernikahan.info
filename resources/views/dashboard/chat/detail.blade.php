@@ -6,13 +6,13 @@
 @section('content')
 <div class="mb-4 flex items-center gap-3">
     <a href="{{ route('chat.admin') }}"
-       class="text-sm text-gray-400 hover:text-accent transition flex items-center gap-1">
+       class="app-hide text-sm text-gray-400 hover:text-accent transition flex items-center gap-1">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
         Semua Chat
     </a>
-    <span class="text-gray-300">/</span>
+    <span class="app-hide text-gray-300">/</span>
     <div>
         <span class="text-sm font-semibold text-dark">{{ $session->guest_name }}</span>
         <p class="mt-0.5 text-xs text-gray-400">

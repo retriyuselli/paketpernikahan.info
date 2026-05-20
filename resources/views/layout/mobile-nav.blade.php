@@ -97,6 +97,9 @@
             var wrapper = el.parentElement;
             if (wrapper) wrapper.style.display = 'none';
         });
+        document.querySelectorAll('.app-hide').forEach(function (el) {
+            el.style.display = 'none';
+        });
     }
 })();
 </script>
