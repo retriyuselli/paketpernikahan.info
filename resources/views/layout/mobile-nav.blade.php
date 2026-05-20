@@ -100,6 +100,22 @@
         document.querySelectorAll('.app-hide').forEach(function (el) {
             el.style.display = 'none';
         });
+
+        // Sembunyikan bottom nav saat keyboard muncul, tampilkan kembali saat keyboard tutup
+        document.addEventListener('focusin', function (e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                if (nav) nav.style.display = 'none';
+                document.body.style.paddingBottom = '0';
+            }
+        });
+        document.addEventListener('focusout', function (e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                setTimeout(function () {
+                    if (nav) nav.style.display = 'block';
+                    document.body.style.paddingBottom = 'calc(60px + env(safe-area-inset-bottom))';
+                }, 150);
+            }
+        });
     }
 })();
 </script>
