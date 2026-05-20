@@ -742,7 +742,8 @@
              class="relative z-1 flex h-full w-full max-w-4xl flex-col overflow-hidden bg-black lg:h-auto lg:max-h-[90vh] lg:rounded-2xl lg:bg-white lg:shadow-2xl">
 
             {{-- Full-width header: title + close --}}
-            <div class="flex items-center justify-between gap-4 px-4 py-4 text-white shrink-0 lg:px-5 lg:py-3.5 lg:border-b lg:border-gray-100 lg:text-gray-900">
+            <div class="flex items-center justify-between gap-4 px-4 py-4 text-white shrink-0 lg:px-5 lg:py-3.5 lg:border-b lg:border-gray-100 lg:text-gray-900"
+                 style="padding-top: calc(1rem + env(safe-area-inset-top));">
                 <button type="button" id="store-image-modal-mobile-back"
                         class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:bg-white/10 lg:hidden"
                         aria-label="Kembali">
