@@ -152,8 +152,40 @@
         <section class="pt-3 pb-8 sm:pt-0 sm:pb-16 bg-cream" id="packages">
             <x-ui.container>
 
+                {{-- Category Filter Chips --}}
+                <style>
+                    .pkg-cat-chip {
+                        background: var(--cream);
+                        color: var(--dark-gray);
+                        border-color: var(--light-sage);
+                    }
+                    .pkg-cat-chip.active {
+                        background: var(--sage-green);
+                        color: var(--cream);
+                        border-color: transparent;
+                    }
+                    .pkg-cat-chip:hover:not(.active) {
+                        border-color: var(--sage-green);
+                        color: var(--sage-green);
+                    }
+                </style>
+                <div class="-mx-4 sm:mx-0 mb-4">
+                    <div class="flex gap-2 overflow-x-auto scrollbar-hide px-4 sm:px-0 pb-1">
+                        <button type="button"
+                            class="pkg-cat-chip active flex-none px-3 py-1 rounded-full text-[10px] font-semibold border transition whitespace-nowrap"
+                            data-cat="all">Semua</button>
+                        @foreach($homeCategories as $category)
+                            @if($homePackagesByCategory->get($category->slug, collect())->isNotEmpty())
+                            <button type="button"
+                                class="pkg-cat-chip flex-none px-3 py-1 rounded-full text-[10px] font-semibold border transition whitespace-nowrap"
+                                data-cat="{{ $category->slug }}">{{ $category->name }}</button>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+
                 <div class="mb-2 flex items-end justify-between gap-3">
-                    <h2 class="text-xl font-bold text-dark sm:text-2xl">Wedding Package</h2>
+                    <h2 class="text-[18px] font-bold text-dark sm:text-2xl">Wedding Package</h2>
                 </div>
 
                 @php $catIndex = 0; @endphp
@@ -161,10 +193,10 @@
                     @php $group = $homePackagesByCategory->get($category->slug, collect()); @endphp
                     @if($group->isNotEmpty())
                         @php $catIndex++; @endphp
-                        <div class="mb-[14px] sm:mb-10 pkg-category-block" @if($catIndex > 3) style="display:none" @endif>
+                        <div class="mb-[14px] sm:mb-10 pkg-category-block" id="pkg-cat-{{ $category->slug }}" @if($catIndex > 3) style="display:none" @endif>
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
-                                    <p class="text-base font-bold text-dark">{{ $category->name }}</p>
+                                    <p class="text-[base] font-bold text-dark">{{ $category->name }}</p>
                                 </div>
                                 <a href="{{ route('store.category', $category) }}" class="text-xs font-medium hover:underline text-accent">Lihat</a>
                             </div>
@@ -236,6 +268,40 @@
                         })();
                     </script>
                 @endif
+
+                <script>
+                    (function () {
+                        var chips = document.querySelectorAll('.pkg-cat-chip');
+                        chips.forEach(function (chip) {
+                            chip.addEventListener('click', function () {
+                                chips.forEach(function (c) { c.classList.remove('active'); });
+                                chip.classList.add('active');
+                                var cat = chip.dataset.cat;
+                                var offset = 70;
+                                if (cat === 'all') {
+                                    var sec = document.getElementById('packages');
+                                    if (sec) {
+                                        window.scrollTo({ top: sec.getBoundingClientRect().top + window.pageYOffset - offset, behavior: 'smooth' });
+                                    }
+                                    return;
+                                }
+                                var target = document.getElementById('pkg-cat-' + cat);
+                                if (!target) return;
+                                if (target.style.display === 'none') {
+                                    target.style.display = '';
+                                    var remaining = Array.from(document.querySelectorAll('.pkg-category-block')).filter(function (el) {
+                                        return el.style.display === 'none';
+                                    });
+                                    if (remaining.length === 0) {
+                                        var wrap = document.getElementById('pkg-more-btn-wrap');
+                                        if (wrap) wrap.style.display = 'none';
+                                    }
+                                }
+                                window.scrollTo({ top: target.getBoundingClientRect().top + window.pageYOffset - offset, behavior: 'smooth' });
+                            });
+                        });
+                    })();
+                </script>
 
             </x-ui.container>
         </section>
