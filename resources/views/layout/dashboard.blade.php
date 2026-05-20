@@ -860,5 +860,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 @yield('scripts')
+@include('layout.mobile-nav')
 </body>
 </html>
