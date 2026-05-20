@@ -402,7 +402,7 @@
                     <a href="{{ route('review-videos') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
 
-                <div class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                <div class="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-4 scrollbar-hide">
 
                     @forelse($venueReviewVideos as $video)
                         @php
@@ -416,11 +416,11 @@
                             <div class="absolute inset-0 flex items-center justify-center @if(!$hasVideo) opacity-0 @endif group-hover:opacity-100 transition-opacity duration-200">
                                 <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
                             </div>
-                            <div class="absolute bottom-4 left-4 right-4 text-white">
-                                <p class="text-[10px] uppercase tracking-widest opacity-80 mb-1">{{ $video->subtitle }}</p>
-                                <p class="font-bold text-sm leading-tight">{{ $video->title }}</p>
+                            <div class="absolute bottom-3 left-3 right-3 text-white">
+                                <p class="text-[8px] uppercase tracking-widest opacity-80 mb-0.5 sm:text-[10px]">{{ $video->subtitle }}</p>
+                                <p class="font-bold text-[11px] leading-tight sm:text-sm">{{ $video->title }}</p>
                                 @if($video->location)
-                                    <p class="text-[10px] opacity-70 mt-1">{{ $video->location }}</p>
+                                    <p class="text-[8px] opacity-70 mt-0.5 sm:text-[10px]">{{ $video->location }}</p>
                                 @endif
                             </div>
                         </div>
@@ -643,7 +643,7 @@
                 </div>
 
                 <div class="relative">
-                    <div class="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 scrollbar-hide" id="real-wedding-scroll">
+                    <div class="flex snap-x snap-mandatory gap-1 overflow-x-auto pb-2 scrollbar-hide" id="real-wedding-scroll">
 
                         @forelse($realWeddings as $rw)
                             @php
@@ -653,13 +653,13 @@
                                class="flex-none snap-start rounded-2xl overflow-hidden cursor-pointer relative group w-[30vw] min-w-25 sm:w-[calc((100%-4rem)/5)] sm:min-w-40 aspect-3/4 block">
                                 <img src="{{ $rwImage }}" alt="{{ $rw->couple_names }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
-                                <div class="absolute bottom-4 left-4 right-4 text-white">
+                                <div class="absolute bottom-3 left-3 right-3 text-white">
                                     @if($rw->badge)
-                                        <span class="inline-block text-[9px] border border-white/70 rounded-full px-2 py-0.5 mb-2 bg-black/20 backdrop-blur-sm">{{ $rw->badge }}</span>
+                                        <span class="inline-block text-[7px] sm:text-[9px] border border-white/70 rounded-full px-2 py-0.5 mb-1.5 bg-black/20 backdrop-blur-sm">{{ $rw->badge }}</span>
                                     @endif
-                                    <p class="font-bold text-base leading-tight tracking-wide uppercase">{{ $rw->couple_names }}</p>
+                                    <p class="font-bold text-[11px] sm:text-base leading-tight tracking-wide uppercase">{{ $rw->couple_names }}</p>
                                     @if($rw->venue_name)
-                                        <p class="text-[11px] opacity-70 mt-1">{{ $rw->venue_name }}</p>
+                                        <p class="text-[8px] sm:text-[11px] opacity-70 mt-0.5">{{ $rw->venue_name }}</p>
                                     @endif
                                 </div>
                             </a>
