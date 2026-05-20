@@ -498,7 +498,7 @@
         <section class="pt-6 pb-2 bg-cream" id="venue-reviews">
             <x-ui.container>
 
-                <div class="mb-6 flex items-end justify-between gap-3">
+                <div class="mb-2.5 flex items-end justify-between gap-3">
                     <h2 class="text-xl font-bold text-dark sm:text-2xl">Review Videos</h2>
                     <a href="{{ route('review-videos') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>
@@ -515,7 +515,7 @@
                             <img src="{{ $thumb }}" alt="{{ $video->title }}" loading="lazy" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
                             <div class="absolute inset-0 flex items-center justify-center @if(!$hasVideo) opacity-0 @endif group-hover:opacity-100 transition-opacity duration-200">
-                                <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
+                                <div class="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center shadow-lg"><svg class="w-3 h-3 text-gray-800 ml-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
                             </div>
                             <div class="absolute bottom-3 left-3 right-3 text-white">
                                 <p class="text-[8px] uppercase tracking-widest opacity-80 mb-0.5 sm:text-[10px]">{{ $video->subtitle }}</p>
@@ -634,7 +634,7 @@
         <section class="pt-6 pb-6 bg-cream" id="real-wedding">
             <x-ui.container>
 
-                <div class="mb-6 flex items-end justify-between gap-3">
+                <div class="mb-2.5 flex items-end justify-between gap-3">
                     <h2 class="text-xl font-bold text-dark sm:text-2xl">Real Wedding</h2>
                     <a href="{{ route('real-wedding.index') }}" class="text-sm font-medium hover:underline text-accent">Lihat</a>
                 </div>

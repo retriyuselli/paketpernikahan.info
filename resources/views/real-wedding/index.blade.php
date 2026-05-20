@@ -8,6 +8,7 @@
 
 @section('content')
     @include('layout.header')
+    @include('layout.inspirations-tabs')
 
     @php
         $breadcrumbItems = [

@@ -6,6 +6,7 @@
 
 @section('content')
     @include('layout.header')
+    @include('layout.inspirations-tabs')
 
     @php
         $breadcrumbItems = [
@@ -32,7 +33,7 @@
             <form method="GET" action="{{ route('blog.index') }}" class="mb-6">
                 <div class="flex flex-wrap gap-3 items-center">
                     <!-- Search -->
-                    <div class="relative flex-1 min-w-[200px]">
+                    <div class="relative flex-1 min-w-50">
                         <input type="text" name="q" value="{{ $q }}"
                                placeholder="Cari artikel..."
                                class="w-full h-10 pl-9 pr-4 text-sm rounded-xl border border-gray-200 bg-white focus:outline-none focus:border-accent transition">
