@@ -11,6 +11,7 @@
 @if($ad)
 <div id="{{ $uid }}"
      data-delay="{{ $ad->delay_seconds ?? 5 }}"
+     class="app-banner-ad"
      style="overflow:hidden; max-height:200px; opacity:0;
             margin-top:{{ $mt }}; margin-bottom:{{ $mb }};
             transition: opacity 0.7s ease, max-height 0.7s ease,

@@ -96,6 +96,9 @@
         document.querySelectorAll('.app-breadcrumb').forEach(function (el) {
             el.style.display = 'none';
         });
+        document.querySelectorAll('.app-banner-ad').forEach(function (el) {
+            el.style.display = 'none';
+        });
     }
 })();
 </script>
