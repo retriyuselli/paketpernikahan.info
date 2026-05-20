@@ -21,7 +21,7 @@ class SocialAuthController extends Controller
         if ($request->query('source') === 'app') {
             $request->session()->put('oauth_source', 'app');
         }
-        return Socialite::driver('google')->redirect();
+        return Socialite::driver('google')->with(['prompt' => 'select_account'])->redirect();
     }
 
     public function handleGoogleCallback()
