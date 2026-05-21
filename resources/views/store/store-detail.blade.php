@@ -130,7 +130,7 @@
 @section('meta-image', $packageMetaImage)
 @section('meta-type', 'product')
 
-@section('body-class', 'bg-cream text-dark store-detail-page')
+@section('body-class', 'bg-cream text-dark store-detail-page no-bottom-nav')
 
 @section('extra-head')
 <script type="application/ld+json">@json($packageSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)</script>

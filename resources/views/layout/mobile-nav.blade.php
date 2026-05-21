@@ -110,6 +110,7 @@
         });
         document.addEventListener('focusout', function (e) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                if (document.body.classList.contains('no-bottom-nav')) return;
                 setTimeout(function () {
                     if (nav) nav.style.display = 'block';
                     document.body.style.paddingBottom = 'calc(60px + env(safe-area-inset-bottom))';

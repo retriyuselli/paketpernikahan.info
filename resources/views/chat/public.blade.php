@@ -32,7 +32,7 @@
 
 @section('title', 'Chat dengan ' . $chatVendorName . ' - Makna Wedding')
 @section('meta-description', 'Mulai chat langsung dengan ' . $chatVendorName . ' untuk tanya detail paket dan ketersediaan.')
-@section('body-class', 'bg-white text-dark chat-public-page')
+@section('body-class', 'bg-white text-dark chat-public-page no-bottom-nav')
 
 @section('extra-head')
 <style>
