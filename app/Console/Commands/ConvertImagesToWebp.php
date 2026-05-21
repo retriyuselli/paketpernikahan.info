@@ -107,11 +107,14 @@ class ConvertImagesToWebp extends Command
                     continue;
                 }
 
-                if (!is_dir($destDir)) {
-                    mkdir($destDir, 0755, true);
+                if (!is_dir($destDir) && !mkdir($destDir, 0755, true) && !is_dir($destDir)) {
+                    $this->error("  Gagal membuat direktori: {$destDir}");
+                    $this->failed++;
+                    continue;
                 }
 
-                if (rename($srcPath, $destPath)) {
+                if (copy($srcPath, $destPath)) {
+                    unlink($srcPath);
                     $this->line("  <info>OK</info> Dipindahkan: {$relativePath}");
                     $this->moved++;
                 } else {
