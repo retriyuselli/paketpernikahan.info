@@ -865,6 +865,8 @@
                 if (!message) {
                     return;
                 }
+                inputEl.value = '';
+                inputEl.focus();
 
                 if (!isDifferentPackage) {
                     showContextTop();
@@ -889,10 +891,8 @@
                                 message: message,
                                 created_at: data.created_at,
                             });
-                            inputEl.value = '';
                             syncSendState();
                             scrollBottom();
-                            inputEl.focus();
                         })
                         .catch(function () {
                             syncSendState();
