@@ -1,4 +1,4 @@
-<footer class="bg-dark text-light-sage">
+<footer class="bg-dark text-light-sage app-hide">
     @php
         $footerCategories = \App\Models\CategoryVendor::where('is_active', true)
             ->orderBy('sort_order')->limit(6)->get();
