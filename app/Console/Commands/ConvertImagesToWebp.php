@@ -78,7 +78,7 @@ class ConvertImagesToWebp extends Command
         $this->info('Memindahkan file asli ke folder backup...');
 
         $publicBase = Storage::disk('public')->path('');
-        $backupBase = Storage::disk('local')->path(self::BACKUP_DIR);
+        $backupBase = storage_path('app/' . self::BACKUP_DIR);
 
         $extensions = ['jpg', 'jpeg', 'png'];
 
@@ -131,7 +131,7 @@ class ConvertImagesToWebp extends Command
 
     private function purgeBackup(): int
     {
-        $backupPath = Storage::disk('local')->path(self::BACKUP_DIR);
+        $backupPath = storage_path('app/' . self::BACKUP_DIR);
 
         if (!is_dir($backupPath)) {
             $this->warn('Folder backup tidak ditemukan: ' . $backupPath);
