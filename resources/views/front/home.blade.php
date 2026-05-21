@@ -326,10 +326,7 @@
                                 $discount = (int) ($pkg->discount ?? 0);
                                 $final = max($price - $discount, 0);
                                 $discountPercent = $price > 0 && $discount > 0 ? (int) round(($discount / $price) * 100) : 0;
-                                $logo = $vendor->logo_vendor
-                                    ? (str_starts_with($vendor->logo_vendor, 'http') ? $vendor->logo_vendor : \Illuminate\Support\Facades\Storage::url($vendor->logo_vendor))
-                                    : null;
-                                $logo = $logo ?: $pkg->image_url ?: ($vendor->cover_image_url ?? null);
+                                $logo = $pkg->image_url;
                                 $rating = $vendor && $vendor->rating ? number_format((float) $vendor->rating, 1) : null;
                             @endphp
                                      <a href="{{ route('store.package.show', $pkg) }}"
