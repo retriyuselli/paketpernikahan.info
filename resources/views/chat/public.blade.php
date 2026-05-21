@@ -986,7 +986,10 @@
 
             quickReplyButtons.forEach(function (button) {
                 button.addEventListener('click', function () {
-                    sendMessage(button.getAttribute('data-quick-reply') || '');
+                    var text = button.getAttribute('data-quick-reply') || '';
+                    inputEl.value = text;
+                    inputEl.focus();
+                    inputEl.dispatchEvent(new Event('input'));
                 });
             });
 
