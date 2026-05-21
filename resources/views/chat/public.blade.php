@@ -892,6 +892,7 @@
                             inputEl.value = '';
                             syncSendState();
                             scrollBottom();
+                            inputEl.focus();
                         })
                         .catch(function () {
                             syncSendState();
