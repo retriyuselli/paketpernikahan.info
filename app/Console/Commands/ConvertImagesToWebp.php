@@ -113,13 +113,23 @@ class ConvertImagesToWebp extends Command
                     continue;
                 }
 
-                if (copy($srcPath, $destPath)) {
-                    unlink($srcPath);
-                    $this->line("  <info>OK</info> Dipindahkan: {$relativePath}");
-                    $this->moved++;
-                } else {
-                    $this->error("  Gagal memindahkan: {$relativePath}");
-                    $this->failed++;
+                if (!file_exists($srcPath)) {
+                    $this->skipped++;
+                    continue;
+                }
+
+                try {
+                    if (copy($srcPath, $destPath)) {
+                        unlink($srcPath);
+                        $this->line("  <info>OK</info> Dipindahkan: {$relativePath}");
+                        $this->moved++;
+                    } else {
+                        $this->error("  Gagal memindahkan: {$relativePath}");
+                        $this->failed++;
+                    }
+                } catch (\Throwable $e) {
+                    $this->warn("  Skip (tidak ditemukan): {$relativePath}");
+                    $this->skipped++;
                 }
             }
         }
