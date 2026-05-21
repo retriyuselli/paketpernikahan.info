@@ -196,5 +196,6 @@
         @endif
 
         @include('layout.mobile-nav')
+        @yield('extra-scripts')
     </body>
 </html>

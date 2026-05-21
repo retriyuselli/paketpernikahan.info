@@ -1272,3 +1272,15 @@
 
     @include('layout.footer')
 @endsection
+
+@section('extra-scripts')
+<script>
+(function () {
+    if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+        var nav = document.getElementById('app-bottom-nav');
+        if (nav) nav.style.display = 'none';
+        document.body.style.paddingBottom = '0';
+    }
+})();
+</script>
+@endsection
