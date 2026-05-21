@@ -183,7 +183,7 @@
         }
 
         .store-detail-page .store-image-mobile-meta {
-            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+            padding-bottom: var(--store-mobile-bar-offset);
         }
     }
 
