@@ -259,6 +259,21 @@
                                  data-store-image-open
                                  data-store-image-src="{{ $galleryImages[0] }}">
                             <div class="absolute inset-0 pointer-events-none bg-linear-to-t from-black/10 to-transparent"></div>
+                            <div class="absolute inset-x-0 top-0 h-16 pointer-events-none bg-linear-to-b from-black/30 to-transparent"></div>
+                            @if($categoryName)
+                            <span class="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest text-white pointer-events-none" style="text-shadow: 0 1px 3px rgba(0,0,0,0.5);">
+                                {{ $categoryName }}
+                            </span>
+                            @endif
+                            @if($vendor->city)
+                            <span class="absolute bottom-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/90 border border-gray-200 text-dark flex items-center gap-1 pointer-events-none">
+                                <svg class="w-3 h-3 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                {{ $vendor->city }}
+                            </span>
+                            @endif
                             <span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/90 border border-gray-200 text-dark flex items-center gap-1 pointer-events-none">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
                                 Perbesar
@@ -302,27 +317,13 @@
                         <div class="p-5">
                             <div class="flex items-start justify-between gap-4">
                                 <div class="min-w-0 flex-1">
-                                    {{-- Category badge --}}
-                                    {{-- @if($categoryName)
-                                        <span class="inline-block text-[10px] font-bold uppercase tracking-widest border border-accent/40 rounded-full px-3 py-0.5 mb-2 text-accent">
-                                            {{ $categoryName }}
-                                        </span>
-                                    @endif --}}
                                     <h1 class="text-lg sm:text-xl font-extrabold leading-tight text-dark">{{ $package->name }}</h1>
                                     {{-- Vendor row --}}
                                     <div class="flex items-center gap-2 mt-2">
                                         <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l9-6 9 6v10a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10z"/>
                                         </svg>
-                                        <a href="{{ route('vendor.detail', $vendor->slug) }}" class="text-xs font-semibold hover:opacity-80 transition text-accent">{{ $vendor->name }}</a>
-                                        @if($vendor->city)
-                                            <span class="text-gray-300">·</span>
-                                            {{-- <svg class="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            </svg>
-                                            <span class="text-xs text-gray-500">{{ $vendor->city }}</span> --}}
-                                        @endif
+                                        <a href="{{ route('vendor.detail', $vendor->slug) }}" class="text-xs font-semibold hover:opacity-80 transition text-accent truncate">{{ $vendor->name }}</a>
                                     </div>
                                 </div>
                                 <div class="flex flex-wrap items-center justify-end gap-2">
@@ -1133,7 +1134,7 @@
                     var btn = document.createElement('button');
                     btn.type = 'button';
                     btn.setAttribute('data-modal-thumb-idx', String(idx));
-                    btn.className = 'modal-thumb w-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all duration-150 lg:w-full lg:rounded-lg ' + (idx === currentIndex ? 'border-accent' : 'border-transparent');
+                    btn.className = 'modal-thumb w-10 shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-150 lg:w-full lg:rounded-lg ' + (idx === currentIndex ? 'border-accent' : 'border-transparent');
                     btn.style.aspectRatio = '1';
                     var img = document.createElement('img');
                     img.src = src;
