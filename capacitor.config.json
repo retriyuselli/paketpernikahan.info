@@ -17,6 +17,9 @@
       "launchAutoHide": true,
       "backgroundColor": "#FAF6F0",
       "showSpinner": false
+    },
+    "Keyboard": {
+      "hideFormAccessoryBar": true
     }
   }
 }
