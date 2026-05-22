@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    # Redirect /public/* to /* (fix old indexed URLs)
+    RewriteCond %{REQUEST_URI} ^/public/(.*)$
+    RewriteRule ^ https://paketpernikahan.co.id/%1 [L,R=301]
+
     # Force non-www
     RewriteCond %{HTTP_HOST} ^www\.paketpernikahan\.co\.id [NC]
     RewriteRule ^ https://paketpernikahan.co.id%{REQUEST_URI} [L,R=301]
