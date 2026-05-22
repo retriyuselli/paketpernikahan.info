@@ -204,6 +204,14 @@
         $vendorChatUrl = $vendor->cheapestPackage
             ? route('chat.public', ['package' => $vendor->cheapestPackage->id])
             : route('chat.public');
+        $vendorPackagesJson = $vendor->packages->map(fn($p) => [
+            'id'         => $p->id,
+            'slug'       => $p->slug,
+            'name'       => $p->name,
+            'price'      => (int) $p->price,
+            'discount'   => (int) ($p->discount ?? 0),
+            'max_guests' => $p->max_guests,
+        ])->values();
     @endphp
 
     <!-- Breadcrumb -->
@@ -438,7 +446,7 @@
                                  loading="lazy"
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                             <!-- Dark gradient overlay -->
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
                             <!-- Play button -->
                             @if($hasVideo)
                             <div class="absolute inset-0 flex items-center justify-center">
@@ -925,81 +933,30 @@
         </div>
     </div>
 
-    <!-- Package Detail Modal -->
-    <div id="package-modal"
+    <!-- Package Picker Modal -->
+    <div id="pkg-picker-modal"
          class="fixed inset-0 z-50 hidden items-center justify-center p-4">
-        <!-- Backdrop -->
-        <div data-action="close-package-modal" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-
-        <!-- Modal Box -->
-        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
-
-            <!-- Modal Header (colored) -->
-            <div id="modal-header" class="p-6 pb-5">
-                <button type="button" data-action="close-package-modal"
-                        class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div data-action="close-pkg-picker" class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden max-h-[85vh] flex flex-col">
+            <div class="p-5 pb-4 bg-cream flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-0.5">Langkah 1</p>
+                    <p class="text-base font-bold text-dark">Pilih Paket</p>
+                </div>
+                <button type="button" data-action="close-pkg-picker"
+                        class="w-8 h-8 rounded-full bg-white/60 hover:bg-white/80 flex items-center justify-center transition">
+                    <svg class="w-4 h-4 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
-                <p id="modal-pkg-name" class="text-xs font-bold uppercase tracking-widest opacity-70 mb-1"></p>
-                <p id="modal-price" class="text-3xl font-bold mb-0.5"></p>
-                <p id="modal-guests" class="text-sm opacity-70"></p>
             </div>
-
-            <!-- Modal Body -->
-            <div class="p-6 space-y-5">
-
-                <!-- Venue Info -->
-                <div id="modal-venue-info" class="hidden mb-4">
-                    <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Detail Venue</p>
-                    <ul class="space-y-2" id="modal-venue-list">
-                    </ul>
-                </div>
-
-                <!-- Items List -->
-                <div>
-                    <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3">Yang Sudah Termasuk</p>
-                    <div id="modal-items" class="prose prose-sm max-w-none text-gray-700 text-sm"></div>
-                </div>
-
-                <hr class="border-gray-100">
-
-                <!-- Summary -->
-                <div class="rounded-2xl p-4 bg-cream">
-                    <div class="flex items-center justify-between mb-1">
-                        <span class="text-xs text-gray-500">Paket dipilih</span>
-                        <span id="modal-summary-name" class="text-xs font-bold text-dark"></span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs text-gray-500">Total estimasi</span>
-                        <span id="modal-summary-price" class="text-base font-bold text-accent"></span>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex flex-col gap-2 pt-1">
-                    <button type="button" data-action="select-package"
-                            class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 bg-accent text-cream">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                        Pilih Paket Ini
-                    </button>
-                    <a id="modal-detail-link"
-                       href="#"
-                       class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold transition hover:opacity-90 border border-gray-200 bg-white text-dark">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8v8m0 4a9 9 0 100-18 9 9 0 000 18z"/>
-                        </svg>
-                        Lihat Detail Paket
-                    </a>
-                    <button type="button" data-action="close-package-modal"
-                            class="w-full py-2.5 rounded-xl text-sm font-semibold border border-gray-200 hover:bg-gray-50 transition text-dark">
-                        Batal
-                    </button>
-                </div>
-
+            <div id="pkg-picker-list" class="overflow-y-auto flex-1 p-4 space-y-2"></div>
+            <div class="p-4 pt-3 border-t border-gray-100">
+                <button type="button" id="pkg-picker-confirm" data-action="confirm-pkg-pick"
+                        disabled
+                        class="w-full py-3 rounded-xl text-sm font-bold transition bg-accent text-cream opacity-40 cursor-not-allowed">
+                    Lanjut Booking
+                </button>
             </div>
         </div>
     </div>
@@ -1126,8 +1083,7 @@
             }
             const pkgId = document.getElementById('booking-vendor-package-id')?.value ?? '';
             if (!pkgId) {
-                showBookingWarning('Silakan pilih paket terlebih dahulu sebelum booking.');
-                document.getElementById('packages')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                openPkgPickerModal();
                 return;
             }
             modal.classList.remove('hidden');
@@ -1186,8 +1142,7 @@
                 } catch {}
             }
             if (!pkgId) {
-                showBookingWarning('Silakan pilih paket terlebih dahulu sebelum booking.');
-                document.getElementById('packages')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                openPkgPickerModal();
                 return;
             }
             window.location.href = bookingVendorUrl + '?vendor_package_id=' + encodeURIComponent(String(pkgId));
@@ -1242,10 +1197,10 @@
         document.body.style.overflow = '';
     }
 
-    // ── Package Modal ─────────────────────────────────────────
-    let currentPackage = null;
     let selectedPackage = null;
+    let pickerChosenPkg = null;
     const vendorSlug = '{{ $vendor->slug }}';
+    const vendorPackages = @json($vendorPackagesJson);
     const waNumber = '{{ preg_replace('/[^0-9]/', '', $vendor->phone) }}';
     const vendorName = '{{ addslashes($vendor->name) }}';
     const bookingVendorUrl = '{{ route('booking.vendor', $vendor) }}';
@@ -1281,138 +1236,69 @@
         }
     }
 
-    function openPackageModal(pkg) {
-        currentPackage = pkg;
-
-        // Header color
-        const header = document.getElementById('modal-header');
-        header.style.backgroundColor = pkg.card_color;
-        header.style.color = pkg.card_text_color;
-
-        // Close button text
-        header.querySelector('svg').style.color = pkg.card_text_color;
-
-        // Fill data
-        document.getElementById('modal-pkg-name').textContent    = pkg.name;
-        const fmtPrice = (price) => price > 0 ? ('Rp ' + parseInt(price).toLocaleString('id-ID')) : '—';
-        document.getElementById('modal-price').textContent        = fmtPrice(pkg.price);
-        document.getElementById('modal-guests').textContent       = pkg.max_guests || '—';
-        document.getElementById('modal-summary-name').textContent  = pkg.name;
-        document.getElementById('modal-summary-price').textContent = fmtPrice(pkg.price);
-
-        // Venue Info
-        const venueInfo = document.getElementById('modal-venue-info');
-        const venueList = document.getElementById('modal-venue-list');
-        venueList.innerHTML = '';
-        let hasVenue = false;
-
-        if (pkg.type) {
-            hasVenue = true;
-            venueList.innerHTML += `
-                <li class="flex items-start gap-2 text-xs text-gray-700">
-                    <svg class="w-4 h-4 flex-shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    <span><strong>Tipe:</strong> ${pkg.type}</span>
-                </li>`;
-        }
-        if (pkg.capacity) {
-            hasVenue = true;
-            venueList.innerHTML += `
-                <li class="flex items-start gap-2 text-xs text-gray-700">
-                    <svg class="w-4 h-4 flex-shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    <span><strong>Kapasitas:</strong> ${new Intl.NumberFormat('id-ID').format(pkg.capacity)} Orang</span>
-                </li>`;
-        }
-        if (pkg.facilities && pkg.facilities.length > 0) {
-            hasVenue = true;
-            venueList.innerHTML += `
-                <li class="flex items-start gap-2 text-xs text-gray-700">
-                    <svg class="w-4 h-4 flex-shrink-0 text-accent mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                    <span><strong>Fasilitas:</strong> ${pkg.facilities.join(', ')}</span>
-                </li>`;
-        }
-        
-        if (hasVenue) {
-            venueInfo.classList.remove('hidden');
-        } else {
-            venueInfo.classList.add('hidden');
-        }
-
-        // Items list
-        const itemsDiv = document.getElementById('modal-items');
-        itemsDiv.innerHTML = pkg.item_html || '';
-        if (!pkg.item_html) {
-            // fallback to plain array if no html
-            const count = (pkg.items || []).length;
-            const cols2 = count > 5;
-            let html = cols2 ? '<ul style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;padding-left:1.25rem;list-style:disc">' : '<ul style="padding-left:1.25rem;list-style:disc">';
-            (pkg.items || []).forEach(item => { html += `<li>${item}</li>`; });
-            html += '</ul>';
-            itemsDiv.innerHTML = html;
-        }
-
-        // Detail link
-        const detailLink = document.getElementById('modal-detail-link');
-        if (detailLink) {
-            detailLink.href = pkg.slug ? `/store/paket/${pkg.slug}` : '#';
-        }
-
-        // Show modal
-        const modal = document.getElementById('package-modal');
+    function openPkgPickerModal() {
+        const modal = document.getElementById('pkg-picker-modal');
+        const list  = document.getElementById('pkg-picker-list');
+        const btn   = document.getElementById('pkg-picker-confirm');
+        if (!modal || !list) return;
+        pickerChosenPkg = null;
+        btn.disabled = true;
+        btn.classList.add('opacity-40', 'cursor-not-allowed');
+        list.innerHTML = vendorPackages.map(p => {
+            const final = p.discount > 0 ? p.price - p.discount : p.price;
+            const priceStr = final > 0 ? 'Rp ' + final.toLocaleString('id-ID') : '—';
+            const origStr  = p.discount > 0 ? 'Rp ' + p.price.toLocaleString('id-ID') : '';
+            return `<label class="pkg-picker-item flex items-center gap-3 p-3 rounded-xl border border-gray-100 cursor-pointer hover:border-accent/40 hover:bg-cream transition has-[:checked]:border-accent has-[:checked]:bg-cream">
+                <input type="radio" name="pkg-pick" value="${p.id}" class="sr-only" data-pkg='${JSON.stringify(p)}'>
+                <span class="w-4 h-4 rounded-full border-2 border-gray-300 flex-shrink-0 flex items-center justify-center pkg-radio-dot">
+                    <span class="w-2 h-2 rounded-full bg-accent hidden"></span>
+                </span>
+                <span class="flex-1 min-w-0">
+                    <span class="block text-sm font-semibold text-dark leading-tight">${p.name}</span>
+                    <span class="block text-xs text-gray-400">${p.max_guests ? p.max_guests + ' Pax' : ''}</span>
+                </span>
+                <span class="text-right flex-shrink-0">
+                    ${origStr ? `<span class="block text-[10px] text-gray-400 line-through">${origStr}</span>` : ''}
+                    <span class="block text-sm font-bold text-accent">${priceStr}</span>
+                </span>
+            </label>`;
+        }).join('');
+        list.querySelectorAll('input[type=radio]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                pickerChosenPkg = JSON.parse(radio.dataset.pkg);
+                list.querySelectorAll('.pkg-radio-dot span').forEach(dot => dot.classList.add('hidden'));
+                radio.closest('label').querySelector('.pkg-radio-dot span').classList.remove('hidden');
+                btn.disabled = false;
+                btn.classList.remove('opacity-40', 'cursor-not-allowed');
+            });
+        });
         modal.classList.remove('hidden');
         modal.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
 
-    function closePackageModal() {
-        const modal = document.getElementById('package-modal');
-        if (modal) {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
+    function closePkgPickerModal() {
+        const modal = document.getElementById('pkg-picker-modal');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
         document.body.style.overflow = '';
     }
 
-    function selectPackage() {
-        if (!currentPackage) return;
-
-        // Update sidebar
-        const sidebarPriceEl = document.getElementById('sidebar-price');
-        const unitRaw = parseInt(currentPackage.price || 0, 10) || 0;
-        const discount = parseInt(currentPackage.discount || 0, 10) || 0;
-        const unitFinal = Math.max(unitRaw - discount, 0);
-        if (sidebarPriceEl) sidebarPriceEl.textContent = unitFinal > 0 ? ('Rp ' + unitFinal.toLocaleString('id-ID')) : (currentPackage.price || '—');
-        const sidebarOriginalEl = document.getElementById('sidebar-price-original');
-        if (sidebarOriginalEl) {
-            if (unitRaw > 0 && discount > 0) {
-                sidebarOriginalEl.textContent = 'Rp ' + unitRaw.toLocaleString('id-ID');
-                sidebarOriginalEl.classList.remove('hidden');
-            } else {
-                sidebarOriginalEl.classList.add('hidden');
-            }
-        }
-        const dpEl = document.getElementById('sidebar-dp');
-        const dp = parseInt(currentPackage.dp_paket || 0, 10) || 0;
-        if (dpEl) dpEl.textContent = dp > 0 ? ('Rp ' + dp.toLocaleString('id-ID')) : '—';
-        document.getElementById('sidebar-pkg-label').textContent = currentPackage.name;
-        document.getElementById('sidebar-pkg-sub').textContent   = `${currentPackage.max_guests} Pax`;
-
-        selectedPackage = { id: currentPackage.id, name: currentPackage.name, price: currentPackage.price };
+    function confirmPkgPick() {
+        if (!pickerChosenPkg) return;
+        selectedPackage = { id: pickerChosenPkg.id, name: pickerChosenPkg.name, price: pickerChosenPkg.price };
         try {
             localStorage.setItem(`bookingPkg:${vendorSlug}`, JSON.stringify(selectedPackage));
         } catch {}
-        syncBookingPackage();
-
-        closePackageModal();
-        if (typeof showBookingWarning === 'function') {
-            showBookingWarning('Paket dipilih. Klik "Booking Sekarang" untuk lanjut.');
-        }
-        document.getElementById('contact-cta')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        closePkgPickerModal();
+        openBookingPage();
     }
 
     // Close on Escape key
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
-            closePackageModal();
+            closePkgPickerModal();
             closeVideoModal();
         }
     });
@@ -1423,15 +1309,6 @@
         const action = el.getAttribute('data-action');
         if (!action) return;
 
-        if (action === 'open-package') {
-            const raw = el.dataset.package || '';
-            if (!raw) return;
-            try {
-                openPackageModal(JSON.parse(raw));
-            } catch {}
-            return;
-        }
-
         if (action === 'open-video') {
             const url = el.getAttribute('data-video-url') || '';
             if (!url) return;
@@ -1441,16 +1318,6 @@
 
         if (action === 'close-video-modal') {
             closeVideoModal();
-            return;
-        }
-
-        if (action === 'close-package-modal') {
-            closePackageModal();
-            return;
-        }
-
-        if (action === 'select-package') {
-            selectPackage();
             return;
         }
 
@@ -1487,6 +1354,16 @@
 
         if (action === 'close-booking-success-modal') {
             closeBookingSuccessModal();
+            return;
+        }
+
+        if (action === 'close-pkg-picker') {
+            closePkgPickerModal();
+            return;
+        }
+
+        if (action === 'confirm-pkg-pick') {
+            confirmPkgPick();
             return;
         }
     });

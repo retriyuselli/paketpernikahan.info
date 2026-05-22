@@ -26,7 +26,7 @@
         @endif
 
         @php
-            $label = mb_convert_case((string) ($item['label'] ?? ''), MB_CASE_TITLE, 'UTF-8');
+            $label = (string) ($item['label'] ?? '');
             $url = $item['url'] ?? null;
         @endphp
 

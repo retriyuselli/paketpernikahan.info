@@ -8,9 +8,11 @@
     @include('layout.header')
 
     @php
+        $breadcrumbCategoryName = $vendor->categoryVendor?->name ?? ucfirst((string) $vendor->category);
         $breadcrumbItems = [
             ['label' => 'Home', 'url' => route('home')],
             ['label' => 'Vendor', 'url' => route('vendor')],
+            ['label' => $breadcrumbCategoryName, 'url' => route('vendor') . '?category=' . $vendor->category],
             ['label' => $vendor->name, 'url' => route('vendor.detail', $vendor)],
             ['label' => 'Booking', 'url' => null],
         ];
@@ -24,15 +26,15 @@
         $bookingPaymentUrl = $bookingId ? route('dashboard.booking.payment', $bookingId) : null;
     @endphp
 
-    <section class="pt-3 lg:py-8 bg-cream">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="pt-1 pb-4 lg:pt-4">
+    <section class="pt-3 lg:pt-3 lg:pb-8 bg-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="pt-1 pb-4 lg:pt-1">
                 <x-breadcrumb :items="$breadcrumbItems" />
             </div>
-            <div class="mt-3">
-                <x-banner-ad mt="0" />
-            </div>
 
+            <x-banner-ad mt="0" mb="1rem" />
+
+            <div class="max-w-xl mx-auto pt-0 pb-1 lg:py-2">
             @if(($bookingOwnerBlocked ?? false))
                 <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                     <div class="p-6 pb-5 bg-cream">
@@ -93,7 +95,7 @@
                                 <input type="hidden" name="qty" value="{{ $qty }}">
 
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Paket {{ $hasPackages ? '' : '(opsional)' }}</label>
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Paket{{ $hasPackages ? '' : ' (opsional)' }}</label>
                                     <select id="booking-vendor-package-select" name="vendor_package_id"
                                             class="w-full h-11 border border-gray-200 rounded-xl px-3.5 text-sm focus:outline-none focus:border-gray-400 transition bg-white"
                                             {{ $hasPackages ? 'required' : '' }}>
@@ -110,7 +112,7 @@
                                                         data-discount="{{ (int) ($pkg->discount ?? 0) }}"
                                                         data-dp="{{ (int) ($pkg->dp_paket ?? 0) }}"
                                                         {{ (int) $selectedId === (int) $pkg->id ? 'selected' : '' }}>
-                                                    {{ $pkg->name }} — {{ $pkg->price }}
+                                                    {{ $pkg->name }} — Rp {{ number_format($pkg->price, 0, ',', '.') }}
                                                 </option>
                                             @endforeach
                                         @endif
@@ -122,7 +124,7 @@
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <span class="text-xs text-gray-500">Total (x <span id="booking-summary-qty">{{ $qty }}</span>)</span>
-                                            <span id="booking-summary-price" class="text-base font-bold text-accent">{{ $selectedPackage?->price }}</span>
+                                            <span id="booking-summary-price" class="text-base font-bold text-accent">{{ $selectedPackage ? 'Rp ' . number_format($selectedPackage->price, 0, ',', '.') : '' }}</span>
                                         </div>
                                         <div id="booking-summary-dp-wrap" class="flex items-center justify-between mt-1 {{ ($selectedPackage?->dp_paket ?? 0) > 0 ? '' : 'hidden' }}">
                                             <span class="text-[11px] text-gray-500">DP Paket</span>
@@ -180,6 +182,7 @@
                     </div>
                 </div>
             @endif
+            </div>
         </div>
     </section>
 
