@@ -406,47 +406,17 @@
                     <h2 class="text-base font-bold mb-4 text-dark">Paket & Harga</h2>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         @foreach ($vendor->packages as $pkg)
-                        @php
-                            $pkgData = array_merge(
-                                $pkg->only(['id', 'slug', 'name', 'price', 'discount', 'dp_paket', 'max_guests', 'card_color', 'card_text_color', 'items', 'type', 'capacity', 'facilities']),
-                                ['item_html' => (string) ($pkg->item ?? '')]
-                            );
-                        @endphp
-                        <div class="rounded-2xl p-3 sm:p-5 flex flex-col cursor-pointer group ring-2 ring-transparent hover:ring-white/50 transition"
-                             style="background-color: {{ $pkg->card_color }}; color: {{ $pkg->card_text_color }}"
-                             data-action="open-package"
-                             data-package='@json($pkgData)'>
-                            <p class="text-[9px] sm:text-xs font-bold uppercase tracking-widest mb-1 opacity-70 leading-tight">{{ $pkg->name }}</p>
-                            <p class="text-sm font-bold leading-tight mb-0.5">Rp {{ number_format($pkg->price, 0, ',', '.') }}</p>
-                            <p class="text-[10px] sm:text-xs mb-2 sm:mb-3 opacity-70">{{ $pkg->max_guests ?: '0' }} Pax</p>
-                            @php $maxShow = 5; $total = count($pkg->items); $more = $total - $maxShow; @endphp
-                            <ul class="space-y-1.5 flex-1 mb-3">
-                                @if($pkg->type)
-                                <li class="hidden sm:flex items-start gap-2 text-xs font-semibold">
-                                    <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                    {{ $pkg->type }}
-                                </li>
-                                @endif
-                                @foreach ($pkg->items as $idx => $item)
-                                @if ($idx < $maxShow)
-                                <li class="{{ $idx >= 3 ? 'hidden sm:flex' : 'flex' }} items-start gap-2 text-xs">
-                                    <svg class="w-3.5 h-3.5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                    {{ $item }}
-                                </li>
-                                @endif
-                                @endforeach
-                                @if ($more > 0)
-                                <li class="flex items-center gap-1.5 text-xs font-semibold opacity-80 mt-1">
-                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                                    +{{ $more }} fasilitas lainnya
-                                </li>
-                                @endif
-                            </ul>
-                            <button type="button"
-                                    class="block w-full text-center text-[10px] sm:text-xs font-bold uppercase tracking-wider py-1.5 sm:py-2 rounded-full transition hover:opacity-80 bg-white/25">
-                                Pilih Paket
-                            </button>
-                        </div>
+                        <x-package-card
+                            :href="route('store.package.show', $pkg->slug)"
+                            :name="$pkg->name"
+                            :image="$pkg->image_url ?: asset('images/placeholder.jpg')"
+                            :price="$pkg->price"
+                            :discount="$pkg->discount ?: 0"
+                            :location="$vendor->city ?: 'Indonesia'"
+                            :benefitPrimary="($pkg->max_guests ? $pkg->max_guests . ' Pax' : 'Paket Pilihan')"
+                            :benefitSecondary="$pkg->type ?: 'Gratis Konsultasi'"
+                            widthClass="w-full"
+                        />
                         @endforeach
                     </div>
                 </div>
