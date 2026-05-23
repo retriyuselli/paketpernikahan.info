@@ -238,6 +238,10 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
+                {{-- ── Left + Middle block (9 cols) ───────────────────────── --}}
+                <div class="lg:col-span-9 flex flex-col gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-9 gap-6">
+
                 {{-- ── Left: Gallery Column ─────────────────────────────── --}}
                 <div class="lg:col-span-4 lg:self-start">
                     @php
@@ -309,7 +313,7 @@
                 </div>
 
                 {{-- ── Middle: Detail Column ─────────────────────────────── --}}
-                <div class="lg:col-span-5">
+                <div class="lg:col-span-5 lg:self-start">
                     {{-- ── Header Card ───────────────────────────────────── --}}
                     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
                         {{-- Top accent bar --}}
@@ -502,6 +506,53 @@
                     @endif
 
                 </div>
+                </div>{{-- end inner grid-cols-9 --}}
+
+                {{-- ── Produk Lainnya oleh Vendor Ini ──────────────── --}}
+                @if($otherPackages->isNotEmpty())
+                    <div>
+                        <div class="flex items-end justify-between gap-4 mb-3">
+                            <div>
+                                <p class="text-sm font-bold text-dark">Produk Lainnya</p>
+                                <p class="text-xs text-gray-400">oleh {{ $vendor->name }} · {{ $otherPackages->count() }} paket</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                            @foreach($otherPackages->take(8) as $op)
+                                @php
+                                    $opPrice    = (int) ($op->price ?? 0);
+                                    $opDiscount = (int) ($op->discount ?? 0);
+                                    $opCover    = $op->image_url ?: null;
+                                    if (!$opCover && is_array($op->image_path ?? null) && count($op->image_path) > 0) {
+                                        $opCover = $op->image_path[0];
+                                        if ($opCover && !str_starts_with($opCover, 'http')) {
+                                            $opCover = \Illuminate\Support\Facades\Storage::url($opCover);
+                                        }
+                                    }
+                                    if (!$opCover) { $opCover = $vendor->cover_image_url ?: null; }
+                                    if (!$opCover && is_array($vendor->cover_image ?? null)) { $opCover = $vendor->cover_image[0] ?? null; }
+                                    $opPrimaryBenefit   = $opDiscount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
+                                    $opSecondaryBenefit = !empty($op->items[0]) ? \Illuminate\Support\Str::limit($op->items[0], 16) : 'Gratis Konsultasi';
+                                @endphp
+                                <x-package-card
+                                    :href="route('store.package.show', $op)"
+                                    :name="$op->name"
+                                    :image="$opCover"
+                                    :price="$opPrice"
+                                    :discount="$opDiscount"
+                                    :vendor-name="$vendor->name"
+                                    :location="$vendor->city ?? 'Indonesia'"
+                                    :rating="$vendor->rating ?? null"
+                                    :benefit-primary="$opPrimaryBenefit"
+                                    :benefit-secondary="$opSecondaryBenefit"
+                                    width-class="w-full"
+                                    :class="$loop->index >= 6 ? 'hidden lg:block' : ''"
+                                />
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+                </div>{{-- end lg:col-span-9 wrapper --}}
 
                 <div class="lg:col-span-3 flex flex-col gap-4">
                     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm lg:sticky lg:top-24">
@@ -697,50 +748,7 @@
                     @endif
                 </div>
 
-                {{-- ── Produk Lainnya oleh Vendor Ini ──────────────── --}}
-                @if($otherPackages->isNotEmpty())
-                    <div class="lg:col-span-9 lg:mt-2">
-                        <div class="flex items-end justify-between gap-4 mb-3">
-                            <div>
-                                <p class="text-sm font-bold text-dark">Produk Lainnya</p>
-                                <p class="text-xs text-gray-400">oleh {{ $vendor->name }} · {{ $otherPackages->count() }} paket</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-                            @foreach($otherPackages->take(8) as $op)
-                                @php
-                                    $opPrice    = (int) ($op->price ?? 0);
-                                    $opDiscount = (int) ($op->discount ?? 0);
-                                    $opCover    = $op->image_url ?: null;
-                                    if (!$opCover && is_array($op->image_path ?? null) && count($op->image_path) > 0) {
-                                        $opCover = $op->image_path[0];
-                                        if ($opCover && !str_starts_with($opCover, 'http')) {
-                                            $opCover = \Illuminate\Support\Facades\Storage::url($opCover);
-                                        }
-                                    }
-                                    if (!$opCover) { $opCover = $vendor->cover_image_url ?: null; }
-                                    if (!$opCover && is_array($vendor->cover_image ?? null)) { $opCover = $vendor->cover_image[0] ?? null; }
-                                    $opPrimaryBenefit   = $opDiscount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
-                                    $opSecondaryBenefit = !empty($op->items[0]) ? \Illuminate\Support\Str::limit($op->items[0], 16) : 'Gratis Konsultasi';
-                                @endphp
-                                <x-package-card
-                                    :href="route('store.package.show', $op)"
-                                    :name="$op->name"
-                                    :image="$opCover"
-                                    :price="$opPrice"
-                                    :discount="$opDiscount"
-                                    :vendor-name="$vendor->name"
-                                    :location="$vendor->city ?? 'Indonesia'"
-                                    :rating="$vendor->rating ?? null"
-                                    :benefit-primary="$opPrimaryBenefit"
-                                    :benefit-secondary="$opSecondaryBenefit"
-                                    width-class="w-full"
-                                    :class="$loop->index >= 6 ? 'hidden lg:block' : ''"
-                                />
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
+
             </div>
         </x-ui.container>
     </section>
