@@ -70,11 +70,18 @@ class ListActivityLogs extends ListRecords
                         $old = $props['old'] ?? [];
                         $new = $props['attributes'] ?? [];
 
+                        // konversi nilai apapun (string/array/bool/null) ke string aman untuk HTML
+                        $toStr = function ($val): string {
+                            if (is_null($val)) return '—';
+                            if (is_bool($val)) return $val ? 'true' : 'false';
+                            if (is_array($val) || is_object($val)) return e(json_encode($val, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+                            return e((string) $val);
+                        };
+
                         if (empty($new) && ! empty($old)) {
                             $lines = [];
                             foreach ($old as $field => $val) {
-                                $str = is_bool($val) ? ($val ? 'true' : 'false') : e($val);
-                                $lines[] = "<span class=\"text-gray-500 text-xs\">{$field}:</span> {$str}";
+                                $lines[] = "<span class=\"text-gray-500 text-xs\">{$field}:</span> {$toStr($val)}";
                             }
                             return implode('<br>', $lines);
                         }
@@ -84,11 +91,9 @@ class ListActivityLogs extends ListRecords
                         $lines = [];
                         foreach ($new as $field => $newVal) {
                             $oldVal = $old[$field] ?? null;
-                            $oldStr = is_null($oldVal) ? '—' : (is_bool($oldVal) ? ($oldVal ? 'true' : 'false') : e($oldVal));
-                            $newStr = is_bool($newVal) ? ($newVal ? 'true' : 'false') : e($newVal);
                             $lines[] = empty($old)
-                                ? "<span class=\"text-gray-500 text-xs\">{$field}:</span> {$newStr}"
-                                : "<span class=\"text-gray-500 text-xs\">{$field}:</span> {$oldStr} → <strong>{$newStr}</strong>";
+                                ? "<span class=\"text-gray-500 text-xs\">{$field}:</span> {$toStr($newVal)}"
+                                : "<span class=\"text-gray-500 text-xs\">{$field}:</span> {$toStr($oldVal)} → <strong>{$toStr($newVal)}</strong>";
                         }
                         return implode('<br>', $lines);
                     })
