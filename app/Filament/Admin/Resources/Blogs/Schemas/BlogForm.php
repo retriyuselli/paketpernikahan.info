@@ -64,12 +64,11 @@ class BlogForm
                     FileUpload::make('cover_image')
                         ->label('Gambar Cover')
                         ->image()
+                        ->imageEditor()
                         ->disk('public')
                         ->directory('blogs')
-                        ->imageResizeMode('cover')
-                        ->imageCropAspectRatio('3:2')
                         ->helperText('Rekomendasi: rasio 3:2 (landscape), min. 900×600px')
-                        ->columnSpanFull(),
+                        ->columnSpanFull(), 
 
                     RichEditor::make('content')
                         ->label('Konten')

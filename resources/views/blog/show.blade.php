@@ -111,6 +111,17 @@
                                         </a>
                                     @endif
                                 @endauth
+                                <button type="button"
+                                        id="blog-share-btn"
+                                        data-share-url="{{ route('blog.show', $blog->slug) }}"
+                                        data-share-title="{{ $blog->title }}"
+                                        data-share-text="{{ $blog->excerpt ?? $blog->title }}"
+                                        class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                                    </svg>
+                                    Share
+                                </button>
                                 <a href="{{ route('blog.index') }}"
                                    class="text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
                                     Kembali
@@ -328,4 +339,44 @@
     </section>
 
     @include('layout.footer')
+
+    <script>
+    (function () {
+        var btn = document.getElementById('blog-share-btn');
+        if (!btn) return;
+
+        function copyText(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                return navigator.clipboard.writeText(text);
+            }
+            return new Promise(function (resolve, reject) {
+                var el = document.createElement('textarea');
+                el.value = text;
+                el.className = 'fixed -left-[9999px] top-0 opacity-0';
+                document.body.appendChild(el);
+                el.select();
+                try { document.execCommand('copy') ? resolve() : reject(); } catch (e) { reject(e); }
+                finally { document.body.removeChild(el); }
+            });
+        }
+
+        btn.addEventListener('click', function () {
+            var url   = btn.dataset.shareUrl   || window.location.href;
+            var title = btn.dataset.shareTitle  || document.title;
+            var text  = btn.dataset.shareText   || title;
+
+            if (navigator.share) {
+                navigator.share({ title: title, text: text, url: url })
+                    .catch(function (e) {
+                        if (e && e.name === 'AbortError') return;
+                        copyText(url).catch(function () { window.prompt('Salin link artikel ini:', url); });
+                    });
+                return;
+            }
+            copyText(url)
+                .then(function () { btn.textContent = 'Tersalin!'; setTimeout(function () { btn.innerHTML = '<svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>Share'; }, 2000); })
+                .catch(function () { window.prompt('Salin link artikel ini:', url); });
+        });
+    })();
+    </script>
 @endsection
