@@ -64,7 +64,7 @@
         $coverImage = $blogCoverImage;
     @endphp
 
-    <section class="pt-3 lg:pt-3 lg:pb-8 bg-cream">
+    <section class="pt-3 pb-8 lg:pt-3 lg:pb-8 bg-cream">
         <x-ui.container>
             <div class="pt-1 pb-4 lg:pt-1">
                 <x-breadcrumb :items="$breadcrumbItems" />
@@ -78,6 +78,37 @@
 
                     <!-- Header Card -->
                     <div class="bg-white rounded-2xl border border-gray-100 p-6">
+                        {{-- Buttons row (mobile: top-right aligned; desktop: inline with title) --}}
+                        <div class="flex items-center justify-end gap-2 mb-3 lg:hidden">
+                            @auth
+                                @if(auth()->user()->hasRole('super_admin'))
+                                    <a href="/admin/blogs/{{ $blog->id }}/edit"
+                                       class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                        Edit
+                                    </a>
+                                @endif
+                            @endauth
+                            <button type="button"
+                                    id="blog-share-btn-mobile"
+                                    data-share-url="{{ route('blog.show', $blog->slug) }}"
+                                    data-share-title="{{ $blog->title }}"
+                                    data-share-text="{{ $blog->excerpt ?? $blog->title }}"
+                                    class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                                </svg>
+                                Share
+                            </button>
+                            <a href="{{ route('blog.index') }}"
+                               class="text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                Kembali
+                            </a>
+                        </div>
+
+                        {{-- Title + buttons (desktop: side by side) --}}
                         <div class="flex items-start justify-between gap-4 mb-4">
                             <div class="flex-1">
                                 @if($blog->category)
@@ -99,7 +130,7 @@
                                     <p class="mt-3 text-sm text-gray-500 leading-relaxed">{{ $blog->excerpt }}</p>
                                 @endif
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
+                            <div class="hidden lg:flex items-center gap-2 shrink-0">
                                 @auth
                                     @if(auth()->user()->hasRole('super_admin'))
                                         <a href="/admin/blogs/{{ $blog->id }}/edit"
@@ -342,8 +373,7 @@
 
     <script>
     (function () {
-        var btn = document.getElementById('blog-share-btn');
-        if (!btn) return;
+        var shareIconSvg = '<svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>';
 
         function copyText(text) {
             if (navigator.clipboard && window.isSecureContext) {
@@ -360,23 +390,29 @@
             });
         }
 
-        btn.addEventListener('click', function () {
-            var url   = btn.dataset.shareUrl   || window.location.href;
-            var title = btn.dataset.shareTitle  || document.title;
-            var text  = btn.dataset.shareText   || title;
+        function attachShare(btn) {
+            if (!btn) return;
+            btn.addEventListener('click', function () {
+                var url   = btn.dataset.shareUrl   || window.location.href;
+                var title = btn.dataset.shareTitle  || document.title;
+                var text  = btn.dataset.shareText   || title;
 
-            if (navigator.share) {
-                navigator.share({ title: title, text: text, url: url })
-                    .catch(function (e) {
-                        if (e && e.name === 'AbortError') return;
-                        copyText(url).catch(function () { window.prompt('Salin link artikel ini:', url); });
-                    });
-                return;
-            }
-            copyText(url)
-                .then(function () { btn.textContent = 'Tersalin!'; setTimeout(function () { btn.innerHTML = '<svg class="w-3.5 h-3.5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>Share'; }, 2000); })
-                .catch(function () { window.prompt('Salin link artikel ini:', url); });
-        });
+                if (navigator.share) {
+                    navigator.share({ title: title, text: text, url: url })
+                        .catch(function (e) {
+                            if (e && e.name === 'AbortError') return;
+                            copyText(url).catch(function () { window.prompt('Salin link artikel ini:', url); });
+                        });
+                    return;
+                }
+                copyText(url)
+                    .then(function () { btn.textContent = 'Tersalin!'; setTimeout(function () { btn.innerHTML = shareIconSvg + 'Share'; }, 2000); })
+                    .catch(function () { window.prompt('Salin link artikel ini:', url); });
+            });
+        }
+
+        attachShare(document.getElementById('blog-share-btn'));
+        attachShare(document.getElementById('blog-share-btn-mobile'));
     })();
     </script>
 @endsection
