@@ -24,7 +24,7 @@
 
         <link rel="canonical" href="{{ $canonicalUrl }}">
 
-        <title>{{ $pageTitle }}</title>
+        <title>{!! $pageTitle !!}</title>
         <link rel="icon" href="{{ config('app.favicon_url') }}">
         <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
         <meta property="og:type" content="{{ $metaType }}">
