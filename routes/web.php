@@ -1257,7 +1257,50 @@ Route::get('/dashboard', function () {
     $bookingUserCount = $user->hasRole(['super_admin', 'admin'])
         ? \App\Models\VendorBooking::where('status', 'pending')->count()
         : 0;
-    return view('dashboard.index', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount', 'bookingUserCount'));
+
+    $availablePromos = (!$user->hasRole(['super_admin', 'admin']) && !$user->hasRole('vendor'))
+        ? \App\Models\Promo::active()->available()
+            ->whereDoesntHave('bookings', fn ($q) => $q->where('user_id', $user->id))
+            ->with(['vendorPackages' => fn ($q) => $q->select('vendor_packages.id', 'vendor_packages.name', 'vendor_packages.slug')])
+            ->limit(4)
+            ->get()
+        : collect();
+
+    $promoStats = $user->hasRole(['super_admin', 'admin']) ? [
+        'active_count'      => \App\Models\Promo::active()->available()->count(),
+        'usage_this_month'  => \App\Models\VendorBooking::whereNotNull('promo_code')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count(),
+        'discount_this_month' => (int) \App\Models\VendorBooking::whereNotNull('promo_code')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('promo_discount'),
+        'discount_all_time'   => (int) \App\Models\VendorBooking::whereNotNull('promo_code')
+            ->sum('promo_discount'),
+    ] : [];
+
+    $vendorPromoPackages = $user->hasRole('vendor')
+        ? \App\Models\VendorPackage::whereHas('vendor', fn ($q) => $q->where('owner_user_id', $user->id))
+            ->whereHas('promos', fn ($q) => $q->active()->available())
+            ->with([
+                'promos' => fn ($q) => $q->active()->available()
+                    ->select('promos.id', 'promos.code', 'promos.type', 'promos.value', 'promos.uses_count', 'promos.valid_until'),
+            ])
+            ->select('id', 'vendor_id', 'name', 'slug')
+            ->get()
+            ->map(function ($pkg) {
+                $pkg->promo_bookings_count = \App\Models\VendorBooking::where('vendor_package_id', $pkg->id)
+                    ->whereNotNull('promo_code')
+                    ->count();
+                $pkg->promo_discount_total = (int) \App\Models\VendorBooking::where('vendor_package_id', $pkg->id)
+                    ->whereNotNull('promo_code')
+                    ->sum('promo_discount');
+                return $pkg;
+            })
+        : collect();
+
+    return view('dashboard.index', compact('user', 'reviewCount', 'favoriteCount', 'bookingCount', 'bookingUserCount', 'availablePromos', 'promoStats', 'vendorPromoPackages'));
 })->name('dashboard')->middleware(['auth', 'verified']);
 
 Route::get('/dashboard/pengaturan', function () {

@@ -86,6 +86,66 @@
         </a>
     </div>
 
+    {{-- Promo Tersedia --}}
+    @if(!$isAdmin && !$isVendor && isset($availablePromos) && $availablePromos->isNotEmpty())
+    <div class="mb-8">
+        <div class="flex items-center justify-between mb-3">
+            <p class="text-sm font-bold text-dark">Promo Tersedia Untukmu</p>
+            <a href="{{ route('store.promo') }}" class="text-xs text-accent hover:underline">Lihat semua →</a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            @foreach($availablePromos as $promo)
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 flex flex-col gap-3">
+                <div class="flex items-start justify-between gap-2">
+                    <div>
+                        <div class="mb-1">
+                            @if($promo->type === 'percent')
+                            <span class="text-xs font-bold bg-green-50 text-green-600 px-2 py-0.5 rounded-full">Diskon {{ $promo->value }}%</span>
+                            @else
+                            <span class="text-xs font-bold bg-green-50 text-green-600 px-2 py-0.5 rounded-full">Hemat Rp {{ number_format($promo->value, 0, ',', '.') }}</span>
+                            @endif
+                        </div>
+                        @if($promo->description)
+                        <p class="text-xs text-gray-500">{{ $promo->description }}</p>
+                        @endif
+                    </div>
+                    @if($promo->valid_until)
+                    <span class="text-[10px] text-gray-400 whitespace-nowrap flex-shrink-0">s/d {{ $promo->valid_until->format('d M Y') }}</span>
+                    @endif
+                </div>
+                <div class="flex items-center gap-2">
+                    <code class="flex-1 text-sm font-mono font-bold text-dark bg-cream rounded-xl px-3 py-2 tracking-widest">{{ $promo->code }}</code>
+                    <button type="button"
+                            onclick="copyPromoCode('{{ $promo->code }}', this)"
+                            class="flex-shrink-0 h-9 px-3 rounded-xl text-xs font-semibold bg-accent text-white hover:opacity-90 transition">
+                        Salin
+                    </button>
+                </div>
+                @if($promo->vendorPackages->isNotEmpty())
+                <p class="text-[10px] text-gray-400 leading-relaxed">Berlaku untuk:
+                    @foreach($promo->vendorPackages->take(2) as $pkg)
+                    <a href="{{ route('store.package.show', $pkg) }}" class="text-accent hover:underline">{{ $pkg->name }}</a>{{ !$loop->last && $promo->vendorPackages->count() > 1 ? ',' : '' }}
+                    @endforeach
+                    @if($promo->vendorPackages->count() > 2)
+                    &amp; {{ $promo->vendorPackages->count() - 2 }} lainnya
+                    @endif
+                </p>
+                @endif
+            </div>
+            @endforeach
+        </div>
+    </div>
+    <script>
+    function copyPromoCode(code, btn) {
+        navigator.clipboard.writeText(code).then(function () {
+            var orig = btn.textContent;
+            btn.textContent = 'Tersalin!';
+            setTimeout(function () { btn.textContent = orig; }, 1500);
+        });
+    }
+    </script>
+    @endif
+
     {{-- Stats --}}
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
         @if($isAdmin)
@@ -156,6 +216,35 @@
                     {{ $user->email_verified_at ? '✓ Terverifikasi' : '⚠ Belum verifikasi' }}
                 </p>
             </div>
+
+            {{-- Promo Stats --}}
+            @if(!empty($promoStats))
+            <div class="col-span-2 sm:col-span-3 border-t border-gray-100 pt-4 mt-2">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-3">Statistik Promo</p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-green-50 rounded-2xl p-4">
+                        <p class="text-[10px] uppercase tracking-widest text-green-600 mb-1">Promo Aktif</p>
+                        <p class="text-3xl font-bold text-green-700">{{ $promoStats['active_count'] }}</p>
+                        <p class="text-xs text-green-500 mt-0.5">siap digunakan</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 p-4">
+                        <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Pemakaian Bulan Ini</p>
+                        <p class="text-3xl font-bold text-dark">{{ $promoStats['usage_this_month'] }}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">booking pakai promo</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 p-4">
+                        <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Diskon Bulan Ini</p>
+                        <p class="text-lg font-bold leading-tight text-dark">{{ number_format($promoStats['discount_this_month'], 0, ',', '.') }}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">total potongan</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 p-4">
+                        <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Total Diskon</p>
+                        <p class="text-lg font-bold leading-tight text-dark">{{ number_format($promoStats['discount_all_time'], 0, ',', '.') }}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">sepanjang waktu</p>
+                    </div>
+                </div>
+            </div>
+            @endif
         @elseif($isVendor)
             <div class="bg-white rounded-2xl border border-gray-100 p-5">
                 <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Vendor Saya</p>
@@ -208,6 +297,42 @@
                     {{ $user->email_verified_at ? '✓ Terverifikasi' : '⚠ Belum verifikasi' }}
                 </p>
             </div>
+
+            {{-- Vendor Promo Performance --}}
+            @if(isset($vendorPromoPackages) && $vendorPromoPackages->isNotEmpty())
+            <div class="col-span-2 sm:col-span-3 border-t border-gray-100 pt-4 mt-2">
+                <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-3">Performa Promo Paket</p>
+                <div class="flex flex-col gap-3">
+                    @foreach($vendorPromoPackages as $pkg)
+                    <div class="bg-white rounded-2xl border border-gray-100 p-4">
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <a href="{{ route('store.package.show', $pkg) }}" class="text-sm font-bold text-dark hover:text-accent transition">{{ $pkg->name }}</a>
+                            <div class="flex items-center gap-3 text-xs text-gray-400 shrink-0">
+                                <span>{{ $pkg->promo_bookings_count }} booking</span>
+                                <span class="font-semibold text-dark">Rp {{ number_format($pkg->promo_discount_total, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($pkg->promos as $promo)
+                            <div class="flex items-center gap-2 bg-cream rounded-xl px-3 py-1.5">
+                                <code class="text-xs font-mono font-bold text-dark tracking-wide">{{ $promo->code }}</code>
+                                @if($promo->type === 'percent')
+                                <span class="text-[10px] text-green-600 font-semibold">{{ $promo->value }}%</span>
+                                @else
+                                <span class="text-[10px] text-green-600 font-semibold">Rp {{ number_format($promo->value, 0, ',', '.') }}</span>
+                                @endif
+                                <span class="text-[10px] text-gray-400">{{ $promo->uses_count }}× dipakai</span>
+                                @if($promo->valid_until)
+                                <span class="text-[10px] text-gray-400">s/d {{ $promo->valid_until->format('d M') }}</span>
+                                @endif
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
         @else
             <div class="bg-white rounded-2xl border border-gray-100 p-5">
                 <p class="text-[10px] uppercase tracking-widest text-gray-400 mb-1">Booking Aktif</p>
