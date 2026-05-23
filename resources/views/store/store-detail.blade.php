@@ -508,50 +508,6 @@
                 </div>
                 </div>{{-- end inner grid-cols-9 --}}
 
-                {{-- ── Produk Lainnya oleh Vendor Ini ──────────────── --}}
-                @if($otherPackages->isNotEmpty())
-                    <div>
-                        <div class="flex items-end justify-between gap-4 mb-3">
-                            <div>
-                                <p class="text-sm font-bold text-dark">Produk Lainnya</p>
-                                <p class="text-xs text-gray-400">oleh {{ $vendor->name }} · {{ $otherPackages->count() }} paket</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-                            @foreach($otherPackages->take(8) as $op)
-                                @php
-                                    $opPrice    = (int) ($op->price ?? 0);
-                                    $opDiscount = (int) ($op->discount ?? 0);
-                                    $opCover    = $op->image_url ?: null;
-                                    if (!$opCover && is_array($op->image_path ?? null) && count($op->image_path) > 0) {
-                                        $opCover = $op->image_path[0];
-                                        if ($opCover && !str_starts_with($opCover, 'http')) {
-                                            $opCover = \Illuminate\Support\Facades\Storage::url($opCover);
-                                        }
-                                    }
-                                    if (!$opCover) { $opCover = $vendor->cover_image_url ?: null; }
-                                    if (!$opCover && is_array($vendor->cover_image ?? null)) { $opCover = $vendor->cover_image[0] ?? null; }
-                                    $opPrimaryBenefit   = $opDiscount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
-                                    $opSecondaryBenefit = !empty($op->items[0]) ? \Illuminate\Support\Str::limit($op->items[0], 16) : 'Gratis Konsultasi';
-                                @endphp
-                                <x-package-card
-                                    :href="route('store.package.show', $op)"
-                                    :name="$op->name"
-                                    :image="$opCover"
-                                    :price="$opPrice"
-                                    :discount="$opDiscount"
-                                    :vendor-name="$vendor->name"
-                                    :location="$vendor->city ?? 'Indonesia'"
-                                    :rating="$vendor->rating ?? null"
-                                    :benefit-primary="$opPrimaryBenefit"
-                                    :benefit-secondary="$opSecondaryBenefit"
-                                    width-class="w-full"
-                                    :class="$loop->index >= 6 ? 'hidden lg:block' : ''"
-                                />
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
                 </div>{{-- end lg:col-span-9 wrapper --}}
 
                 <div class="lg:col-span-3 flex flex-col gap-4">
@@ -720,8 +676,8 @@
                         </div>
                     </div>
 
-                    {{-- ── Artikel Terpopuler ──────────────────────────── --}}
-                    @if(isset($popularBlogs) && $popularBlogs->isNotEmpty())
+                    {{-- ── Artikel Terpopuler (moved below Produk Lainnya) ── --}}
+                    @if(false && isset($popularBlogs) && $popularBlogs->isNotEmpty())
                         <div class="hidden lg:block bg-white rounded-2xl border border-gray-100 p-5">
                             <h3 class="text-xs font-extrabold uppercase tracking-widest text-gray-400 border-b border-gray-100 pb-3 mb-4">Artikel Terpopuler</h3>
                             <div class="flex flex-col gap-4">
@@ -748,6 +704,77 @@
                     @endif
                 </div>
 
+                {{-- ── Produk Lainnya — full width mobile, 9-col desktop ── --}}
+                @if($otherPackages->isNotEmpty())
+                    <div class="lg:col-span-9">
+                        <div class="flex items-end justify-between gap-4 mb-3">
+                            <div>
+                                <p class="text-sm font-bold text-dark">Produk Lainnya</p>
+                                <p class="text-xs text-gray-400">oleh {{ $vendor->name }} · {{ $otherPackages->count() }} paket</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                            @foreach($otherPackages->take(8) as $op)
+                                @php
+                                    $opPrice    = (int) ($op->price ?? 0);
+                                    $opDiscount = (int) ($op->discount ?? 0);
+                                    $opCover    = $op->image_url ?: null;
+                                    if (!$opCover && is_array($op->image_path ?? null) && count($op->image_path) > 0) {
+                                        $opCover = $op->image_path[0];
+                                        if ($opCover && !str_starts_with($opCover, 'http')) {
+                                            $opCover = \Illuminate\Support\Facades\Storage::url($opCover);
+                                        }
+                                    }
+                                    if (!$opCover) { $opCover = $vendor->cover_image_url ?: null; }
+                                    if (!$opCover && is_array($vendor->cover_image ?? null)) { $opCover = $vendor->cover_image[0] ?? null; }
+                                    $opPrimaryBenefit   = $opDiscount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
+                                    $opSecondaryBenefit = !empty($op->items[0]) ? \Illuminate\Support\Str::limit($op->items[0], 16) : 'Gratis Konsultasi';
+                                @endphp
+                                <x-package-card
+                                    :href="route('store.package.show', $op)"
+                                    :name="$op->name"
+                                    :image="$opCover"
+                                    :price="$opPrice"
+                                    :discount="$opDiscount"
+                                    :vendor-name="$vendor->name"
+                                    :location="$vendor->city ?? 'Indonesia'"
+                                    :rating="$vendor->rating ?? null"
+                                    :benefit-primary="$opPrimaryBenefit"
+                                    :benefit-secondary="$opSecondaryBenefit"
+                                    width-class="w-full"
+                                    :class="$loop->index >= 6 ? 'hidden lg:block' : ''"
+                                />
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
+                {{-- ── Artikel Terpopuler (mobile only) ── --}}
+                @if(isset($popularBlogs) && $popularBlogs->isNotEmpty())
+                    <div class="lg:col-span-9 bg-white rounded-2xl border border-gray-100 p-5">
+                        <h3 class="text-xs font-extrabold uppercase tracking-widest text-gray-400 border-b border-gray-100 pb-3 mb-4">Artikel Terpopuler</h3>
+                        <div class="flex flex-col gap-4">
+                            @foreach($popularBlogs as $idx => $pop)
+                                @php $popImage = $pop->cover_image_url ?: asset('images/placeholder.jpg'); @endphp
+                                @if($idx > 0)
+                                    <div class="border-t border-gray-100"></div>
+                                @endif
+                                <a href="{{ route('blog.show', $pop->slug) }}" class="flex gap-3 group">
+                                    <img src="{{ $popImage }}" alt="{{ $pop->title }}" loading="lazy"
+                                         class="w-16 h-12 rounded-xl object-cover shrink-0">
+                                    <div>
+                                        @if($pop->category)
+                                            <p class="text-[10px] font-bold text-accent">{{ $pop->category }}
+                                                <span class="text-gray-400 font-normal">· {{ number_format($pop->views_count) }} views</span>
+                                            </p>
+                                        @endif
+                                        <p class="text-xs font-semibold text-gray-800 leading-snug group-hover:underline">{{ $pop->title }}</p>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
             </div>
         </x-ui.container>
