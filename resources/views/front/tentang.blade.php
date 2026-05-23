@@ -61,6 +61,7 @@ $tentangFaqSchema = [
     ],
 ];
 @endphp
+{{-- safe: $tentangFaqSchema adalah array PHP hardcoded di atas, bukan user input --}}
 <script type="application/ld+json">{!! json_encode($tentangFaqSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}</script>
 @endsection
 
@@ -257,6 +258,7 @@ $tentangFaqSchema = [
                              x-transition:leave="transition ease-in duration-150"
                              x-transition:leave-start="opacity-100 translate-y-0"
                              x-transition:leave-end="opacity-0 -translate-y-1">
+                            {{-- safe: $faqs hardcoded di atas dengan tag <strong> saja, bukan user input --}}
                             <p class="px-6 pb-5 text-sm text-gray-500 leading-relaxed">{!! $faq['a'] !!}</p>
                         </div>
                     </div>

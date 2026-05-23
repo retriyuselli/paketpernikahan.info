@@ -387,6 +387,7 @@
                             @if($package->item)
                                 <div class="relative">
                                     <div data-facilities-content class="prose prose-sm max-w-none max-h-64 overflow-hidden text-gray-700 transition-all duration-300">
+                                        {{-- safe: package->item diisi vendor/admin via Filament rich text, bukan user input --}}
                                         {!! $package->item !!}
                                     </div>
                                     <div data-facilities-fade class="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-white via-white/95 to-transparent"></div>
@@ -538,6 +539,46 @@
                             </div>
                         </div>
                         @endif
+
+                        {{-- ── Kode Promo Badge ───────────────────────── --}}
+                        @if($activePromos > 0)
+                        <div class="flex items-center gap-2.5 bg-emerald-50 border-b border-emerald-100 px-5 py-3">
+                            <div class="shrink-0 w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center">
+                                <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold text-emerald-700 leading-tight">Ada Kode Promo!</p>
+                                <p class="text-[10px] text-emerald-600 leading-tight mt-0.5">Masukkan kode saat pemesanan</p>
+                            </div>
+                            <span class="ml-auto shrink-0 bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                                {{ $activePromos }} Promo
+                            </span>
+                        </div>
+                        @endif
+
+                        {{-- ── Notif promo sudah dipakai ───────────────── --}}
+                        @auth
+                        @if(!empty($userUsedPromoCodes))
+                        <div class="flex items-start gap-2.5 bg-amber-50 border-b border-amber-100 px-5 py-3">
+                            <div class="shrink-0 w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center mt-0.5">
+                                <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-bold text-amber-700 leading-tight">Kode sudah pernah dipakai</p>
+                                <p class="text-[10px] text-amber-600 leading-tight mt-0.5">
+                                    Kode berikut tidak bisa digunakan kembali:
+                                    @foreach($userUsedPromoCodes as $usedCode)
+                                        <span class="font-mono font-bold">{{ $usedCode }}</span>{{ !$loop->last ? ', ' : '' }}
+                                    @endforeach
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+                        @endauth
 
                         {{-- ── Vendor info mini ────────────────────────── --}}
                         <div class="px-5 pt-4 pb-3 border-b border-gray-100 flex items-center justify-between gap-3">
@@ -705,6 +746,7 @@
                                 @endphp
                                 <x-package-card
                                     :href="route('store.package.show', $op)"
+                                    :package-id="$op->id"
                                     :name="$op->name"
                                     :image="$opCover"
                                     :price="$opPrice"

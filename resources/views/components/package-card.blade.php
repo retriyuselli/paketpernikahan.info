@@ -7,8 +7,7 @@
     'vendorName' => null,
     'location' => 'Indonesia',
     'rating' => null,
-    'benefitPrimary' => 'Paket Pilihan',
-    'benefitSecondary' => 'Gratis Konsultasi',
+    'packageId' => null,
     'widthClass' => 'w-[calc((100%-0.375rem)/2)] sm:w-[44vw] lg:w-60',
     'aspectClass' => 'aspect-square',
 ])
@@ -23,6 +22,20 @@
         : 0;
     $ratingText = filled($rating) ? number_format((float) $rating, 1) : null;
     $displayName = \Illuminate\Support\Str::title((string) $name);
+
+    // Query promo IDs sekali per request (static cache), tidak N+1
+    static $promoPackageIds = null;
+    if ($promoPackageIds === null) {
+        $promoPackageIds = \App\Models\Promo::active()->available()
+            ->has('vendorPackages')
+            ->with('vendorPackages:id')
+            ->get()
+            ->flatMap(fn ($p) => $p->vendorPackages->pluck('id'))
+            ->unique()
+            ->values()
+            ->all();
+    }
+    $hasPromo = $packageId !== null && in_array((int) $packageId, $promoPackageIds);
 @endphp
 
 <a href="{{ $href }}"
@@ -40,10 +53,16 @@
         <span class="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-1 text-[10px] font-medium leading-none text-dark shadow-sm">
             {{ $location }}
         </span>
-        <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5 text-dark" style="background: linear-gradient(90deg, var(--soft-pink), var(--light-sage), var(--sage-green));">
-            <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">{{ $benefitPrimary }}</span>
-            <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">{{ $benefitSecondary }}</span>
+        @if($hasPromo)
+        <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5">
+            <span class="flex items-center gap-1 rounded-md bg-emerald-500/90 px-1.5 py-0.5 text-[9px] font-bold leading-none text-white backdrop-blur-sm">
+                <svg class="h-2.5 w-2.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                Ada Kode Promo
+            </span>
         </div>
+        @endif
     </div>
 
     <div class="space-y-0.5 p-3 sm:space-y-1">
@@ -54,12 +73,6 @@
         @endif
 
         <p class="font-extrabold leading-none text-accent"><span class="text-[11px]">Rp</span><span class="text-[13px]">{{ number_format($displayPrice, 0, ',', '.') }}</span></p>
-
-        {{-- @if($discountAmount > 0)
-            <div class="flex flex-wrap gap-1">
-                <span class="rounded-xs border border-transparent bg-accent-pink px-1.5 py-0.5 text-[10px] font-medium text-dark">Harga Diskon</span>
-            </div>
-        @endif --}}
 
         @if(filled($vendorName))
             <p class="truncate text-[11px] text-gray-500">{{ $vendorName }}</p>

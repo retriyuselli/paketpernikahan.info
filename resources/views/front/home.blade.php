@@ -221,6 +221,7 @@
                                     @endphp
                                     <x-package-card
                                         :href="route('store.package.show', $pkg)"
+                                        :package-id="$pkg->id"
                                         :name="$pkg->name"
                                         :image="$cover"
                                         :price="$price"
@@ -441,6 +442,7 @@
                                 @endphp
                                 <x-package-card
                                     :href="route('store.package.show', $pkg)"
+                                    :package-id="$pkg->id"
                                     :name="$pkg->name"
                                     :image="$cover"
                                     :price="$price"

@@ -25,6 +25,8 @@ class VendorBooking extends Model
         'vendor_package_id',
         'agreed_total',
         'dp_required_amount',
+        'promo_code',
+        'promo_discount',
         'event_date',
         'phone',
         'notes',

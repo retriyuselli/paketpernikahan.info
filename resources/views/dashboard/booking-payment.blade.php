@@ -19,14 +19,17 @@
             Tanggal acara: <span class="font-semibold">{{ $booking->event_date?->format('d M Y') }}</span>
         </div>
         @php
-            $unitRawForQty = (int) ($booking->vendorPackage?->price ?? 0);
+            $unitRawForQty      = (int) ($booking->vendorPackage?->price ?? 0);
             $unitDiscountForQty = (int) ($booking->vendorPackage?->discount ?? 0);
-            $unitFinalForQty = max($unitRawForQty - $unitDiscountForQty, 0);
-            $agreedTotalForQty = (int) ($booking->agreed_total ?? 0);
+            $unitFinalForQty    = max($unitRawForQty - $unitDiscountForQty, 0);
+            $promoDiscountAmt   = (int) ($booking->promo_discount ?? 0);
+            $agreedTotalForQty  = (int) ($booking->agreed_total ?? 0);
+            // agreed_total sudah dikurangi promo, kembalikan dulu sebelum hitung qty
+            $subtotalBeforePromo = $agreedTotalForQty + $promoDiscountAmt;
             $qty = 1;
-            if ($unitFinalForQty > 0 && $agreedTotalForQty > 0) {
-                $guess = intdiv($agreedTotalForQty, $unitFinalForQty);
-                if ($guess >= 1 && $guess <= 99 && ($guess * $unitFinalForQty) === $agreedTotalForQty) {
+            if ($unitFinalForQty > 0 && $subtotalBeforePromo > 0) {
+                $guess = intdiv($subtotalBeforePromo, $unitFinalForQty);
+                if ($guess >= 1 && $guess <= 99 && ($guess * $unitFinalForQty) === $subtotalBeforePromo) {
                     $qty = $guess;
                 }
             }
@@ -34,6 +37,14 @@
         <div class="text-xs text-gray-500 mt-1">
             Jumlah: <span class="font-semibold">{{ $qty }}</span>
         </div>
+        @if($booking->promo_code)
+        <div class="text-xs text-gray-500 mt-1">
+            Kode promo: <span class="font-semibold font-mono tracking-wide text-emerald-600">{{ $booking->promo_code }}</span>
+            <span class="ml-1 text-emerald-600 font-semibold">
+                (Hemat Rp {{ number_format($promoDiscountAmt, 0, ',', '.') }})
+            </span>
+        </div>
+        @endif
         <div class="text-xs text-gray-500 mt-1">
             Status pembayaran: <span class="font-semibold">{{ $booking->payment_status }}</span>
         </div>
@@ -65,8 +76,8 @@
                     <label class="block text-xs font-semibold text-gray-500 mb-1">Tipe</label>
                     @php
                         $dpPaketAmount = (int) ($booking->dp_required_amount ?? ($booking->vendorPackage?->dp_paket ?? 0));
-                        $dpPaketLabel = $dpPaketAmount > 0 ? ('Rp ' . number_format($dpPaketAmount, 0, ',', '.')) : '—';
-                        $pkgFinal = (int) ($booking->agreed_total ?? 0);
+                        $dpPaketLabel  = $dpPaketAmount > 0 ? ('Rp ' . number_format($dpPaketAmount, 0, ',', '.')) : '—';
+                        $pkgFinal      = (int) ($booking->agreed_total ?? 0);
                         $pkgTotalLabel = $pkgFinal > 0
                             ? ('Rp ' . number_format($pkgFinal, 0, ',', '.'))
                             : (($booking->vendorPackage?->price ?? null) ?: '—');
@@ -81,6 +92,9 @@
                     </p>
                     <p id="final-helper" data-total="{{ $pkgFinal }}" class="mt-1.5 text-[11px] text-gray-400 hidden">
                         Total paket (x {{ $qty }}): <span class="font-semibold text-gray-600">{{ $pkgTotalLabel }}</span>
+                        @if($promoDiscountAmt > 0)
+                            <span class="ml-1 text-emerald-600">(sudah termasuk diskon promo Rp {{ number_format($promoDiscountAmt, 0, ',', '.') }})</span>
+                        @endif
                     </p>
                 </div>
                 <div>

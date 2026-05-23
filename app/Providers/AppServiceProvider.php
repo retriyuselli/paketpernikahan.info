@@ -8,6 +8,7 @@ use App\Models\VendorBooking;
 use App\Models\VendorBookingPayment;
 use App\Models\VendorReview;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Filament\Auth\Http\Responses\Contracts\LogoutResponse as LogoutResponseContract;
@@ -24,6 +25,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Gate::define('viewLogViewer', function ($user) {
+            return $user->hasRole(['super_admin', 'admin']);
+        });
+
         View::composer('layout.header', function ($view) {
             $user = Auth::user();
 

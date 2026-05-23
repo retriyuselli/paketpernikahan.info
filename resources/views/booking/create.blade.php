@@ -166,6 +166,28 @@
                                               placeholder="Mis: jam acara, estimasi tamu, request konsep...">{{ old('notes') }}</textarea>
                                 </div>
 
+                                {{-- Kode Promo --}}
+                                <div id="booking-promo-wrap" class="hidden">
+                                    <label class="block text-xs font-semibold text-gray-500 mb-1">Kode Promo (opsional)</label>
+                                    <div class="flex gap-2">
+                                        <div class="relative flex-1">
+                                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                            </svg>
+                                            <input id="booking-promo-input" type="text" name="promo_code"
+                                                   value="{{ old('promo_code') }}"
+                                                   placeholder="Masukkan kode promo"
+                                                   autocomplete="off" maxlength="50"
+                                                   class="w-full h-11 pl-9 pr-3.5 border border-gray-200 rounded-xl text-sm font-mono uppercase focus:outline-none focus:border-gray-400 transition">
+                                        </div>
+                                        <button type="button" id="booking-promo-btn"
+                                                class="shrink-0 h-11 px-4 rounded-xl text-xs font-bold border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                            Pakai
+                                        </button>
+                                    </div>
+                                    <div id="booking-promo-feedback" class="hidden mt-2 text-xs font-semibold px-3 py-2 rounded-xl"></div>
+                                </div>
+
                                 <button type="submit"
                                         class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold bg-accent text-cream transition hover:opacity-90">
                                     Kirim Booking
@@ -240,11 +262,43 @@
                 return 'Rp ' + n.toLocaleString('id-ID');
             }
 
+            var promoWrap     = document.getElementById('booking-promo-wrap');
+            var promoInput    = document.getElementById('booking-promo-input');
+            var promoBtn      = document.getElementById('booking-promo-btn');
+            var promoFeedback = document.getElementById('booking-promo-feedback');
+            var appliedDiscount = 0;
+
+            function getSubtotal() {
+                var opt = sel.options[sel.selectedIndex];
+                if (!sel.value) return 0;
+                var priceRaw = parseInt(opt.getAttribute('data-price-raw') || '0', 10) || 0;
+                var discount = parseInt(opt.getAttribute('data-discount') || '0', 10) || 0;
+                var qty = qtyEl ? clamp(qtyEl.value) : 1;
+                return Math.max(priceRaw - discount, 0) * qty;
+            }
+
+            function showFinal() {
+                var subtotal = getSubtotal();
+                var final = Math.max(subtotal - appliedDiscount, 0);
+                priceEl.textContent = money(final);
+            }
+
+            function resetPromo() {
+                appliedDiscount = 0;
+                if (promoFeedback) {
+                    promoFeedback.className = 'hidden mt-2 text-xs font-semibold px-3 py-2 rounded-xl';
+                    promoFeedback.textContent = '';
+                }
+                showFinal();
+            }
+
             function update() {
                 var opt = sel.options[sel.selectedIndex];
                 var id = sel.value;
                 if (!id) {
                     box.classList.add('hidden');
+                    if (promoWrap) promoWrap.classList.add('hidden');
+                    resetPromo();
                     return;
                 }
                 nameEl.textContent = opt.getAttribute('data-name') || opt.textContent;
@@ -256,7 +310,10 @@
                 var priceRaw = parseInt(opt.getAttribute('data-price-raw') || '0', 10) || 0;
                 var discount = parseInt(opt.getAttribute('data-discount') || '0', 10) || 0;
                 var unitFinal = Math.max(priceRaw - discount, 0);
-                priceEl.textContent = money(unitFinal * qty);
+                var subtotal = unitFinal * qty;
+                var final = Math.max(subtotal - appliedDiscount, 0);
+                priceEl.textContent = money(final);
+
                 guestsEl.textContent = opt.getAttribute('data-guests') || '';
                 if (dpWrap && dpEl) {
                     var dp = parseInt(opt.getAttribute('data-dp') || '0', 10) || 0;
@@ -269,6 +326,57 @@
                     }
                 }
                 box.classList.remove('hidden');
+                if (promoWrap) promoWrap.classList.remove('hidden');
+                resetPromo();
+            }
+
+            if (promoBtn && promoInput) {
+                promoBtn.addEventListener('click', function () {
+                    var code = promoInput.value.trim();
+                    var subtotal = getSubtotal();
+                    if (!code || !sel.value) return;
+
+                    promoBtn.disabled = true;
+                    promoBtn.textContent = '...';
+
+                    var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+                    var vendorPackageId = sel.value ? parseInt(sel.value) : null;
+
+                    fetch('{{ route('promo.validate') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({ code: code, subtotal: subtotal, vendor_package_id: vendorPackageId }),
+                    })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        promoBtn.disabled = false;
+                        promoBtn.textContent = 'Pakai';
+
+                        if (data.valid) {
+                            appliedDiscount = data.discount;
+                            promoFeedback.textContent = data.message + ' — Hemat ' + money(data.discount);
+                            promoFeedback.className = 'mt-2 text-xs font-semibold px-3 py-2 rounded-xl bg-green-50 text-green-700';
+                        } else {
+                            appliedDiscount = 0;
+                            promoFeedback.textContent = data.message;
+                            promoFeedback.className = 'mt-2 text-xs font-semibold px-3 py-2 rounded-xl bg-red-50 text-red-600';
+                        }
+                        promoFeedback.classList.remove('hidden');
+                        showFinal();
+                    })
+                    .catch(function () {
+                        promoBtn.disabled = false;
+                        promoBtn.textContent = 'Pakai';
+                    });
+                });
+
+                promoInput.addEventListener('input', function () {
+                    if (appliedDiscount > 0) resetPromo();
+                });
             }
 
             sel.addEventListener('change', update);

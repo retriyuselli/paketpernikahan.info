@@ -128,16 +128,33 @@
                             </td>
                             <td class="px-5 py-3 text-right">
                                 @php
-                                    $amount = (int) ($booking->agreed_total ?: ($package->price ?? 0));
+                                    $promoDisc = (int) ($booking->promo_discount ?? 0);
+                                    $finalAmt  = (int) ($booking->agreed_total ?: ($package->price ?? 0));
+                                    $subtotal  = $finalAmt + $promoDisc;
                                 @endphp
-                                <div class="text-xs font-bold text-dark">{{ number_format($amount, 0, ',', '.') }}</div>
+                                @if($promoDisc > 0)
+                                    <div class="text-xs text-gray-400 line-through">{{ number_format($subtotal, 0, ',', '.') }}</div>
+                                @endif
+                                <div class="text-xs font-bold text-dark">{{ number_format($finalAmt, 0, ',', '.') }}</div>
                             </td>
                         </tr>
+                        @if($promoDisc > 0)
+                        <tr class="bg-emerald-50/60">
+                            <td class="px-5 py-2 text-xs text-emerald-700">
+                                <span class="font-semibold">Kode Promo:</span>
+                                <span class="font-mono font-bold tracking-wide ml-1">{{ $booking->promo_code }}</span>
+                            </td>
+                            <td class="px-5 py-2 text-xs text-emerald-700">Diskon</td>
+                            <td class="px-5 py-2 text-right text-xs font-bold text-emerald-700">
+                                − {{ number_format($promoDisc, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                        @endif
                     </tbody>
                     <tfoot class="bg-white border-t border-gray-100">
                         <tr>
                             <td colspan="2" class="px-5 py-3 text-right text-xs font-semibold text-gray-500">Total</td>
-                            <td class="px-5 py-3 text-right text-sm font-extrabold text-accent">{{ number_format($amount, 0, ',', '.') }}</td>
+                            <td class="px-5 py-3 text-right text-sm font-extrabold text-accent">{{ number_format($finalAmt, 0, ',', '.') }}</td>
                         </tr>
                     </tfoot>
                 </table>

@@ -4,11 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Vendor;
 use App\Models\VendorBooking;
+use App\Services\BookingService;
+use App\Services\PromoService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class VendorBookingController extends Controller
 {
+    public function __construct(
+        private BookingService $bookingService,
+        private PromoService $promoService,
+    ) {}
+
     public function store(Request $request, Vendor $vendor)
     {
         if ((int) $vendor->owner_user_id === (int) $request->user()->id) {
@@ -35,6 +42,7 @@ class VendorBookingController extends Controller
             'event_date' => ['required', 'date', 'after_or_equal:today'],
             'phone'      => ['required', 'string', 'max:30', 'regex:/^[0-9+()\s.-]{8,30}$/'],
             'notes'      => ['nullable', 'string', 'max:2000'],
+            'promo_code' => ['nullable', 'string', 'max:50'],
         ]);
 
         $normalizedPhone = VendorBooking::normalizeWhatsappNumber($data['phone']);
@@ -44,37 +52,31 @@ class VendorBookingController extends Controller
                 ->withInput();
         }
 
-        $qty = max(1, min(99, (int) ($data['qty'] ?? 1)));
-        $package = isset($data['vendor_package_id'])
-            ? $vendor->packages()
-                ->select(['id', 'price', 'discount', 'dp_paket'])
-                ->whereKey((int) $data['vendor_package_id'])
-                ->first()
-            : null;
+        $data['phone'] = $normalizedPhone;
 
-        $agreedTotal = null;
-        $dpRequiredAmount = null;
-        if ($package) {
-            $priceRaw = (int) ($package->price ?? 0);
-            $discount = (int) ($package->discount ?? 0);
-            $unitFinal = max($priceRaw - $discount, 0);
-            $agreedTotal = $unitFinal * $qty;
+        // Resolve promo jika ada kode — validasi server-side ulang
+        $promo = null;
+        $promoCode = trim((string) ($data['promo_code'] ?? ''));
+        if ($promoCode !== '') {
+            $package = isset($data['vendor_package_id'])
+                ? $vendor->packages()
+                    ->select(['id', 'price', 'discount'])
+                    ->whereKey((int) $data['vendor_package_id'])
+                    ->first()
+                : null;
 
-            $dp = (int) ($package->dp_paket ?? 0);
-            $dpRequiredAmount = $dp > 0 ? ($dp * $qty) : null;
+            if ($package) {
+                $qty      = max(1, min(99, (int) ($data['qty'] ?? 1)));
+                $subtotal = max((int) $package->price - (int) ($package->discount ?? 0), 0) * $qty;
+
+                $promoResult = $this->promoService->validate($promoCode, $subtotal, isset($data['vendor_package_id']) ? (int) $data['vendor_package_id'] : null, $request->user()->id);
+                if ($promoResult['valid']) {
+                    $promo = $promoResult['promo'];
+                }
+            }
         }
 
-        $booking = VendorBooking::create([
-            'vendor_id'         => $vendor->id,
-            'user_id'           => $request->user()->id,
-            'vendor_package_id' => $data['vendor_package_id'] ?? null,
-            'agreed_total'      => $agreedTotal,
-            'dp_required_amount'=> $dpRequiredAmount,
-            'event_date'        => $data['event_date'],
-            'phone'             => $normalizedPhone,
-            'notes'             => $data['notes'] ?? null,
-            'status'            => 'pending',
-        ]);
+        $booking = $this->bookingService->createBooking($vendor, $request->user(), $data, $promo);
 
         return back()
             ->with('booking_success', 'Booking berhasil dikirim. Tim kami akan segera menghubungi Anda.')

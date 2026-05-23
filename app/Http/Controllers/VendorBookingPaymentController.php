@@ -5,17 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\VendorBooking;
 use App\Models\VendorBookingPayment;
+use App\Services\BookingService;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class VendorBookingPaymentController extends Controller
 {
+    public function __construct(
+        private BookingService $bookingService,
+        private PaymentService $paymentService,
+    ) {}
+
     public function store(Request $request, VendorBooking $booking)
     {
         $user = $request->user();
         abort_unless($user && (int) $booking->user_id === (int) $user->id, 403);
-
-        $booking->loadMissing(['vendorPackage']);
 
         $data = $request->validateWithBag('payment', [
             'type'        => ['required', 'in:dp,final,installment'],
@@ -27,37 +32,16 @@ class VendorBookingPaymentController extends Controller
             'proof'       => ['required', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:5120'],
         ]);
 
-        $dpRequired = (int) ($booking->dp_required_amount ?? ($booking->vendorPackage?->dp_paket ?? 0));
-        if (($data['type'] ?? null) === 'dp' && $dpRequired > 0 && (int) ($data['amount'] ?? 0) !== $dpRequired) {
+        $dpError = $this->bookingService->validateDpAmount($booking, $data['type'], (int) $data['amount']);
+        if ($dpError) {
             if ($request->expectsJson()) {
-                return response()->json([
-                    'message' => 'Nominal DP harus sama dengan DP paket.',
-                    'errors' => [
-                        'amount' => ['Nominal DP harus sama dengan DP paket.'],
-                    ],
-                ], 422);
+                return response()->json(['message' => $dpError, 'errors' => ['amount' => [$dpError]]], 422);
             }
 
-            return back()
-                ->withErrors(['amount' => 'Nominal DP harus sama dengan DP paket.'], 'payment')
-                ->withInput();
+            return back()->withErrors(['amount' => $dpError], 'payment')->withInput();
         }
 
-        $path = $request->file('proof')->store('payments', 'public');
-
-        VendorBookingPayment::create([
-            'vendor_booking_id' => $booking->id,
-            'type'              => $data['type'],
-            'amount'            => (int) $data['amount'],
-            'method'            => $data['method'],
-            'sender_name'       => $data['sender_name'] ?? null,
-            'sender_bank'       => $data['sender_bank'] ?? null,
-            'paid_at'           => $data['paid_at'] ?? null,
-            'proof_path'        => $path,
-            'status'            => 'pending_verification',
-        ]);
-
-        $this->recalcBookingPaymentStatus($booking);
+        $this->paymentService->uploadPayment($booking, $data, $request->file('proof'));
 
         return redirect()
             ->route('dashboard.booking')
@@ -71,7 +55,7 @@ class VendorBookingPaymentController extends Controller
 
         $booking = $payment->booking()->with('vendor')->firstOrFail();
 
-        $isAdmin = $user->hasRole(['super_admin', 'admin']);
+        $isAdmin       = $user->hasRole(['super_admin', 'admin']);
         $isVendorOwner = $user->hasRole(['vendor']) && (int) $booking->vendor?->owner_user_id === (int) $user->id;
         abort_unless($isAdmin || $isVendorOwner, 403);
 
@@ -80,66 +64,14 @@ class VendorBookingPaymentController extends Controller
             'note'   => ['nullable', 'string', 'max:2000'],
         ]);
 
-        if ($data['action'] === 'approve') {
-            $payment->update([
-                'status' => 'approved',
-                'verified_by' => $user->id,
-                'verified_at' => now(),
-                'note' => $data['note'] ?? null,
-            ]);
-        } else {
-            $note = trim((string) ($data['note'] ?? ''));
-            if ($note === '') {
-                return back()
-                    ->withErrors(['note' => 'Catatan wajib diisi saat reject.'], 'payment_verify');
-            }
-            $payment->update([
-                'status' => 'rejected',
-                'verified_by' => $user->id,
-                'verified_at' => now(),
-                'note' => $note,
-            ]);
+        $note = trim((string) ($data['note'] ?? ''));
+
+        if ($data['action'] === 'reject' && $note === '') {
+            return back()->withErrors(['note' => 'Catatan wajib diisi saat reject.'], 'payment_verify');
         }
 
-        $this->recalcBookingPaymentStatus($booking);
+        $this->paymentService->verifyPayment($payment, $user, $data['action'], $note ?: null);
 
         return back()->with('payment_success', 'Status pembayaran berhasil diperbarui.');
-    }
-
-    private function recalcBookingPaymentStatus(VendorBooking $booking): void
-    {
-        $hasApprovedFinal = $booking->payments()
-            ->where('status', 'approved')
-            ->whereIn('type', ['final', 'installment'])
-            ->exists();
-
-        if ($hasApprovedFinal) {
-            $updates = ['payment_status' => 'paid'];
-            if ($booking->status === 'pending') {
-                $updates['status'] = 'confirmed';
-            }
-            $booking->update($updates);
-            return;
-        }
-
-        $hasApprovedDp = $booking->payments()
-            ->where('status', 'approved')
-            ->where('type', 'dp')
-            ->exists();
-
-        if ($hasApprovedDp) {
-            $updates = ['payment_status' => 'dp_paid'];
-            if ($booking->status === 'pending') {
-                $updates['status'] = 'confirmed';
-            }
-            $booking->update($updates);
-            return;
-        }
-
-        $hasPending = $booking->payments()
-            ->where('status', 'pending_verification')
-            ->exists();
-
-        $booking->update(['payment_status' => $hasPending ? 'dp_waiting' : 'unpaid']);
     }
 }

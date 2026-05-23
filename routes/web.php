@@ -639,6 +639,7 @@ Route::get('/kontak', function () {
     return view('front.kontak');
 })->name('kontak');
 
+// throttle:5,1 = cegah spam form kontak dari bot/user iseng
 Route::post('/kontak', function (\Illuminate\Http\Request $request) {
     $request->validate([
         'nama'   => ['required', 'string', 'max:100'],
@@ -658,7 +659,7 @@ Route::post('/kontak', function (\Illuminate\Http\Request $request) {
     );
 
     return redirect()->route('kontak')->with('kontak_success', 'Pesan Anda berhasil dikirim. Kami akan segera menghubungi Anda.');
-})->name('kontak.send');
+})->middleware('throttle:5,1')->name('kontak.send');
 
 Route::get('/blog/{blog:slug}', function (\App\Models\Blog $blog) {
     abort_unless($blog->is_published, 404);
@@ -837,7 +838,20 @@ Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $packag
         ->limit(5)
         ->get();
 
-    return view('store.store-detail', compact('package', 'vendor', 'images', 'otherPackages', 'videos', 'popularBlogs'));
+    $activePromos = \App\Models\Promo::active()->available()
+        ->whereHas('vendorPackages', fn ($q) => $q->where('vendor_packages.id', $package->id))
+        ->count();
+
+    $userUsedPromoCodes = auth()->check()
+        ? \App\Models\VendorBooking::where('user_id', auth()->id())
+            ->whereNotNull('promo_code')
+            ->pluck('promo_code')
+            ->unique()
+            ->values()
+            ->all()
+        : [];
+
+    return view('store.store-detail', compact('package', 'vendor', 'images', 'otherPackages', 'videos', 'popularBlogs', 'activePromos', 'userUsedPromoCodes'));
 })->name('store.package.show');
 
 Route::get('/vendor', function () {
@@ -1053,6 +1067,10 @@ Route::post('/vendor/{vendor:slug}/bookings', [\App\Http\Controllers\VendorBooki
     ->middleware('auth')
     ->name('vendor.booking.store');
 
+Route::post('/promo/validate', [\App\Http\Controllers\PromoController::class, 'validate'])
+    ->middleware('auth')
+    ->name('promo.validate');
+
 Route::get('/booking/vendor/{vendor:slug}', function (\App\Models\Vendor $vendor) {
     $authUser = Auth::check() ? \App\Models\User::find(Auth::id()) : null;
     $isPrivileged = $authUser?->hasRole(['super_admin', 'admin']) ?? false;
@@ -1141,8 +1159,9 @@ Route::get('/login', function () {
     return view('auth.login');
 })->name('login');
 
-Route::post('/login', [LoginController::class, 'login'])->name('login.post');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// throttle:10,1 = max 10 percobaan per menit per IP — cegah brute-force password
+Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:10,1')->name('login.post');
+Route::post('/logout', [LoginController::class, 'logout'])->middleware('throttle:20,1')->name('logout');
 
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
@@ -1159,7 +1178,8 @@ Route::get('/register', function () {
     return view('auth.register');
 })->name('register');
 
-Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+// throttle:10,1 = cegah pembuatan akun spam massal dari satu IP
+Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:10,1')->name('register.post');
 
 // Email Verification
 Route::get('/email/verify', function () {
@@ -1184,13 +1204,14 @@ Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
 })->middleware('guest')->name('password.request');
 
+// throttle:5,1 = max 5 request per menit — cegah email flooding ke pengguna lain
 Route::post('/forgot-password', function (\Illuminate\Http\Request $request) {
     $request->validate(['email' => 'required|email']);
     $status = \Illuminate\Support\Facades\Password::sendResetLink($request->only('email'));
     return $status === \Illuminate\Support\Facades\Password::RESET_LINK_SENT
         ? redirect()->route('login')->with('status', __($status))
         : back()->withErrors(['email' => __($status)]);
-})->middleware('guest')->name('password.email');
+})->middleware(['guest', 'throttle:5,1'])->name('password.email');
 
 Route::get('/reset-password/{token}', function ($token) {
     return view('auth.reset-password', ['token' => $token]);
@@ -1218,7 +1239,8 @@ Route::post('/reset-password', function (\Illuminate\Http\Request $request) {
     return $status === \Illuminate\Support\Facades\Password::PASSWORD_RESET
         ? redirect()->route('dashboard')->with('status', 'Password berhasil diperbarui.')
         : back()->withErrors(['email' => __($status)]);
-})->middleware('guest')->name('password.update');
+// throttle:5,1 = cegah brute-force token reset password
+})->middleware(['guest', 'throttle:5,1'])->name('password.update');
 
 Route::get('/dashboard', function () {
     $user        = \App\Models\User::findOrFail(Auth::id());
@@ -1617,9 +1639,10 @@ Route::post('/dashboard/admin/vendors/{vendor}/toggle-active', function (\App\Mo
     return back()->with('success', 'Status vendor berhasil diperbarui.');
 })->name('dashboard.admin.vendors.toggle')->middleware(['auth', 'verified']);
 
+// throttle:10,1 = cegah abuse verifikasi pembayaran berulang-ulang dari satu session
 Route::post('/dashboard/vendor/payments/{payment}/verify', [\App\Http\Controllers\VendorBookingPaymentController::class, 'verify'])
     ->name('dashboard.vendor.payments.verify')
-    ->middleware(['auth', 'verified']);
+    ->middleware(['auth', 'verified', 'throttle:10,1']);
 
 Route::put('/dashboard/booking/{booking}', function (\Illuminate\Http\Request $request, \App\Models\VendorBooking $booking) {
     $user = $request->user();
@@ -1687,7 +1710,9 @@ Route::get('/dashboard/favorit', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/dashboard/profile/name', [\App\Http\Controllers\ProfileController::class, 'updateName'])
         ->name('dashboard.profile.update');
+    // throttle:5,1 = cegah brute-force ganti password dari session yang sudah login
     Route::post('/dashboard/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])
+        ->middleware('throttle:5,1')
         ->name('dashboard.password.update');
     Route::post('/dashboard/profile/avatar', [\App\Http\Controllers\ProfileController::class, 'updateAvatar'])
         ->name('dashboard.avatar.update');
@@ -1721,11 +1746,12 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard/chat')->name('chat.')
     Route::get('/', [ChatController::class, 'adminIndex'])->name('admin');
     Route::get('/notify', [ChatController::class, 'adminNotify'])->name('admin.notify');
     Route::get('/{token}', [ChatController::class, 'adminDetail'])->name('admin.detail');
-    Route::post('/{token}/reply', [ChatController::class, 'adminReply'])->name('admin.reply');
+    // throttle: cegah flooding pesan & spam status change dari session admin
+    Route::post('/{token}/reply', [ChatController::class, 'adminReply'])->middleware('throttle:60,1')->name('admin.reply');
     Route::delete('/{token}/messages/{message}', [ChatController::class, 'adminDeleteMessage'])->name('admin.message.delete');
     Route::delete('/{token}', [ChatController::class, 'adminDeleteSession'])->name('admin.delete');
-    Route::post('/{token}/close', [ChatController::class, 'adminClose'])->name('admin.close');
-    Route::post('/{token}/open', [ChatController::class, 'adminOpen'])->name('admin.open');
+    Route::post('/{token}/close', [ChatController::class, 'adminClose'])->middleware('throttle:20,1')->name('admin.close');
+    Route::post('/{token}/open', [ChatController::class, 'adminOpen'])->middleware('throttle:20,1')->name('admin.open');
 });
 
 // ── Chat (vendor) ──────────────────────────────────────────────────────────
@@ -1733,7 +1759,8 @@ Route::middleware(['auth', 'verified'])->prefix('dashboard/vendor-chat')->name('
     Route::get('/', [ChatController::class, 'vendorChatList'])->name('index');
     Route::get('/notify', [ChatController::class, 'vendorNotify'])->name('notify');
     Route::get('/{token}', [ChatController::class, 'vendorDetail'])->name('detail');
-    Route::post('/{token}/reply', [ChatController::class, 'vendorReply'])->name('reply');
+    // throttle: cegah flooding pesan chat dari vendor
+    Route::post('/{token}/reply', [ChatController::class, 'vendorReply'])->middleware('throttle:60,1')->name('reply');
 });
 
 // ── Chat Internal (vendor ↔ admin) ─────────────────────────────────────────

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Promo;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -96,6 +97,11 @@ class VendorPackage extends Model
     public function wishlists()
     {
         return $this->hasMany(Wishlist::class);
+    }
+
+    public function promos()
+    {
+        return $this->belongsToMany(Promo::class, 'promo_vendor_package');
     }
 
     public function getImageUrlAttribute(): ?string

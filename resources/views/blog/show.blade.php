@@ -188,6 +188,7 @@
 
                             <div class="px-6 py-6">
                                 <div class="blog-content">
+                                    {{-- safe: konten hanya bisa diedit admin via Filament, bukan user input --}}
                                     {!! $blog->content !!}
                                 </div>
                             </div>

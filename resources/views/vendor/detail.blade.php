@@ -416,6 +416,7 @@
                         @foreach ($vendor->packages as $pkg)
                         <x-package-card
                             :href="route('store.package.show', $pkg->slug)"
+                            :package-id="$pkg->id"
                             :name="$pkg->name"
                             :image="$pkg->image_url ?: asset('images/placeholder.jpg')"
                             :price="$pkg->price"
