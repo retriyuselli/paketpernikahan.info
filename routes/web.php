@@ -832,7 +832,12 @@ Route::get('/store/paket/{package}', function (\App\Models\VendorPackage $packag
         ->orderBy('id')
         ->get();
 
-    return view('store.store-detail', compact('package', 'vendor', 'images', 'otherPackages', 'videos'));
+    $popularBlogs = \App\Models\Blog::published()
+        ->orderByDesc('views_count')
+        ->limit(5)
+        ->get();
+
+    return view('store.store-detail', compact('package', 'vendor', 'images', 'otherPackages', 'videos', 'popularBlogs'));
 })->name('store.package.show');
 
 Route::get('/vendor', function () {

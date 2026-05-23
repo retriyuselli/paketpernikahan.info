@@ -503,7 +503,7 @@
 
                 </div>
 
-                <div class="lg:col-span-3">
+                <div class="lg:col-span-3 flex flex-col gap-4">
                     <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm lg:sticky lg:top-24">
 
                         {{-- ── Spesial Diskon Banner ───────────────────── --}}
@@ -668,6 +668,33 @@
                             </button>
                         </div>
                     </div>
+
+                    {{-- ── Artikel Terpopuler ──────────────────────────── --}}
+                    @if(isset($popularBlogs) && $popularBlogs->isNotEmpty())
+                        <div class="hidden lg:block bg-white rounded-2xl border border-gray-100 p-5">
+                            <h3 class="text-xs font-extrabold uppercase tracking-widest text-gray-400 border-b border-gray-100 pb-3 mb-4">Artikel Terpopuler</h3>
+                            <div class="flex flex-col gap-4">
+                                @foreach($popularBlogs as $idx => $pop)
+                                    @php $popImage = $pop->cover_image_url ?: asset('images/placeholder.jpg'); @endphp
+                                    @if($idx > 0)
+                                        <div class="border-t border-gray-100"></div>
+                                    @endif
+                                    <a href="{{ route('blog.show', $pop->slug) }}" class="flex gap-3 group">
+                                        <img src="{{ $popImage }}" alt="{{ $pop->title }}" loading="lazy"
+                                             class="w-16 h-12 rounded-xl object-cover shrink-0">
+                                        <div>
+                                            @if($pop->category)
+                                                <p class="text-[10px] font-bold text-accent">{{ $pop->category }}
+                                                    <span class="text-gray-400 font-normal">· {{ number_format($pop->views_count) }} views</span>
+                                                </p>
+                                            @endif
+                                            <p class="text-xs font-semibold text-gray-800 leading-snug group-hover:underline">{{ $pop->title }}</p>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- ── Produk Lainnya oleh Vendor Ini ──────────────── --}}
