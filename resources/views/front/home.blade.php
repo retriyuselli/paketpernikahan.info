@@ -329,9 +329,10 @@
                                 $discountPercent = $price > 0 && $discount > 0 ? (int) round(($discount / $price) * 100) : 0;
                                 $logo = $pkg->image_url;
                                 $rating = $vendor && $vendor->rating ? number_format((float) $vendor->rating, 1) : null;
+                                $hasPromoCode = $pkg->relationLoaded('promos') && $pkg->promos->isNotEmpty();
                             @endphp
-                                     <a href="{{ route('store.package.show', $pkg) }}"
-                                         class="flex-none snap-start w-[calc((100%-0.375rem)/2)] sm:w-56 bg-white border border-gray-200 rounded-[18px] overflow-hidden cursor-pointer hover:shadow-md transition relative">
+                            <a href="{{ route('store.package.show', $pkg) }}"
+                               class="flex-none snap-start w-[calc((100%-0.375rem)/2)] sm:w-56 bg-white border border-gray-200 rounded-[18px] overflow-hidden cursor-pointer hover:shadow-md transition relative">
                                 <div class="relative aspect-square bg-gray-50">
                                     @if($logo)
                                         <img src="{{ $logo }}" alt="{{ $vendor->name }}" loading="lazy" class="w-full h-full object-cover">
@@ -340,24 +341,31 @@
                                             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                         </div>
                                     @endif
+
                                     @if($discountPercent > 0)
                                         <span class="absolute right-0 top-0 rounded-bl-2xl bg-accent px-2.5 py-1.5 text-[11px] font-extrabold leading-none text-cream">
                                             {{ $discountPercent }}%
                                         </span>
                                     @endif
+
+                                    @if($hasPromoCode)
+                                        <span class="absolute left-0 top-0 rounded-br-2xl bg-emerald-500 px-2.5 py-1.5 text-[10px] font-extrabold leading-none text-white flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                                            Kode Promo
+                                        </span>
+                                    @endif
+
                                     <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5 text-dark" style="background: linear-gradient(90deg, var(--soft-pink), var(--light-sage), var(--sage-green));">
-                                        <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">XTRA Voucher</span>
-                                        <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">Gratis Ongkir</span>
+                                        @if($discountPercent > 0)
+                                            <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">Diskon {{ $discountPercent }}%</span>
+                                        @endif
+                                        @if($hasPromoCode)
+                                            <span class="rounded-md bg-white/55 px-1.5 py-0.5 text-[9px] font-bold leading-none">Ada Kode Promo</span>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="space-y-1 p-3">
                                     <p class="text-[13px] font-medium leading-tight text-gray-900">{{ $pkg->name }}</p>
-                                    @php
-                                        $catNames = collect($pkg->category_vendor_id ?? [])
-                                            ->map(fn($cid) => $homeCategories->firstWhere('id', (int)$cid)?->name)
-                                            ->filter()
-                                            ->implode(', ');
-                                    @endphp
                                     @if($discount > 0)
                                         <p class="text-[11px] text-gray-400 line-through">Rp{{ number_format($price, 0, ',', '.') }}</p>
                                     @endif

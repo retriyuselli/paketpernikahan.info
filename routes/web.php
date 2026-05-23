@@ -178,10 +178,14 @@ Route::get('/', function () {
 
     $homePromoPackages = \App\Models\VendorPackage::query()
         ->where('is_active', true)
-        ->where('discount', '>', 0)
+        ->where(fn ($q) => $q
+            ->where('discount', '>', 0)
+            ->orWhereHas('promos', fn ($q) => $q->active()->available())
+        )
         ->whereHas('vendor', fn ($q) => $q->where('is_active', true)->where('is_profile_complete', true))
         ->with([
-            'vendor' => fn ($q) => $q->select('id', 'name', 'slug', 'city', 'cover_image', 'logo_vendor'),
+            'vendor'  => fn ($q) => $q->select('id', 'name', 'slug', 'city', 'cover_image', 'logo_vendor'),
+            'promos'  => fn ($q) => $q->active()->available()->select('promos.id', 'promos.code'),
         ])
         ->orderByDesc('discount')
         ->limit(12)
