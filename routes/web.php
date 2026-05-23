@@ -492,7 +492,10 @@ Route::get('/store/promo', function () {
 
     $packagesQuery = \App\Models\VendorPackage::query()
         ->where('is_active', true)
-        ->where('discount', '>', 0)
+        ->where(fn ($q) => $q
+            ->where('discount', '>', 0)
+            ->orWhereHas('promos', fn ($q) => $q->active()->available())
+        )
         ->whereHas('vendor', fn ($vq) => $vq
             ->where('is_active', true)
             ->where('is_profile_complete', true)

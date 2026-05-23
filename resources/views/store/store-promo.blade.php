@@ -1,7 +1,7 @@
 @extends('layout.app')
 
-@section('title', 'Promo Paket Pernikahan - Diskon & Penawaran Spesial | Makna Wedding')
-@section('meta-description', 'Dapatkan promo dan diskon terbaik paket pernikahan – foto, katering, dekorasi, wedding organizer, dan lebih. Penawaran terbatas di Makna Wedding.')
+@section('title', 'Promo Paket Pernikahan - Diskon & Kode Promo Spesial | Makna Wedding')
+@section('meta-description', 'Dapatkan promo, diskon, dan kode promo terbaik paket pernikahan – foto, katering, dekorasi, wedding organizer, dan lebih. Penawaran terbatas di Makna Wedding.')
 @section('canonical-url', route('store.promo'))
 
 @section('body-class', 'bg-cream text-dark')
@@ -28,7 +28,7 @@
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
                 <div>
                     <h1 class="text-base font-bold text-dark">Promo</h1>
-                    <p class="text-xs text-gray-500 mt-1">Paket pernikahan dengan harga spesial dan promo terbaik.</p>
+                    <p class="text-xs text-gray-500 mt-1">Paket pernikahan dengan harga diskon dan kode promo eksklusif.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <form method="GET" action="{{ route('store.promo') }}" class="flex items-center gap-2">
@@ -44,7 +44,7 @@
                         <select name="sort"
                                 data-auto-submit
                                 class="h-10 rounded-xl border border-gray-200 px-3 text-xs font-bold bg-white text-dark hover:border-gray-300 transition focus:outline-none">
-                            <option value="diskon" {{ ($sort ?? 'diskon') === 'diskon' ? 'selected' : '' }}>Promo Terbesar</option>
+                            <option value="diskon" {{ ($sort ?? 'diskon') === 'diskon' ? 'selected' : '' }}>Diskon Terbesar</option>
                             <option value="termurah" {{ ($sort ?? 'diskon') === 'termurah' ? 'selected' : '' }}>Termurah</option>
                             <option value="termahal" {{ ($sort ?? 'diskon') === 'termahal' ? 'selected' : '' }}>Termahal</option>
                             <option value="terbaru" {{ ($sort ?? 'diskon') === 'terbaru' ? 'selected' : '' }}>Terbaru</option>
@@ -73,12 +73,6 @@
                                 $cover = $vendor->cover_image_url;
                             }
                             $cover = $cover ?: 'https://picsum.photos/seed/store-promo-' . $pkg->id . '/800/600';
-                            $items = $pkg->items;
-                            $vendorName = $vendor ? $vendor->name : null;
-                            $vendorLocation = $vendor && $vendor->city ? $vendor->city : 'Indonesia';
-                            $vendorRating = $vendor ? ($vendor->rating ?? null) : null;
-                            $primaryBenefit = $discount > 0 ? 'Harga Diskon' : 'Paket Pilihan';
-                            $secondaryBenefit = !empty($items[0]) ? \Illuminate\Support\Str::limit($items[0], 16) : 'Gratis Konsultasi';
                         @endphp
 
                         <x-package-card
@@ -88,11 +82,9 @@
                             :image="$cover"
                             :price="$price"
                             :discount="$discount"
-                            :vendor-name="$vendorName"
-                            :location="$vendorLocation"
-                            :rating="$vendorRating"
-                            :benefit-primary="$primaryBenefit"
-                            :benefit-secondary="$secondaryBenefit"
+                            :vendor-name="$vendor?->name"
+                            :location="$vendor?->city ?? 'Indonesia'"
+                            :rating="$vendor?->rating ?? null"
                             width-class="w-full"
                         />
                     @endforeach
