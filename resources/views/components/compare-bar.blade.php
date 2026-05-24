@@ -8,8 +8,9 @@
     x-transition:leave="transition ease-in duration-200"
     x-transition:leave-start="translate-y-0 opacity-100"
     x-transition:leave-end="translate-y-full opacity-0"
-    class="fixed bottom-0 inset-x-0 z-50 pb-[env(safe-area-inset-bottom)]"
-    style="display: none;"
+    class="fixed inset-x-0 z-50"
+    style="display: none; bottom: calc(60px + env(safe-area-inset-bottom));"
+    id="compare-bar"
 >
     <div class="bg-white border-t border-gray-200 shadow-[0_-4px_24px_rgba(0,0,0,0.12)] px-4 py-3">
         <div class="max-w-5xl mx-auto">

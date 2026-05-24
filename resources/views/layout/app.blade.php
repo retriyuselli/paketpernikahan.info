@@ -236,6 +236,25 @@
         });
         </script>
 
+        {{-- Posisi compare bar: di atas mobile nav kalau mobile, di bawah kalau desktop --}}
+        <script>
+        (function() {
+            function adjustCompareBar() {
+                var bar = document.getElementById('compare-bar');
+                if (!bar) return;
+                var nav = document.getElementById('app-bottom-nav');
+                var navVisible = nav && window.getComputedStyle(nav).display !== 'none';
+                if (navVisible) {
+                    bar.style.bottom = 'calc(60px + env(safe-area-inset-bottom))';
+                } else {
+                    bar.style.bottom = '0px';
+                }
+            }
+            document.addEventListener('DOMContentLoaded', adjustCompareBar);
+            window.addEventListener('resize', adjustCompareBar);
+        })();
+        </script>
+
         @yield('extra-scripts')
     </body>
 </html>
