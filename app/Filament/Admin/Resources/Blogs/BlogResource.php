@@ -16,6 +16,11 @@ class BlogResource extends Resource
     protected static ?string $modelLabel = 'Blog Post';
     protected static ?string $pluralModelLabel = 'Blog Posts';
 
+    public static function getRecordRouteKeyName(): ?string
+    {
+        return 'slug';
+    }
+
     public static function getNavigationIcon(): string
     {
         return 'heroicon-o-newspaper';
