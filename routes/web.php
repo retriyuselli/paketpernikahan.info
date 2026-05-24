@@ -25,6 +25,7 @@ Route::get('/sitemap.xml', function () {
         ['loc' => route('real-wedding.index'), 'lastmod' => now()->toDateString(), 'changefreq' => 'weekly', 'priority' => '0.8'],
         ['loc' => route('tentang'), 'lastmod' => now()->toDateString(), 'changefreq' => 'monthly', 'priority' => '0.5'],
         ['loc' => route('kontak'), 'lastmod' => now()->toDateString(), 'changefreq' => 'monthly', 'priority' => '0.5'],
+        ['loc' => route('privacy-policy'), 'lastmod' => now()->toDateString(), 'changefreq' => 'monthly', 'priority' => '0.3'],
     ])->merge(
         \App\Models\Vendor::query()
             ->where('is_active', true)
@@ -645,6 +646,10 @@ Route::get('/tentang', function () {
 Route::get('/kontak', function () {
     return view('front.kontak');
 })->name('kontak');
+
+Route::get('/privacy-policy', function () {
+    return view('front.privacy-policy');
+})->name('privacy-policy');
 
 // throttle:5,1 = cegah spam form kontak dari bot/user iseng
 Route::post('/kontak', function (\Illuminate\Http\Request $request) {
