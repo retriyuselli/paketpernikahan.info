@@ -321,7 +321,8 @@
 
 @section('extra-scripts')
 <style>
-.compare-item-list ul, .compare-item-list ol { list-style: disc; padding-left: 1.25rem; }
+.compare-item-list ul { list-style: disc; padding-left: 1.25rem; }
+.compare-item-list ol { list-style: decimal; padding-left: 1.25rem; }
 .compare-item-list li { font-size: 12px; color: #374151; line-height: 1.7; }
 .compare-item-list p { margin-bottom: 0.25rem; font-size: 12px; }
 .compare-item-list strong { font-weight: 600; }
