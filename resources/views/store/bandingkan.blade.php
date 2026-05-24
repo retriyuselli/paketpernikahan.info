@@ -50,11 +50,155 @@
                 </div>
 
             @else
-                {{-- Tabel Perbandingan --}}
-                <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden mb-5">
+                @php
+                $rows = [
+                    ['label' => 'Harga',         'type' => 'price'],
+                    ['label' => 'Diskon',         'type' => 'discount'],
+                    ['label' => 'DP / Uang Muka', 'type' => 'dp'],
+                    ['label' => 'Kapasitas Tamu', 'type' => 'guests'],
+                    ['label' => 'Vendor',         'type' => 'vendor'],
+                    ['label' => 'Kota',           'type' => 'city'],
+                    ['label' => 'Kategori',       'type' => 'category'],
+                    ['label' => 'Yang Termasuk',  'type' => 'item'],
+                ];
+                @endphp
+
+                {{-- ============================================================ --}}
+                {{-- MOBILE: Tab per paket (hidden di lg ke atas) --}}
+                {{-- ============================================================ --}}
+                <div class="lg:hidden mb-5" x-data="{ activeTab: 0 }">
+
+                    {{-- Tab switcher --}}
+                    <div class="flex gap-2 mb-4">
+                        @foreach($packages as $i => $pkg)
+                        @php
+                            $rawImg = is_array($pkg->image_path) ? ($pkg->image_path[0] ?? null) : $pkg->image_path;
+                            $imgUrl = $rawImg
+                                ? (\Illuminate\Support\Str::startsWith($rawImg, 'http') ? $rawImg : asset('storage/' . $rawImg))
+                                : 'https://placehold.co/400x225/f3f4f6/9ca3af?text=No+Photo';
+                        @endphp
+                        <button
+                            type="button"
+                            @click="activeTab = {{ $i }}"
+                            :class="activeTab === {{ $i }}
+                                ? 'border-accent bg-white shadow-sm'
+                                : 'border-gray-200 bg-gray-50 opacity-60'"
+                            class="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-2xl border transition text-left"
+                        >
+                            <img src="{{ $imgUrl }}" alt="{{ $pkg->name }}" class="w-9 h-9 rounded-xl object-cover shrink-0">
+                            <div class="min-w-0">
+                                <p class="text-[11px] font-bold text-dark truncate leading-tight">{{ Str::limit(Str::title($pkg->name), 18) }}</p>
+                                <p class="text-[10px] text-gray-400 truncate leading-tight">{{ Str::limit($pkg->vendor->name ?? '', 16) }}</p>
+                            </div>
+                        </button>
+                        @endforeach
+                    </div>
+
+                    {{-- Konten per tab --}}
+                    @foreach($packages as $i => $pkg)
+                    @php
+                        $basePrice  = (int) ($pkg->price ?? 0);
+                        $disc       = (int) ($pkg->discount ?? 0);
+                        $finalPrice = max($basePrice - $disc, 0);
+                        $discPct    = $basePrice > 0 && $disc > 0 ? (int) round(($disc / $basePrice) * 100) : 0;
+                        $dp         = (int) ($pkg->dp_paket ?? 0);
+                        $rawImg     = is_array($pkg->image_path) ? ($pkg->image_path[0] ?? null) : $pkg->image_path;
+                        $imgUrl     = $rawImg
+                            ? (\Illuminate\Support\Str::startsWith($rawImg, 'http') ? $rawImg : asset('storage/' . $rawImg))
+                            : 'https://placehold.co/400x225/f3f4f6/9ca3af?text=No+Photo';
+                        $categoryLabel = match($pkg->vendor->category ?? '') {
+                            'wo', 'wedding-organizer' => 'Wedding Organizer',
+                            'fotografer' => 'Fotografer',
+                            'katering'   => 'Katering',
+                            'dekorasi'   => 'Dekorasi',
+                            'hotel'      => 'Hotel & Venue',
+                            'undangan'   => 'Undangan',
+                            'mua'        => 'MUA & Rias',
+                            default      => Str::title(str_replace('-', ' ', $pkg->vendor->category ?? '-')),
+                        };
+                    @endphp
+                    <div x-show="activeTab === {{ $i }}" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 translate-y-1" x-transition:enter-end="opacity-100 translate-y-0">
+                        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+
+                            {{-- Header paket --}}
+                            <div class="relative rounded-t-2xl overflow-hidden aspect-video">
+                                <img src="{{ $imgUrl }}" alt="{{ $pkg->name }}" loading="lazy" class="w-full h-full object-cover">
+                                @if($discPct > 0)
+                                    <span class="absolute top-2 right-2 bg-accent text-white text-[11px] font-bold px-2 py-0.5 rounded-lg">-{{ $discPct }}%</span>
+                                @endif
+                            </div>
+                            <div class="px-4 pt-4 pb-3 border-b border-gray-100">
+                                <p class="font-bold text-[15px] text-dark leading-tight">{{ Str::title($pkg->name) }}</p>
+                                <p class="text-[12px] text-gray-400 mt-0.5">{{ $pkg->vendor->name ?? '-' }}</p>
+                                <a href="{{ route('store.package.show', $pkg) }}"
+                                   class="mt-3 inline-block w-full text-center bg-accent text-white text-[13px] font-semibold py-2.5 rounded-xl hover:bg-accent/90 transition">
+                                    Lihat Detail Paket
+                                </a>
+                            </div>
+
+                            {{-- Detail rows --}}
+                            @foreach($rows as $rowIdx => $row)
+                            <div class="flex items-start gap-3 px-4 py-3 {{ $rowIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50/40' }} border-b border-gray-100 last:border-b-0">
+                                <span class="text-[12px] font-semibold text-gray-400 w-28 shrink-0 pt-0.5">{{ $row['label'] }}</span>
+                                <div class="flex-1 min-w-0">
+                                    @if($row['type'] === 'price')
+                                        @if($disc > 0)
+                                            <p class="text-[11px] text-gray-400 line-through leading-tight">Rp{{ number_format($basePrice, 0, ',', '.') }}</p>
+                                            <p class="text-[15px] font-extrabold text-accent leading-tight">Rp{{ number_format($finalPrice, 0, ',', '.') }}</p>
+                                        @else
+                                            <p class="text-[15px] font-extrabold text-accent leading-tight">Rp{{ number_format($basePrice, 0, ',', '.') }}</p>
+                                        @endif
+
+                                    @elseif($row['type'] === 'discount')
+                                        @if($disc > 0)
+                                            <span class="inline-flex items-center bg-red-50 text-red-500 text-[11px] font-semibold px-2 py-0.5 rounded-lg">
+                                                -{{ $discPct }}% (Rp{{ number_format($disc, 0, ',', '.') }})
+                                            </span>
+                                        @else
+                                            <span class="text-[13px] text-gray-300">—</span>
+                                        @endif
+
+                                    @elseif($row['type'] === 'dp')
+                                        <p class="text-[13px] font-semibold text-dark">{{ $dp > 0 ? 'Rp' . number_format($dp, 0, ',', '.') : '—' }}</p>
+
+                                    @elseif($row['type'] === 'guests')
+                                        <p class="text-[13px] text-dark">{{ filled($pkg->max_guests) ? $pkg->max_guests : '—' }}</p>
+
+                                    @elseif($row['type'] === 'vendor')
+                                        @if($pkg->vendor)
+                                            <a href="{{ route('vendor.detail', $pkg->vendor) }}" class="text-[13px] font-medium text-accent hover:underline">{{ $pkg->vendor->name }}</a>
+                                        @else
+                                            <span class="text-[13px] text-gray-300">—</span>
+                                        @endif
+
+                                    @elseif($row['type'] === 'city')
+                                        <p class="text-[13px] text-dark">{{ $pkg->vendor->city ?? '—' }}</p>
+
+                                    @elseif($row['type'] === 'category')
+                                        <p class="text-[13px] text-dark">{{ $categoryLabel }}</p>
+
+                                    @elseif($row['type'] === 'item')
+                                        @if(filled($pkg->item))
+                                            <div class="text-[12px] text-dark leading-relaxed compare-item-list">{!! $pkg->item !!}</div>
+                                        @else
+                                            <span class="text-[13px] text-gray-300">—</span>
+                                        @endif
+                                    @endif
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+
+                {{-- ============================================================ --}}
+                {{-- DESKTOP: Tabel side-by-side (hidden di bawah lg) --}}
+                {{-- ============================================================ --}}
+                <div class="hidden lg:block bg-white rounded-2xl border border-gray-100 overflow-hidden mb-5">
 
                     {{-- Header: foto + nama --}}
-                    <div class="grid border-b border-gray-100" style="grid-template-columns: 140px repeat({{ count($packages) }}, 1fr)">
+                    <div class="grid border-b border-gray-100" style="grid-template-columns: 160px repeat({{ count($packages) }}, 1fr)">
                         <div class="p-4 bg-gray-50/70 flex items-end">
                             <span class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Paket</span>
                         </div>
@@ -62,7 +206,6 @@
                         @php
                             $basePrice = (int) ($pkg->price ?? 0);
                             $disc      = (int) ($pkg->discount ?? 0);
-                            $finalPrice = max($basePrice - $disc, 0);
                             $discPct   = $basePrice > 0 && $disc > 0 ? (int) round(($disc / $basePrice) * 100) : 0;
                             $rawImg    = is_array($pkg->image_path) ? ($pkg->image_path[0] ?? null) : $pkg->image_path;
                             $imgUrl    = $rawImg
@@ -86,29 +229,12 @@
                         @endforeach
                     </div>
 
-                    @php
-                    $rows = [
-                        ['label' => 'Harga',          'type' => 'price'],
-                        ['label' => 'Diskon',          'type' => 'discount'],
-                        ['label' => 'DP / Uang Muka',  'type' => 'dp'],
-                        ['label' => 'Kapasitas Tamu',  'type' => 'guests'],
-                        ['label' => 'Vendor',          'type' => 'vendor'],
-                        ['label' => 'Kota',            'type' => 'city'],
-                        ['label' => 'Kategori',        'type' => 'category'],
-                        ['label' => 'Yang Termasuk',   'type' => 'item'],
-                    ];
-                    @endphp
-
                     @foreach($rows as $rowIdx => $row)
                     <div class="grid border-b border-gray-100 last:border-b-0 {{ $rowIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50/40' }}"
-                         style="grid-template-columns: 140px repeat({{ count($packages) }}, 1fr)">
-
-                        {{-- Label --}}
+                         style="grid-template-columns: 160px repeat({{ count($packages) }}, 1fr)">
                         <div class="p-4 flex items-start bg-gray-50/70 border-r border-gray-100">
                             <span class="text-[12px] font-semibold text-gray-500">{{ $row['label'] }}</span>
                         </div>
-
-                        {{-- Nilai per paket --}}
                         @foreach($packages as $pkg)
                         @php
                             $basePrice  = (int) ($pkg->price ?? 0);
@@ -118,13 +244,13 @@
                             $dp         = (int) ($pkg->dp_paket ?? 0);
                             $categoryLabel = match($pkg->vendor->category ?? '') {
                                 'wo', 'wedding-organizer' => 'Wedding Organizer',
-                                'fotografer'  => 'Fotografer',
-                                'katering'    => 'Katering',
-                                'dekorasi'    => 'Dekorasi',
-                                'hotel'       => 'Hotel & Venue',
-                                'undangan'    => 'Undangan',
-                                'mua'         => 'MUA & Rias',
-                                default       => Str::title(str_replace('-', ' ', $pkg->vendor->category ?? '-')),
+                                'fotografer' => 'Fotografer',
+                                'katering'   => 'Katering',
+                                'dekorasi'   => 'Dekorasi',
+                                'hotel'      => 'Hotel & Venue',
+                                'undangan'   => 'Undangan',
+                                'mua'        => 'MUA & Rias',
+                                default      => Str::title(str_replace('-', ' ', $pkg->vendor->category ?? '-')),
                             };
                         @endphp
                         <div class="p-4 border-l border-gray-100">
@@ -135,46 +261,31 @@
                                 @else
                                     <p class="text-[15px] font-extrabold text-accent leading-tight">Rp{{ number_format($basePrice, 0, ',', '.') }}</p>
                                 @endif
-
                             @elseif($row['type'] === 'discount')
                                 @if($disc > 0)
-                                    <span class="inline-flex items-center gap-1 bg-red-50 text-red-500 text-[11px] font-semibold px-2 py-0.5 rounded-lg">
-                                        -{{ $discPct }}% &nbsp;(Rp{{ number_format($disc, 0, ',', '.') }})
+                                    <span class="inline-flex bg-red-50 text-red-500 text-[11px] font-semibold px-2 py-0.5 rounded-lg">
+                                        -{{ $discPct }}% (Rp{{ number_format($disc, 0, ',', '.') }})
                                     </span>
                                 @else
                                     <span class="text-[12px] text-gray-300">—</span>
                                 @endif
-
                             @elseif($row['type'] === 'dp')
-                                @if($dp > 0)
-                                    <p class="text-[13px] font-semibold text-dark">Rp{{ number_format($dp, 0, ',', '.') }}</p>
-                                @else
-                                    <span class="text-[12px] text-gray-300">—</span>
-                                @endif
-
+                                <p class="text-[13px] font-semibold text-dark">{{ $dp > 0 ? 'Rp' . number_format($dp, 0, ',', '.') : '—' }}</p>
                             @elseif($row['type'] === 'guests')
                                 <p class="text-[13px] text-dark">{{ filled($pkg->max_guests) ? $pkg->max_guests : '—' }}</p>
-
                             @elseif($row['type'] === 'vendor')
                                 @if($pkg->vendor)
-                                    <a href="{{ route('vendor.detail', $pkg->vendor) }}" class="text-[12px] font-medium text-accent hover:underline">
-                                        {{ $pkg->vendor->name }}
-                                    </a>
+                                    <a href="{{ route('vendor.detail', $pkg->vendor) }}" class="text-[12px] font-medium text-accent hover:underline">{{ $pkg->vendor->name }}</a>
                                 @else
                                     <span class="text-[12px] text-gray-300">—</span>
                                 @endif
-
                             @elseif($row['type'] === 'city')
                                 <p class="text-[12px] text-dark">{{ $pkg->vendor->city ?? '—' }}</p>
-
                             @elseif($row['type'] === 'category')
                                 <p class="text-[12px] text-dark">{{ $categoryLabel }}</p>
-
                             @elseif($row['type'] === 'item')
                                 @if(filled($pkg->item))
-                                    <div class="text-[12px] text-dark leading-relaxed compare-item-list">
-                                        {!! $pkg->item !!}
-                                    </div>
+                                    <div class="text-[12px] text-dark leading-relaxed compare-item-list">{!! $pkg->item !!}</div>
                                 @else
                                     <span class="text-[12px] text-gray-300">—</span>
                                 @endif
