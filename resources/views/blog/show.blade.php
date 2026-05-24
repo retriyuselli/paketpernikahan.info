@@ -81,11 +81,44 @@
 
                         {{-- Title + meta + excerpt — full width 8 kolom --}}
                         <div class="mb-5">
-                            @if($blog->category)
-                                <span class="inline-block text-[10px] font-bold uppercase tracking-widest border border-accent/40 rounded-full px-3 py-0.5 mb-3 text-accent">
-                                    {{ $blog->category }}
-                                </span>
-                            @endif
+                            {{-- Category + buttons (sejajar) --}}
+                            <div class="flex items-center justify-between gap-3 mb-3">
+                                @if($blog->category)
+                                    <span class="inline-block text-[10px] font-bold uppercase tracking-widest border border-accent/40 rounded-full px-3 py-0.5 text-accent">
+                                        {{ $blog->category }}
+                                    </span>
+                                @else
+                                    <span></span>
+                                @endif
+                                <div class="flex items-center gap-2 shrink-0">
+                                    @auth
+                                        @if(auth()->user()->hasRole('super_admin'))
+                                            <a href="/admin/blogs/{{ $blog->id }}/edit"
+                                               class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                </svg>
+                                                Edit
+                                            </a>
+                                        @endif
+                                    @endauth
+                                    <button type="button"
+                                            id="blog-share-btn"
+                                            data-share-url="{{ route('blog.show', $blog->slug) }}"
+                                            data-share-title="{{ $blog->title }}"
+                                            data-share-text="{{ $blog->excerpt ?? $blog->title }}"
+                                            class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                                        </svg>
+                                        Share
+                                    </button>
+                                    <a href="{{ route('blog.index') }}"
+                                       class="text-xs font-bold px-3 py-1.5 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
+                                        Kembali
+                                    </a>
+                                </div>
+                            </div>
                             <h1 class="text-xl sm:text-2xl font-extrabold leading-tight text-dark">{{ $blog->title }}</h1>
                             <div class="flex flex-wrap gap-3 mt-2 text-xs text-gray-500">
                                 @if($blog->author)
@@ -105,36 +138,6 @@
                         <div class="rounded-xl overflow-hidden">
                             <img src="{{ $coverImage }}" alt="{{ $blog->title }}" loading="lazy" class="w-full object-cover max-h-105">
                         </div>
-                    </div>
-
-                    <!-- Share Edit Kembali -->
-                    <div class="flex items-center justify-end gap-2 mt-3">
-                        @auth
-                            @if(auth()->user()->hasRole('super_admin'))
-                                <a href="/admin/blogs/{{ $blog->id }}/edit"
-                                   class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                    </svg>
-                                    Edit
-                                </a>
-                            @endif
-                        @endauth
-                        <button type="button"
-                                id="blog-share-btn"
-                                data-share-url="{{ route('blog.show', $blog->slug) }}"
-                                data-share-title="{{ $blog->title }}"
-                                data-share-text="{{ $blog->excerpt ?? $blog->title }}"
-                                class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-                            </svg>
-                            Share
-                        </button>
-                        <a href="{{ route('blog.index') }}"
-                           class="text-xs font-bold px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition text-dark">
-                            Kembali
-                        </a>
                     </div>
 
                     <!-- Content -->
@@ -280,7 +283,6 @@
                                     </a>
                                 @endforeach
                             </div>
-                            <!-- Back to Blog -->
                             <a href="{{ route('blog.index') }}"
                                class="mt-4 flex items-center justify-center gap-2 w-full py-3 rounded-2xl border border-gray-200 bg-white hover:border-accent hover:text-accent transition text-sm font-semibold text-dark">
                                 Lihat Semua Blog
@@ -290,7 +292,6 @@
                             </a>
                         </div>
                     @endif
-
 
                     <!-- Featured Packages -->
                     @if(!empty($featuredPackages) && $featuredPackages->isNotEmpty())
@@ -336,7 +337,6 @@
                         </div>
                     @endif
 
-                    
 
                 </div>
 
