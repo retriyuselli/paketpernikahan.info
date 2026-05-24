@@ -640,7 +640,9 @@ Route::get('/review-videos', function () {
 })->name('review-videos');
 
 Route::get('/tentang', function () {
-    return view('front.tentang');
+    $instagram = app(\App\Services\InstagramService::class);
+    $instagramPosts = $instagram->getRecentPosts(12);
+    return view('front.tentang', compact('instagramPosts'));
 })->name('tentang');
 
 Route::get('/kontak', function () {

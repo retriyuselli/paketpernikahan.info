@@ -45,4 +45,11 @@ return [
         'measurement_id' => env('GA4_MEASUREMENT_ID'),
     ],
 
+    'instagram' => [
+        'app_id'       => env('INSTAGRAM_APP_ID'),
+        'app_secret'   => env('INSTAGRAM_APP_SECRET'),
+        'access_token' => env('INSTAGRAM_ACCESS_TOKEN'),
+        'user_id'      => env('INSTAGRAM_USER_ID'),
+    ],
+
 ];
