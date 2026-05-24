@@ -772,6 +772,28 @@ Route::get('/real-wedding/{realWedding:slug}', function (\App\Models\RealWedding
 })->name('real-wedding.show');
 
 // Redirect URL lama pakai ID numerik ke slug
+// Bandingkan Paket
+Route::get('/bandingkan', function () {
+    $idsParam = request('ids', '');
+    $ids = collect(explode(',', $idsParam))
+        ->map(fn ($id) => (int) trim($id))
+        ->filter(fn ($id) => $id > 0)
+        ->unique()
+        ->take(3)
+        ->values();
+
+    $packages = $ids->isNotEmpty()
+        ? \App\Models\VendorPackage::with('vendor')
+            ->whereIn('id', $ids)
+            ->where('is_active', true)
+            ->get()
+            ->sortBy(fn ($p) => $ids->search($p->id))
+            ->values()
+        : collect();
+
+    return view('store.bandingkan', compact('packages'));
+})->name('store.bandingkan');
+
 Route::get('/store/paket/{id}', function (string $id) {
     $package = \App\Models\VendorPackage::where('id', $id)->first();
     abort_if(!$package || !$package->slug, 404);

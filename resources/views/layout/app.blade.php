@@ -196,6 +196,46 @@
         @endif
 
         @include('layout.mobile-nav')
+
+        {{-- Compare Bar --}}
+        <x-compare-bar />
+
+        {{-- Alpine.js Compare Store --}}
+        <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('compare', {
+                items: JSON.parse(localStorage.getItem('mw_compare') || '[]'),
+                max: 3,
+                add(pkg) {
+                    if (this.has(pkg.id) || this.items.length >= this.max) return;
+                    this.items.push(pkg);
+                    this.save();
+                },
+                remove(id) {
+                    this.items = this.items.filter(i => i.id !== id);
+                    this.save();
+                },
+                toggle(pkg) {
+                    this.has(pkg.id) ? this.remove(pkg.id) : this.add(pkg);
+                },
+                has(id) {
+                    return this.items.some(i => i.id === id);
+                },
+                clear() {
+                    this.items = [];
+                    this.save();
+                },
+                save() {
+                    localStorage.setItem('mw_compare', JSON.stringify(this.items));
+                },
+                compareUrl() {
+                    const ids = this.items.map(i => i.id).join(',');
+                    return '/bandingkan?ids=' + ids;
+                }
+            });
+        });
+        </script>
+
         @yield('extra-scripts')
     </body>
 </html>

@@ -38,11 +38,25 @@
     $hasPromo = $packageId !== null && in_array((int) $packageId, $promoPackageIds);
 @endphp
 
-<a href="{{ $href }}"
-   {{ $attributes->class([
-       'flex-none snap-start overflow-hidden rounded-[10px] border border-gray-200 bg-white shadow-[0_2px_10px_rgba(15,23,42,0.08)] transition hover:border-gray-200 hover:shadow-sm',
-       $widthClass,
-   ]) }}>
+@php
+    $compareData = $packageId ? json_encode([
+        'id'     => (int) $packageId,
+        'name'   => $displayName,
+        'vendor' => (string) $vendorName,
+        'image'  => $image,
+        'price'  => $displayPrice,
+        'href'   => $href,
+    ]) : null;
+@endphp
+
+<div
+    x-data
+    {{ $attributes->class([
+        'flex-none snap-start rounded-[10px] border border-gray-200 bg-white shadow-[0_2px_10px_rgba(15,23,42,0.08)] transition hover:border-gray-200 hover:shadow-sm relative',
+        $widthClass,
+    ]) }}
+>
+<a href="{{ $href }}" class="block overflow-hidden rounded-[10px]">
     <div class="relative {{ $aspectClass }}">
         <img src="{{ $image }}" alt="{{ $name }}{{ $vendorName ? ' oleh ' . $vendorName : '' }}{{ $location && $location !== 'Indonesia' ? ' di ' . $location : '' }}" loading="lazy" class="h-full w-full object-cover">
         @if($discountPercent > 0)
@@ -53,6 +67,23 @@
         <span class="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-1 text-[10px] font-medium leading-none text-dark shadow-sm">
             {{ $location }}
         </span>
+        {{-- Tombol Bandingkan — pojok kanan bawah --}}
+        @if($compareData)
+        <button
+            type="button"
+            @click.prevent="$store.compare.toggle({{ $compareData }})"
+            :class="$store.compare.has({{ $packageId }}) ? 'bg-accent text-white border-accent' : 'bg-white/90 text-gray-500 hover:text-accent border-gray-200'"
+            class="absolute bottom-2 right-2 z-10 flex items-center justify-center w-5 h-5 rounded-full border shadow-sm transition backdrop-blur-sm"
+            :title="$store.compare.has({{ $packageId }}) ? 'Hapus dari perbandingan' : 'Bandingkan paket ini'"
+        >
+            <svg x-show="!$store.compare.has({{ $packageId }})" class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            <svg x-show="$store.compare.has({{ $packageId }})" class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+        </button>
+        @endif
         @if($hasPromo)
         <div class="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-2 py-1.5">
             <span class="flex items-center gap-1 rounded-md bg-emerald-500/90 px-1.5 py-0.5 text-[9px] font-bold leading-none text-white backdrop-blur-sm">
@@ -88,3 +119,4 @@
         </div>
     </div>
 </a>
+</div>
