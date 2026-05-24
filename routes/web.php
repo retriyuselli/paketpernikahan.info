@@ -1027,6 +1027,18 @@ Route::get('/vendor', function () {
         ->limit(3)
         ->get();
 
+    $featuredPackages = \App\Models\VendorPackage::where('is_active', true)
+        ->whereHas('vendor', fn ($q) => $q->where('is_active', true)->where('is_profile_complete', true))
+        ->where(fn ($q) => $q->where('discount', '>', 0)
+            ->orWhereHas('promos', fn ($q) => $q->active()->available()))
+        ->with([
+            'vendor:id,name,city,slug',
+            'promos' => fn ($q) => $q->active()->available()->select('promos.id', 'promos.code'),
+        ])
+        ->inRandomOrder()
+        ->limit(12)
+        ->get();
+
     return view('front.vendor', [
         'categories'       => $categoriesWithVendors,
         'provinces'        => $provinces,
@@ -1035,6 +1047,7 @@ Route::get('/vendor', function () {
         'homeAd'           => $homeAd,
         'homeFeaturedBlogs'=> $homeFeaturedBlogs,
         'homePopularBlogs' => $homePopularBlogs,
+        'featuredPackages' => $featuredPackages,
     ]);
 })->name('vendor');
 

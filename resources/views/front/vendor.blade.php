@@ -163,6 +163,15 @@
     });
     </script>
 
+    @if(isset($featuredPackages) && $featuredPackages->isNotEmpty())
+        <x-paket-section
+            :packages="$featuredPackages"
+            title="Paket dengan Promo & Diskon"
+            :more-url="route('store.promo')"
+            section-class="pt-2 pb-10 bg-cream"
+        />
+    @endif
+
     @include('layout.footer')
 
     <!-- Vendor Quick Preview Modal -->
