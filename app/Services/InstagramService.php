@@ -37,7 +37,8 @@ class InstagramService
 
         $cacheKey = "instagram_posts_{$this->userId}_{$limit}";
 
-        return Cache::remember($cacheKey, $this->cacheTtl, function () use ($limit) {
+        // Cache sebagai array (bukan Collection) agar tidak gagal saat deserialisasi
+        $posts = Cache::remember($cacheKey, $this->cacheTtl, function () use ($limit) {
             try {
                 $response = Http::timeout(10)->get(
                     "https://graph.facebook.com/v19.0/{$this->userId}/media",
@@ -50,21 +51,23 @@ class InstagramService
 
                 if ($response->failed()) {
                     Log::warning('Instagram API error', ['status' => $response->status(), 'body' => $response->body()]);
-                    return collect();
+                    return [];
                 }
 
                 $data = $response->json('data', []);
 
-                // Filter hanya IMAGE dan VIDEO yang punya thumbnail
+                // Filter hanya IMAGE, CAROUSEL_ALBUM, VIDEO yang punya media_url
                 return collect($data)->filter(fn ($post) =>
                     in_array($post['media_type'] ?? '', ['IMAGE', 'CAROUSEL_ALBUM', 'VIDEO'])
                     && filled($post['media_url'] ?? $post['thumbnail_url'] ?? null)
-                );
+                )->values()->all(); // simpan sebagai plain array
             } catch (\Throwable $e) {
                 Log::error('Instagram fetch exception', ['message' => $e->getMessage()]);
-                return collect();
+                return [];
             }
         });
+
+        return collect(is_array($posts) ? $posts : []);
     }
 
     /**
