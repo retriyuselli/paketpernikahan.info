@@ -52,14 +52,14 @@
             @else
                 @php
                 $rows = [
-                    ['label' => 'Harga',         'type' => 'price'],
-                    ['label' => 'Diskon',         'type' => 'discount'],
-                    ['label' => 'DP / Uang Muka', 'type' => 'dp'],
-                    ['label' => 'Kapasitas Tamu', 'type' => 'guests'],
-                    ['label' => 'Vendor',         'type' => 'vendor'],
-                    ['label' => 'Kota',           'type' => 'city'],
-                    ['label' => 'Kategori',       'type' => 'category'],
-                    ['label' => 'Yang Termasuk',  'type' => 'item'],
+                    ['label' => 'Harga',            'type' => 'price'],
+                    ['label' => 'Diskon',           'type' => 'discount'],
+                    ['label' => 'Uang Muka',        'type' => 'dp'],
+                    ['label' => 'Kapasitas',        'type' => 'guests'],
+                    ['label' => 'Vendor',           'type' => 'vendor'],
+                    ['label' => 'Kota',             'type' => 'city'],
+                    ['label' => 'Kategori',         'type' => 'category'],
+                    ['label' => 'Fasilitas',        'type' => 'item'],
                 ];
                 @endphp
 
@@ -138,9 +138,9 @@
 
                             {{-- Detail rows --}}
                             @foreach($rows as $rowIdx => $row)
-                            <div class="flex items-start gap-3 px-4 py-3 {{ $rowIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50/40' }} border-b border-gray-100 last:border-b-0">
-                                <span class="text-[12px] font-semibold text-gray-400 w-28 shrink-0 pt-0.5">{{ $row['label'] }}</span>
-                                <div class="flex-1 min-w-0">
+                            <div class="grid grid-cols-[100px_1fr] items-start gap-2 px-4 py-3 {{ $rowIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50/40' }} border-b border-gray-100 last:border-b-0">
+                                <span class="text-[12px] font-semibold text-gray-500 pt-0.5">{{ $row['label'] }}</span>
+                                <div class="min-w-0">
                                     @if($row['type'] === 'price')
                                         @if($disc > 0)
                                             <p class="text-[11px] text-gray-400 line-through leading-tight">Rp{{ number_format($basePrice, 0, ',', '.') }}</p>
