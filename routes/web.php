@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\PushNotificationController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\VendorApplicationController;
@@ -1872,4 +1873,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/wishlist/{package}/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::get('/wishlist/{package}/check', [WishlistController::class, 'check'])->name('wishlist.check');
+});
+
+// ── Push Notifications (Mobile App) ───────────────────────────────────────
+// Bisa dipanggil tanpa login (guest juga perlu simpan token untuk notif promo)
+Route::prefix('app/push')->name('push.')->group(function () {
+    Route::post('/register', [PushNotificationController::class, 'register'])->name('register');
+    Route::delete('/unregister', [PushNotificationController::class, 'unregister'])->name('unregister');
+    Route::post('/send-test', [PushNotificationController::class, 'sendTest'])->name('send-test')->middleware('auth');
 });
