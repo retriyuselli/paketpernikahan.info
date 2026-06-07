@@ -75,6 +75,8 @@ class PushNotificationService
     {
         return str_contains($errorMessage, 'UNREGISTERED')
             || str_contains($errorMessage, 'INVALID_ARGUMENT')
-            || str_contains($errorMessage, 'registration-token-not-registered');
+            || str_contains($errorMessage, 'registration-token-not-registered')
+            || str_contains($errorMessage, 'not a valid FCM registration token')
+            || str_contains($errorMessage, 'Requested entity was not found');
     }
 }
