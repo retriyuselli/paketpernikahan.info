@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\DeviceToken;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Filament\Models\Contracts\HasAvatar;
@@ -98,5 +99,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
     public function wishlistedPackages()
     {
         return $this->belongsToMany(VendorPackage::class, 'wishlists')->withTimestamps();
+    }
+
+    public function deviceTokens()
+    {
+        return $this->hasMany(DeviceToken::class);
     }
 }
