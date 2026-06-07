@@ -55,9 +55,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     // ── Push Notifications ──────────────────────────────────────────────────
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        // Berikan APNs token ke Firebase agar bisa dikonversi ke FCM token
         Messaging.messaging().apnsToken = deviceToken
         NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken)
+
+        // Explicitly request FCM token setelah APNs token di-set
+        Messaging.messaging().token { token, error in
+            if let error = error {
+                print("[FCM] Error ambil token: \(error.localizedDescription)")
+            } else if let token = token {
+                print("[FCM] Token: \(token)")
+                self.sendFCMTokenToBackend(token)
+            }
+        }
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -65,12 +74,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     }
 
     // Dipanggil Firebase saat FCM token siap atau diperbarui.
-    // Token ini (bukan APNs token) yang harus dikirim ke backend.
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let token = fcmToken else { return }
+        print("[FCM] Delegate token: \(token)")
+        sendFCMTokenToBackend(token)
+    }
 
-        print("[FCM] Token: \(token)")
-
+    private func sendFCMTokenToBackend(_ token: String) {
         let serverURL = "https://paketpernikahan.co.id/app/push/register"
         guard let url = URL(string: serverURL) else { return }
 
@@ -82,7 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
         let body: [String: Any] = ["token": token, "platform": "ios"]
         request.httpBody = try? JSONSerialization.data(withJSONObject: body)
 
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { _, _, error in
             if let error = error {
                 print("[FCM] Gagal kirim token: \(error.localizedDescription)")
             } else {

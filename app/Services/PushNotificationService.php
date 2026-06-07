@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\DeviceToken;
 use Kreait\Firebase\Contract\Messaging;
 use Kreait\Firebase\Messaging\CloudMessage;
-use Kreait\Firebase\Messaging\Notification;
 use Illuminate\Support\Facades\Log;
 
 class PushNotificationService
@@ -39,9 +38,11 @@ class PushNotificationService
     public function sendToToken(string $token, string $title, string $body, array $data = []): void
     {
         try {
-            $message = CloudMessage::withTarget('token', $token)
-                ->withNotification(Notification::create($title, $body))
-                ->withData(array_map('strval', $data));
+            $message = CloudMessage::fromArray([
+                'token'        => $token,
+                'notification' => ['title' => $title, 'body' => $body],
+                'data'         => array_map('strval', $data),
+            ]);
 
             $this->messaging->send($message);
         } catch (\Throwable $e) {
