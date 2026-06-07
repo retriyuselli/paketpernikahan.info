@@ -42,8 +42,9 @@ class SendPushNotification extends Page implements HasForms
                 Select::make('target')
                     ->label('Target Penerima')
                     ->options([
-                        'all'  => 'Semua Pengguna',
-                        'user' => 'Pengguna Tertentu',
+                        'all'   => 'Semua Device (Pengguna + Tamu)',
+                        'user'  => 'Pengguna Tertentu',
+                        'guest' => 'Tamu (belum punya akun)',
                     ])
                     ->default('all')
                     ->live()
@@ -76,8 +77,15 @@ class SendPushNotification extends Page implements HasForms
 
         if ($data['target'] === 'all') {
             $push->broadcast($data['title'], $data['body']);
-            $count = DeviceToken::count();
-            $message = "Notifikasi dikirim ke {$count} device.";
+            $count   = DeviceToken::count();
+            $message = "Notifikasi dikirim ke {$count} device (pengguna + tamu).";
+        } elseif ($data['target'] === 'guest') {
+            $tokens = DeviceToken::whereNull('user_id')->get();
+            foreach ($tokens as $deviceToken) {
+                $push->sendToToken($deviceToken->token, $data['title'], $data['body']);
+            }
+            $count   = $tokens->count();
+            $message = "Notifikasi dikirim ke {$count} device tamu.";
         } else {
             $push->sendToUser((int) $data['user_id'], $data['title'], $data['body']);
             $user    = User::find($data['user_id']);
