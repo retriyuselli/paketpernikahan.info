@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\VendorBooking;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
@@ -77,5 +78,24 @@ class ProfileController extends Controller
 
         return redirect()->route('dashboard.pengaturan')
             ->with('setting_success', 'Nomor WhatsApp berhasil diperbarui.');
+    }
+
+    public function deleteAccount(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // Delete avatar from storage
+        if ($user->avatar_url && !str_starts_with($user->avatar_url, 'http')) {
+            Storage::disk('public')->delete($user->avatar_url);
+        }
+
+        $user->delete();
+
+        return redirect()->route('home')
+            ->with('status', 'Akun kamu telah berhasil dihapus.');
     }
 }

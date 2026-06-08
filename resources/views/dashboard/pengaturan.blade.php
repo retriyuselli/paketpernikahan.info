@@ -160,6 +160,38 @@
 
     </div>
 
+    {{-- Hapus Akun --}}
+    <div class="mt-4 bg-white rounded-2xl border border-red-100 p-5" x-data="{ confirm: false }">
+        <p class="text-xs font-bold text-red-500 mb-1">Hapus Akun</p>
+        <p class="text-xs text-gray-400 mb-4">Tindakan ini permanen dan tidak dapat dibatalkan. Semua data akunmu akan dihapus.</p>
+
+        <div x-show="!confirm">
+            <button type="button" @click="confirm = true"
+                class="px-5 py-2.5 rounded-xl text-sm font-bold border border-red-300 text-red-500 hover:bg-red-50 transition">
+                Hapus Akun Saya
+            </button>
+        </div>
+
+        <div x-show="confirm" x-cloak class="border border-red-200 rounded-xl p-4 bg-red-50">
+            <p class="text-sm font-semibold text-red-600 mb-1">Yakin ingin menghapus akun?</p>
+            <p class="text-xs text-red-400 mb-4">Akun dan semua datamu akan dihapus permanen.</p>
+            <div class="flex gap-3">
+                <form method="POST" action="{{ route('dashboard.account.delete') }}">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="px-5 py-2.5 rounded-xl text-sm font-bold bg-red-500 text-white hover:bg-red-600 transition">
+                        Ya, Hapus Akun
+                    </button>
+                </form>
+                <button type="button" @click="confirm = false"
+                    class="px-5 py-2.5 rounded-xl text-sm font-bold border border-gray-200 text-gray-500 hover:bg-gray-50 transition">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
 @endsection
 
 @section('scripts')
