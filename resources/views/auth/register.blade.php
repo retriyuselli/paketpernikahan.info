@@ -98,13 +98,51 @@
                             @enderror
                         </div>
 
-                        <!-- Kebijakan Privasi -->
-                        <div class="flex items-center mb-5">
+                        <!-- ToS + Kebijakan Privasi -->
+                        <div class="flex items-start mb-5">
                             <input type="checkbox" name="agree" id="agree" required
-                                class="h-4 w-4 rounded border-gray-300 accent-dark shrink-0">
+                                class="h-4 w-4 rounded border-gray-300 accent-dark shrink-0 mt-0.5">
                             <label for="agree" class="ml-2 text-sm text-gray-600 font-light">
-                                Saya setuju dengan <a href="#" data-privacy-open class="text-accent no-underline hover:opacity-80">Kebijakan Privasi</a>
+                                Saya telah membaca dan menyetujui <a href="#" data-tos-open class="text-accent no-underline hover:opacity-80">Syarat & Ketentuan</a> serta <a href="#" data-privacy-open class="text-accent no-underline hover:opacity-80">Kebijakan Privasi</a>
                             </label>
+                        </div>
+
+                        <!-- ToS Modal -->
+                        <div id="tos-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 p-4">
+                            <div class="relative w-full max-w-[40rem] bg-white rounded-2xl max-h-[80vh] flex flex-col shadow-2xl">
+                                <div class="px-6 pt-6 pb-4 border-b border-gray-100 flex items-center justify-between">
+                                    <h2 class="text-lg font-semibold text-dark m-0">Syarat & Ketentuan</h2>
+                                    <button type="button" data-tos-close class="text-gray-400 hover:text-dark text-xl leading-none p-1">&#10005;</button>
+                                </div>
+                                <div class="p-6 overflow-y-auto text-sm text-gray-600 font-light leading-relaxed">
+                                    <p class="mb-4">Dengan mendaftar dan menggunakan aplikasi Makna Wedding, Anda menyetujui syarat dan ketentuan berikut ini.</p>
+
+                                    <h3 class="text-sm font-semibold text-dark mb-2">1. Konten yang Tidak Diperbolehkan</h3>
+                                    <p class="mb-4">Makna Wedding <strong>tidak mentoleransi</strong> konten yang menyinggung, berbahaya, atau melanggar hukum. Pengguna dilarang keras memposting konten yang:</p>
+                                    <ul class="list-disc pl-5 mb-4 space-y-1 text-xs">
+                                        <li>Mengandung ujaran kebencian, diskriminasi, atau ancaman</li>
+                                        <li>Bersifat vulgar, pornografi, atau tidak pantas</li>
+                                        <li>Menyebarkan informasi palsu atau menyesatkan</li>
+                                        <li>Melanggar privasi atau hak orang lain</li>
+                                        <li>Merupakan spam atau promosi yang tidak diminta</li>
+                                    </ul>
+
+                                    <h3 class="text-sm font-semibold text-dark mb-2">2. Pelaporan Konten</h3>
+                                    <p class="mb-4">Pengguna dapat melaporkan konten yang dianggap tidak pantas melalui tombol <em>"Laporkan"</em> yang tersedia. Tim kami berkomitmen untuk menindaklanjuti setiap laporan dalam waktu <strong>24 jam</strong> dengan menghapus konten dan/atau memblokir pengguna yang melanggar.</p>
+
+                                    <h3 class="text-sm font-semibold text-dark mb-2">3. Pemblokiran Pengguna</h3>
+                                    <p class="mb-4">Pengguna yang terbukti melanggar ketentuan ini dapat diblokir dari platform secara permanen tanpa pemberitahuan sebelumnya.</p>
+
+                                    <h3 class="text-sm font-semibold text-dark mb-2">4. Tanggung Jawab Pengguna</h3>
+                                    <p class="mb-4">Setiap pengguna bertanggung jawab penuh atas konten yang mereka buat, termasuk ulasan vendor. Makna Wedding berhak menghapus konten yang melanggar ketentuan ini kapan saja.</p>
+
+                                    <h3 class="text-sm font-semibold text-dark mb-2">5. Penghentian Akun</h3>
+                                    <p>Kami berhak menangguhkan atau menghapus akun yang terbukti melanggar Syarat & Ketentuan ini tanpa pemberitahuan terlebih dahulu.</p>
+                                </div>
+                                <div class="px-6 py-4 border-t border-gray-100 flex justify-end">
+                                    <button type="button" data-tos-close class="bg-dark text-cream text-sm font-semibold py-2 px-6 rounded-full transition hover:opacity-90">Tutup</button>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Privacy Modal -->
@@ -131,26 +169,24 @@
                             </div>
                         </div>
                         <script>
+                            function openModal(id) {
+                                var el = document.getElementById(id);
+                                if (el) { el.classList.remove('hidden'); el.classList.add('flex'); }
+                            }
+                            function closeModal(id) {
+                                var el = document.getElementById(id);
+                                if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+                            }
                             document.addEventListener('click', function (e) {
-                                if (e.target.closest('[data-privacy-open]')) {
-                                    e.preventDefault();
-                                    var el = document.getElementById('privacy-modal');
-                                    if (el) { el.classList.remove('hidden'); el.classList.add('flex'); }
-                                    return;
-                                }
-                                if (e.target.closest('[data-privacy-close]')) {
-                                    var el = document.getElementById('privacy-modal');
-                                    if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
-                                    return;
-                                }
-                                var modal = document.getElementById('privacy-modal');
-                                if (modal && e.target === modal) { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+                                if (e.target.closest('[data-tos-open]'))     { e.preventDefault(); openModal('tos-modal'); return; }
+                                if (e.target.closest('[data-tos-close]'))    { closeModal('tos-modal'); return; }
+                                if (e.target.closest('[data-privacy-open]')) { e.preventDefault(); openModal('privacy-modal'); return; }
+                                if (e.target.closest('[data-privacy-close]')){ closeModal('privacy-modal'); return; }
+                                if (e.target === document.getElementById('tos-modal'))     closeModal('tos-modal');
+                                if (e.target === document.getElementById('privacy-modal')) closeModal('privacy-modal');
                             });
                             document.addEventListener('keydown', function(e) {
-                                if (e.key === 'Escape') {
-                                    var el = document.getElementById('privacy-modal');
-                                    if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
-                                }
+                                if (e.key === 'Escape') { closeModal('tos-modal'); closeModal('privacy-modal'); }
                             });
                         </script>
 

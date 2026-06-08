@@ -10,6 +10,12 @@
         <p class="text-sm text-gray-400 mt-1">Semua ulasan yang pernah kamu tulis.</p>
     </div>
 
+    @if(session('report_success'))
+    <div class="mb-4 text-xs font-semibold px-3 py-2.5 rounded-xl bg-green-50 text-green-700">
+        ✓ {{ session('report_success') }}
+    </div>
+    @endif
+
     @if($myReviews->isEmpty())
     <div class="bg-white rounded-2xl border border-gray-100 p-10 flex flex-col items-center text-center gap-3">
         <div class="w-12 h-12 rounded-full flex items-center justify-center bg-light-sage">

@@ -587,6 +587,33 @@
                                     </div>
                                 @endif
                             @endauth
+
+                            @auth
+                                @if(!auth()->user()->hasRole(['super_admin', 'admin']) && $rev->user_id !== auth()->id())
+                                <div class="mt-2 flex justify-end" x-data="{ open: false }">
+                                    <button type="button" @click="open = !open"
+                                        class="text-[10px] text-gray-400 hover:text-red-400 transition flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
+                                        Laporkan
+                                    </button>
+                                    <div x-show="open" x-cloak class="absolute mt-5 mr-4 right-0 z-10 bg-white border border-gray-200 rounded-xl shadow-lg p-3 w-52">
+                                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Alasan laporan</p>
+                                        <form method="POST" action="{{ route('report.review', $rev) }}">
+                                            @csrf
+                                            <select name="reason" class="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs mb-2 focus:outline-none">
+                                                <option value="spam">Spam</option>
+                                                <option value="offensive">Konten tidak pantas</option>
+                                                <option value="fake">Ulasan palsu</option>
+                                                <option value="other">Lainnya</option>
+                                            </select>
+                                            <button type="submit" class="w-full py-1.5 rounded-lg text-xs font-bold bg-red-50 text-red-500 hover:bg-red-100 transition">
+                                                Kirim Laporan
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                                @endif
+                            @endauth
                         </div>
                         @endforeach
                     </div>
@@ -1513,6 +1540,14 @@
     }
 
     async function shareVendor() {
+        try {
+            if (window.Capacitor?.isNativePlatform?.()) {
+                const { Share } = await import('@capacitor/share');
+                await Share.share({ title: SHARE_TITLE, url: SHARE_URL, dialogTitle: 'Bagikan vendor ini' });
+                return;
+            }
+        } catch (_) {}
+
         try {
             if (navigator.share) {
                 await navigator.share({ title: SHARE_TITLE, url: SHARE_URL });

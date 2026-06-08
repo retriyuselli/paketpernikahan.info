@@ -1814,6 +1814,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('dashboard.whatsapp.update');
     Route::delete('/dashboard/profile/delete', [\App\Http\Controllers\ProfileController::class, 'deleteAccount'])
         ->name('dashboard.account.delete');
+    Route::post('/report/review/{review}', [\App\Http\Controllers\ContentReportController::class, 'reportReview'])
+        ->name('report.review');
 });
 
 // ── Chat (user: my chats) ──────────────────────────────────────────────────
