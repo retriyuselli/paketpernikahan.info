@@ -10,17 +10,19 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="bg-cream font-sans font-light">
-        <div class="min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="min-h-screen flex flex-col px-4" style="padding-top: max(env(safe-area-inset-top, 0px), 16px); padding-bottom: max(env(safe-area-inset-bottom, 0px), 16px)">
+            <!-- Back to Home -->
+            <div class="py-3">
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-dark transition no-underline">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Kembali ke Beranda
+                </a>
+            </div>
+
+            <div class="flex-1 flex items-center justify-center py-6">
             <div class="w-full max-w-md">
-                <!-- Back to Home -->
-                <div class="mb-4">
-                    <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-dark transition no-underline">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                        Kembali ke Beranda
-                    </a>
-                </div>
 
                 <!-- Logo -->
                 <div class="text-center mb-8">
@@ -116,6 +118,7 @@
                     </p>
                 </div>
             </div>
+            </div><!-- end flex-1 center wrapper -->
         </div>
     </body>
 </html>
