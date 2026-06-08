@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Firebase\JWT\JWT;
+use Firebase\JWT\JWK;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\InvalidStateException;
@@ -64,6 +67,67 @@ class SocialAuthController extends Controller
         }
 
         return redirect()->intended(route('dashboard'));
+    }
+
+    public function appleSignIn(Request $request)
+    {
+        $identityToken = $request->input('identity_token');
+        $givenName     = $request->input('given_name');
+        $familyName    = $request->input('family_name');
+
+        if (!$identityToken) {
+            return response()->json(['error' => 'Token tidak valid'], 422);
+        }
+
+        try {
+            $appleKeys = Http::get('https://appleid.apple.com/auth/keys')->json();
+            $decoded   = JWT::decode($identityToken, JWK::parseKeySet($appleKeys));
+
+            if (($decoded->iss ?? '') !== 'https://appleid.apple.com') {
+                throw new \Exception('Invalid issuer');
+            }
+            if (($decoded->aud ?? '') !== 'id.co.paketpernikahan.app') {
+                throw new \Exception('Invalid audience');
+            }
+
+            $appleId = $decoded->sub;
+            $email   = $decoded->email ?? null;
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Verifikasi token gagal: ' . $e->getMessage()], 422);
+        }
+
+        // Find user by apple_id, then by email
+        $user = User::where('apple_id', $appleId)->first();
+
+        if (!$user && $email) {
+            $user = User::where('email', $email)->first();
+        }
+
+        if (!$user) {
+            if (!$email) {
+                return response()->json(['error' => 'Email tidak tersedia, silakan coba lagi.'], 422);
+            }
+            $name = trim(($givenName ?? '') . ' ' . ($familyName ?? '')) ?: 'Apple User';
+            $user = User::create([
+                'name'              => $name,
+                'email'             => $email,
+                'password'          => bcrypt(Str::random(32)),
+                'email_verified_at' => now(),
+                'apple_id'          => $appleId,
+            ]);
+            Role::findOrCreate('pengunjung', 'web');
+            $user->assignRole('pengunjung');
+        } else {
+            $updates = [];
+            if (!$user->apple_id) $updates['apple_id'] = $appleId;
+            if (!$user->email_verified_at) $updates['email_verified_at'] = now();
+            if ($updates) $user->update($updates);
+        }
+
+        $token = Str::random(64);
+        cache()->put('app_login_token_' . $token, $user->id, now()->addMinutes(5));
+
+        return response()->json(['redirect' => route('auth.app.token') . '?token=' . $token]);
     }
 
     public function loginWithAppToken(\Illuminate\Http\Request $request)

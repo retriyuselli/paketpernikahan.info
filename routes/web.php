@@ -1215,6 +1215,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->middleware('throttle
 
 Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::post('/auth/apple', [SocialAuthController::class, 'appleSignIn'])->name('auth.apple');
 Route::get('/auth/app-token', [SocialAuthController::class, 'loginWithAppToken'])->name('auth.app.token');
 
 Route::get('/register', function () {

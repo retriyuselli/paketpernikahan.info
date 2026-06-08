@@ -3,8 +3,31 @@
     "file": "assets/dist-CRsPgqLG.js",
     "name": "dist"
   },
+  "node_modules/@capacitor-community/apple-sign-in/dist/esm/index.js": {
+    "file": "assets/esm-D8ldwBsJ.js",
+    "name": "esm",
+    "src": "node_modules/@capacitor-community/apple-sign-in/dist/esm/index.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_dist-CRsPgqLG.js"
+    ],
+    "dynamicImports": [
+      "node_modules/@capacitor-community/apple-sign-in/dist/esm/web.js"
+    ]
+  },
+  "node_modules/@capacitor-community/apple-sign-in/dist/esm/web.js": {
+    "file": "assets/web-CTmMtpVB.js",
+    "name": "web",
+    "src": "node_modules/@capacitor-community/apple-sign-in/dist/esm/web.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_dist-CRsPgqLG.js"
+    ]
+  },
   "node_modules/@capacitor/app/dist/esm/index.js": {
-    "file": "assets/esm-Bfj21s5a.js",
+    "file": "assets/esm-Da1P930q.js",
     "name": "esm",
     "src": "node_modules/@capacitor/app/dist/esm/index.js",
     "isDynamicEntry": true,
@@ -17,7 +40,7 @@
     ]
   },
   "node_modules/@capacitor/app/dist/esm/web.js": {
-    "file": "assets/web-bTL5Wb9r.js",
+    "file": "assets/web-BiE6-57S.js",
     "name": "web",
     "src": "node_modules/@capacitor/app/dist/esm/web.js",
     "isDynamicEntry": true,
@@ -26,7 +49,7 @@
     ]
   },
   "node_modules/@capacitor/browser/dist/esm/index.js": {
-    "file": "assets/esm-BtPVDqxJ.js",
+    "file": "assets/esm-qa_SeTat.js",
     "name": "esm",
     "src": "node_modules/@capacitor/browser/dist/esm/index.js",
     "isDynamicEntry": true,
@@ -39,7 +62,7 @@
     ]
   },
   "node_modules/@capacitor/browser/dist/esm/web.js": {
-    "file": "assets/web-DYdia3Z5.js",
+    "file": "assets/web-DaTIG1gG.js",
     "name": "web",
     "src": "node_modules/@capacitor/browser/dist/esm/web.js",
     "isDynamicEntry": true,
@@ -48,7 +71,7 @@
     ]
   },
   "node_modules/@capacitor/push-notifications/dist/esm/index.js": {
-    "file": "assets/esm-jowkzD34.js",
+    "file": "assets/esm-D6_-QiIC.js",
     "name": "esm",
     "src": "node_modules/@capacitor/push-notifications/dist/esm/index.js",
     "isDynamicEntry": true,
@@ -57,7 +80,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-btxHrfw3.css",
+    "file": "assets/app-BznqapOd.css",
     "name": "app",
     "names": [
       "app.css"
@@ -66,13 +89,14 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-IA01Et5N.js",
+    "file": "assets/app-CwkCwhSS.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "dynamicImports": [
       "node_modules/@capacitor/browser/dist/esm/index.js",
       "node_modules/@capacitor/app/dist/esm/index.js",
+      "node_modules/@capacitor-community/apple-sign-in/dist/esm/index.js",
       "node_modules/@capacitor/push-notifications/dist/esm/index.js"
     ]
   }

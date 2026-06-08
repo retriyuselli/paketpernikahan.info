@@ -16,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 
-#[Fillable(['name', 'email', 'password', 'avatar_url', 'theme_color', 'email_verified_at', 'whatsapp'])]
+#[Fillable(['name', 'email', 'password', 'avatar_url', 'apple_id', 'theme_color', 'email_verified_at', 'whatsapp'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
