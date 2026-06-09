@@ -1098,7 +1098,11 @@ Route::get('/vendor/{vendor:slug}', function (\App\Models\Vendor $vendor) {
             ->first()
         : null;
     $packages = $vendor->packages->where('is_active', true)->values();
-    return view('vendor.detail', compact('vendor', 'hasLiked', 'myBooking', 'vendorDetailDisabled', 'vendorDetailBackUrl', 'packages'));
+    $blockedUserIds = $authUser
+        ? \App\Models\UserBlock::where('blocker_id', $authUser->id)->pluck('blocked_id')
+        : collect();
+    $vendor->setRelation('approvedReviews', $vendor->approvedReviews->whereNotIn('user_id', $blockedUserIds)->values());
+    return view('vendor.detail', compact('vendor', 'hasLiked', 'myBooking', 'vendorDetailDisabled', 'vendorDetailBackUrl', 'packages', 'blockedUserIds'));
 })->name('vendor.detail');
 
 Route::post('/vendor/{vendor:slug}/reviews', [\App\Http\Controllers\VendorReviewController::class, 'store'])
@@ -1816,6 +1820,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('dashboard.account.delete');
     Route::post('/report/review/{review}', [\App\Http\Controllers\ContentReportController::class, 'reportReview'])
         ->name('report.review');
+    Route::post('/block/user/{user}', [\App\Http\Controllers\UserBlockController::class, 'block'])
+        ->name('user.block');
+    Route::delete('/block/user/{user}', [\App\Http\Controllers\UserBlockController::class, 'unblock'])
+        ->name('user.unblock');
 });
 
 // ── Chat (user: my chats) ──────────────────────────────────────────────────

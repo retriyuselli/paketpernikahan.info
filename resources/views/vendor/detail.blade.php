@@ -529,6 +529,11 @@
                                 {{ session('reply_success') }}
                             </div>
                         @endif
+                        @if (session('block_success'))
+                            <div class="bg-orange-50 text-orange-700 border border-orange-100 rounded-2xl p-3 text-xs font-semibold">
+                                {{ session('block_success') }}
+                            </div>
+                        @endif
                         @foreach ($reviewList as $revIdx => $rev)
                         <div class="bg-white rounded-2xl p-4 border border-gray-100 review-card {{ $revIdx >= 3 ? 'hidden' : '' }}">
                             <div class="flex items-center gap-3 mb-2">
@@ -590,7 +595,32 @@
 
                             @auth
                                 @if(!auth()->user()->hasRole(['super_admin', 'admin']) && $rev->user_id !== auth()->id())
-                                <div class="mt-2 flex justify-end" x-data="{ open: false }">
+                                <div class="mt-2 flex items-center justify-end gap-3" x-data="{ open: false }">
+                                    {{-- Tombol Blokir --}}
+                                    @if($rev->user_id)
+                                        @php $isBlocked = ($blockedUserIds ?? collect())->contains($rev->user_id); @endphp
+                                        @if($isBlocked)
+                                            <form method="POST" action="{{ route('user.unblock', $rev->user) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-[10px] text-blue-400 hover:text-blue-600 transition flex items-center gap-1">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                                    Batal Blokir
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form method="POST" action="{{ route('user.block', $rev->user) }}">
+                                                @csrf
+                                                <button type="submit" class="text-[10px] text-gray-400 hover:text-orange-400 transition flex items-center gap-1"
+                                                    onclick="return confirm('Blokir pengguna ini? Ulasan mereka tidak akan muncul untukmu.')">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                                    Blokir
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @endif
+
+                                    {{-- Tombol Laporkan --}}
                                     <button type="button" @click="open = !open"
                                         class="text-[10px] text-gray-400 hover:text-red-400 transition flex items-center gap-1">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg>
