@@ -552,6 +552,10 @@
                                 </div>
                             </div>
                             <p class="text-sm text-gray-600 leading-relaxed">{{ $rev->body }}</p>
+                            @if($rev->photo)
+                                <img src="{{ \Illuminate\Support\Facades\Storage::url($rev->photo) }}" alt="Foto ulasan"
+                                     class="mt-2 rounded-xl max-h-48 object-cover border border-gray-100">
+                            @endif
                             @if(filled($rev->admin_reply))
                                 <div class="mt-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
                                     <div class="flex items-center justify-between gap-2 mb-1">
@@ -715,6 +719,24 @@
                                       placeholder="Ceritakan pengalaman Anda dengan vendor ini (min. 10 karakter)..."
                                       class="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-gray-400 transition resize-none"></textarea>
                             <p class="text-[10px] text-gray-300 text-right mt-0.5"><span id="review-char">0</span>/1000</p>
+                        </div>
+
+                        {{-- Photo Upload --}}
+                        <div class="mb-4">
+                            <div id="review-photo-preview" class="hidden mb-2 items-center gap-2">
+                                <img id="review-photo-img" src="" alt="" class="w-20 h-20 rounded-xl object-cover border border-gray-200">
+                                <button type="button" id="review-photo-remove"
+                                        class="text-xs text-red-500 hover:text-red-700 transition">Hapus foto</button>
+                            </div>
+                            <label class="inline-flex items-center gap-2 cursor-pointer px-3 py-2 border border-dashed border-gray-300 rounded-xl text-xs text-gray-500 hover:border-accent hover:text-accent transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                Tambah Foto
+                                <input type="file" id="review-photo-input" accept="image/*" class="hidden">
+                            </label>
+                            <p class="text-[10px] text-gray-400 mt-1">Opsional · Maks 5MB</p>
                         </div>
 
                         <div id="review-feedback" class="hidden mb-3 text-xs font-semibold px-3 py-2 rounded-lg"></div>
@@ -1448,6 +1470,35 @@
         });
     }
 
+    // ── Photo preview ────────────────────────────────────────────────
+    const photoInput   = document.getElementById('review-photo-input');
+    const photoPreview = document.getElementById('review-photo-preview');
+    const photoImg     = document.getElementById('review-photo-img');
+    const photoRemove  = document.getElementById('review-photo-remove');
+
+    if (photoInput) {
+        photoInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                photoImg.src = e.target.result;
+                photoPreview.classList.remove('hidden');
+                photoPreview.style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    if (photoRemove) {
+        photoRemove.addEventListener('click', function () {
+            photoInput.value = '';
+            photoImg.src = '';
+            photoPreview.classList.add('hidden');
+            photoPreview.style.display = '';
+        });
+    }
+
     function submitReview() {
         const rating  = parseInt(document.getElementById('review-rating').value, 10);
         const body    = document.getElementById('review-body')?.value?.trim() ?? '';
@@ -1467,14 +1518,20 @@
         btn.disabled    = true;
         btn.textContent = 'Mengirim...';
 
+        const formData = new FormData();
+        formData.append('rating', rating);
+        formData.append('body', body);
+        if (photoInput && photoInput.files[0]) {
+            formData.append('photo', photoInput.files[0]);
+        }
+
         fetch(REVIEW_STORE_URL, {
             method : 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
                 'Accept'      : 'application/json',
             },
-            body: JSON.stringify({ rating, body }),
+            body: formData,
         })
         .then(async r => {
             const contentType = r.headers.get('content-type') ?? '';
@@ -1493,6 +1550,7 @@
                 document.getElementById('review-rating').value = '0';
                 document.getElementById('star-label').textContent = 'Pilih rating';
                 document.querySelectorAll('.star-btn svg').forEach(s => s.style.color = '#d1d5db');
+                if (photoInput) { photoInput.value = ''; photoImg.src = ''; photoPreview.classList.add('hidden'); photoPreview.style.display = ''; }
                 btn.textContent = 'Terkirim ✓';
                 return;
             }

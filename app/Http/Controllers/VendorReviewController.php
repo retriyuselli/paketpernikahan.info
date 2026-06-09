@@ -6,6 +6,7 @@ use App\Models\Vendor;
 use App\Models\VendorReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class VendorReviewController extends Controller
 {
@@ -14,6 +15,7 @@ class VendorReviewController extends Controller
         $data = $request->validate([
             'rating'        => 'required|integer|min:1|max:5',
             'body'          => 'required|string|min:10|max:1000',
+            'photo'         => 'nullable|image|max:5120',
         ]);
 
         $recentQuery = VendorReview::where('vendor_id', $vendor->id)
@@ -40,6 +42,11 @@ class VendorReviewController extends Controller
             ], 403);
         }
 
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('reviews', 'public');
+        }
+
         VendorReview::create([
             'vendor_id'     => $vendor->id,
             'user_id'       => $user?->id,
@@ -47,6 +54,7 @@ class VendorReviewController extends Controller
             'reviewer_avatar' => $user?->avatarUrl(),
             'rating'        => $data['rating'],
             'body'          => $data['body'],
+            'photo'         => $photoPath,
             'reviewed_at'   => now(),
             'is_approved'   => false,
             'reviewer_ip'   => $request->ip(),

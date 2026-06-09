@@ -21,7 +21,7 @@ class VendorReview extends Model
 
     protected $fillable = [
         'vendor_id', 'user_id', 'reviewer_name', 'reviewer_avatar',
-        'rating', 'body', 'admin_reply', 'admin_reply_by', 'admin_replied_at',
+        'rating', 'body', 'photo', 'admin_reply', 'admin_reply_by', 'admin_replied_at',
         'reviewed_at', 'is_approved', 'reviewer_ip',
     ];
 
