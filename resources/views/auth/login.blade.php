@@ -56,7 +56,72 @@
                     <button type="submit" class="w-full bg-dark hover:opacity-90 text-cream text-sm font-semibold py-3 px-4 rounded-full transition">
                         Masuk
                     </button>
+
+                    <p class="text-center text-xs text-gray-400 mt-3">
+                        Dengan masuk, Anda menyetujui <a href="#" data-tos-open class="text-accent no-underline hover:opacity-80">Syarat & Ketentuan</a> kami yang melarang konten berbahaya dan pengguna yang melanggar.
+                    </p>
                 </form>
+
+                <!-- ToS Modal -->
+                <div id="tos-modal" class="hidden fixed inset-0 z-50 items-center justify-center bg-black/40 p-4">
+                    <div class="relative w-full max-w-[40rem] bg-white rounded-2xl max-h-[80vh] flex flex-col shadow-2xl">
+                        <div class="px-6 pt-6 pb-4 border-b border-gray-100 flex items-center justify-between">
+                            <h2 class="text-lg font-semibold text-dark m-0">Syarat & Ketentuan</h2>
+                            <button type="button" data-tos-close class="text-gray-400 hover:text-dark text-xl leading-none p-1">&#10005;</button>
+                        </div>
+                        <div class="p-6 overflow-y-auto text-sm text-gray-600 font-light leading-relaxed">
+                            <p class="mb-4">Dengan mendaftar dan menggunakan aplikasi Makna Wedding, Anda menyetujui syarat dan ketentuan berikut ini.</p>
+
+                            <h3 class="text-sm font-semibold text-dark mb-2">1. Konten yang Tidak Diperbolehkan</h3>
+                            <p class="mb-4">Makna Wedding <strong>tidak mentoleransi</strong> konten yang menyinggung, berbahaya, atau melanggar hukum. Pengguna dilarang keras memposting konten yang:</p>
+                            <ul class="list-disc pl-5 mb-4 space-y-1 text-xs">
+                                <li>Mengandung ujaran kebencian, diskriminasi, atau ancaman</li>
+                                <li>Bersifat vulgar, pornografi, atau tidak pantas</li>
+                                <li>Menyebarkan informasi palsu atau menyesatkan</li>
+                                <li>Melanggar privasi atau hak orang lain</li>
+                                <li>Merupakan spam atau promosi yang tidak diminta</li>
+                            </ul>
+
+                            <h3 class="text-sm font-semibold text-dark mb-2">2. Pelaporan Konten</h3>
+                            <p class="mb-4">Pengguna dapat melaporkan konten yang dianggap tidak pantas melalui tombol <em>"Laporkan"</em> yang tersedia. Tim kami berkomitmen untuk menindaklanjuti setiap laporan dalam waktu <strong>24 jam</strong>.</p>
+
+                            <h3 class="text-sm font-semibold text-dark mb-2">3. Pemblokiran Pengguna</h3>
+                            <p class="mb-4">Pengguna yang terbukti melanggar ketentuan ini dapat diblokir dari platform secara permanen tanpa pemberitahuan sebelumnya.</p>
+
+                            <h3 class="text-sm font-semibold text-dark mb-2">4. Tanggung Jawab Pengguna</h3>
+                            <p class="mb-4">Setiap pengguna bertanggung jawab penuh atas konten yang mereka buat. Makna Wedding berhak menghapus konten yang melanggar ketentuan ini kapan saja.</p>
+
+                            <h3 class="text-sm font-semibold text-dark mb-2">5. Penghentian Akun</h3>
+                            <p>Kami berhak menangguhkan atau menghapus akun yang terbukti melanggar Syarat & Ketentuan ini tanpa pemberitahuan terlebih dahulu.</p>
+                        </div>
+                        <div class="px-6 py-4 border-t border-gray-100 flex justify-end">
+                            <button type="button" data-tos-close class="bg-dark text-cream text-sm font-semibold py-2 px-6 rounded-full transition hover:opacity-90">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener('click', function (e) {
+                        if (e.target.closest('[data-tos-open]')) {
+                            e.preventDefault();
+                            var el = document.getElementById('tos-modal');
+                            if (el) { el.classList.remove('hidden'); el.classList.add('flex'); }
+                        }
+                        if (e.target.closest('[data-tos-close]')) {
+                            var el = document.getElementById('tos-modal');
+                            if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+                        }
+                        if (e.target === document.getElementById('tos-modal')) {
+                            var el = document.getElementById('tos-modal');
+                            if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+                        }
+                    });
+                    document.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape') {
+                            var el = document.getElementById('tos-modal');
+                            if (el) { el.classList.add('hidden'); el.classList.remove('flex'); }
+                        }
+                    });
+                </script>
 
                 <div class="relative my-6">
                     <div class="absolute inset-0 flex items-center">
