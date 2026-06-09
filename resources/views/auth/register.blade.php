@@ -188,6 +188,9 @@
                 </div>
 
                 <div class="flex flex-col gap-3">
+                    <p class="text-center text-xs text-gray-400">
+                        Dengan mendaftar, Anda menyetujui <a href="#" data-tos-open class="text-accent no-underline hover:opacity-80">Syarat & Ketentuan</a> kami yang melarang konten berbahaya dan pengguna yang melanggar.
+                    </p>
                     <a href="{{ route('auth.google') }}" class="w-full flex items-center justify-center gap-2.5 py-3 px-4 border border-gray-200 rounded-xl bg-white text-sm text-dark font-medium transition hover:bg-gray-50 no-underline">
                         <svg width="18" height="18" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
