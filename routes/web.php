@@ -107,6 +107,10 @@ Route::get('/sitemap.xml', function () {
         ->header('Content-Type', 'application/xml');
 })->name('sitemap');
 
+Route::get('/app', function () {
+    return redirect()->away('https://apps.apple.com/us/app/paket-pernikahan/id6777688676');
+})->name('app.download');
+
 Route::get('/', function () {
     $heroCircles = \App\Models\HeroCircle::active()->get();
 
@@ -1004,25 +1008,6 @@ Route::get('/vendor', function () {
         }
     }
 
-    $provinces = \App\Models\Vendor::where('is_active', true)
-        ->where('is_profile_complete', true)
-        ->whereNotNull('province')
-        ->distinct()
-        ->orderBy('province')
-        ->pluck('province');
-
-    // Group cities by province for cascade dropdown
-    $citiesByProvince = \App\Models\Vendor::where('is_active', true)
-        ->where('is_profile_complete', true)
-        ->whereNotNull('province')
-        ->whereNotNull('city')
-        ->select('province', 'city')
-        ->distinct()
-        ->orderBy('city')
-        ->get()
-        ->groupBy('province')
-        ->map(fn ($rows) => $rows->pluck('city')->unique()->sort()->values());
-
     $categoriesWithVendors = \App\Models\CategoryVendor::where('is_active', true)
         ->orderBy('sort_order')
         ->get()
@@ -1066,8 +1051,6 @@ Route::get('/vendor', function () {
 
     return view('front.vendor', [
         'categories'       => $categoriesWithVendors,
-        'provinces'        => $provinces,
-        'citiesByProvince' => $citiesByProvince,
         'realWeddings'     => $realWeddings,
         'homeAd'           => $homeAd,
         'homeFeaturedBlogs'=> $homeFeaturedBlogs,

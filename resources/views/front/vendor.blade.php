@@ -128,41 +128,6 @@
         </div>
     </section>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const citiesByProvince = @json($citiesByProvince);
-        const provinceSelect   = document.querySelector('select[name="province"]');
-        const citySelect       = document.getElementById('city-select');
-        const savedCity        = @json(request('city'));
-
-        function populateCities(province) {
-            citySelect.innerHTML = '';
-            if (!province || !citiesByProvince[province] || !citiesByProvince[province].length) {
-                citySelect.disabled = true;
-                citySelect.add(new Option('Pilih Provinsi dulu', ''));
-                return;
-            }
-            citySelect.disabled = false;
-            citySelect.add(new Option('Semua Kota', ''));
-            citiesByProvince[province].forEach(function (city) {
-                const opt = new Option(city, city);
-                if (city === savedCity) opt.selected = true;
-                citySelect.add(opt);
-            });
-        }
-
-        provinceSelect.addEventListener('change', function () {
-            populateCities(this.value);
-        });
-
-        if (provinceSelect.value) {
-            populateCities(provinceSelect.value);
-        } else {
-            citySelect.disabled = true;
-        }
-    });
-    </script>
-
     @if(isset($featuredPackages) && $featuredPackages->isNotEmpty())
         <x-paket-section
             :packages="$featuredPackages"

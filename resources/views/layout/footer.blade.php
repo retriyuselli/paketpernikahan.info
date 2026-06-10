@@ -14,6 +14,10 @@
                     <span class="text-2xl font-extrabold text-cream tracking-tight">Makna Wedding</span>
                 </a>
                 <p class="text-sm leading-relaxed text-light-sage/70 mb-4">Platform pernikahan terpercaya di Sumatera Selatan. Temukan vendor, paket, dan inspirasi terbaik.</p>
+                <a href="https://apps.apple.com/us/app/paket-pernikahan/id6777688676" target="_blank" rel="noopener"
+                   class="inline-block mb-4 transition hover:opacity-80">
+                    <img src="{{ asset('images/badge-app-store.svg') }}" alt="Unduh di App Store" class="h-10 w-auto">
+                </a>
                 <div class="flex items-center gap-3">
                     <a href="https://instagram.com/" target="_blank" rel="noopener"
                        class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-accent/30 transition">

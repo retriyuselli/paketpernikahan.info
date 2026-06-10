@@ -53,6 +53,12 @@
                     Paket Pernikahan membantu mewujudkan pernikahan impian Anda dengan paket lengkap dan terjangkau
                 </p>
 
+                <!-- Download App Store -->
+                <a href="https://apps.apple.com/us/app/paket-pernikahan/id6777688676" target="_blank" rel="noopener"
+                   class="inline-block transition hover:opacity-80">
+                    <img src="{{ asset('images/badge-app-store.svg') }}" alt="Unduh di App Store" class="h-12 w-auto">
+                </a>
+
                 <!-- Search Bar -->
                 {{-- <form action="{{ route('store') }}" method="GET">
                     <div class="flex items-center bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden pr-2 py-2 pl-5 gap-3">
