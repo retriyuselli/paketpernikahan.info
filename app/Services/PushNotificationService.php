@@ -18,24 +18,27 @@ class PushNotificationService
      * @param  string $title
      * @param  string $body
      * @param  array  $data  Payload tambahan (url, type, id, dll)
+     * @return array{sent: int, failed: int}
      */
-    public function sendToUser(int $userId, string $title, string $body, array $data = []): void
+    public function sendToUser(int $userId, string $title, string $body, array $data = []): array
     {
         $tokens = DeviceToken::where('user_id', $userId)->pluck('token');
 
-        if ($tokens->isEmpty()) {
-            return;
-        }
+        $result = ['sent' => 0, 'failed' => 0];
 
         foreach ($tokens as $token) {
-            $this->sendToToken($token, $title, $body, $data);
+            $this->sendToToken($token, $title, $body, $data)
+                ? $result['sent']++
+                : $result['failed']++;
         }
+
+        return $result;
     }
 
     /**
      * Kirim notifikasi ke satu FCM token.
      */
-    public function sendToToken(string $token, string $title, string $body, array $data = []): void
+    public function sendToToken(string $token, string $title, string $body, array $data = []): bool
     {
         try {
             $message = CloudMessage::fromArray([
@@ -45,6 +48,8 @@ class PushNotificationService
             ]);
 
             $this->messaging->send($message);
+
+            return true;
         } catch (\Throwable $e) {
             Log::error('[Push] Gagal kirim ke token', [
                 'token' => substr($token, 0, 20) . '...',
@@ -56,19 +61,29 @@ class PushNotificationService
                 DeviceToken::where('token', $token)->delete();
                 Log::info('[Push] Token tidak valid dihapus.', ['token' => substr($token, 0, 20) . '...']);
             }
+
+            return false;
         }
     }
 
     /**
      * Kirim notifikasi broadcast ke semua device yang terdaftar.
+     *
+     * @return array{sent: int, failed: int}
      */
-    public function broadcast(string $title, string $body, array $data = []): void
+    public function broadcast(string $title, string $body, array $data = []): array
     {
-        DeviceToken::chunk(500, function ($tokens) use ($title, $body, $data) {
+        $result = ['sent' => 0, 'failed' => 0];
+
+        DeviceToken::chunk(500, function ($tokens) use ($title, $body, $data, &$result) {
             foreach ($tokens as $deviceToken) {
-                $this->sendToToken($deviceToken->token, $title, $body, $data);
+                $this->sendToToken($deviceToken->token, $title, $body, $data)
+                    ? $result['sent']++
+                    : $result['failed']++;
             }
         });
+
+        return $result;
     }
 
     private function isInvalidToken(string $errorMessage): bool

@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Pages;
 
 use App\Models\DeviceToken;
+use App\Models\PushNotificationLog;
 use App\Models\User;
 use App\Services\PushNotificationService;
 use BackedEnum;
@@ -76,21 +77,35 @@ class SendPushNotification extends Page implements HasForms
         $data = $this->form->getState();
 
         if ($data['target'] === 'all') {
-            $push->broadcast($data['title'], $data['body']);
-            $count   = DeviceToken::count();
-            $message = "Notifikasi dikirim ke {$count} device (pengguna + tamu).";
+            $result  = $push->broadcast($data['title'], $data['body']);
+            $message = "Notifikasi dikirim ke {$result['sent']} device (pengguna + tamu).";
         } elseif ($data['target'] === 'guest') {
+            $result = ['sent' => 0, 'failed' => 0];
             $tokens = DeviceToken::whereNull('user_id')->get();
             foreach ($tokens as $deviceToken) {
-                $push->sendToToken($deviceToken->token, $data['title'], $data['body']);
+                $push->sendToToken($deviceToken->token, $data['title'], $data['body'])
+                    ? $result['sent']++
+                    : $result['failed']++;
             }
-            $count   = $tokens->count();
-            $message = "Notifikasi dikirim ke {$count} device tamu.";
+            $message = "Notifikasi dikirim ke {$result['sent']} device tamu.";
         } else {
-            $push->sendToUser((int) $data['user_id'], $data['title'], $data['body']);
+            $result  = $push->sendToUser((int) $data['user_id'], $data['title'], $data['body']);
             $user    = User::find($data['user_id']);
-            $count   = DeviceToken::where('user_id', $data['user_id'])->count();
-            $message = "Notifikasi dikirim ke {$user->name} ({$count} device).";
+            $message = "Notifikasi dikirim ke {$user->name} ({$result['sent']} device).";
+        }
+
+        PushNotificationLog::create([
+            'target'       => $data['target'],
+            'user_id'      => $data['target'] === 'user' ? (int) $data['user_id'] : null,
+            'title'        => $data['title'],
+            'body'         => $data['body'],
+            'sent_count'   => $result['sent'],
+            'failed_count' => $result['failed'],
+            'sent_by'      => auth()->id(),
+        ]);
+
+        if ($result['failed'] > 0) {
+            $message .= " {$result['failed']} device gagal.";
         }
 
         Notification::make()
