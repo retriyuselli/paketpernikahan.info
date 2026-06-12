@@ -12,6 +12,7 @@
         "joaopaulolndev/filament-edit-profile": "^3.0",
         "kreait/laravel-firebase": "^7.2",
         "laravel/framework": "^13.0",
+        "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.26",
         "laravel/tinker": "^3.0",
         "opcodesio/log-viewer": "^3.24",

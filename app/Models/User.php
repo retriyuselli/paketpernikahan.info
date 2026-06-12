@@ -12,6 +12,7 @@ use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -21,7 +22,7 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasRoles, Notifiable, LogsActivity;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, LogsActivity;
 
     public function getActivitylogOptions(): LogOptions
     {

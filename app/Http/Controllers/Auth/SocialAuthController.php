@@ -80,7 +80,7 @@ class SocialAuthController extends Controller
         }
 
         try {
-            $appleKeys = Http::get('https://appleid.apple.com/auth/keys')->json();
+            $appleKeys = Http::timeout(10)->get('https://appleid.apple.com/auth/keys')->json();
             $decoded   = JWT::decode($identityToken, JWK::parseKeySet($appleKeys));
 
             if (($decoded->iss ?? '') !== 'https://appleid.apple.com') {
