@@ -18,10 +18,28 @@ class BlogResource extends JsonResource
             'title'           => $this->title,
             'category'        => $this->category,
             'excerpt'         => $this->excerpt,
-            'tags'            => $this->tags ?? [],
+            'tags'            => $this->normalizedTags(),
             'cover_image_url' => $this->absoluteUrl($this->cover_image),
             'views_count'     => $this->views_count,
             'published_at'    => $this->published_at?->toIso8601String(),
         ];
+    }
+
+    /**
+     * Data lama menyimpan tags sebagai string biasa, bukan array JSON —
+     * normalisasi agar API selalu mengembalikan array string.
+     */
+    protected function normalizedTags(): array
+    {
+        $tags = $this->tags;
+
+        if (is_string($tags)) {
+            $decoded = json_decode($tags, true);
+            $tags = is_array($decoded)
+                ? $decoded
+                : array_values(array_filter(array_map('trim', explode(',', $tags))));
+        }
+
+        return is_array($tags) ? $tags : [];
     }
 }
