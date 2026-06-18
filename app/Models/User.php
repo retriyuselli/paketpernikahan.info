@@ -37,6 +37,16 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         return $this->hasRole(['super_admin', 'admin']);
     }
 
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(['super_admin', 'admin']);
+    }
+
+    public function isVendor(): bool
+    {
+        return $this->hasRole('vendor');
+    }
+
     /**
      * Get the attributes that should be cast.
      *

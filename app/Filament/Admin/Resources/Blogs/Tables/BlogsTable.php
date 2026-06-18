@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Blogs\Tables;
 
+use App\Filament\Admin\Resources\Blogs\BlogResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -82,7 +83,8 @@ class BlogsTable
                     ]),
             ])
             ->actions([
-                EditAction::make(),
+                EditAction::make()
+                    ->url(fn ($record) => BlogResource::getUrl('edit', ['record' => $record->slug])),
                 DeleteAction::make(),
             ])
             ->bulkActions([

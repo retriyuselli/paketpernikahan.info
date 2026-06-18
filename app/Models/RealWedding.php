@@ -43,7 +43,7 @@ class RealWedding extends Model
 
     public function vendors()
     {
-        return $this->belongsToMany(Vendor::class);
+        return $this->belongsToMany(Vendor::class)->withPivot('sort_order')->orderByPivot('sort_order');
     }
 
     public function vendorPackages()

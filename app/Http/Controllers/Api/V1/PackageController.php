@@ -8,6 +8,7 @@ use App\Http\Resources\Api\V1\PackageResource;
 use App\Models\CategoryVendor;
 use App\Models\VendorPackage;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class PackageController extends Controller
 {
@@ -57,9 +58,20 @@ class PackageController extends Controller
         );
     }
 
-    public function show(VendorPackage $package)
+    public function show(Request $request, VendorPackage $package)
     {
-        abort_unless($package->is_active, 404);
+        if (!$package->is_active) {
+            $user = $request->user();
+            if (!$user && $token = $request->bearerToken()) {
+                $user = PersonalAccessToken::findToken($token)?->tokenable;
+            }
+
+            $package->loadMissing('vendor');
+            $canPreviewInactive = $user
+                && ($user->isAdmin() || (int) $package->vendor?->owner_user_id === (int) $user->id);
+
+            abort_unless($canPreviewInactive, 404);
+        }
 
         $package->load(['vendor', 'galleries']);
 

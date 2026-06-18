@@ -168,4 +168,86 @@ class VendorPackage extends Model
 
         return $items;
     }
+
+    /**
+     * Parse HTML item field menjadi grup: [{header, items}]
+     * Header dideteksi dari <strong> atau <b> di dalam <p>.
+     */
+    public function getItemsGroupedAttribute(): array
+    {
+        if (empty($this->item)) {
+            return [];
+        }
+
+        $dom = new \DOMDocument();
+        @$dom->loadHTML(
+            mb_convert_encoding($this->item, 'HTML-ENTITIES', 'UTF-8'),
+            LIBXML_NOERROR | LIBXML_NOWARNING
+        );
+
+        $body = $dom->getElementsByTagName('body')->item(0);
+        if (!$body) {
+            $items = $this->items;
+            return empty($items) ? [] : [['header' => null, 'items' => $items]];
+        }
+
+        $groups        = [];
+        $currentHeader = null;
+        $currentItems  = [];
+
+        foreach ($body->childNodes as $node) {
+            if ($node->nodeType !== XML_ELEMENT_NODE) {
+                continue;
+            }
+
+            $tag = strtolower($node->tagName);
+
+            if ($tag === 'p') {
+                // Cek apakah <p> berisi <strong> atau <b> saja (= heading)
+                $hasStrong = $node->getElementsByTagName('strong')->length > 0
+                          || $node->getElementsByTagName('b')->length > 0;
+                $text = trim($node->textContent);
+
+                if ($hasStrong && $text !== '') {
+                    // Simpan grup sebelumnya
+                    if ($currentHeader !== null || !empty($currentItems)) {
+                        $groups[] = ['header' => $currentHeader, 'items' => $currentItems];
+                    }
+                    $currentHeader = $text;
+                    $currentItems  = [];
+                }
+                // <p> tanpa strong — abaikan (biasanya <br> spacer)
+
+            } elseif ($tag === 'ol' || $tag === 'ul') {
+                foreach ($node->getElementsByTagName('li') as $li) {
+                    $t = trim($li->textContent);
+                    if ($t !== '') {
+                        $currentItems[] = $t;
+                    }
+                }
+            }
+        }
+
+        // Simpan grup terakhir
+        if ($currentHeader !== null || !empty($currentItems)) {
+            $groups[] = ['header' => $currentHeader, 'items' => $currentItems];
+        }
+
+        // Fallback: jika tidak ada grup terstruktur, kembalikan items flat
+        if (empty($groups)) {
+            $items = $this->items;
+            return empty($items) ? [] : [['header' => null, 'items' => $items]];
+        }
+
+        return $groups;
+    }
+
+    public function getDescriptionAttribute(): ?string
+    {
+        if (empty($this->item)) {
+            return null;
+        }
+        $plain = trim(strip_tags(preg_replace('/<br\s*\/?>/i', ' ', $this->item)));
+        return $plain !== '' ? $plain : null;
+    }
 }

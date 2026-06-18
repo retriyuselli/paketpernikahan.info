@@ -92,6 +92,8 @@ class PushNotificationService
             || str_contains($errorMessage, 'INVALID_ARGUMENT')
             || str_contains($errorMessage, 'registration-token-not-registered')
             || str_contains($errorMessage, 'not a valid FCM registration token')
-            || str_contains($errorMessage, 'Requested entity was not found');
+            || str_contains($errorMessage, 'Requested entity was not found')
+            || str_contains($errorMessage, 'missing required authentication credential')
+            || str_contains($errorMessage, 'SENDER_ID_MISMATCH');
     }
 }

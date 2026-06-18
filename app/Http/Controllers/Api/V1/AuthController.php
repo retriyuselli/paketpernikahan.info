@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
@@ -185,6 +186,88 @@ class AuthController extends Controller
     public function me(Request $request): UserResource
     {
         return new UserResource($request->user());
+    }
+
+    public function dashboard(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $bookings = \App\Models\VendorBooking::where('user_id', $user->id);
+
+        $bookingCounts = [
+            'total'     => (clone $bookings)->count(),
+            'pending'   => (clone $bookings)->where('status', 'pending')->count(),
+            'contacted' => (clone $bookings)->where('status', 'contacted')->count(),
+            'confirmed' => (clone $bookings)->where('status', 'confirmed')->count(),
+            'completed' => (clone $bookings)->where('status', 'completed')->count(),
+            'cancelled' => (clone $bookings)->whereIn('status', ['cancelled', 'rejected'])->count(),
+        ];
+
+        $wishlistCount = \App\Models\Wishlist::where('user_id', $user->id)->count();
+
+        return response()->json([
+            'data' => [
+                'booking_counts' => $bookingCounts,
+                'wishlist_count' => $wishlistCount,
+            ],
+        ]);
+    }
+
+    public function myReviews(Request $request): JsonResponse
+    {
+        $reviews = \App\Models\VendorReview::where('user_id', $request->user()->id)
+            ->with('vendor:id,name,slug,cover_image')
+            ->latest('reviewed_at')
+            ->get();
+
+        return response()->json([
+            'data' => $reviews->map(fn ($r) => [
+                'id'          => $r->id,
+                'rating'      => $r->rating,
+                'body'        => $r->body,
+                'is_approved' => $r->is_approved,
+                'admin_reply' => $r->admin_reply,
+                'reviewed_at' => $r->reviewed_at?->toIso8601String(),
+                'vendor'      => $r->vendor ? [
+                    'id'              => $r->vendor->id,
+                    'name'            => $r->vendor->name,
+                    'slug'            => $r->vendor->slug,
+                    'cover_image_url' => $r->vendor->cover_image ? asset('storage/' . $r->vendor->cover_image) : null,
+                    'city'            => null,
+                ] : null,
+            ]),
+        ]);
+    }
+
+    public function updateProfile(Request $request): UserResource
+    {
+        $request->validate([
+            'name'      => ['sometimes', 'string', 'max:255'],
+            'whatsapp'  => ['sometimes', 'nullable', 'string', 'max:20'],
+        ]);
+
+        $user = $request->user();
+        $user->update($request->only(['name', 'whatsapp']));
+
+        return new UserResource($user->fresh());
+    }
+
+    public function updateAvatar(Request $request): UserResource
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+        ]);
+
+        $user = $request->user();
+
+        if ($user->avatar_url && !str_starts_with($user->avatar_url, 'http')) {
+            Storage::disk('public')->delete($user->avatar_url);
+        }
+
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $user->update(['avatar_url' => $path]);
+
+        return new UserResource($user->fresh());
     }
 
     private function assignDefaultRole(User $user): void

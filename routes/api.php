@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\PushNotificationController;
+use App\Http\Controllers\Api\V1\JoinVendorController;
 use App\Http\Controllers\Api\V1\BlogController;
 use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\CategoryController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\Api\V1\PackageController;
 use App\Http\Controllers\Api\V1\PromoController;
 use App\Http\Controllers\Api\V1\RealWeddingController;
 use App\Http\Controllers\Api\V1\ReviewController;
+use App\Http\Controllers\Api\V1\VendorAdminController;
 use App\Http\Controllers\Api\V1\VendorController;
 use App\Http\Controllers\Api\V1\VendorLikeController;
 use App\Http\Controllers\Api\V1\WishlistController;
@@ -38,7 +41,15 @@ Route::prefix('v1')->group(function () {
     Route::get('/blogs', [BlogController::class, 'index']);
     Route::get('/blogs/{blog:slug}', [BlogController::class, 'show']);
 
+    Route::get('/real-weddings', [RealWeddingController::class, 'index']);
     Route::get('/real-weddings/{realWedding:slug}', [RealWeddingController::class, 'show']);
+
+    // Join Vendor — publik (provinces, cities, categories)
+    Route::prefix('join-vendor')->group(function () {
+        Route::get('/provinces',  [JoinVendorController::class, 'provinces']);
+        Route::get('/cities',     [JoinVendorController::class, 'cities']);
+        Route::get('/categories', [JoinVendorController::class, 'categories']);
+    });
 
     // Autentikasi — menghasilkan token Sanctum untuk aplikasi iOS
     Route::prefix('auth')->middleware('throttle:10,1')->group(function () {
@@ -48,9 +59,17 @@ Route::prefix('v1')->group(function () {
         Route::post('/google', [AuthController::class, 'google']);
     });
 
+    // Device token FCM — daftar/hapus device untuk push notification
+    Route::post('/device-tokens', [PushNotificationController::class, 'register']);
+    Route::delete('/device-tokens', [PushNotificationController::class, 'unregister']);
+
     // Terproteksi — butuh token Sanctum
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
+        Route::get('/me/dashboard', [AuthController::class, 'dashboard']);
+        Route::get('/me/reviews', [AuthController::class, 'myReviews']);
+        Route::post('/me/profile', [AuthController::class, 'updateProfile']);
+        Route::post('/me/avatar', [AuthController::class, 'updateAvatar']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
 
         // Booking
@@ -80,5 +99,30 @@ Route::prefix('v1')->group(function () {
         Route::get('/chats/{token}', [ChatController::class, 'show']);
         Route::post('/chats/{token}/messages', [ChatController::class, 'send'])
             ->middleware('throttle:30,1');
+
+        // Join Vendor — submit & status (butuh login)
+        Route::prefix('join-vendor')->group(function () {
+            Route::get('/status', [JoinVendorController::class, 'status']);
+            Route::post('/',      [JoinVendorController::class, 'store'])->middleware('throttle:5,1');
+        });
+
+        // Vendor dashboard
+        Route::prefix('vendor')->group(function () {
+            Route::get('/packages', [VendorAdminController::class, 'vendorPackages']);
+            Route::get('/bookings', [VendorAdminController::class, 'vendorBookings']);
+            Route::get('/payments', [VendorAdminController::class, 'vendorPayments']);
+            Route::get('/chats', [VendorAdminController::class, 'vendorChats']);
+        });
+
+        // Admin dashboard
+        Route::prefix('admin')->group(function () {
+            Route::get('/stats', [VendorAdminController::class, 'adminStats']);
+            Route::get('/bookings', [VendorAdminController::class, 'adminBookings']);
+            Route::get('/vendors', [VendorAdminController::class, 'adminVendors']);
+            Route::get('/vendor-applications', [VendorAdminController::class, 'adminApplications']);
+            Route::get('/payments', [VendorAdminController::class, 'adminPayments']);
+            Route::get('/chats', [VendorAdminController::class, 'adminChats']);
+            Route::get('/vendor-chats', [VendorAdminController::class, 'adminVendorChats']);
+        });
     });
 });
