@@ -37,6 +37,7 @@ class RealWeddingController extends Controller
                 (new RealWeddingResource($realWedding))->toArray(request()),
                 [
                     'content'  => $realWedding->content,
+                    'gallery'  => $realWedding->gallery_urls,
                     'vendors'  => VendorSummaryResource::collection($realWedding->vendors),
                     'packages' => PackageResource::collection($realWedding->vendorPackages),
                 ]
