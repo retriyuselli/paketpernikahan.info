@@ -83,8 +83,18 @@ class RealWeddingForm
                     FileUpload::make('cover_image')
                         ->label('Foto Cover')
                         ->image()
+                        ->downloadable()
                         ->disk('public')
                         ->directory('real-weddings')
+                        ->columnSpanFull(),
+                    FileUpload::make('gallery')
+                        ->label('Galeri Foto')
+                        ->image()
+                        ->multiple()
+                        ->reorderable()
+                        ->downloadable()
+                        ->disk('public')
+                        ->directory('real-weddings/gallery')
                         ->columnSpanFull(),
                     TextInput::make('sort_order')
                         ->label('Urutan')

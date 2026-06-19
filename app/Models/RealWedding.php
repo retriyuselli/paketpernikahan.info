@@ -27,6 +27,7 @@ class RealWedding extends Model
         'published_at',
         'content',
         'cover_image',
+        'gallery',
         'venue_name',
         'views_count',
         'badge',
@@ -39,6 +40,7 @@ class RealWedding extends Model
         'wedding_date'  => 'date',
         'published_at'  => 'datetime',
         'views_count'   => 'integer',
+        'gallery'       => 'array',
     ];
 
     public function vendors()
@@ -60,5 +62,13 @@ class RealWedding extends Model
             return $this->cover_image;
         }
         return Storage::url($this->cover_image);
+    }
+
+    public function getGalleryUrlsAttribute(): array
+    {
+        return collect($this->gallery ?? [])
+            ->map(fn ($path) => str_starts_with($path, 'http') ? $path : Storage::url($path))
+            ->values()
+            ->all();
     }
 }

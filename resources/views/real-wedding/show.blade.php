@@ -124,6 +124,99 @@
                         </div>
                     @endif
 
+                    <!-- Gallery -->
+                    @php $galleryUrls = $realWedding->gallery_urls; @endphp
+                    @if(!empty($galleryUrls))
+                        <div class="mt-5 bg-white rounded-2xl border border-gray-100 overflow-hidden"
+                             x-data="{
+                                lightbox: false,
+                                active: 0,
+                                images: {{ Js::from($galleryUrls) }},
+                                open(i) { this.active = i; this.lightbox = true; document.body.style.overflow='hidden'; },
+                                close() { this.lightbox = false; document.body.style.overflow=''; },
+                                prev() { this.active = (this.active - 1 + this.images.length) % this.images.length; },
+                                next() { this.active = (this.active + 1) % this.images.length; },
+                             }"
+                             @keydown.escape.window="close()"
+                             @keydown.arrow-left.window="lightbox && prev()"
+                             @keydown.arrow-right.window="lightbox && next()">
+
+                            {{-- Header --}}
+                            <div class="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-light-sage/20">
+                                <div class="w-1 h-5 rounded-full bg-accent flex-shrink-0"></div>
+                                <span class="text-xs font-bold uppercase tracking-widest text-gray-400">Galeri Foto</span>
+                                <span class="ml-auto text-[11px] text-gray-400">{{ count($galleryUrls) }} foto</span>
+                            </div>
+
+                            {{-- Grid --}}
+                            <div class="grid grid-cols-2 sm:grid-cols-3">
+                                @foreach($galleryUrls as $i => $url)
+                                    <button type="button"
+                                            class="group relative aspect-square overflow-hidden focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent"
+                                            @click="open({{ $i }})">
+                                        <img src="{{ $url }}"
+                                             alt="Galeri {{ $realWedding->couple_names }} {{ $i + 1 }}"
+                                             loading="lazy"
+                                             class="w-full h-full object-cover transition duration-300 group-hover:scale-105">
+                                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition duration-300 flex items-center justify-center">
+                                            <svg class="w-7 h-7 text-white opacity-0 group-hover:opacity-100 transition duration-200 drop-shadow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                                            </svg>
+                                        </div>
+                                    </button>
+                                @endforeach
+                            </div>
+
+                            {{-- Lightbox --}}
+                            <template x-teleport="body">
+                                <div x-show="lightbox"
+                                     x-transition:enter="transition duration-200"
+                                     x-transition:enter-start="opacity-0"
+                                     x-transition:enter-end="opacity-100"
+                                     x-transition:leave="transition duration-150"
+                                     x-transition:leave-start="opacity-100"
+                                     x-transition:leave-end="opacity-0"
+                                     class="fixed inset-0 z-9999 bg-black/90 flex items-center justify-center p-4"
+                                     @click.self="close()"
+                                     style="display:none">
+
+                                    {{-- Close --}}
+                                    <button type="button" @click="close()"
+                                            class="absolute top-4 right-4 text-white/70 hover:text-white transition">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+
+                                    {{-- Prev --}}
+                                    <button type="button" @click="prev()"
+                                            class="absolute left-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition bg-black/30 rounded-full p-2">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                        </svg>
+                                    </button>
+
+                                    {{-- Image --}}
+                                    <img :src="images[active]"
+                                         :alt="`Foto ${active + 1} dari ${images.length}`"
+                                         class="max-h-[85vh] max-w-full rounded-xl object-contain shadow-2xl">
+
+                                    {{-- Next --}}
+                                    <button type="button" @click="next()"
+                                            class="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition bg-black/30 rounded-full p-2">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </button>
+
+                                    {{-- Counter --}}
+                                    <p class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm"
+                                       x-text="`${active + 1} / ${images.length}`"></p>
+                                </div>
+                            </template>
+                        </div>
+                    @endif
+
                 </div>
 
                 <!-- Sidebar -->
