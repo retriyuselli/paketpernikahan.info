@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\DeviceToken;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -17,7 +19,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 
-#[Fillable(['name', 'email', 'password', 'avatar_url', 'apple_id', 'theme_color', 'email_verified_at', 'whatsapp'])]
+#[Fillable(['name', 'email', 'password', 'avatar_url', 'apple_id', 'theme_color', 'email_verified_at', 'whatsapp', 'notification_settings'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerifyEmail
 {
@@ -55,8 +57,9 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'email_verified_at'     => 'datetime',
+            'password'              => 'hashed',
+            'notification_settings' => 'array',
         ];
     }
 
@@ -115,5 +118,40 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
     public function deviceTokens()
     {
         return $this->hasMany(DeviceToken::class);
+    }
+
+    public function weddingInfo(): HasOne
+    {
+        return $this->hasOne(WeddingInfo::class);
+    }
+
+    public function familyMembers(): HasMany
+    {
+        return $this->hasMany(FamilyMember::class);
+    }
+
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(CustomerPaymentMethod::class);
+    }
+
+    public function customerNotifications(): HasMany
+    {
+        return $this->hasMany(CustomerNotification::class);
+    }
+
+    public function preparationSections(): HasMany
+    {
+        return $this->hasMany(CustomerPreparationSection::class)->orderBy('sort_order');
+    }
+
+    public function weddingEvents(): HasMany
+    {
+        return $this->hasMany(WeddingEvent::class)->orderBy('tgl_acara');
+    }
+
+    public function vipGuests(): HasMany
+    {
+        return $this->hasMany(VipGuest::class);
     }
 }

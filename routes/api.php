@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CustomerController;
 use App\Http\Controllers\PushNotificationController;
 use App\Http\Controllers\Api\V1\JoinVendorController;
 use App\Http\Controllers\Api\V1\BlogController;
@@ -112,6 +113,57 @@ Route::prefix('v1')->group(function () {
             Route::get('/bookings', [VendorAdminController::class, 'vendorBookings']);
             Route::get('/payments', [VendorAdminController::class, 'vendorPayments']);
             Route::get('/chats', [VendorAdminController::class, 'vendorChats']);
+        });
+
+        // Customer dashboard
+        Route::prefix('customer')->group(function () {
+            // ── Read-only (GET) — tidak perlu rate limit ketat
+            Route::get('/dashboard',                   [CustomerController::class, 'dashboard']);
+            Route::get('/wedding-info',                [CustomerController::class, 'weddingInfo']);
+            Route::get('/family-members',              [CustomerController::class, 'familyMembers']);
+            Route::get('/vip-guests',                  [CustomerController::class, 'vipGuests']);
+            Route::get('/notifications',               [CustomerController::class, 'notifications']);
+            Route::get('/preparation/sections',        [CustomerController::class, 'preparationSections']);
+            Route::get('/preparation/vendors',         [CustomerController::class, 'preparationVendors']);
+            Route::get('/payments/upcoming',           [CustomerController::class, 'paymentsUpcoming']);
+            Route::get('/payments/schedule',           [CustomerController::class, 'paymentsSchedule']);
+            Route::get('/payments/all',                [CustomerController::class, 'paymentsAll']);
+            Route::get('/budget',                      [CustomerController::class, 'budget']);
+            Route::get('/payment-methods',             [CustomerController::class, 'paymentMethods']);
+
+            // ── Mutasi data — throttle 30 request/menit
+            Route::middleware('throttle:30,1')->group(function () {
+                Route::put('/wedding-info',                [CustomerController::class, 'updateWeddingInfo']);
+                Route::post('/wedding-events',             [CustomerController::class, 'storeWeddingEvent']);
+                Route::put('/wedding-events/{id}',         [CustomerController::class, 'updateWeddingEvent']);
+                Route::delete('/wedding-events/{id}',      [CustomerController::class, 'destroyWeddingEvent']);
+
+                Route::post('/family-members',             [CustomerController::class, 'storeFamilyMember']);
+                Route::put('/family-members/{id}',         [CustomerController::class, 'updateFamilyMember']);
+                Route::delete('/family-members/{id}',      [CustomerController::class, 'destroyFamilyMember']);
+
+                Route::post('/vip-guests',                 [CustomerController::class, 'storeVipGuest']);
+                Route::post('/vip-guests/import',          [CustomerController::class, 'importVipGuests']);
+                Route::put('/vip-guests/{id}',             [CustomerController::class, 'updateVipGuest']);
+                Route::delete('/vip-guests/{id}',          [CustomerController::class, 'destroyVipGuest']);
+
+                Route::patch('/notifications/{id}/read',   [CustomerController::class, 'markNotificationRead']);
+
+                Route::post('/preparation/sections',       [CustomerController::class, 'storePreparationSection']);
+                Route::delete('/preparation/sections/{id}',[CustomerController::class, 'destroyPreparationSection']);
+                Route::post('/preparation/tasks',          [CustomerController::class, 'storePreparationTask']);
+                Route::put('/preparation/tasks/{id}',      [CustomerController::class, 'updatePreparationTask']);
+                Route::delete('/preparation/tasks/{id}',   [CustomerController::class, 'destroyPreparationTask']);
+
+                Route::post('/payment-methods',            [CustomerController::class, 'storePaymentMethod']);
+                Route::delete('/payment-methods/{id}',     [CustomerController::class, 'destroyPaymentMethod']);
+
+                Route::put('/profile',                     [CustomerController::class, 'updateProfile']);
+            });
+
+            // ── Ganti password — throttle ketat 5 request/menit
+            Route::put('/password', [CustomerController::class, 'updatePassword'])
+                ->middleware('throttle:5,1');
         });
 
         // Admin dashboard

@@ -549,6 +549,7 @@ class VendorSeeder extends Seeder
                 VendorPackage::create([
                     'vendor_id'       => $vendor->id,
                     'name'            => $tpl['name'],
+                    'slug'            => $this->makePackageSlug($vendor->slug, $tpl['name']),
                     'price'           => $priceRaw,
                     'dp_paket'        => $dpPaket,
                     'max_guests'      => $tpl['cap'] ? 'Maks. ' . $tpl['cap'] . ' tamu' : 'Tanpa batas',
@@ -805,6 +806,7 @@ class VendorSeeder extends Seeder
                 VendorPackage::create([
                     'vendor_id'       => $pv->id,
                     'name'            => $tpl['name'],
+                    'slug'            => $this->makePackageSlug($pv->slug, $tpl['name']),
                     'price'           => $priceRaw,
                     'dp_paket'        => $dpPaket,
                     'max_guests'      => $tpl['cap'],
@@ -821,6 +823,21 @@ class VendorSeeder extends Seeder
         }
 
         $this->command->info('VendorSeeder: ' . (count($vendors) + count($premiumVendors)) . ' vendors seeded with galleries, packages, bookings & reviews.');
+    }
+
+    /** Slug unik untuk VendorPackage — dipakai karena WithoutModelEvents menonaktifkan boot() */
+    private array $usedPackageSlugs = [];
+
+    private function makePackageSlug(string $vendorSlug, string $packageName): string
+    {
+        $base = $vendorSlug . '-' . Str::slug($packageName ?: 'paket');
+        $slug = $base;
+        $i    = 2;
+        while (in_array($slug, $this->usedPackageSlugs)) {
+            $slug = $base . '-' . $i++;
+        }
+        $this->usedPackageSlugs[] = $slug;
+        return $slug;
     }
 
     private function brandName(string $name, string $category): string

@@ -196,7 +196,7 @@ class VendorPackage extends Model
         $currentItems  = [];
 
         foreach ($body->childNodes as $node) {
-            if ($node->nodeType !== XML_ELEMENT_NODE) {
+            if (!($node instanceof \DOMElement)) {
                 continue;
             }
 

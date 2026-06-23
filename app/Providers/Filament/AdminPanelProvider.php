@@ -22,6 +22,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Joaopaulolndev\FilamentEditProfile\FilamentEditProfilePlugin;
 use Filament\Actions\Action;
+use Filament\View\PanelsRenderHook;
 use Joaopaulolndev\FilamentEditProfile\Pages\EditProfilePage;
 
 class AdminPanelProvider extends PanelProvider
@@ -87,6 +88,20 @@ class AdminPanelProvider extends PanelProvider
                     ->shouldShowBrowserSessionsForm()
                     ->shouldShowAvatarForm()
             ])
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn () => '
+                    <style>
+                        .fi-sidebar-nav-groups {
+                            gap: 0.25rem !important;
+                        }
+                        .fi-sidebar-group {
+                            padding-top: 0.125rem !important;
+                            padding-bottom: 0.125rem !important;
+                        }
+                    </style>
+                ',
+            )
             ->authMiddleware([
                 Authenticate::class,
             ]);

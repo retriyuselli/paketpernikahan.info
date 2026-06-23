@@ -11,7 +11,7 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         // Buat roles jika belum ada
-        $roles = ['super_admin', 'admin', 'vendor', 'author', 'pengunjung'];
+        $roles = ['super_admin', 'admin', 'vendor', 'author', 'pengunjung', 'customer'];
 
         foreach ($roles as $role) {
             Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
@@ -21,7 +21,7 @@ class RoleSeeder extends Seeder
         $assignments = [
             'admin@paketpernikahan.com'  => 'super_admin',
             'editor@paketpernikahan.com' => 'admin',
-            'demo@paketpernikahan.com'   => 'pengunjung',
+            'demo@paketpernikahan.com'   => 'customer',
         ];
 
         foreach ($assignments as $email => $role) {

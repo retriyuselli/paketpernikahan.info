@@ -802,3 +802,37 @@ Gunakan langkah ini jika app iPhone menampilkan error `Tidak dapat terhubung ke 
 - Signing team & TestFlight
 - Inspiration & Event tab masih Coming Soon
 - BlogDetailView belum hide tab bar saat dibuka
+
+## Session 2026-06-20
+
+### Throttle Koneksi Gambar (Components.swift)
+
+- Keluhan: banyak log `nw_connection_copy_protocol_metadata_internal on unconnected nm_connection` saat load pertama kali.
+- Penyebab: semua `RemoteImage` langsung fire `URLSession.shared` bersamaan (20–30+ request serentak) saat `HomeView` selesai load data.
+- Fix di `Views/Components.swift`:
+  - Tambah `session: URLSession` di `RemoteImageCache` dengan `httpMaximumConnectionsPerHost = 4`.
+  - `RemoteImage.loadImage()` sekarang memakai `RemoteImageCache.shared.session` bukan `URLSession.shared`.
+- Dampak: log spam berkurang drastis; gambar tetap muncul, hanya queue jika > 4 koneksi serentak.
+
+### Gallery Real Wedding (backend + iOS)
+
+- **Problem**: halaman `RealWeddingDetailView` tidak menampilkan galeri foto.
+- **Root cause ditemukan setelah 3 langkah investigasi:**
+  1. iOS model `RealWeddingDetail` sudah benar (decode dari key `gallery`/`galleries`/`images`).
+  2. Database `paket_nikah` tabel `real_weddings` sudah punya kolom `gallery` (JSON) dan data Kevin & Nabila sudah ada (4 foto).
+  3. **Bug ada di backend**: `RealWeddingController::show()` tidak menyertakan `gallery_urls` di response JSON.
+- **Fix backend** di `app/Http/Controllers/Api/V1/RealWeddingController.php`:
+  - Tambah `'gallery' => $realWedding->gallery_urls` ke array_merge di method `show()`.
+- **Fix iOS** di `Views/RealWeddingDetailView.swift`:
+  - Fallback: jika `galleryImageUrls` kosong, coba ambil dari `wedding.galleries` (GalleryItem objects).
+- **Status**: fix sudah diterapkan di local (`paket_nikah`). **Belum di-deploy ke production** `paketpernikahan.co.id`. Gallery tidak akan tampil di app sampai controller di-deploy.
+- **File yang diubah**:
+  - `app/Http/Controllers/Api/V1/RealWeddingController.php` (backend)
+  - `PaketPernikahan/Views/RealWeddingDetailView.swift` (iOS)
+
+### Struktur Backend yang Benar
+
+- Backend lokal ada di: `/Applications/MAMP/htdocs/xcode/paketpernikahan.info_swift` (BUKAN `/Applications/MAMP/htdocs/paketpernikahan.info`)
+- Database: `paket_nikah` (port 8889)
+- App URL lokal: `http://127.0.0.1:8000`
+- iOS Info.plist saat ini: semua URL → `https://paketpernikahan.co.id/api/v1` (production)

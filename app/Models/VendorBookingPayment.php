@@ -22,6 +22,7 @@ class VendorBookingPayment extends Model
     protected $fillable = [
         'vendor_booking_id',
         'type',
+        'due_date',
         'amount',
         'method',
         'sender_name',
@@ -35,9 +36,10 @@ class VendorBookingPayment extends Model
     ];
 
     protected $casts = [
-        'amount' => 'integer',
-        'paid_at' => 'datetime',
-        'verified_at' => 'datetime',
+        'amount'       => 'integer',
+        'due_date'     => 'date',
+        'paid_at'      => 'datetime',
+        'verified_at'  => 'datetime',
     ];
 
     public function booking()

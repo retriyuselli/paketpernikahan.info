@@ -1,3 +1,65 @@
+{{-- App Store Modal (mobile only) --}}
+<div id="appstore-overlay" class="md:hidden app-hide fixed inset-0 z-50 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div id="appstore-modal" class="absolute bottom-0 left-0 right-0 bg-dark rounded-t-2xl translate-y-full transition-transform duration-300 ease-out">
+
+        {{-- Tombol X di sudut kanan atas modal --}}
+        <button onclick="closeAppStoreBanner()" id="appstore-close"
+                class="absolute -top-4 right-3 bg-white text-gray-700 hover:bg-gray-100 transition rounded-full w-8 h-8 items-center justify-center shadow-md hidden"
+                aria-label="Tutup">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+        {{-- Konten --}}
+        <div class="flex items-center gap-3 px-4 py-4 pb-8">
+            <div class="shrink-0 w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
+                <img src="{{ asset('images/app-icon.png') }}" alt="Paket Pernikahan" class="w-11 h-11 object-cover rounded-xl"
+                     onerror="this.style.display='none'; this.parentElement.innerHTML='<svg class=\'w-6 h-6 text-accent\' fill=\'currentColor\' viewBox=\'0 0 24 24\'><path d=\'M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11\'/></svg>';">
+            </div>
+            <p class="flex-1 text-sm font-bold text-cream">Paket Pernikahan</p>
+            <a href="https://apps.apple.com/id/app/paket-pernikahan/id6777688676" target="_blank" rel="noopener"
+               class="shrink-0 flex items-center gap-1.5 bg-accent text-white font-bold px-4 py-2.5 rounded-xl hover:bg-accent/90 transition text-sm whitespace-nowrap">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/>
+                </svg>
+                Download
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function closeAppStoreBanner() {
+        var overlay = document.getElementById('appstore-overlay');
+        var modal = document.getElementById('appstore-modal');
+        var closeBtn = document.getElementById('appstore-close');
+        modal.classList.add('translate-y-full');
+        if (closeBtn) closeBtn.classList.add('hidden');
+        overlay.classList.remove('opacity-100');
+        overlay.classList.add('opacity-0');
+        setTimeout(function() { overlay.classList.add('pointer-events-none'); }, 300);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var overlay = document.getElementById('appstore-overlay');
+        var modal = document.getElementById('appstore-modal');
+        var closeBtn = document.getElementById('appstore-close');
+        if (!overlay) return;
+
+        setTimeout(function () {
+            overlay.classList.remove('pointer-events-none', 'opacity-0');
+            overlay.classList.add('opacity-100');
+            modal.classList.remove('translate-y-full');
+            if (closeBtn) { closeBtn.classList.remove('hidden'); closeBtn.classList.add('flex'); }
+        }, 1200);
+
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) closeAppStoreBanner();
+        });
+    });
+</script>
+
 <footer class="bg-dark text-light-sage app-hide">
     @php
         $footerCategories = \App\Models\CategoryVendor::where('is_active', true)
@@ -65,19 +127,19 @@
                 <h4 class="text-xs font-bold uppercase tracking-widest mb-4 text-cream">Kontak</h4>
                 <ul class="text-sm space-y-2.5 text-light-sage/70">
                     <li class="flex items-start gap-2">
-                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                         </svg>
                         office@maknawedding.id
                     </li>
                     <li class="flex items-start gap-2">
-                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
                         +62 822-9796-2600
                     </li>
                     <li class="flex items-start gap-2">
-                        <svg class="w-4 h-4 mt-0.5 flex-shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
