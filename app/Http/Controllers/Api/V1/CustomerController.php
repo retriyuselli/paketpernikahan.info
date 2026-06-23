@@ -11,6 +11,7 @@ use App\Models\CustomerPreparationSection;
 use App\Models\CustomerPreparationTask;
 use App\Models\FamilyMember;
 use App\Models\VipGuest;
+use App\Models\VipGuestDelegate;
 use App\Models\VendorBooking;
 use App\Models\VendorBookingPayment;
 use App\Models\WeddingEvent;
@@ -804,5 +805,133 @@ class CustomerController extends Controller
             ->delete();
 
         return response()->json(['message' => 'ok']);
+    }
+
+    // ── VIP Guest Delegates ────────────────────────────────────────────────
+
+    public function vipGuestDelegates(Request $request): JsonResponse
+    {
+        $delegates = VipGuestDelegate::where('user_id', $request->user()->id)
+            ->latest()
+            ->get()
+            ->map(fn ($d) => [
+                'id'               => $d->id,
+                'name'             => $d->name,
+                'token'            => $d->token,
+                'expires_at'       => $d->expires_at?->toIso8601String(),
+                'last_accessed_at' => $d->last_accessed_at?->toIso8601String(),
+                'is_active'        => $d->isActive(),
+                'created_at'       => $d->created_at->toIso8601String(),
+            ]);
+
+        return response()->json(['data' => $delegates]);
+    }
+
+    public function storeVipGuestDelegate(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'name'       => ['required', 'string', 'max:100'],
+            'expires_at' => ['sometimes', 'nullable', 'date', 'after:now'],
+        ]);
+
+        $delegate = VipGuestDelegate::create([
+            'user_id'    => $request->user()->id,
+            'name'       => $data['name'],
+            'token'      => VipGuestDelegate::generateToken(),
+            'expires_at' => $data['expires_at'] ?? null,
+        ]);
+
+        return response()->json([
+            'data' => [
+                'id'         => $delegate->id,
+                'name'       => $delegate->name,
+                'token'      => $delegate->token,
+                'expires_at' => $delegate->expires_at?->toIso8601String(),
+                'is_active'  => true,
+                'created_at' => $delegate->created_at->toIso8601String(),
+            ],
+            'message' => 'Akses delegasi berhasil dibuat.',
+        ], 201);
+    }
+
+    public function destroyVipGuestDelegate(Request $request, int $id): JsonResponse
+    {
+        VipGuestDelegate::where('user_id', $request->user()->id)
+            ->where('id', $id)
+            ->delete();
+
+        return response()->json(['message' => 'Akses delegasi berhasil dicabut.']);
+    }
+
+    // ── VIP Guest Shared Access (tanpa login, via token) ──────────────────
+
+    public function sharedVipGuests(Request $request, string $token): JsonResponse
+    {
+        $delegate = VipGuestDelegate::where('token', $token)->firstOrFail();
+
+        if ($delegate->isExpired()) {
+            return response()->json(['message' => 'Token akses sudah kadaluarsa.'], 403);
+        }
+
+        $delegate->update(['last_accessed_at' => now()]);
+
+        $guests = VipGuest::where('user_id', $delegate->user_id)
+            ->orderBy('kategori')
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($g) => [
+                'id'             => $g->id,
+                'name'           => $g->name,
+                'jabatan'        => $g->jabatan,
+                'instansi'       => $g->instansi,
+                'phone'          => $g->phone,
+                'kategori'       => $g->kategori,
+                'kategori_label' => VipGuest::$kategoriOptions[$g->kategori] ?? $g->kategori,
+                'rsvp_status'    => $g->rsvp_status,
+                'rsvp_label'     => VipGuest::$rsvpOptions[$g->rsvp_status] ?? $g->rsvp_status,
+                'catatan'        => $g->catatan,
+            ]);
+
+        return response()->json([
+            'data' => [
+                'delegate_name' => $delegate->name,
+                'guests'        => $guests,
+                'summary' => [
+                    'total'       => $guests->count(),
+                    'hadir'       => $guests->where('rsvp_status', 'hadir')->count(),
+                    'tidak_hadir' => $guests->where('rsvp_status', 'tidak_hadir')->count(),
+                    'menunggu'    => $guests->where('rsvp_status', 'menunggu')->count(),
+                ],
+            ],
+        ]);
+    }
+
+    public function updateSharedVipGuestRsvp(Request $request, string $token, int $guestId): JsonResponse
+    {
+        $delegate = VipGuestDelegate::where('token', $token)->firstOrFail();
+
+        if ($delegate->isExpired()) {
+            return response()->json(['message' => 'Token akses sudah kadaluarsa.'], 403);
+        }
+
+        $data = $request->validate([
+            'rsvp_status' => ['required', 'in:menunggu,hadir,tidak_hadir'],
+        ]);
+
+        $guest = VipGuest::where('user_id', $delegate->user_id)
+            ->where('id', $guestId)
+            ->firstOrFail();
+
+        $guest->update(['rsvp_status' => $data['rsvp_status']]);
+
+        return response()->json([
+            'data' => [
+                'id'          => $guest->id,
+                'name'        => $guest->name,
+                'rsvp_status' => $guest->rsvp_status,
+                'rsvp_label'  => VipGuest::$rsvpOptions[$guest->rsvp_status] ?? $guest->rsvp_status,
+            ],
+            'message' => 'Status RSVP berhasil diperbarui.',
+        ]);
     }
 }

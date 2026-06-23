@@ -45,6 +45,12 @@ Route::prefix('v1')->group(function () {
     Route::get('/real-weddings', [RealWeddingController::class, 'index']);
     Route::get('/real-weddings/{realWedding:slug}', [RealWeddingController::class, 'show']);
 
+    // VIP Guest Shared Access — akses via token tanpa login
+    Route::prefix('vip-guests/shared')->group(function () {
+        Route::get('/{token}',                  [CustomerController::class, 'sharedVipGuests']);
+        Route::patch('/{token}/guests/{guestId}/rsvp', [CustomerController::class, 'updateSharedVipGuestRsvp']);
+    });
+
     // Join Vendor — publik (provinces, cities, categories)
     Route::prefix('join-vendor')->group(function () {
         Route::get('/provinces',  [JoinVendorController::class, 'provinces']);
@@ -122,6 +128,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/wedding-info',                [CustomerController::class, 'weddingInfo']);
             Route::get('/family-members',              [CustomerController::class, 'familyMembers']);
             Route::get('/vip-guests',                  [CustomerController::class, 'vipGuests']);
+            Route::get('/vip-guests/delegates',        [CustomerController::class, 'vipGuestDelegates']);
             Route::get('/notifications',               [CustomerController::class, 'notifications']);
             Route::get('/preparation/sections',        [CustomerController::class, 'preparationSections']);
             Route::get('/preparation/vendors',         [CustomerController::class, 'preparationVendors']);
@@ -146,6 +153,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('/vip-guests/import',          [CustomerController::class, 'importVipGuests']);
                 Route::put('/vip-guests/{id}',             [CustomerController::class, 'updateVipGuest']);
                 Route::delete('/vip-guests/{id}',          [CustomerController::class, 'destroyVipGuest']);
+                Route::post('/vip-guests/delegates',       [CustomerController::class, 'storeVipGuestDelegate']);
+                Route::delete('/vip-guests/delegates/{id}',[CustomerController::class, 'destroyVipGuestDelegate']);
 
                 Route::patch('/notifications/{id}/read',   [CustomerController::class, 'markNotificationRead']);
 

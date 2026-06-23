@@ -1,4 +1,5 @@
-{{-- App Store Modal (mobile only) --}}
+{{-- App Store Modal (mobile only, home page only) --}}
+@if(request()->routeIs('home'))
 <div id="appstore-overlay" class="md:hidden app-hide fixed inset-0 z-50 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300">
     <div id="appstore-modal" class="absolute bottom-0 left-0 right-0 bg-dark rounded-t-2xl translate-y-full transition-transform duration-300 ease-out">
 
@@ -59,6 +60,7 @@
         });
     });
 </script>
+@endif
 
 <footer class="bg-dark text-light-sage app-hide">
     @php

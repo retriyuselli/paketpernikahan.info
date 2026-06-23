@@ -109,6 +109,7 @@ Tombol "Lihat Detail" pada card Progress & Laporan Persiapan menggunakan `select
 | `wedding_events` | `WeddingEvent` | Lamaran/Pengajian/Akad/Resepsi |
 | `family_members` | `FamilyMember` | Anggota keluarga mempelai |
 | `vip_guests` | `VipGuest` | Tamu VIP terpisah dari keluarga |
+| `vip_guest_delegates` | `VipGuestDelegate` | Token akses berbagi daftar VIP ke orang lain |
 | `customer_payment_methods` | `CustomerPaymentMethod` | Bank/e-wallet customer |
 | `customer_notifications` | `CustomerNotification` | Notifikasi in-app |
 | `customer_preparation_sections` | `CustomerPreparationSection` | Kategori checklist |
@@ -120,6 +121,18 @@ Tombol "Lihat Detail" pada card Progress & Laporan Persiapan menggunakan `select
 |-------|------|-------------|
 | `kategori` | enum | `keluarga_besar` · `pejabat` · `tokoh_masyarakat` · `rekan_bisnis` · `teman` |
 | `rsvp_status` | enum | `menunggu` · `hadir` · `tidak_hadir` |
+
+### VipGuestDelegate — Akses Berbagi Daftar VIP
+
+Customer dapat membuat token akses untuk dibagikan ke orang lain (panitia, keluarga, MC, dll.) tanpa perlu punya akun. Penerima token bisa melihat seluruh daftar VIP milik customer dan mengupdate status RSVP.
+
+| Kolom | Keterangan |
+|-------|------------|
+| `user_id` | Pemilik daftar VIP (customer) |
+| `name` | Label akses, misal "Panitia Keluarga" |
+| `token` | String unik 48 karakter untuk akses |
+| `expires_at` | Batas waktu akses (nullable = tidak ada batas) |
+| `last_accessed_at` | Terakhir kali token digunakan |
 
 ### Model Data iOS (Swift)
 
@@ -134,7 +147,8 @@ struct CustomerBudgetCategory, CustomerBudgetVendor
 struct CustomerPaymentMethodItem
 enum PaymentMethodType { case bank, ewallet }
 // Tambah:
-struct VipGuest  // name, jabatan, instansi, phone, kategori, rsvpStatus, catatan
+struct VipGuest        // name, jabatan, instansi, phone, kategori, rsvpStatus, catatan
+struct VipGuestDelegate // id, name, token, expiresAt, lastAccessedAt, isActive
 ```
 
 ---
@@ -173,6 +187,11 @@ Token diperoleh dari endpoint login (`POST /api/v1/auth/login`) dan disimpan di 
 | POST | `/api/v1/customer/vip-guests` | Tambah tamu VIP |
 | PUT | `/api/v1/customer/vip-guests/{id}` | Edit tamu VIP |
 | DELETE | `/api/v1/customer/vip-guests/{id}` | Hapus tamu VIP |
+| GET | `/api/v1/customer/vip-guests/delegates` | List token akses delegasi |
+| POST | `/api/v1/customer/vip-guests/delegates` | Buat token delegasi baru |
+| DELETE | `/api/v1/customer/vip-guests/delegates/{id}` | Cabut token delegasi |
+| GET | `/api/v1/vip-guests/shared/{token}` | Lihat VIP list via token (tanpa login) |
+| PATCH | `/api/v1/vip-guests/shared/{token}/guests/{id}/rsvp` | Update RSVP via token (tanpa login) |
 | GET | `/api/v1/customer/notifications` | List notifikasi |
 | PATCH | `/api/v1/customer/notifications/{id}/read` | Tandai dibaca |
 | GET | `/api/v1/customer/preparation/sections` | Sections + tasks |
@@ -301,6 +320,30 @@ Token diperoleh dari endpoint login (`POST /api/v1/auth/login`) dan disimpan di 
 }
 ```
 
+**Contoh response vip-guests/delegates:**
+```json
+{
+  "data": [
+    { "id": 1, "name": "Panitia Keluarga", "token": "aB3dEf...", "expires_at": null, "last_accessed_at": "2026-06-23T10:00:00+07:00", "is_active": true, "created_at": "2026-06-23T09:00:00+07:00" }
+  ]
+}
+```
+
+**Body buat delegate:** `{ "name": "Panitia Keluarga", "expires_at": "2026-08-01T00:00:00" }` *(expires_at opsional)*
+
+**Contoh response vip-guests/shared/{token}:**
+```json
+{
+  "data": {
+    "delegate_name": "Panitia Keluarga",
+    "guests": [ { "id": 1, "name": "Budi Santoso", "rsvp_status": "menunggu", ... } ],
+    "summary": { "total": 10, "hadir": 6, "tidak_hadir": 1, "menunggu": 3 }
+  }
+}
+```
+
+**Body update RSVP via token:** `{ "rsvp_status": "hadir" }` | `"tidak_hadir"` | `"menunggu"`
+
 ---
 
 ## Filament Admin — Resource Customer
@@ -310,6 +353,7 @@ Token diperoleh dari endpoint login (`POST /api/v1/auth/login`) dan disimpan di 
 | `WeddingInfoResource` | Customer | 1 | RelationManager: WeddingEvents |
 | `FamilyMemberResource` | Customer | 2 | — |
 | `VipGuestResource` | Customer | 3 | Import XLSX + Download Template |
+| `VipGuestDelegateResource` | Customer | 4 | List, buat, edit, cabut token delegasi |
 | `CustomerPaymentMethodResource` | Customer | — | — |
 | `CustomerNotificationResource` | Customer | — | — |
 | `CustomerPreparationSectionResource` | Customer | — | RelationManager: Tasks |
@@ -336,6 +380,7 @@ Tombol **"Unduh Template"** → download `template-tamu-vip.xlsx` dengan 2 baris
 | Wedding Info & Events | ✅ | ⏳ |
 | Anggota Keluarga | ✅ | ⏳ |
 | Tamu VIP | ✅ | ⏳ |
+| Tamu VIP – Delegasi Akses | ✅ | ⏳ |
 | Dashboard stats | ✅ | ⏳ |
 | Persiapan (sections + tasks) | ✅ | ⏳ |
 | Pembayaran (upcoming, schedule, all) | ✅ | ⏳ |
