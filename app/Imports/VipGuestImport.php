@@ -35,8 +35,8 @@ class VipGuestImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                 continue;
             }
 
-            $rawKategori = Str::lower(trim((string) ($row['kategori'] ?? 'teman')));
-            $kategori    = in_array($rawKategori, $validKategori) ? $rawKategori : 'teman';
+            $rawKategori = Str::lower(trim((string) ($row['kategori'] ?? '')));
+            $kategori    = in_array($rawKategori, $validKategori) ? $rawKategori : 'vip';
 
             $rawRsvp  = Str::lower(trim((string) ($row['rsvp'] ?? $row['rsvp_status'] ?? 'menunggu')));
             $rsvp     = in_array($rawRsvp, $validRsvp) ? $rawRsvp : 'menunggu';

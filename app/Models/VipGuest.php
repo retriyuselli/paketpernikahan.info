@@ -25,6 +25,7 @@ class VipGuest extends Model
     ];
 
     public static array $kategoriOptions = [
+        'vip'              => 'VIP',
         'keluarga_besar'   => 'Keluarga Besar',
         'pejabat'          => 'Pejabat',
         'tokoh_masyarakat' => 'Tokoh Masyarakat',

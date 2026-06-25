@@ -732,19 +732,24 @@ class CustomerController extends Controller
             'jabatan'     => ['nullable', 'string', 'max:150'],
             'instansi'    => ['nullable', 'string', 'max:150'],
             'phone'       => ['nullable', 'string', 'max:30'],
-            'kategori'    => ['required', 'in:keluarga_besar,pejabat,tokoh_masyarakat,rekan_bisnis,teman'],
+            'kategori'    => ['sometimes', 'in:vip,keluarga_besar,pejabat,tokoh_masyarakat,rekan_bisnis,teman'],
             'rsvp_status' => ['sometimes', 'in:menunggu,hadir,tidak_hadir'],
             'catatan'     => ['nullable', 'string', 'max:500'],
         ]);
 
+        $nextNo = (VipGuest::where('user_id', $request->user()->id)->max('no') ?? 0) + 1;
+
         $guest = VipGuest::create(array_merge($data, [
             'user_id'     => $request->user()->id,
+            'no'          => $nextNo,
+            'kategori'    => $data['kategori'] ?? 'vip',
             'rsvp_status' => $data['rsvp_status'] ?? 'menunggu',
         ]));
 
         return response()->json([
             'data' => [
                 'id'                   => $guest->id,
+                'no'                   => $guest->no,
                 'name'                 => $guest->name,
                 'jabatan'              => $guest->jabatan,
                 'instansi'             => $guest->instansi,

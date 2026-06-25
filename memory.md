@@ -915,3 +915,16 @@ Gunakan langkah ini jika app iPhone menampilkan error `Tidak dapat terhubung ke 
   ```
 - Method ini dipanggil di 3 flow: register email (line 36), Apple Sign-In (line 116), Google Sign-In (line 173).
 - **Dampak**: user baru tidak otomatis dapat akses Customer Dashboard — harus di-assign manual oleh super_admin.
+
+## Tentang Aplikasi — Update Developer & Legal In-App — 2026-06-25
+
+- **Developer** di `CustomerAboutSheet` diubah dari `"PT Paket Pernikahan"` → `"PT. Makna Kreatif Indonesia"`.
+- **Legal section** sebelumnya membuka URL eksternal via `openURL` (browser). Sekarang menggunakan `NavigationLink` ke halaman native in-app:
+  - `Kebijakan Privasi` → `TermsView()` (sudah ada, berisi konten kebijakan privasi)
+  - `Syarat & Ketentuan` → `TermsView()` (sama; view berisi konten kebijakan & persyaratan)
+  - `Lisensi Open Source` → `OpenSourceLicensesView()` (baru dibuat)
+- `@Environment(\.openURL)` dihapus dari `CustomerAboutSheet` karena tidak lagi digunakan.
+- **`OpenSourceLicensesView`** ditambahkan di `Views/AuthViews.swift` setelah `TermsView`. Menampilkan daftar pustaka open source yang digunakan: Firebase iOS SDK, GoogleSignIn-iOS, Kingfisher — dengan nama, versi, lisensi (Apache 2.0 / MIT), copyright, dan URL repo.
+- Helper `aboutLinkRow` (tombol dengan ikon `arrow.up.right`) diganti `aboutNavLabel` (label untuk NavigationLink; chevron otomatis dari List).
+- **File diubah**: `CustomerProfileView.swift` (CustomerAboutSheet), `AuthViews.swift` (tambah OpenSourceLicensesView).
+- **Build**: diagnostics kedua file bersih.
