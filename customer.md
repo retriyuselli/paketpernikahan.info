@@ -758,7 +758,8 @@ File: `app/Filament/Admin/Resources/LabelPersiapans/LabelPersiapanResource.php`
 | Profil dasar (`/me`) | ✅ | ✅ |
 | Wedding Info & Events | ✅ | ✅ |
 | Anggota Keluarga (CRUD) | ✅ | ✅ |
-| Anggota Keluarga – Import XLSX (iOS upload) | ✅ | 🔨 in progress |
+| Anggota Keluarga – Import XLSX (iOS upload) | ✅ | ✅ |
+| Anggota Keluarga – Hapus semua (`DELETE /family-members`) | ✅ | ✅ |
 | Tamu VIP (CRUD + summary RSVP) | ✅ | ✅ |
 | Tamu VIP – Hapus semua (`DELETE /vip-guests`) | ✅ | ✅ |
 | Tamu VIP – Tracking siapa yang update RSVP (`rsvp_updated_by_name`) | ✅ | ✅ |
@@ -950,3 +951,41 @@ struct UpdateTaskRequest: Encodable {
 ```
 
 Task dengan `label = null` → masukkan ke grup `"Lainnya"` atau tampilkan langsung tanpa header grup.
+
+---
+
+## Troubleshooting Production
+
+### Google Sign-In: "Verifikasi token Google gagal" di TestFlight / App Store
+
+**Gejala:** Login dengan Google berhasil di simulator/device debug, tapi gagal di TestFlight atau build production dengan pesan `Verifikasi token Google gagal.`
+
+**Penyebab:** Backend memvalidasi field `aud` dari Google ID token terhadap dua client ID:
+```php
+$allowedAudiences = array_filter([
+    config('services.google.client_id'),     // web client ID
+    config('services.google.ios_client_id'), // iOS client ID
+]);
+```
+iOS SDK mengisi `aud` dengan **iOS Client ID** (`GIDClientID`). Jika production `.env` di server tidak punya `GOOGLE_IOS_CLIENT_ID`, validasi gagal.
+
+**Fix:** Tambahkan ke `.env` production (Hostinger):
+```env
+GOOGLE_IOS_CLIENT_ID=1073847707519-nl2v15m0qh0ep66kkldm92tcuoug3faj.apps.googleusercontent.com
+```
+Lalu jalankan `php artisan config:clear && php artisan cache:clear`.
+
+**Nilai yang benar (cocokkan dengan `GIDClientID` di `Info.plist`):**
+| Key | Value |
+|-----|-------|
+| `GOOGLE_CLIENT_ID` | `1073847707519-au4ul9ha3b3rrlpf8j7o3ngc4i55fdh4.apps.googleusercontent.com` |
+| `GOOGLE_IOS_CLIENT_ID` | `1073847707519-nl2v15m0qh0ep66kkldm92tcuoug3faj.apps.googleusercontent.com` |
+
+---
+
+## App Store / TestFlight — Catatan Release
+
+| Versi | Build | Tanggal | Catatan |
+|-------|-------|---------|---------|
+| 2.0.2 | 6 | — | Versi sebelumnya (live di App Store) |
+| 2.0.3 | 7 | 2026-06-25 | Fitur Anggota Keluarga: XLSX upload + swipe edit/hapus + hapus semua. Hapus key `NSLocalNetworkUsageDescription` & `NSAllowsLocalNetworking` dari `Info.plist`. Fix Google Sign-In production (`GOOGLE_IOS_CLIENT_ID`). |
