@@ -5,6 +5,8 @@ namespace App\Filament\Admin\Resources\WeddingInfos;
 use App\Filament\Admin\Resources\WeddingInfos\Pages\CreateWeddingInfo;
 use App\Filament\Admin\Resources\WeddingInfos\Pages\EditWeddingInfo;
 use App\Filament\Admin\Resources\WeddingInfos\Pages\ListWeddingInfos;
+use App\Filament\Admin\Resources\WeddingInfos\RelationManagers\FamilyMembersRelationManager;
+use App\Filament\Admin\Resources\WeddingInfos\RelationManagers\PreparationTasksRelationManager;
 use App\Filament\Admin\Resources\WeddingInfos\RelationManagers\WeddingEventsRelationManager;
 use App\Models\WeddingInfo;
 use BackedEnum;
@@ -38,6 +40,8 @@ class WeddingInfoResource extends Resource
     {
         return [
             WeddingEventsRelationManager::class,
+            PreparationTasksRelationManager::class,
+            FamilyMembersRelationManager::class,
         ];
     }
 

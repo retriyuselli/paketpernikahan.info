@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Imports\FamilyMemberImport;
 use App\Imports\VipGuestImport;
 use App\Models\CustomerNotification;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\CustomerPaymentMethod;
-use App\Models\CustomerPreparationSection;
 use App\Models\CustomerPreparationTask;
 use App\Models\FamilyMember;
 use App\Models\VipGuest;
@@ -52,13 +52,12 @@ class CustomerController extends Controller
             ->where('status', 'verified')
             ->sum('amount');
 
-        // Preparation summary
-        $sections    = CustomerPreparationSection::where('user_id', $user->id)->with('tasks')->get();
-        $allTasks    = $sections->flatMap(fn ($s) => $s->tasks);
-        $totalTasks  = $allTasks->count();
-        $doneTasks   = $allTasks->where('status', 'done')->count();
-        $pendingTasks = $allTasks->where('status', 'pending')->count();
-        $todoTasks   = $allTasks->where('status', 'todo')->count();
+        // Preparation summary — hitung semua task milik user (event-based + general)
+        $allTasksQuery = CustomerPreparationTask::where('user_id', $user->id);
+        $totalTasks    = (clone $allTasksQuery)->count();
+        $doneTasks     = (clone $allTasksQuery)->where('status', 'done')->count();
+        $pendingTasks  = (clone $allTasksQuery)->where('status', 'pending')->count();
+        $todoTasks     = (clone $allTasksQuery)->where('status', 'todo')->count();
 
         // Wedding day countdown
         $akad        = WeddingEvent::where('user_id', $user->id)
@@ -207,25 +206,43 @@ class CustomerController extends Controller
 
     public function preparationSections(Request $request): JsonResponse
     {
-        $sections = CustomerPreparationSection::where('user_id', $request->user()->id)
-            ->orderBy('sort_order')
-            ->with(['tasks' => fn ($q) => $q->orderBy('sort_order')])
+        $userId = $request->user()->id;
+        $now    = now()->startOfDay();
+
+        $eventIcons = [
+            'lamaran'   => 'gift.fill',
+            'pengajian' => 'book.fill',
+            'akad'      => 'heart.fill',
+            'resepsi'   => 'sparkles',
+        ];
+
+        $events = WeddingEvent::where('user_id', $userId)
+            ->orderBy('tgl_acara')
+            ->with(['preparationTasks' => fn ($q) => $q->orderBy('sort_order')])
             ->get()
-            ->map(fn ($s) => [
-                'id'    => $s->id,
-                'title' => $s->title,
-                'icon'  => $s->icon,
-                'done'  => $s->tasks->where('status', 'done')->count(),
-                'total' => $s->tasks->count(),
-                'tasks' => $s->tasks->map(fn ($t) => [
+            ->map(fn ($e) => [
+                'id'          => $e->id,
+                'jenis_acara' => $e->jenis_acara,
+                'label'       => WeddingEvent::$jenisOptions[$e->jenis_acara] ?? $e->jenis_acara,
+                'tgl_acara'   => $e->tgl_acara?->toDateString(),
+                'days_until'  => $e->tgl_acara ? (int) $now->diffInDays($e->tgl_acara, false) : null,
+                'icon'        => $eventIcons[$e->jenis_acara] ?? 'calendar',
+                'done'        => $e->preparationTasks->where('status', 'done')->count(),
+                'total'       => $e->preparationTasks->count(),
+                'tasks'       => $e->preparationTasks->map(fn ($t) => [
                     'id'       => $t->id,
+                    'label'    => $t->label,
                     'title'    => $t->title,
                     'status'   => $t->status,
                     'due_date' => $t->due_date?->toDateString(),
-                ]),
+                ])->values(),
             ]);
 
-        return response()->json(['data' => $sections]);
+        return response()->json([
+            'data' => [
+                'events' => $events,
+            ],
+        ]);
     }
 
     public function preparationVendors(Request $request): JsonResponse
@@ -561,6 +578,36 @@ class CustomerController extends Controller
         return response()->json(['message' => 'ok']);
     }
 
+    public function destroyAllFamilyMembers(Request $request): JsonResponse
+    {
+        FamilyMember::where('user_id', $request->user()->id)->delete();
+
+        return response()->json(['message' => 'Semua anggota keluarga berhasil dihapus.']);
+    }
+
+    public function importFamilyMembers(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file'        => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:2048'],
+            'replace_all' => ['sometimes', 'boolean'],
+        ]);
+
+        if ($request->boolean('replace_all')) {
+            FamilyMember::where('user_id', $request->user()->id)->delete();
+        }
+
+        $import = new FamilyMemberImport($request->user()->id);
+        Excel::import($import, $request->file('file'));
+
+        return response()->json([
+            'data' => [
+                'imported' => $import->getImported(),
+                'skipped'  => $import->getSkipped(),
+            ],
+            'message' => "Berhasil mengimpor {$import->getImported()} anggota keluarga.",
+        ]);
+    }
+
     // ─────────────────────────────────────────
     // Preparation Tasks CRUD
     // ─────────────────────────────────────────
@@ -568,34 +615,38 @@ class CustomerController extends Controller
     public function storePreparationTask(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'section_id' => ['required', 'integer'],
-            'title'      => ['required', 'string', 'max:200'],
-            'status'     => ['sometimes', 'in:todo,done,pending'],
-            'due_date'   => ['nullable', 'date'],
+            'wedding_event_id' => ['required', 'integer'],
+            'label'            => ['nullable', 'string', 'max:100'],
+            'title'            => ['required', 'string', 'max:200'],
+            'status'           => ['sometimes', 'in:todo,done,pending'],
+            'due_date'         => ['nullable', 'date'],
         ]);
 
         $user = $request->user();
 
-        // Pastikan section milik user ini
-        $section = CustomerPreparationSection::where('user_id', $user->id)
-            ->where('id', $data['section_id'])
+        WeddingEvent::where('user_id', $user->id)
+            ->where('id', $data['wedding_event_id'])
             ->firstOrFail();
 
-        $maxSort = CustomerPreparationTask::where('section_id', $section->id)->max('sort_order') ?? 0;
-
-        $task = CustomerPreparationTask::create(array_merge($data, [
-            'user_id'    => $user->id,
-            'status'     => $data['status'] ?? 'todo',
-            'sort_order' => $maxSort + 1,
-        ]));
+        $task = CustomerPreparationTask::create([
+            'user_id'          => $user->id,
+            'wedding_event_id' => $data['wedding_event_id'],
+            'section_id'       => null,
+            'label'            => $data['label'] ?? null,
+            'title'            => $data['title'],
+            'status'           => $data['status'] ?? 'todo',
+            'due_date'         => $data['due_date'] ?? null,
+            'sort_order'       => CustomerPreparationTask::where('wedding_event_id', $data['wedding_event_id'])->max('sort_order') + 1,
+        ]);
 
         return response()->json([
             'data' => [
-                'id'         => $task->id,
-                'title'      => $task->title,
-                'status'     => $task->status,
-                'due_date'   => $task->due_date?->toDateString(),
-                'section_id' => $task->section_id,
+                'id'               => $task->id,
+                'label'            => $task->label,
+                'title'            => $task->title,
+                'status'           => $task->status,
+                'due_date'         => $task->due_date?->toDateString(),
+                'wedding_event_id' => $task->wedding_event_id,
             ],
         ], 201);
     }
@@ -607,6 +658,7 @@ class CustomerController extends Controller
             ->firstOrFail();
 
         $data = $request->validate([
+            'label'    => ['sometimes', 'nullable', 'string', 'max:100'],
             'title'    => ['sometimes', 'string', 'max:200'],
             'status'   => ['sometimes', 'in:todo,done,pending'],
             'due_date' => ['sometimes', 'nullable', 'date'],
@@ -617,6 +669,7 @@ class CustomerController extends Controller
         return response()->json([
             'data' => [
                 'id'       => $task->id,
+                'label'    => $task->label,
                 'title'    => $task->title,
                 'status'   => $task->status,
                 'due_date' => $task->due_date?->toDateString(),
@@ -629,50 +682,6 @@ class CustomerController extends Controller
         CustomerPreparationTask::where('user_id', $request->user()->id)
             ->where('id', $id)
             ->delete();
-
-        return response()->json(['message' => 'ok']);
-    }
-
-    // ─────────────────────────────────────────
-    // Preparation Sections CRUD
-    // ─────────────────────────────────────────
-
-    public function storePreparationSection(Request $request): JsonResponse
-    {
-        $data = $request->validate([
-            'title'      => ['required', 'string', 'max:100'],
-            'icon'       => ['nullable', 'string', 'max:100'],
-            'sort_order' => ['nullable', 'integer'],
-        ]);
-
-        $user    = $request->user();
-        $maxSort = CustomerPreparationSection::where('user_id', $user->id)->max('sort_order') ?? 0;
-
-        $section = CustomerPreparationSection::create(array_merge($data, [
-            'user_id'    => $user->id,
-            'sort_order' => $data['sort_order'] ?? $maxSort + 1,
-        ]));
-
-        return response()->json([
-            'data' => [
-                'id'         => $section->id,
-                'title'      => $section->title,
-                'icon'       => $section->icon,
-                'done'       => 0,
-                'total'      => 0,
-                'tasks'      => [],
-            ],
-        ], 201);
-    }
-
-    public function destroyPreparationSection(Request $request, int $id): JsonResponse
-    {
-        $section = CustomerPreparationSection::where('user_id', $request->user()->id)
-            ->where('id', $id)
-            ->firstOrFail();
-
-        $section->tasks()->delete();
-        $section->delete();
 
         return response()->json(['message' => 'ok']);
     }
@@ -694,9 +703,11 @@ class CustomerController extends Controller
                 'instansi'    => $g->instansi,
                 'phone'       => $g->phone,
                 'kategori'    => $g->kategori,
-                'kategori_label' => VipGuest::$kategoriOptions[$g->kategori] ?? $g->kategori,
-                'rsvp_status' => $g->rsvp_status,
-                'rsvp_label'  => VipGuest::$rsvpOptions[$g->rsvp_status] ?? $g->rsvp_status,
+                'kategori_label'        => VipGuest::$kategoriOptions[$g->kategori] ?? $g->kategori,
+                'rsvp_status'           => $g->rsvp_status,
+                'rsvp_label'            => VipGuest::$rsvpOptions[$g->rsvp_status] ?? $g->rsvp_status,
+                'rsvp_updated_by_name'  => $g->rsvp_updated_by_name,
+                'rsvp_updated_at'       => $g->rsvp_updated_at,
                 'catatan'     => $g->catatan,
             ]);
 
@@ -732,16 +743,18 @@ class CustomerController extends Controller
 
         return response()->json([
             'data' => [
-                'id'             => $guest->id,
-                'name'           => $guest->name,
-                'jabatan'        => $guest->jabatan,
-                'instansi'       => $guest->instansi,
-                'phone'          => $guest->phone,
-                'kategori'       => $guest->kategori,
-                'kategori_label' => VipGuest::$kategoriOptions[$guest->kategori] ?? $guest->kategori,
-                'rsvp_status'    => $guest->rsvp_status,
-                'rsvp_label'     => VipGuest::$rsvpOptions[$guest->rsvp_status] ?? $guest->rsvp_status,
-                'catatan'        => $guest->catatan,
+                'id'                   => $guest->id,
+                'name'                 => $guest->name,
+                'jabatan'              => $guest->jabatan,
+                'instansi'             => $guest->instansi,
+                'phone'                => $guest->phone,
+                'kategori'             => $guest->kategori,
+                'kategori_label'       => VipGuest::$kategoriOptions[$guest->kategori] ?? $guest->kategori,
+                'rsvp_status'          => $guest->rsvp_status,
+                'rsvp_label'           => VipGuest::$rsvpOptions[$guest->rsvp_status] ?? $guest->rsvp_status,
+                'rsvp_updated_by_name' => $guest->rsvp_updated_by_name,
+                'rsvp_updated_at'      => $guest->rsvp_updated_at,
+                'catatan'              => $guest->catatan,
             ],
         ], 201);
     }
@@ -762,20 +775,27 @@ class CustomerController extends Controller
             'catatan'     => ['sometimes', 'nullable', 'string', 'max:500'],
         ]);
 
+        if (isset($data['rsvp_status'])) {
+            $data['rsvp_updated_by_name'] = $request->user()->name;
+            $data['rsvp_updated_at']      = now();
+        }
+
         $guest->update($data);
 
         return response()->json([
             'data' => [
-                'id'             => $guest->id,
-                'name'           => $guest->name,
-                'jabatan'        => $guest->jabatan,
-                'instansi'       => $guest->instansi,
-                'phone'          => $guest->phone,
-                'kategori'       => $guest->kategori,
-                'kategori_label' => VipGuest::$kategoriOptions[$guest->kategori] ?? $guest->kategori,
-                'rsvp_status'    => $guest->rsvp_status,
-                'rsvp_label'     => VipGuest::$rsvpOptions[$guest->rsvp_status] ?? $guest->rsvp_status,
-                'catatan'        => $guest->catatan,
+                'id'                   => $guest->id,
+                'name'                 => $guest->name,
+                'jabatan'              => $guest->jabatan,
+                'instansi'             => $guest->instansi,
+                'phone'                => $guest->phone,
+                'kategori'             => $guest->kategori,
+                'kategori_label'       => VipGuest::$kategoriOptions[$guest->kategori] ?? $guest->kategori,
+                'rsvp_status'          => $guest->rsvp_status,
+                'rsvp_label'           => VipGuest::$rsvpOptions[$guest->rsvp_status] ?? $guest->rsvp_status,
+                'rsvp_updated_by_name' => $guest->rsvp_updated_by_name,
+                'rsvp_updated_at'      => $guest->rsvp_updated_at,
+                'catatan'              => $guest->catatan,
             ],
         ]);
     }
@@ -807,21 +827,32 @@ class CustomerController extends Controller
         return response()->json(['message' => 'ok']);
     }
 
+    public function destroyAllVipGuests(Request $request): JsonResponse
+    {
+        VipGuest::where('user_id', $request->user()->id)->delete();
+
+        return response()->json(['message' => 'Semua tamu VIP berhasil dihapus.']);
+    }
+
     // ── VIP Guest Delegates ────────────────────────────────────────────────
 
     public function vipGuestDelegates(Request $request): JsonResponse
     {
         $delegates = VipGuestDelegate::where('user_id', $request->user()->id)
+            ->with('claimedBy')
             ->latest()
             ->get()
             ->map(fn ($d) => [
-                'id'               => $d->id,
-                'name'             => $d->name,
-                'token'            => $d->token,
-                'expires_at'       => $d->expires_at?->toIso8601String(),
-                'last_accessed_at' => $d->last_accessed_at?->toIso8601String(),
-                'is_active'        => $d->isActive(),
-                'created_at'       => $d->created_at->toIso8601String(),
+                'id'                  => $d->id,
+                'name'                => $d->name,
+                'token'               => $d->token,
+                'claimed_by_user_id'  => $d->claimed_by_user_id,
+                'claimed_by_name'     => $d->claimedBy?->name,
+                'claimed_by_email'    => $d->claimedBy?->email,
+                'expires_at'          => $d->expires_at?->toIso8601String(),
+                'last_accessed_at'    => $d->last_accessed_at?->toIso8601String(),
+                'is_active'           => $d->isActive(),
+                'created_at'          => $d->created_at->toIso8601String(),
             ]);
 
         return response()->json(['data' => $delegates]);
@@ -843,12 +874,16 @@ class CustomerController extends Controller
 
         return response()->json([
             'data' => [
-                'id'         => $delegate->id,
-                'name'       => $delegate->name,
-                'token'      => $delegate->token,
-                'expires_at' => $delegate->expires_at?->toIso8601String(),
-                'is_active'  => true,
-                'created_at' => $delegate->created_at->toIso8601String(),
+                'id'                 => $delegate->id,
+                'name'               => $delegate->name,
+                'token'              => $delegate->token,
+                'claimed_by_user_id'  => null,
+                'claimed_by_name'     => null,
+                'claimed_by_email'    => null,
+                'expires_at'         => $delegate->expires_at?->toIso8601String(),
+                'last_accessed_at'   => null,
+                'is_active'          => true,
+                'created_at'         => $delegate->created_at->toIso8601String(),
             ],
             'message' => 'Akses delegasi berhasil dibuat.',
         ], 201);
@@ -863,38 +898,61 @@ class CustomerController extends Controller
         return response()->json(['message' => 'Akses delegasi berhasil dicabut.']);
     }
 
-    // ── VIP Guest Shared Access (tanpa login, via token) ──────────────────
+    // ── VIP Guest Shared Access (butuh auth:sanctum, via token) ──────────────────
 
     public function sharedVipGuests(Request $request, string $token): JsonResponse
     {
-        $delegate = VipGuestDelegate::where('token', $token)->firstOrFail();
+        $delegate = VipGuestDelegate::where('token', $token)
+            ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+            ->firstOrFail();
 
-        if ($delegate->isExpired()) {
-            return response()->json(['message' => 'Token akses sudah kadaluarsa.'], 403);
+        $user = $request->user();
+
+        // Atomic claim: hanya berhasil jika claimed_by_user_id masih NULL
+        $claimed = VipGuestDelegate::where('id', $delegate->id)
+            ->whereNull('claimed_by_user_id')
+            ->update(['claimed_by_user_id' => $user->id, 'last_accessed_at' => now()]);
+
+        if (!$claimed) {
+            // Token sudah pernah diklaim — reload data terbaru dari DB
+            $delegate->refresh();
+
+            if ($delegate->claimed_by_user_id !== $user->id) {
+                return response()->json(['message' => 'Token ini sudah digunakan oleh akun lain.'], 403);
+            }
+
+            // User yang sama boleh akses ulang
+            $delegate->update(['last_accessed_at' => now()]);
         }
 
-        $delegate->update(['last_accessed_at' => now()]);
+        $wedding = WeddingInfo::where('user_id', $delegate->user_id)->first();
 
         $guests = VipGuest::where('user_id', $delegate->user_id)
             ->orderBy('kategori')
             ->orderBy('name')
             ->get()
             ->map(fn ($g) => [
-                'id'             => $g->id,
-                'name'           => $g->name,
-                'jabatan'        => $g->jabatan,
-                'instansi'       => $g->instansi,
-                'phone'          => $g->phone,
-                'kategori'       => $g->kategori,
-                'kategori_label' => VipGuest::$kategoriOptions[$g->kategori] ?? $g->kategori,
-                'rsvp_status'    => $g->rsvp_status,
-                'rsvp_label'     => VipGuest::$rsvpOptions[$g->rsvp_status] ?? $g->rsvp_status,
-                'catatan'        => $g->catatan,
+                'id'                   => $g->id,
+                'name'                 => $g->name,
+                'jabatan'              => $g->jabatan,
+                'instansi'             => $g->instansi,
+                'phone'                => $g->phone,
+                'kategori'             => $g->kategori,
+                'kategori_label'       => VipGuest::$kategoriOptions[$g->kategori] ?? $g->kategori,
+                'rsvp_status'          => $g->rsvp_status,
+                'rsvp_label'           => VipGuest::$rsvpOptions[$g->rsvp_status] ?? $g->rsvp_status,
+                'rsvp_updated_by_name' => $g->rsvp_updated_by_name,
+                'rsvp_updated_at'      => $g->rsvp_updated_at,
+                'catatan'              => $g->catatan,
             ]);
 
         return response()->json([
             'data' => [
                 'delegate_name' => $delegate->name,
+                'groom_name'    => $wedding?->groom_name,
+                'bride_name'    => $wedding?->bride_name,
+                'expires_at'    => $delegate->expires_at?->toIso8601String(),
+                'created_at'    => $delegate->created_at?->toIso8601String(),
                 'guests'        => $guests,
                 'summary' => [
                     'total'       => $guests->count(),
@@ -908,10 +966,12 @@ class CustomerController extends Controller
 
     public function updateSharedVipGuestRsvp(Request $request, string $token, int $guestId): JsonResponse
     {
-        $delegate = VipGuestDelegate::where('token', $token)->firstOrFail();
+        $delegate = VipGuestDelegate::where('token', $token)
+            ->where(fn ($q) => $q->whereNull('expires_at')->orWhere('expires_at', '>', now()))
+            ->firstOrFail();
 
-        if ($delegate->isExpired()) {
-            return response()->json(['message' => 'Token akses sudah kadaluarsa.'], 403);
+        if ($delegate->claimed_by_user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Akses ditolak.'], 403);
         }
 
         $data = $request->validate([
@@ -922,14 +982,20 @@ class CustomerController extends Controller
             ->where('id', $guestId)
             ->firstOrFail();
 
-        $guest->update(['rsvp_status' => $data['rsvp_status']]);
+        $guest->update([
+            'rsvp_status'          => $data['rsvp_status'],
+            'rsvp_updated_by_name' => $delegate->name,
+            'rsvp_updated_at'      => now(),
+        ]);
 
         return response()->json([
             'data' => [
-                'id'          => $guest->id,
-                'name'        => $guest->name,
-                'rsvp_status' => $guest->rsvp_status,
-                'rsvp_label'  => VipGuest::$rsvpOptions[$guest->rsvp_status] ?? $guest->rsvp_status,
+                'id'                   => $guest->id,
+                'name'                 => $guest->name,
+                'rsvp_status'          => $guest->rsvp_status,
+                'rsvp_label'           => VipGuest::$rsvpOptions[$guest->rsvp_status] ?? $guest->rsvp_status,
+                'rsvp_updated_by_name' => $guest->rsvp_updated_by_name,
+                'rsvp_updated_at'      => $guest->rsvp_updated_at,
             ],
             'message' => 'Status RSVP berhasil diperbarui.',
         ]);

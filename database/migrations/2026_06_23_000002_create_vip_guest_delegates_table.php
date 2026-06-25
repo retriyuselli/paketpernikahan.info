@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('vip_guest_delegates', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete(); // pemilik/customer
+            $table->foreignId('claimed_by_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('name', 100);           // label akses, misal "Panitia Keluarga"
             $table->string('token', 64)->unique(); // token unik untuk akses
             $table->timestamp('expires_at')->nullable();

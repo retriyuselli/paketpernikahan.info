@@ -836,3 +836,53 @@ Gunakan langkah ini jika app iPhone menampilkan error `Tidak dapat terhubung ke 
 - Database: `paket_nikah` (port 8889)
 - App URL lokal: `http://127.0.0.1:8000`
 - iOS Info.plist saat ini: semua URL → `https://paketpernikahan.co.id/api/v1` (production)
+
+---
+
+## Customer Section — Perbaikan & Fitur Baru (2026-06-25)
+
+### Bug Fix: "Gagal membaca respons server" saat Dashboard Load
+
+- **Penyebab**: `CustomerPreparationSectionsData` punya field `general: [CustomerPreparationGeneralSection]` non-optional, tapi backend sudah tidak mengembalikan key `general`.
+- **Fix** di `CustomerModels.swift`: hapus field `general` dan seluruh struct `CustomerPreparationGeneralSection`.
+
+### Bug Fix: "Gagal memuat dashboard" saat Pull-to-Refresh
+
+- **Penyebab**: `fetchCustomerStats` dan `fetchPreparationSections` di `CustomerHomeView` selalu set `errorMessage` saat error, meski data lama sudah ada.
+- **Fix**: tambah guard `if customerStats == nil` / `if preparationSections == nil` sebelum assign `errorMessage`.
+
+### Bug Fix: `sectionId` pada addTask (CustomerPreparationView)
+
+- **Penyebab**: body POST task masih kirim `sectionId` (sudah deprecated), bukan `weddingEventId`.
+- **Fix** di dua tempat: `CustomerPreparationView.addTask` dan `CustomerPreparationDetailView.addTask` — ganti ke `weddingEventId: section.backendId`.
+
+### Fitur: "Segera Hadir" Modal di Tab Pembayaran
+
+- `CustomerPaymentView` menampilkan overlay gelap + modal card saat dibuka.
+- Tombol "Oke, Mengerti" hanya tampil untuk role `super_admin`.
+- State `showComingSoon = true` di-reset setiap `.onAppear`.
+
+### Perubahan Layout CustomerHomeView
+
+- Urutan card: header → weddingHeroCard → **preparationProgressCard** → **agendaCard** → preparationReportCard → budgetCard.
+- `budgetCard` ditambah badge "Segera Hadir" (capsule pill).
+- `summaryGrid` (LazyVGrid 2-kolom) dihapus.
+
+### Fitur: CustomerFamilyMembersSheet — Update UX seperti Daftar Tamu VIP
+
+- **File**: `CustomerProfileView.swift` — struct `CustomerFamilyMembersSheet` (baris ~2305)
+- **Perubahan**:
+  - Swipe kiri (leading) → buka `FamilyMemberFormSheet` untuk edit.
+  - Swipe kanan (trailing) → konfirmasi alert hapus satu anggota (`memberToDelete`).
+  - Toolbar leading: tombol Import XLSX (`fileImporter` dengan `allowedContentTypes: [.spreadsheet]`).
+  - Toolbar trailing: tombol `+`, menu `ellipsis.circle` (Hapus Semua, muncul jika list tidak kosong), tombol `Selesai`.
+  - Alert konfirmasi hapus semua (`showDeleteAllAlert`).
+  - API upload: `POST customer/family-members/import` (multipart XLSX).
+  - API hapus semua: `DELETE customer/family-members`.
+  - `deleteMember` sekarang optimistic (hapus dulu dari array, insert balik jika error).
+  - `addMember` sekarang `insert(at: 0)` bukan `append`.
+  - Edit sheet tidak lagi menerima `onDelete` callback — delete eksklusif via swipe dari list.
+  - `EmptyRequestBody` dihapus (tidak lagi digunakan).
+  - Tambah `.scrollContentBackground(.hidden)` + `.background(Theme.screenBackground)`.
+  - Row `familyMemberRow` dihapus chevron, nomor telepon ditampilkan dengan ikon `phone.fill`.
+- **Build**: sukses tanpa error.

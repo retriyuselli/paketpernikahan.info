@@ -11,7 +11,9 @@ class CustomerPreparationTask extends Model
     use HasFactory;
 
     protected $fillable = [
+        'wedding_event_id',
         'section_id',
+        'label',
         'user_id',
         'title',
         'status',
@@ -23,9 +25,9 @@ class CustomerPreparationTask extends Model
         'due_date' => 'date',
     ];
 
-    public function section(): BelongsTo
+    public function weddingEvent(): BelongsTo
     {
-        return $this->belongsTo(CustomerPreparationSection::class, 'section_id');
+        return $this->belongsTo(WeddingEvent::class, 'wedding_event_id');
     }
 
     public function user(): BelongsTo

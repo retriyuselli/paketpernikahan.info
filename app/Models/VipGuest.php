@@ -18,6 +18,8 @@ class VipGuest extends Model
         'phone',
         'kategori',
         'rsvp_status',
+        'rsvp_updated_by_name',
+        'rsvp_updated_at',
         'catatan',
     ];
 

@@ -45,12 +45,6 @@ Route::prefix('v1')->group(function () {
     Route::get('/real-weddings', [RealWeddingController::class, 'index']);
     Route::get('/real-weddings/{realWedding:slug}', [RealWeddingController::class, 'show']);
 
-    // VIP Guest Shared Access — akses via token tanpa login
-    Route::prefix('vip-guests/shared')->group(function () {
-        Route::get('/{token}',                  [CustomerController::class, 'sharedVipGuests']);
-        Route::patch('/{token}/guests/{guestId}/rsvp', [CustomerController::class, 'updateSharedVipGuestRsvp']);
-    });
-
     // Join Vendor — publik (provinces, cities, categories)
     Route::prefix('join-vendor')->group(function () {
         Route::get('/provinces',  [JoinVendorController::class, 'provinces']);
@@ -146,20 +140,21 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/wedding-events/{id}',      [CustomerController::class, 'destroyWeddingEvent']);
 
                 Route::post('/family-members',             [CustomerController::class, 'storeFamilyMember']);
+                Route::post('/family-members/import',      [CustomerController::class, 'importFamilyMembers']);
                 Route::put('/family-members/{id}',         [CustomerController::class, 'updateFamilyMember']);
+                Route::delete('/family-members',           [CustomerController::class, 'destroyAllFamilyMembers']);
                 Route::delete('/family-members/{id}',      [CustomerController::class, 'destroyFamilyMember']);
 
                 Route::post('/vip-guests',                 [CustomerController::class, 'storeVipGuest']);
                 Route::post('/vip-guests/import',          [CustomerController::class, 'importVipGuests']);
                 Route::put('/vip-guests/{id}',             [CustomerController::class, 'updateVipGuest']);
+                Route::delete('/vip-guests',               [CustomerController::class, 'destroyAllVipGuests']);
                 Route::delete('/vip-guests/{id}',          [CustomerController::class, 'destroyVipGuest']);
                 Route::post('/vip-guests/delegates',       [CustomerController::class, 'storeVipGuestDelegate']);
                 Route::delete('/vip-guests/delegates/{id}',[CustomerController::class, 'destroyVipGuestDelegate']);
 
                 Route::patch('/notifications/{id}/read',   [CustomerController::class, 'markNotificationRead']);
 
-                Route::post('/preparation/sections',       [CustomerController::class, 'storePreparationSection']);
-                Route::delete('/preparation/sections/{id}',[CustomerController::class, 'destroyPreparationSection']);
                 Route::post('/preparation/tasks',          [CustomerController::class, 'storePreparationTask']);
                 Route::put('/preparation/tasks/{id}',      [CustomerController::class, 'updatePreparationTask']);
                 Route::delete('/preparation/tasks/{id}',   [CustomerController::class, 'destroyPreparationTask']);
@@ -173,6 +168,12 @@ Route::prefix('v1')->group(function () {
             // ── Ganti password — throttle ketat 5 request/menit
             Route::put('/password', [CustomerController::class, 'updatePassword'])
                 ->middleware('throttle:5,1');
+        });
+
+        // VIP Guest Shared Access — butuh login, token diklaim 1 user
+        Route::prefix('vip-guests/shared')->group(function () {
+            Route::get('/{token}',                         [CustomerController::class, 'sharedVipGuests']);
+            Route::patch('/{token}/guests/{guestId}/rsvp', [CustomerController::class, 'updateSharedVipGuestRsvp']);
         });
 
         // Admin dashboard

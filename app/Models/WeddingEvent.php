@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WeddingEvent extends Model
 {
@@ -38,6 +39,11 @@ class WeddingEvent extends Model
     public function vendorBooking(): BelongsTo
     {
         return $this->belongsTo(VendorBooking::class);
+    }
+
+    public function preparationTasks(): HasMany
+    {
+        return $this->hasMany(CustomerPreparationTask::class, 'wedding_event_id')->orderBy('sort_order');
     }
 
     public function getJenisLabelAttribute(): string

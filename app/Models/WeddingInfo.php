@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class WeddingInfo extends Model
 {
@@ -26,5 +27,22 @@ class WeddingInfo extends Model
     {
         return $this->hasMany(WeddingEvent::class, 'user_id', 'user_id')
                     ->orderBy('tgl_acara');
+    }
+
+    public function familyMembers(): HasMany
+    {
+        return $this->hasMany(FamilyMember::class, 'user_id', 'user_id');
+    }
+
+    public function preparationTasks(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            CustomerPreparationTask::class,
+            WeddingEvent::class,
+            'user_id',          // FK pada wedding_events → menuju user_id WeddingInfo
+            'wedding_event_id', // FK pada customer_preparation_tasks → menuju id WeddingEvent
+            'user_id',          // local key pada wedding_infos
+            'id',               // local key pada wedding_events
+        );
     }
 }
