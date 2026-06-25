@@ -273,8 +273,8 @@ class AuthController extends Controller
     private function assignDefaultRole(User $user): void
     {
         if (!$user->hasAnyRole(['super_admin', 'admin', 'vendor', 'pengunjung', 'customer'])) {
-            Role::findOrCreate('customer', 'web');
-            $user->assignRole('customer');
+            Role::findOrCreate('pengunjung', 'web');
+            $user->assignRole('pengunjung');
         }
     }
 

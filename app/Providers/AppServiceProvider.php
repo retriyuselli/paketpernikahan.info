@@ -7,6 +7,8 @@ use App\Models\VendorApplication;
 use App\Models\VendorBooking;
 use App\Models\VendorBookingPayment;
 use App\Models\VendorReview;
+use App\Models\WeddingEvent;
+use App\Observers\WeddingEventObserver;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -25,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        WeddingEvent::observe(WeddingEventObserver::class);
+
         Gate::define('viewLogViewer', function ($user) {
             return $user->hasRole(['super_admin', 'admin']);
         });

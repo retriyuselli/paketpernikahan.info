@@ -886,3 +886,32 @@ Gunakan langkah ini jika app iPhone menampilkan error `Tidak dapat terhubung ke 
   - Tambah `.scrollContentBackground(.hidden)` + `.background(Theme.screenBackground)`.
   - Row `familyMemberRow` dihapus chevron, nomor telepon ditampilkan dengan ikon `phone.fill`.
 - **Build**: sukses tanpa error.
+
+### Fix Route DELETE `/customer/family-members` Tidak Ditemukan
+
+- **Penyebab**: route `DELETE /api/v1/customer/family-members` belum ada di `routes/api.php` — hanya ada `DELETE /family-members/{id}`.
+- **Fix backend** di `app/Http/Controllers/Api/V1/CustomerController.php`: tambah method `destroyAllFamilyMembers` (hapus semua FamilyMember milik user saat ini).
+- **Fix routes**: tambah `Route::delete('/family-members', [CustomerController::class, 'destroyAllFamilyMembers'])` **sebelum** route `DELETE /family-members/{id}` agar wildcard `{id}` tidak menangkap request tanpa ID.
+
+### Fix Google Sign-In — "Verifikasi Token Google Gagal" di TestFlight
+
+- **Penyebab**: production `.env` tidak punya `GOOGLE_IOS_CLIENT_ID`. Token iOS punya `aud` = iOS Client ID; backend Laravel (`AuthController::google`) validasi via `Google_Client::setClientId` + `verifyIdToken`, tapi tanpa `GOOGLE_IOS_CLIENT_ID` di `allowedAudiences`, verifikasi gagal.
+- **Fix**: tambah `GOOGLE_IOS_CLIENT_ID=1073847707519-nl2v15m0qh0ep66kkldm92tcuoug3faj.apps.googleusercontent.com` di production `.env` Hostinger, lalu `php artisan config:clear && php artisan cache:clear`.
+- **Status**: sudah berjalan di TestFlight per 2026-06-25.
+
+### Fix Default Role User Baru — `pengunjung`, Bukan `customer`
+
+- **Masalah**: semua user baru (register email, Google, Apple) langsung mendapat role `customer`, padahal seharusnya `pengunjung`.
+- **Aturan bisnis**: role `customer` hanya diberikan manual oleh `super_admin` dari backend (saat booking disetujui atau akses customer dashboard diaktifkan).
+- **Fix** di `app/Http/Controllers/Api/V1/AuthController.php` — method `assignDefaultRole`:
+  ```php
+  // Sebelum (SALAH):
+  Role::findOrCreate('customer', 'web');
+  $user->assignRole('customer');
+  
+  // Sesudah (BENAR):
+  Role::findOrCreate('pengunjung', 'web');
+  $user->assignRole('pengunjung');
+  ```
+- Method ini dipanggil di 3 flow: register email (line 36), Apple Sign-In (line 116), Google Sign-In (line 173).
+- **Dampak**: user baru tidak otomatis dapat akses Customer Dashboard — harus di-assign manual oleh super_admin.
