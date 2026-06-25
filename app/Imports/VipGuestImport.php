@@ -41,8 +41,12 @@ class VipGuestImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             $rawRsvp  = Str::lower(trim((string) ($row['rsvp'] ?? $row['rsvp_status'] ?? 'menunggu')));
             $rsvp     = in_array($rawRsvp, $validRsvp) ? $rawRsvp : 'menunggu';
 
+            $rawNo = $row['no'] ?? $row['no_'] ?? null;
+            $no    = ($rawNo !== null && is_numeric($rawNo)) ? (int) $rawNo : null;
+
             VipGuest::create([
                 'user_id'     => $this->userId,
+                'no'          => $no,
                 'name'        => $name,
                 'jabatan'     => trim((string) ($row['jabatan'] ?? '')) ?: null,
                 'instansi'    => trim((string) ($row['instansi'] ?? '')) ?: null,

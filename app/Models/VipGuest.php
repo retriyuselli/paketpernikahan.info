@@ -12,6 +12,7 @@ class VipGuest extends Model
 
     protected $fillable = [
         'user_id',
+        'no',
         'name',
         'jabatan',
         'instansi',

@@ -12,14 +12,14 @@ class VipGuestTemplateExport implements FromArray, WithHeadings, WithStyles, Wit
 {
     public function headings(): array
     {
-        return ['nama', 'jabatan', 'instansi', 'telepon', 'kategori', 'rsvp', 'catatan'];
+        return ['no', 'nama', 'jabatan', 'instansi', 'telepon', 'kategori', 'rsvp', 'catatan'];
     }
 
     public function array(): array
     {
         return [
-            ['Budi Santoso', 'Walikota', 'Pemkot Palembang', '08123456789', 'pejabat', 'menunggu', 'Undangan kehormatan'],
-            ['Ibu Rahayu',   '',         '',                  '',            'keluarga_besar', 'hadir', ''],
+            [1, 'Budi Santoso', 'Walikota', 'Pemkot Palembang', '08123456789', 'pejabat', 'menunggu', 'Undangan kehormatan'],
+            [2, 'Ibu Rahayu',   '',         '',                  '',            'keluarga_besar', 'hadir', ''],
         ];
     }
 
@@ -33,13 +33,14 @@ class VipGuestTemplateExport implements FromArray, WithHeadings, WithStyles, Wit
     public function columnWidths(): array
     {
         return [
-            'A' => 25,
-            'B' => 22,
-            'C' => 25,
-            'D' => 18,
-            'E' => 20,
-            'F' => 15,
-            'G' => 30,
+            'A' => 6,
+            'B' => 25,
+            'C' => 22,
+            'D' => 25,
+            'E' => 18,
+            'F' => 20,
+            'G' => 15,
+            'H' => 30,
         ];
     }
 }

@@ -693,11 +693,12 @@ class CustomerController extends Controller
     public function vipGuests(Request $request): JsonResponse
     {
         $guests = VipGuest::where('user_id', $request->user()->id)
-            ->orderBy('kategori')
-            ->orderBy('name')
+            ->orderByRaw('no IS NULL, no ASC')
+            ->orderBy('id')
             ->get()
             ->map(fn ($g) => [
                 'id'          => $g->id,
+                'no'          => $g->no,
                 'name'        => $g->name,
                 'jabatan'     => $g->jabatan,
                 'instansi'    => $g->instansi,

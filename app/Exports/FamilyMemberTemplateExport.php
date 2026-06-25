@@ -12,14 +12,14 @@ class FamilyMemberTemplateExport implements FromArray, WithHeadings, WithStyles,
 {
     public function headings(): array
     {
-        return ['nama', 'peran', 'telepon'];
+        return ['no', 'nama', 'peran', 'telepon'];
     }
 
     public function array(): array
     {
         return [
-            ['Budi Santoso', 'Ayah Pengantin Pria', '08123456789'],
-            ['Siti Rahayu',  'Ibu Pengantin Wanita', '08987654321'],
+            [1, 'Budi Santoso', 'Ayah Pengantin Pria', '08123456789'],
+            [2, 'Siti Rahayu',  'Ibu Pengantin Wanita', '08987654321'],
         ];
     }
 
@@ -33,9 +33,10 @@ class FamilyMemberTemplateExport implements FromArray, WithHeadings, WithStyles,
     public function columnWidths(): array
     {
         return [
-            'A' => 30,
+            'A' => 6,
             'B' => 30,
-            'C' => 20,
+            'C' => 30,
+            'D' => 20,
         ];
     }
 }
