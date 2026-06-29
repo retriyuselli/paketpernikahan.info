@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\FamilyMembers\Tables;
 
+use App\Models\FamilyMember;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -21,6 +22,11 @@ class FamilyMembersTable
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('no')
+                    ->label('No')
+                    ->sortable()
+                    ->placeholder('—'),
+
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()
@@ -35,18 +41,44 @@ class FamilyMembersTable
                     ->label('Telepon')
                     ->placeholder('—'),
 
+                TextColumn::make('rsvp_status')
+                    ->label('RSVP')
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+                        'hadir'        => 'success',
+                        'tidak_hadir'  => 'danger',
+                        default        => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => FamilyMember::$rsvpOptions[$state] ?? $state),
+
+                TextColumn::make('rsvp_updated_by_name')
+                    ->label('Update RSVP Oleh')
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('rsvp_updated_at')
+                    ->label('Update RSVP')
+                    ->dateTime('d M Y H:i')
+                    ->placeholder('—')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('created_at')
                     ->label('Ditambahkan')
                     ->dateTime('d M Y')
                     ->sortable(),
             ])
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort('no')
             ->filters([
                 SelectFilter::make('user')
                     ->label('Customer')
                     ->relationship('user', 'name')
                     ->searchable()
                     ->preload(),
+
+                SelectFilter::make('rsvp_status')
+                    ->label('Status RSVP')
+                    ->options(FamilyMember::$rsvpOptions),
             ])
             ->actions([
                 EditAction::make(),

@@ -23,7 +23,10 @@ class DatabaseSeeder extends Seeder
         $this->call(VenueReviewVideoSeeder::class);
         $this->call(RealWeddingSeeder::class);
         $this->call(PartnerLogoSeeder::class);
+        $this->call(WeddingPaymentScheduleTemplateSeeder::class);
         $this->call(CustomerSeeder::class);
+        $this->call(WeddingPaymentSeeder::class);
+        $this->call(WeddingIncomingPaymentSeeder::class);
 
         // Master data persiapan — urutan penting: label dulu, baru template, baru tasks user
         $this->call(LabelPersiapanSeeder::class);

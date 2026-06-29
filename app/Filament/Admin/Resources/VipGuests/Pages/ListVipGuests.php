@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\VipGuests\Pages;
 
 use App\Exports\VipGuestTemplateExport;
+use App\Exports\VipGuestsExport;
 use App\Filament\Admin\Resources\VipGuests\VipGuestResource;
 use App\Imports\VipGuestImport;
 use App\Models\User;
@@ -29,6 +30,26 @@ class ListVipGuests extends ListRecords
                 ->action(fn () => Excel::download(
                     new VipGuestTemplateExport(),
                     'template-tamu-vip.xlsx'
+                )),
+
+            Action::make('exportXlsx')
+                ->label('Export XLSX')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('info')
+                ->schema([
+                    Select::make('user_id')
+                        ->label('Customer')
+                        ->options(fn () => User::role(['customer', 'pengunjung'])
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                        )
+                        ->searchable()
+                        ->required()
+                        ->helperText('Pilih customer yang data tamu VIP-nya akan diexport.'),
+                ])
+                ->action(fn (array $data) => Excel::download(
+                    new VipGuestsExport((int) $data['user_id']),
+                    'tamu-vip.xlsx'
                 )),
 
             Action::make('importXlsx')

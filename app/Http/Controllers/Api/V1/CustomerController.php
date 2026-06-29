@@ -14,6 +14,8 @@ use App\Models\VipGuest;
 use App\Models\VipGuestDelegate;
 use App\Models\VendorBooking;
 use App\Models\VendorBookingPayment;
+use App\Models\WeddingIncomingPayment;
+use App\Models\WeddingPaymentSchedule;
 use App\Models\WeddingEvent;
 use App\Models\WeddingInfo;
 use Illuminate\Http\JsonResponse;
@@ -92,6 +94,7 @@ class CustomerController extends Controller
     {
         $user = $request->user();
         $info = WeddingInfo::where('user_id', $user->id)->first();
+        $budget = $user->weddingBudget;
 
         // Ambil tanggal & venue dari event akad (atau resepsi jika belum ada akad)
         $akad = WeddingEvent::where('user_id', $user->id)
@@ -133,6 +136,10 @@ class CustomerController extends Controller
                 'wedding_date' => $weddingDateEvent?->tgl_acara?->toDateString(),
                 'venue'        => $venueEvent?->lokasi_acara,
                 'package_name' => $packageName,
+                'budget'       => (float) ($budget?->total_budget ?? 0),
+                'currency'     => $budget?->currency ?? 'IDR',
+                'budaya'       => $info?->budaya,
+                'songlist'     => $info?->songlist ?? [],
                 'events'       => $events,
             ],
         ]);
@@ -143,15 +150,46 @@ class CustomerController extends Controller
         $request->validate([
             'groom_name' => ['sometimes', 'nullable', 'string', 'max:100'],
             'bride_name' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'budget'     => ['sometimes', 'nullable', 'numeric', 'min:0'],
+            'currency'   => ['sometimes', 'nullable', 'string', 'size:3'],
+            'budaya'     => ['sometimes', 'nullable', 'string', 'max:100'],
+            'songlist'   => ['sometimes', 'nullable', 'array'],
+            'songlist.*' => ['nullable', 'string', 'max:150'],
         ]);
 
         $user = $request->user();
         $info = WeddingInfo::updateOrCreate(
             ['user_id' => $user->id],
-            $request->only(['groom_name', 'bride_name']),
+            $request->only(['groom_name', 'bride_name', 'budaya', 'songlist']),
         );
 
-        return response()->json(['data' => $info->only(['groom_name', 'bride_name'])]);
+        if ($request->has('budget') || $request->has('currency')) {
+            $budgetData = [];
+
+            if ($request->has('budget')) {
+                $budgetData['total_budget'] = (float) ($request->input('budget') ?? 0);
+            }
+
+            if ($request->filled('currency')) {
+                $budgetData['currency'] = strtoupper($request->input('currency'));
+            }
+
+            $user->weddingBudget()
+                ->updateOrCreate(['user_id' => $user->id], $budgetData);
+        }
+
+        $budget = $user->weddingBudget()->first();
+
+        return response()->json([
+            'data' => [
+                'groom_name' => $info->groom_name,
+                'bride_name' => $info->bride_name,
+                'budget'     => (float) ($budget?->total_budget ?? 0),
+                'currency'   => $budget?->currency ?? 'IDR',
+                'budaya'     => $info->budaya,
+                'songlist'   => $info->songlist ?? [],
+            ],
+        ]);
     }
 
     // ─────────────────────────────────────────
@@ -162,7 +200,20 @@ class CustomerController extends Controller
     {
         $members = $request->user()
             ->familyMembers()
-            ->get(['id', 'name', 'role', 'phone']);
+            ->orderByRaw('no IS NULL, no ASC')
+            ->orderBy('id')
+            ->get(['id', 'no', 'name', 'role', 'phone', 'rsvp_status', 'rsvp_updated_by_name', 'rsvp_updated_at'])
+            ->map(fn (FamilyMember $member): array => [
+                'id'                   => $member->id,
+                'no'                   => $member->no,
+                'name'                 => $member->name,
+                'role'                 => $member->role,
+                'phone'                => $member->phone,
+                'rsvp_status'          => $member->rsvp_status,
+                'rsvp_label'           => FamilyMember::$rsvpOptions[$member->rsvp_status] ?? $member->rsvp_status,
+                'rsvp_updated_by_name' => $member->rsvp_updated_by_name,
+                'rsvp_updated_at'      => $member->rsvp_updated_at,
+            ]);
 
         return response()->json(['data' => $members]);
     }
@@ -178,7 +229,9 @@ class CustomerController extends Controller
             ->get()
             ->map(fn ($n) => [
                 'id'          => $n->id,
-                'group'       => $n->group,
+                'group'       => ($n->created_at->isToday()
+                    ? 'Hari Ini'
+                    : ($n->created_at->gte(now()->subDays(7)) ? 'Minggu Ini' : 'Sebelumnya')),
                 'title'       => $n->title,
                 'message'     => $n->message,
                 'time'        => $n->created_at->diffForHumans(),
@@ -332,36 +385,405 @@ class CustomerController extends Controller
         return response()->json(['data' => $payments]);
     }
 
+    public function paymentSummary(Request $request): JsonResponse
+    {
+        $user      = $request->user();
+        $budget    = $user->weddingBudget;
+        $schedules = $user->paymentSchedules;
+
+        $totalBudget = (float) ($budget?->total_budget ?? 0);
+        $paid        = (float) $schedules->where('status', 'paid')->sum('amount');
+        $remaining   = (float) $schedules->whereIn('status', ['pending', 'overdue'])->sum('amount');
+        $paidPct     = $totalBudget > 0 ? round(($paid / $totalBudget) * 100, 1) : 0;
+
+        return response()->json([
+            'data' => [
+                'total_budget'    => $totalBudget,
+                'currency'        => $budget?->currency ?? 'IDR',
+                'total_paid'      => $paid,
+                'total_remaining' => $remaining,
+                'paid_percentage' => $paidPct,
+            ],
+        ]);
+    }
+
+    public function paymentSchedules(Request $request): JsonResponse
+    {
+        $request->validate([
+            'status' => ['sometimes', 'in:pending,paid,overdue'],
+        ]);
+
+        $query = $request->user()->paymentSchedules();
+
+        if ($request->filled('status')) {
+            $query->where('status', (string) $request->string('status'));
+        }
+
+        $items = $query
+            ->with('paymentMethod')
+            ->orderBy('sort_order')
+            ->orderBy('due_date')
+            ->get()
+            ->map(fn (WeddingPaymentSchedule $schedule): array => $this->serializePaymentSchedule($schedule));
+
+        return response()->json(['data' => $items]);
+    }
+
+    public function paymentTransactions(Request $request): JsonResponse
+    {
+        $items = $request->user()
+            ->paymentSchedules()
+            ->where('status', 'paid')
+            ->with('paymentMethod')
+            ->orderByDesc('paid_at')
+            ->get()
+            ->map(fn (WeddingPaymentSchedule $schedule): array => [
+                'id'             => $schedule->id,
+                'title'          => $schedule->title,
+                'vendor_name'    => $schedule->vendor_name,
+                'category_icon'  => $schedule->category_icon,
+                'amount'         => $schedule->amount,
+                'paid_at'        => $schedule->paid_at?->toDateString(),
+                'payment_method' => $this->serializePaymentMethodRelation($schedule),
+            ]);
+
+        return response()->json(['data' => $items]);
+    }
+
+    public function incomingPayments(Request $request): JsonResponse
+    {
+        $request->validate([
+            'status' => ['sometimes', 'in:pending,confirmed,rejected'],
+        ]);
+
+        $query = $request->user()->incomingPayments();
+
+        if ($request->filled('status')) {
+            $query->where('status', (string) $request->string('status'));
+        }
+
+        $items = $query
+            ->get()
+            ->map(fn (WeddingIncomingPayment $payment): array => $this->serializeIncomingPayment($payment));
+
+        return response()->json(['data' => $items]);
+    }
+
+    public function storePaymentSchedule(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'title'       => ['required', 'string', 'max:200'],
+            'vendor_name' => ['required', 'string', 'max:200'],
+            'category'    => ['required', 'in:venue,catering,decoration,photo_video,entertainment,makeup,transport,wo,other'],
+            'amount'      => ['required', 'numeric', 'min:0'],
+            'due_date'    => ['required', 'date'],
+            'notes'       => ['nullable', 'string'],
+        ]);
+
+        $schedule = $request->user()->paymentSchedules()->create($data);
+
+        return response()->json([
+            'data'    => $this->serializePaymentSchedule($schedule),
+            'message' => 'Tagihan berhasil ditambahkan.',
+        ], 201);
+    }
+
+    public function updatePaymentSchedule(Request $request, int $id): JsonResponse
+    {
+        $schedule = $request->user()->paymentSchedules()->with('paymentMethod')->findOrFail($id);
+
+        $data = $request->validate([
+            'title'          => ['sometimes', 'string', 'max:200'],
+            'vendor_name'    => ['sometimes', 'string', 'max:200'],
+            'category'       => ['sometimes', 'in:venue,catering,decoration,photo_video,entertainment,makeup,transport,wo,other'],
+            'amount'         => ['sometimes', 'numeric', 'min:0'],
+            'due_date'       => ['sometimes', 'date'],
+            'status'                    => ['sometimes', 'in:pending,paid,overdue'],
+            'customer_payment_method_id' => ['nullable', 'exists:customer_payment_methods,id'],
+            'proof_url'                 => ['nullable', 'string', 'max:255'],
+            'notes'          => ['nullable', 'string'],
+        ]);
+
+        if (($data['status'] ?? null) === 'paid' && !$schedule->paid_at) {
+            $data['paid_at'] = now();
+        }
+
+        if (($data['status'] ?? null) !== 'paid' && isset($data['status'])) {
+            $data['paid_at'] = null;
+        }
+
+        $schedule->update($data);
+
+        return response()->json([
+            'data'    => $this->serializePaymentSchedule($schedule),
+            'message' => 'Tagihan berhasil diperbarui.',
+        ]);
+    }
+
+    public function destroyPaymentSchedule(Request $request, int $id): JsonResponse
+    {
+        $request->user()->paymentSchedules()->findOrFail($id)->delete();
+
+        return response()->json(['message' => 'Tagihan berhasil dihapus.']);
+    }
+
+    public function uploadScheduleProof(Request $request, int $id): JsonResponse
+    {
+        $schedule = $request->user()->paymentSchedules()->findOrFail($id);
+
+        $request->validate([
+            'proof' => ['required', 'file', 'image', 'max:5120'],
+        ]);
+
+        $path = $request->file('proof')->store('payment-proofs', 'public');
+        $url  = \Illuminate\Support\Facades\Storage::url($path);
+
+        $schedule->update(['proof_url' => $url]);
+
+        return response()->json([
+            'data'    => $this->serializePaymentSchedule($schedule->refresh()),
+            'message' => 'Bukti pembayaran berhasil diupload.',
+        ]);
+    }
+
+    public function storeIncomingPayment(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'source_name'      => ['required_without:bank_name', 'string', 'max:100'],
+            'bank_name'        => ['required_without:source_name', 'string', 'max:100'],
+            'amount'           => ['required', 'numeric', 'min:1'],
+            'received_date'    => ['required_without:transfer_date', 'date'],
+            'transfer_date'    => ['required_without:received_date', 'date'],
+            'contributor_name' => ['required_without:sender_name', 'string', 'max:200'],
+            'sender_name'      => ['required_without:contributor_name', 'string', 'max:200'],
+            'description'      => ['nullable', 'string', 'max:300'],
+            'reference_number' => ['nullable', 'string', 'max:100'],
+            'proof_url'        => ['nullable', 'string', 'max:255'],
+            'notes'            => ['nullable', 'string'],
+        ]);
+
+        $data = $this->normalizeIncomingPaymentData($data);
+
+        $payment = $request->user()->incomingPayments()->create($data);
+
+        return response()->json([
+            'data'    => $this->serializeIncomingPayment($payment),
+            'message' => 'Dana masuk berhasil dicatat.',
+        ], 201);
+    }
+
+    public function updateIncomingPayment(Request $request, int $id): JsonResponse
+    {
+        $payment = $request->user()->incomingPayments()->findOrFail($id);
+
+        $data = $request->validate([
+            'source_name'      => ['sometimes', 'string', 'max:100'],
+            'bank_name'        => ['sometimes', 'string', 'max:100'],
+            'amount'           => ['sometimes', 'numeric', 'min:1'],
+            'received_date'    => ['sometimes', 'date'],
+            'transfer_date'    => ['sometimes', 'date'],
+            'contributor_name' => ['sometimes', 'string', 'max:200'],
+            'sender_name'      => ['sometimes', 'string', 'max:200'],
+            'description'      => ['nullable', 'string', 'max:300'],
+            'reference_number' => ['nullable', 'string', 'max:100'],
+            'proof_url'        => ['nullable', 'string', 'max:255'],
+            'notes'            => ['nullable', 'string'],
+        ]);
+
+        $data = $this->normalizeIncomingPaymentData($data);
+
+        $payment->update($data);
+
+        return response()->json([
+            'data'    => $this->serializeIncomingPayment($payment),
+            'message' => 'Data berhasil diperbarui.',
+        ]);
+    }
+
+    public function destroyIncomingPayment(Request $request, int $id): JsonResponse
+    {
+        $request->user()->incomingPayments()->findOrFail($id)->delete();
+
+        return response()->json(['message' => 'Data berhasil dihapus.']);
+    }
+
     public function budget(Request $request): JsonResponse
     {
-        $bookings = VendorBooking::where('user_id', $request->user()->id)
-            ->with(['vendor:id,name', 'vendorPackage:id,name', 'payments'])
-            ->get();
+        $budget = $request->user()->weddingBudget;
 
-        $categories = $bookings->map(function ($b) {
-            $totalAmount  = $b->agreed_total ?? 0;
-            $paidAmount   = $b->payments->where('status', 'verified')->sum('amount');
-            $paidPercent  = $totalAmount > 0
-                ? (int) round($paidAmount / $totalAmount * 100)
-                : 0;
+        return response()->json([
+            'data' => [
+                'total_budget' => (float) ($budget?->total_budget ?? 0),
+                'currency'     => $budget?->currency ?? 'IDR',
+                'notes'        => $budget?->notes,
+            ],
+        ]);
+    }
 
-            return [
-                'id'           => $b->id,
-                'name'         => $b->vendor?->name ?? '—',
-                'icon'         => 'bag.fill',
-                'amount'       => 'Rp ' . number_format($totalAmount, 0, ',', '.'),
-                'paid_percent' => $paidPercent,
-                'vendors'      => [[
-                    'id'           => $b->id,
-                    'name'         => $b->vendorPackage?->name ?? $b->vendor?->name ?? '—',
-                    'icon'         => 'bag.fill',
-                    'amount'       => 'Rp ' . number_format($totalAmount, 0, ',', '.'),
-                    'paid_percent' => $paidPercent,
-                ]],
-            ];
-        });
+    public function updateBudget(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'total_budget' => ['required', 'numeric', 'min:0'],
+            'currency'     => ['sometimes', 'nullable', 'string', 'size:3'],
+            'notes'        => ['nullable', 'string'],
+        ]);
 
-        return response()->json(['data' => $categories]);
+        if (! empty($data['currency'])) {
+            $data['currency'] = strtoupper($data['currency']);
+        }
+
+        $budget = $request->user()
+            ->weddingBudget()
+            ->updateOrCreate(['user_id' => $request->user()->id], $data);
+
+        return response()->json([
+            'data' => [
+                'total_budget' => (float) $budget->total_budget,
+                'currency'     => $budget->currency,
+                'notes'        => $budget->notes,
+            ],
+            'message' => 'Budget berhasil disimpan.',
+        ]);
+    }
+
+    public function weddingBudget(Request $request): JsonResponse
+    {
+        $budget = $request->user()->weddingBudget;
+
+        return response()->json([
+            'data' => [
+                'budget' => $budget ? [
+                    'id'            => $budget->id,
+                    'nominalBudget' => (float) $budget->total_budget,
+                    'currency'      => $budget->currency ?? 'IDR',
+                    'catatan'       => $budget->notes,
+                ] : null,
+            ],
+        ]);
+    }
+
+    public function storeWeddingBudget(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'nominal_budget' => ['sometimes', 'nullable', 'numeric', 'min:0'],
+            'total_budget'   => ['sometimes', 'nullable', 'numeric', 'min:0'],
+            'currency'       => ['sometimes', 'nullable', 'string', 'size:3'],
+            'catatan'        => ['sometimes', 'nullable', 'string'],
+            'notes'          => ['sometimes', 'nullable', 'string'],
+        ]);
+
+        $totalBudget = $data['nominal_budget'] ?? $data['total_budget'] ?? 0;
+        $currency    = strtoupper($data['currency'] ?? 'IDR');
+        $notes       = $data['catatan'] ?? $data['notes'] ?? null;
+
+        $budget = $request->user()
+            ->weddingBudget()
+            ->updateOrCreate(
+                ['user_id' => $request->user()->id],
+                ['total_budget' => $totalBudget, 'currency' => $currency, 'notes' => $notes]
+            );
+
+        return response()->json([
+            'data' => [
+                'budget' => [
+                    'id'            => $budget->id,
+                    'nominalBudget' => (float) $budget->total_budget,
+                    'currency'      => $budget->currency,
+                    'catatan'       => $budget->notes,
+                ],
+            ],
+            'message' => 'Budget berhasil disimpan.',
+        ]);
+    }
+
+    public function destroyWeddingBudget(Request $request): JsonResponse
+    {
+        $request->user()->weddingBudget?->delete();
+
+        return response()->json(['message' => 'Budget berhasil dihapus.']);
+    }
+
+    private function serializePaymentSchedule(WeddingPaymentSchedule $schedule): array
+    {
+        return [
+            'id'                         => $schedule->id,
+            'wedding_event_id'           => $schedule->wedding_event_id,
+            'source_template_id'         => $schedule->source_template_id,
+            'title'                      => $schedule->title,
+            'vendor_name'                => $schedule->vendor_name,
+            'category'                   => $schedule->category,
+            'category_label'             => $schedule->category_label,
+            'category_icon'              => $schedule->category_icon,
+            'amount'                     => $schedule->amount,
+            'due_date'                   => $schedule->due_date?->toDateString(),
+            'status'                     => $schedule->status,
+            'paid_at'                    => $schedule->paid_at?->toISOString(),
+            'payment_method'             => $this->serializePaymentMethodRelation($schedule),
+            'proof_url'                  => $schedule->proof_url,
+            'notes'                      => $schedule->notes,
+        ];
+    }
+
+    private function serializePaymentMethodRelation(WeddingPaymentSchedule $schedule): ?array
+    {
+        $pm = $schedule->relationLoaded('paymentMethod')
+            ? $schedule->paymentMethod
+            : $schedule->paymentMethod()->first();
+
+        if (! $pm) {
+            return null;
+        }
+
+        return [
+            'id'             => $pm->id,
+            'name'           => $pm->name,
+            'type'           => $pm->type,
+            'logo_icon'      => $pm->logo_icon,
+            'account_number' => $pm->account_number,
+            'account_name'   => $pm->account_name,
+        ];
+    }
+
+    private function serializeIncomingPayment(WeddingIncomingPayment $payment): array
+    {
+        return [
+            'id'               => $payment->id,
+            'source_name'      => $payment->bank_name,
+            'bank_name'        => $payment->bank_name,
+            'amount'           => $payment->amount,
+            'received_date'    => $payment->transfer_date?->toDateString(),
+            'transfer_date'    => $payment->transfer_date?->toDateString(),
+            'contributor_name' => $payment->sender_name,
+            'sender_name'      => $payment->sender_name,
+            'description'      => $payment->description,
+            'reference_number' => $payment->reference_number,
+            'proof_url'        => $payment->proof_url,
+            'status'           => $payment->status,
+            'status_label'     => $payment->status_label,
+            'confirmed_at'     => $payment->confirmed_at?->toISOString(),
+            'confirmed_by'     => $payment->confirmed_by,
+            'rejection_reason' => $payment->rejection_reason,
+            'notes'            => $payment->notes,
+        ];
+    }
+
+    private function normalizeIncomingPaymentData(array $data): array
+    {
+        if (array_key_exists('source_name', $data)) {
+            $data['bank_name'] = $data['source_name'];
+        }
+
+        if (array_key_exists('received_date', $data)) {
+            $data['transfer_date'] = $data['received_date'];
+        }
+
+        if (array_key_exists('contributor_name', $data)) {
+            $data['sender_name'] = $data['contributor_name'];
+        }
+
+        unset($data['source_name'], $data['received_date'], $data['contributor_name']);
+
+        return $data;
     }
 
     // ─────────────────────────────────────────
@@ -540,16 +962,34 @@ class CustomerController extends Controller
     public function storeFamilyMember(Request $request): JsonResponse
     {
         $data = $request->validate([
+            'no'    => ['sometimes', 'nullable', 'integer', 'min:1', 'max:65535'],
             'name'  => ['required', 'string', 'max:100'],
             'role'  => ['required', 'string', 'max:100'],
             'phone' => ['nullable', 'string', 'max:20'],
+            'rsvp_status' => ['sometimes', 'in:menunggu,hadir,tidak_hadir'],
         ]);
 
+        $nextNo = (FamilyMember::where('user_id', $request->user()->id)->max('no') ?? 0) + 1;
+
         $member = FamilyMember::create(
-            array_merge($data, ['user_id' => $request->user()->id])
+            array_merge($data, [
+                'user_id' => $request->user()->id,
+                'no'      => $data['no'] ?? $nextNo,
+                'rsvp_status' => $data['rsvp_status'] ?? 'menunggu',
+            ])
         );
 
-        return response()->json(['data' => $member->only(['id', 'name', 'role', 'phone'])], 201);
+        return response()->json(['data' => [
+            'id'                   => $member->id,
+            'no'                   => $member->no,
+            'name'                 => $member->name,
+            'role'                 => $member->role,
+            'phone'                => $member->phone,
+            'rsvp_status'          => $member->rsvp_status,
+            'rsvp_label'           => FamilyMember::$rsvpOptions[$member->rsvp_status] ?? $member->rsvp_status,
+            'rsvp_updated_by_name' => $member->rsvp_updated_by_name,
+            'rsvp_updated_at'      => $member->rsvp_updated_at,
+        ]], 201);
     }
 
     public function updateFamilyMember(Request $request, int $id): JsonResponse
@@ -559,14 +999,31 @@ class CustomerController extends Controller
             ->firstOrFail();
 
         $data = $request->validate([
+            'no'    => ['sometimes', 'nullable', 'integer', 'min:1', 'max:65535'],
             'name'  => ['sometimes', 'string', 'max:100'],
             'role'  => ['sometimes', 'string', 'max:100'],
             'phone' => ['sometimes', 'nullable', 'string', 'max:20'],
+            'rsvp_status' => ['sometimes', 'in:menunggu,hadir,tidak_hadir'],
         ]);
+
+        if (isset($data['rsvp_status'])) {
+            $data['rsvp_updated_by_name'] = $request->user()->name;
+            $data['rsvp_updated_at']      = now();
+        }
 
         $member->update($data);
 
-        return response()->json(['data' => $member->only(['id', 'name', 'role', 'phone'])]);
+        return response()->json(['data' => [
+            'id'                   => $member->id,
+            'no'                   => $member->no,
+            'name'                 => $member->name,
+            'role'                 => $member->role,
+            'phone'                => $member->phone,
+            'rsvp_status'          => $member->rsvp_status,
+            'rsvp_label'           => FamilyMember::$rsvpOptions[$member->rsvp_status] ?? $member->rsvp_status,
+            'rsvp_updated_by_name' => $member->rsvp_updated_by_name,
+            'rsvp_updated_at'      => $member->rsvp_updated_at,
+        ]]);
     }
 
     public function destroyFamilyMember(Request $request, int $id): JsonResponse
@@ -728,6 +1185,7 @@ class CustomerController extends Controller
     public function storeVipGuest(Request $request): JsonResponse
     {
         $data = $request->validate([
+            'no'          => ['sometimes', 'nullable', 'integer', 'min:1', 'max:65535'],
             'name'        => ['required', 'string', 'max:150'],
             'jabatan'     => ['nullable', 'string', 'max:150'],
             'instansi'    => ['nullable', 'string', 'max:150'],
@@ -741,7 +1199,7 @@ class CustomerController extends Controller
 
         $guest = VipGuest::create(array_merge($data, [
             'user_id'     => $request->user()->id,
-            'no'          => $nextNo,
+            'no'          => $data['no'] ?? $nextNo,
             'kategori'    => $data['kategori'] ?? 'vip',
             'rsvp_status' => $data['rsvp_status'] ?? 'menunggu',
         ]));
@@ -772,6 +1230,7 @@ class CustomerController extends Controller
             ->firstOrFail();
 
         $data = $request->validate([
+            'no'          => ['sometimes', 'nullable', 'integer', 'min:1', 'max:65535'],
             'name'        => ['sometimes', 'string', 'max:150'],
             'jabatan'     => ['sometimes', 'nullable', 'string', 'max:150'],
             'instansi'    => ['sometimes', 'nullable', 'string', 'max:150'],
@@ -791,6 +1250,7 @@ class CustomerController extends Controller
         return response()->json([
             'data' => [
                 'id'                   => $guest->id,
+                'no'                   => $guest->no,
                 'name'                 => $guest->name,
                 'jabatan'              => $guest->jabatan,
                 'instansi'             => $guest->instansi,
@@ -934,11 +1394,12 @@ class CustomerController extends Controller
         $wedding = WeddingInfo::where('user_id', $delegate->user_id)->first();
 
         $guests = VipGuest::where('user_id', $delegate->user_id)
-            ->orderBy('kategori')
-            ->orderBy('name')
+            ->orderByRaw('no IS NULL, no ASC')
+            ->orderBy('id')
             ->get()
             ->map(fn ($g) => [
                 'id'                   => $g->id,
+                'no'                   => $g->no,
                 'name'                 => $g->name,
                 'jabatan'              => $g->jabatan,
                 'instansi'             => $g->instansi,

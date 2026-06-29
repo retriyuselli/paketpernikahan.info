@@ -793,6 +793,24 @@ Gunakan langkah ini jika app iPhone menampilkan error `Tidak dapat terhubung ke 
 - Bug fix `App.swift`: `let token = storedToken ?? (await fetchCurrentToken())` → autoclosure tidak support async. Diperbaiki dengan `var token = storedToken; if token == nil { token = await fetchCurrentToken() }`.
 - **Push notification setup SELESAI PENUH** dari sisi iOS dan Firebase. Tinggal build + run ke iPhone fisik, tap Allow saat dialog izin muncul.
 
+## Backend Fix: Route `wedding-budget` Tidak Ditemukan — 2026-06-29
+
+- **Error**: iOS menampilkan "The route api/v1/customer/wedding-budget could not be found."
+- **Penyebab**: Route di backend pakai `/budget`, tapi iOS memanggil `/wedding-budget` (GET, POST, PUT, DELETE).
+- **Fix di `routes/api.php`**:
+  - Tambah `GET /wedding-budget` → `CustomerController::weddingBudget`
+  - Tambah `POST /wedding-budget` (throttle) → `CustomerController::storeWeddingBudget`
+  - Tambah `PUT /wedding-budget` (throttle) → `CustomerController::storeWeddingBudget`
+  - Tambah `DELETE /wedding-budget` (throttle) → `CustomerController::destroyWeddingBudget`
+- **Fix di `CustomerController.php`**: Tambah 3 method baru:
+  - `weddingBudget()` — GET, return `{ data: { budget: { id, nominalBudget, currency, catatan } } }`
+  - `storeWeddingBudget()` — POST/PUT, terima `nominalBudget`/`total_budget`, `currency`, `catatan`/`notes`, pakai `updateOrCreate`
+  - `destroyWeddingBudget()` — DELETE, hapus `weddingBudget` user
+- **Format respons** menggunakan key `budget` agar cocok dengan iOS decoder `CustomerWeddingBudgetPayload` yang cari key `["budget", "weddingBudget", "budgetInfo", "model", "data"]`.
+- **Field mapping iOS → backend**: `nominalBudget` → `total_budget`, `catatan` → `notes`.
+- **Catatan snake_case**: `APIClient` pakai `.convertToSnakeCase`, jadi `nominalBudget` dikirim sebagai `nominal_budget`. Backend harus validasi key `nominal_budget`, bukan `nominalBudget`.
+- **Fix iOS `resolvedSummary`**: `CustomerWeddingBudgetPayload.resolvedSummary` sekarang fallback ke `budgetInfo.nominalBudget` saat `schedules` kosong, agar Total Budget di Beranda tampil benar.
+
 ## Pending / Belum Dikerjakan
 
 - Bug tap overlap sub-tab All Articles/Real Wedding di BlogSectionView
@@ -916,6 +934,27 @@ Gunakan langkah ini jika app iPhone menampilkan error `Tidak dapat terhubung ke 
 - Method ini dipanggil di 3 flow: register email (line 36), Apple Sign-In (line 116), Google Sign-In (line 173).
 - **Dampak**: user baru tidak otomatis dapat akses Customer Dashboard — harus di-assign manual oleh super_admin.
 
+## Customer Payment Detail Views — Connect to API — 2026-06-27
+
+### Halaman Pembayaran (CustomerPaymentView)
+- Overlay "Segera Hadir" dihapus; semua kartu terhubung ke API real via 3 parallel requests (`customer/payment/summary`, `customer/payment/schedules`, `customer/payment/transactions`).
+- `CustomerAllUpcomingPaymentsView` & `CustomerAllTransactionsView` di-rewrite: API-driven, grouping bulan dinamis, filter chips.
+
+### Beranda — Progress Persiapan
+- Bug: `progressValue` salah pakai `customerStats.preparation` (endpoint berbeda). Fix: pakai `preparationSections` (sama dengan tab Persiapan) sebagai sumber primer.
+
+### CustomerPaymentDetailViews.swift — Full Rewrite 3 Views
+- **`CustomerPaymentScheduleView`**: load `customer/payment/schedules` (semua). Tab "Akan Datang" = filter `pending`/`overdue`, tab "Selesai" = filter `paid`. Grouped by month dengan `ScheduleMonthGroup`.
+- **`CustomerBudgetDetailView`**: load `customer/payment/schedules` + `customer/payment/summary` (parallel). Tab "Kategori" → group by `category`, tab "Vendor" → group by `vendorName`, keduanya pakai `BudgetGroup` (totalAmount, paidAmount, paidPercent computed). Summary card pakai `PaymentSummaryData`.
+- **`CustomerPaymentMethodView`**: tetap hardcode (belum ada endpoint backend).
+- File-level helpers: `formatRupiah()`, `ScheduleMonthGroup`, `TransactionMonthGroup`, `BudgetGroup`, `groupSchedulesByMonth()`, `groupTransactionsByMonth()`.
+- Semua view: skeleton loading (`.redacted`), empty state, `.task { await loadData() }`.
+
+### CustomerModels.swift — Cleanup
+- Tambah `statusLabel` computed property ke `PaymentScheduleItem` (Lunas/Lewat/Menunggu).
+- Hapus model legacy tidak terpakai: `PaymentScheduleStatus`, `CustomerScheduleItem`, `TransactionType`, `TransactionStatus`, `CustomerTransaction`, `CustomerBudgetCategory`, `CustomerBudgetVendor`.
+- **Build**: diagnostics 0 issues di kedua file.
+
 ## Tentang Aplikasi — Update Developer & Legal In-App — 2026-06-25
 
 - **Developer** di `CustomerAboutSheet` diubah dari `"PT Paket Pernikahan"` → `"PT. Makna Kreatif Indonesia"`.
@@ -928,3 +967,72 @@ Gunakan langkah ini jika app iPhone menampilkan error `Tidak dapat terhubung ke 
 - Helper `aboutLinkRow` (tombol dengan ikon `arrow.up.right`) diganti `aboutNavLabel` (label untuk NavigationLink; chevron otomatis dari List).
 - **File diubah**: `CustomerProfileView.swift` (CustomerAboutSheet), `AuthViews.swift` (tambah OpenSourceLicensesView).
 - **Build**: diagnostics kedua file bersih.
+
+## Customer Payment — Uang Masuk & Pembayaran Terdekat CRUD — 2026-06-28
+
+### Uang Masuk (CustomerIncomingPaymentsView)
+- Rewrite dari pass-through view menjadi self-loading dengan state `@State private var payments`.
+- API: `GET customer/payment/incoming`, `POST customer/payment/incoming`, `PUT customer/payment/incoming/{id}`, `DELETE customer/payment/incoming/{id}`.
+- CRUD: FAB `+` untuk create, `.contextMenu` (long-press) untuk Edit & Delete di setiap row.
+- Form `IncomingPaymentFormView`: fields bankName, amount, transferDate (DatePicker), senderName, description (opsional), referenceNumber (opsional). Pre-fill dari `editingItem`.
+- Month-grouping descending dengan `MonthGroup`, filter chips dengan count badge, summary banner (Dikonfirmasi + Menunggu + Grand Total), pull-to-refresh, hint text "Tahan item untuk edit atau hapus".
+- `IncomingPaymentItem`, `IncomingPaymentStatus` dipindah ke `CustomerModels.swift` (internal, sebelumnya fileprivate).
+- `flexDecimal` dan `formatShortDate` di CustomerModels.swift dijadikan internal (hapus `private`).
+- **Build**: diagnostics 0.
+
+### Uang Masuk — UI Improvements (tambahan)
+- BudgetRowView redesign: icon 48×48, progress bar LinearGradient 8px, color-coding green/orange/accent, amounts line.
+- BudgetListCard: mini 3-col summary header (Total Alokasi | Terbayar | Progress %).
+- budgetSummaryCard: overall gradient progress bar, row layout lebih clean dengan dividers.
+
+### Pembayaran Terdekat (CustomerAllUpcomingPaymentsView)
+- Tambah state: `showCreateForm`, `editingSchedule`, `deleteTarget`, `errorMessage`.
+- FAB `+` button untuk create jadwal baru.
+- `.contextMenu` (long-press) pada tiap row: Edit / Hapus.
+- Delete confirmation alert dengan nama jadwal + nominal.
+- `deleteSchedule()`: `DELETE customer/payment/schedules/{id}` + remove dari local array.
+- `loadData()` sekarang handle error ke `errorMessage`.
+- Pull-to-refresh (`.refreshable`) + `liquidGlassScrollEdgeSoft`.
+- Group header sekarang menampilkan total amount per grup di bawah urgency badge.
+- Empty state diperbarui: mention tombol `+` untuk tambah jadwal baru.
+- Form `PaymentScheduleFormView` (struct baru di CustomerPaymentView.swift): fields title (required), vendorName (required), category (Picker: venue/catering/decoration/photo_video/entertainment/makeup/transport/wo/other), amount (required), dueDate (DatePicker, required), notes (opsional). API: `POST customer/payment/schedules` (create) / `PUT customer/payment/schedules/{id}` (edit).
+- **File diubah**: `CustomerPaymentView.swift`, `CustomerModels.swift`, `CustomerPaymentDetailViews.swift`.
+- **Build**: diagnostics 0.
+
+## Customer Payment — Edit Jadwal: Metode Pembayaran & Bukti Transfer — 2026-06-29
+
+### Perubahan iOS (`CustomerPaymentView.swift` + `CustomerModels.swift`)
+
+**Model baru di `CustomerModels.swift`:**
+- `SchedulePaymentMethodRef: Decodable` — nested object dari backend `payment_method`: `{id, name, accountNumber, logoIcon, type}`.
+- `CustomerPaymentMethodAPIItem: Identifiable, Decodable` — item dari `GET customer/payment-methods`: `{id, name, logoIcon, accountNumber, accountName, isPrimary, type}`.
+- `PaymentScheduleItem.paymentMethod: String?` diubah menjadi `paymentMethodRef: SchedulePaymentMethodRef?`; decoded via `decodeIfPresent(SchedulePaymentMethodRef.self, ...)`.
+- Tambah computed `paymentMethodName: String?` sebagai shortcut ke `paymentMethodRef?.name`.
+
+**Form `PaymentScheduleFormView` (CustomerPaymentView.swift):**
+- Tambah `import PhotosUI` di header file.
+- `@State private var paymentMethod: String` → `@State private var selectedPaymentMethodId: Int?`
+- `@State private var proofUrl: String` → `@State private var existingProofUrl: String`
+- Tambah states: `availablePaymentMethods`, `isLoadingMethods`, `proofImagePickerItem`, `proofImageData`.
+- **`paymentMethodPickerCard`**: Picker dari `availablePaymentMethods` (loaded via `.task` dari `GET customer/payment-methods`). Tag tiap option = `method.id as Int?`. Fallback "Belum ada metode pembayaran" jika array kosong.
+- **`proofImageCard`**: PhotosPicker → `proofImageData: Data?`. Preview thumbnail jika sudah dipilih, with X button untuk hapus. Jika hanya ada `existingProofUrl` → "Bukti sudah diupload" chip. Tombol "Pilih Foto" / "Ganti Foto".
+- `save()`: body pakai `customerPaymentMethodId: Int?` (bukan string). Setelah save berhasil, jika `proofImageData != nil` → upload ke `customer/payment/schedules/{id}/proof` via `APIClient.shared.upload(...)`.
+- `loadPaymentMethods()`: fetch `customer/payment-methods` sekali saat Picker ditampilkan.
+
+### Perubahan Backend
+
+**`routes/api.php`:** Tambah route di throttle group:
+```php
+Route::post('/payment/schedules/{id}/proof', [CustomerController::class, 'uploadScheduleProof']);
+```
+
+**`CustomerController.php` — `uploadScheduleProof()`:**
+- Validate: `proof` file image max 5MB.
+- `$path = $request->file('proof')->store('payment-proofs', 'public')`.
+- `$url = Storage::url($path)`.
+- Update `proof_url` di schedule.
+- Return `serializePaymentSchedule($schedule->refresh())`.
+
+**`updatePaymentSchedule()`** sudah menerima `customer_payment_method_id` (FK nullable) — tidak perlu perubahan validasi.
+
+Route cache cleared: `php artisan route:clear && cache:clear`.

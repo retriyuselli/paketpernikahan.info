@@ -51,9 +51,24 @@ class CustomerSeeder extends Seeder
     private function seedWeddingInfo(User $user): void
     {
         $samples = [
-            ['groom_name' => 'Budi Santoso',    'bride_name' => 'Sari Dewi Lestari'],
-            ['groom_name' => 'Rizky Pratama',   'bride_name' => 'Anisa Rahmawati'],
-            ['groom_name' => 'Dimas Ardiansyah','bride_name' => 'Putri Maharani'],
+            [
+                'groom_name' => 'Budi Santoso',
+                'bride_name' => 'Sari Dewi Lestari',
+                'budaya'     => 'Jawa',
+                'songlist'   => ['Akad', 'Teman Hidup', 'Perfect'],
+            ],
+            [
+                'groom_name' => 'Rizky Pratama',
+                'bride_name' => 'Anisa Rahmawati',
+                'budaya'     => 'Minang',
+                'songlist'   => ['A Thousand Years', 'Janji Suci', 'Beautiful in White'],
+            ],
+            [
+                'groom_name' => 'Dimas Ardiansyah',
+                'bride_name' => 'Putri Maharani',
+                'budaya'     => 'Palembang',
+                'songlist'   => ['Until I Found You', 'Melukis Senja', 'Marry Your Daughter'],
+            ],
         ];
 
         static $idx = 0;

@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\FamilyMembers\Pages;
 
 use App\Exports\FamilyMemberTemplateExport;
+use App\Exports\FamilyMembersExport;
 use App\Filament\Admin\Resources\FamilyMembers\FamilyMemberResource;
 use App\Imports\FamilyMemberImport;
 use App\Models\User;
@@ -29,6 +30,26 @@ class ListFamilyMembers extends ListRecords
                 ->action(fn () => Excel::download(
                     new FamilyMemberTemplateExport(),
                     'template-anggota-keluarga.xlsx'
+                )),
+
+            Action::make('exportXlsx')
+                ->label('Export XLSX')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('info')
+                ->schema([
+                    Select::make('user_id')
+                        ->label('Customer')
+                        ->options(fn () => User::role(['customer', 'pengunjung'])
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                        )
+                        ->searchable()
+                        ->required()
+                        ->helperText('Pilih customer yang data anggota keluarganya akan diexport.'),
+                ])
+                ->action(fn (array $data) => Excel::download(
+                    new FamilyMembersExport((int) $data['user_id']),
+                    'anggota-keluarga.xlsx'
                 )),
 
             Action::make('importXlsx')

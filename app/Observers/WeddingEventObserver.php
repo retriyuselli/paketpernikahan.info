@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\CustomerPreparationTask;
 use App\Models\PreparationTaskTemplate;
 use App\Models\WeddingEvent;
+use App\Services\WeddingPaymentScheduleTemplateService;
 
 class WeddingEventObserver
 {
@@ -15,6 +16,8 @@ class WeddingEventObserver
      */
     public function created(WeddingEvent $event): void
     {
+        app(WeddingPaymentScheduleTemplateService::class)->createSchedulesForEvent($event);
+
         $alreadyHasTasks = CustomerPreparationTask::where('wedding_event_id', $event->id)->exists();
 
         if ($alreadyHasTasks) {

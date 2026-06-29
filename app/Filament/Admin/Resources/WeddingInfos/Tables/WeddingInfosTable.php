@@ -31,6 +31,33 @@ class WeddingInfosTable
                     ->searchable()
                     ->placeholder('—'),
 
+                TextColumn::make('budaya')
+                    ->label('Budaya / Adat')
+                    ->searchable()
+                    ->placeholder('—'),
+
+                TextColumn::make('budget_summary')
+                    ->label('Budget')
+                    ->state(function ($record) {
+                        $budget = $record->user?->weddingBudget;
+
+                        if (! $budget) {
+                            return '—';
+                        }
+
+                        $currency = $budget->currency ?? 'IDR';
+                        $amount   = number_format((float) $budget->total_budget, 0, ',', '.');
+
+                        return "{$currency} {$amount}";
+                    })
+                    ->sortable(false),
+
+                TextColumn::make('songlist_summary')
+                    ->label('Songlist')
+                    ->state(fn ($record) => collect($record->songlist ?? [])->filter()->implode(', ') ?: '—')
+                    ->limit(40)
+                    ->wrap(),
+
                 TextColumn::make('acara_summary')
                     ->label('Rangkaian Acara')
                     ->state(function ($record) {

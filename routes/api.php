@@ -130,7 +130,15 @@ Route::prefix('v1')->group(function () {
             Route::get('/payments/schedule',           [CustomerController::class, 'paymentsSchedule']);
             Route::get('/payments/all',                [CustomerController::class, 'paymentsAll']);
             Route::get('/budget',                      [CustomerController::class, 'budget']);
+            Route::get('/wedding-budget',              [CustomerController::class, 'weddingBudget']);
             Route::get('/payment-methods',             [CustomerController::class, 'paymentMethods']);
+
+            Route::prefix('payment')->group(function () {
+                Route::get('/summary',      [CustomerController::class, 'paymentSummary']);
+                Route::get('/schedules',    [CustomerController::class, 'paymentSchedules']);
+                Route::get('/transactions', [CustomerController::class, 'paymentTransactions']);
+                Route::get('/incoming',     [CustomerController::class, 'incomingPayments']);
+            });
 
             // ── Mutasi data — throttle 30 request/menit
             Route::middleware('throttle:30,1')->group(function () {
@@ -161,6 +169,17 @@ Route::prefix('v1')->group(function () {
 
                 Route::post('/payment-methods',            [CustomerController::class, 'storePaymentMethod']);
                 Route::delete('/payment-methods/{id}',     [CustomerController::class, 'destroyPaymentMethod']);
+                Route::post('/payment/schedules',            [CustomerController::class, 'storePaymentSchedule']);
+                Route::put('/payment/schedules/{id}',        [CustomerController::class, 'updatePaymentSchedule']);
+                Route::delete('/payment/schedules/{id}',     [CustomerController::class, 'destroyPaymentSchedule']);
+                Route::post('/payment/schedules/{id}/proof', [CustomerController::class, 'uploadScheduleProof']);
+                Route::post('/payment/incoming',           [CustomerController::class, 'storeIncomingPayment']);
+                Route::put('/payment/incoming/{id}',       [CustomerController::class, 'updateIncomingPayment']);
+                Route::delete('/payment/incoming/{id}',    [CustomerController::class, 'destroyIncomingPayment']);
+                Route::put('/budget',                      [CustomerController::class, 'updateBudget']);
+                Route::post('/wedding-budget',             [CustomerController::class, 'storeWeddingBudget']);
+                Route::put('/wedding-budget',              [CustomerController::class, 'storeWeddingBudget']);
+                Route::delete('/wedding-budget',           [CustomerController::class, 'destroyWeddingBudget']);
 
                 Route::put('/profile',                     [CustomerController::class, 'updateProfile']);
             });

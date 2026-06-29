@@ -12,9 +12,23 @@ class FamilyMember extends Model
 
     protected $fillable = [
         'user_id',
+        'no',
         'name',
         'role',
         'phone',
+        'rsvp_status',
+        'rsvp_updated_by_name',
+        'rsvp_updated_at',
+    ];
+
+    protected $casts = [
+        'rsvp_updated_at' => 'datetime',
+    ];
+
+    public static array $rsvpOptions = [
+        'menunggu'     => 'Menunggu',
+        'hadir'        => 'Hadir',
+        'tidak_hadir'  => 'Tidak Hadir',
     ];
 
     public function user(): BelongsTo

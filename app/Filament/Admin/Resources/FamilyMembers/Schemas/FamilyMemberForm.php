@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\FamilyMembers\Schemas;
 
+use App\Models\FamilyMember;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -20,6 +21,13 @@ class FamilyMemberForm
                         ->preload()
                         ->required(),
 
+                    TextInput::make('no')
+                        ->label('No')
+                        ->numeric()
+                        ->minValue(1)
+                        ->maxValue(65535)
+                        ->nullable(),
+
                     TextInput::make('name')
                         ->label('Nama')
                         ->required()
@@ -36,6 +44,12 @@ class FamilyMemberForm
                         ->tel()
                         ->maxLength(30)
                         ->nullable(),
+
+                    Select::make('rsvp_status')
+                        ->label('Status RSVP')
+                        ->options(FamilyMember::$rsvpOptions)
+                        ->default('menunggu')
+                        ->required(),
                 ])->columns(2),
         ];
     }

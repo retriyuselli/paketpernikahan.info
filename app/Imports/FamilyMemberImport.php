@@ -21,6 +21,9 @@ class FamilyMemberImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
     public function collection(Collection $rows): void
     {
+        $nextNo = (FamilyMember::where('user_id', $this->userId)->max('no') ?? 0) + 1;
+        $validRsvp = array_keys(FamilyMember::$rsvpOptions);
+
         foreach ($rows as $row) {
             $name = trim((string) ($row['nama'] ?? $row['name'] ?? ''));
 
@@ -29,13 +32,22 @@ class FamilyMemberImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
                 continue;
             }
 
+            $rawNo = $row['no'] ?? $row['no_'] ?? null;
+            $no    = ($rawNo !== null && is_numeric($rawNo)) ? (int) $rawNo : $nextNo;
+
+            $rawRsvp = trim((string) ($row['rsvp'] ?? $row['rsvp_status'] ?? 'menunggu'));
+            $rsvp    = in_array($rawRsvp, $validRsvp, true) ? $rawRsvp : 'menunggu';
+
             FamilyMember::create([
-                'user_id' => $this->userId,
-                'name'    => $name,
-                'role'    => trim((string) ($row['peran'] ?? $row['role'] ?? '')) ?: null,
-                'phone'   => trim((string) ($row['telepon'] ?? $row['phone'] ?? '')) ?: null,
+                'user_id'     => $this->userId,
+                'no'          => $no,
+                'name'        => $name,
+                'role'        => trim((string) ($row['peran'] ?? $row['role'] ?? '')) ?: null,
+                'phone'       => trim((string) ($row['telepon'] ?? $row['phone'] ?? '')) ?: null,
+                'rsvp_status' => $rsvp,
             ]);
 
+            $nextNo = max($nextNo, $no + 1);
             $this->imported++;
         }
     }

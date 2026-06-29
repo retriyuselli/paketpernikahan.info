@@ -22,6 +22,11 @@ class VipGuestsTable
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('no')
+                    ->label('No')
+                    ->sortable()
+                    ->placeholder('—'),
+
                 TextColumn::make('name')
                     ->label('Nama Tamu')
                     ->searchable()
@@ -63,7 +68,7 @@ class VipGuestsTable
                     })
                     ->formatStateUsing(fn ($state) => VipGuest::$rsvpOptions[$state] ?? $state),
             ])
-            ->defaultSort('created_at', 'desc')
+            ->defaultSort('no')
             ->filters([
                 SelectFilter::make('user')
                     ->label('Customer')

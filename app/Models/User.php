@@ -135,6 +135,21 @@ class User extends Authenticatable implements FilamentUser, HasAvatar, MustVerif
         return $this->hasMany(CustomerPaymentMethod::class);
     }
 
+    public function weddingBudget(): HasOne
+    {
+        return $this->hasOne(WeddingBudget::class);
+    }
+
+    public function paymentSchedules(): HasMany
+    {
+        return $this->hasMany(WeddingPaymentSchedule::class)->orderBy('due_date');
+    }
+
+    public function incomingPayments(): HasMany
+    {
+        return $this->hasMany(WeddingIncomingPayment::class)->orderByDesc('transfer_date');
+    }
+
     public function customerNotifications(): HasMany
     {
         return $this->hasMany(CustomerNotification::class);

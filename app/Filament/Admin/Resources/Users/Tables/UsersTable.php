@@ -31,6 +31,7 @@ class UsersTable
                         'super_admin' => 'danger',
                         'admin'       => 'warning',
                         'vendor'      => 'success',
+                        'customer'    => 'primary',
                         'pengunjung'  => 'info',
                         default       => 'gray',
                     })

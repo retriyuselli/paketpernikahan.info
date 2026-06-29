@@ -22,6 +22,13 @@ class VipGuestForm
                         ->preload()
                         ->required(),
 
+                    TextInput::make('no')
+                        ->label('No')
+                        ->numeric()
+                        ->minValue(1)
+                        ->maxValue(65535)
+                        ->nullable(),
+
                     TextInput::make('name')
                         ->label('Nama Tamu')
                         ->required()

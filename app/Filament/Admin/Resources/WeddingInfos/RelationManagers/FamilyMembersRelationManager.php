@@ -2,12 +2,14 @@
 
 namespace App\Filament\Admin\Resources\WeddingInfos\RelationManagers;
 
+use App\Models\FamilyMember;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -31,6 +33,13 @@ class FamilyMembersRelationManager extends RelationManager
     {
         return $schema->components([
             Section::make()->columns(2)->schema([
+                TextInput::make('no')
+                    ->label('No')
+                    ->numeric()
+                    ->minValue(1)
+                    ->maxValue(65535)
+                    ->nullable(),
+
                 TextInput::make('name')
                     ->label('Nama')
                     ->required()
@@ -47,6 +56,12 @@ class FamilyMembersRelationManager extends RelationManager
                     ->tel()
                     ->maxLength(20)
                     ->nullable(),
+
+                Select::make('rsvp_status')
+                    ->label('Status RSVP')
+                    ->options(FamilyMember::$rsvpOptions)
+                    ->default('menunggu')
+                    ->required(),
             ]),
         ]);
     }
@@ -55,6 +70,11 @@ class FamilyMembersRelationManager extends RelationManager
     {
         return $table
             ->columns([
+                TextColumn::make('no')
+                    ->label('No')
+                    ->sortable()
+                    ->placeholder('—'),
+
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()
@@ -67,8 +87,18 @@ class FamilyMembersRelationManager extends RelationManager
                 TextColumn::make('phone')
                     ->label('No. HP')
                     ->placeholder('—'),
+
+                TextColumn::make('rsvp_status')
+                    ->label('RSVP')
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+                        'hadir'        => 'success',
+                        'tidak_hadir'  => 'danger',
+                        default        => 'gray',
+                    })
+                    ->formatStateUsing(fn ($state) => FamilyMember::$rsvpOptions[$state] ?? $state),
             ])
-            ->defaultSort('name')
+            ->defaultSort('no')
             ->headerActions([
                 CreateAction::make()
                     ->mutateFormDataUsing(function (array $data): array {
